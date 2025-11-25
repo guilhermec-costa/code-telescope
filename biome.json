@@ -1,0 +1,70 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.2.6/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "*.ts",
+      "src/**/*.ts",
+      "scripts/**/*.ts",
+      "worker/**/*.ts",
+      "containers/**/*.ts",
+      "adhoc/**/*.ts",
+      "!drizzle",
+      "!package.json",
+      "!package-lock.json"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 120,
+    "bracketSpacing": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": false,
+      "suspicious": {
+        "noExplicitAny": {
+          "level": "warn"
+        },
+        "noEmptyBlock": {
+          "level": "warn"
+        }
+      },
+      "correctness": {
+        "noUnusedVariables": {
+          "fix": "unsafe",
+          "level": "warn"
+        },
+        "noUnusedImports": {
+          "fix": "safe",
+          "level": "info"
+        }
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "semicolons": "always",
+      "indentStyle": "space",
+      "lineWidth": 120,
+      "indentWidth": 2
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
+}
