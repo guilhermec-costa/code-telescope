@@ -16,8 +16,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "code-telescope.health",
-        "title": "Code Telescope Health"
+        "command": "code-telescope.fuzzy",
+        "title": "Telescope Fuzzy"
       }
     ]
   },

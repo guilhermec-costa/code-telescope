@@ -1,26 +1,32 @@
 import * as vscode from "vscode";
 import { CodeTelescopeGlobals } from "./globals";
-import { CmdCallback, ExtCtx } from "./types";
+import type { CmdCallback, ExtensionCtx } from "./types";
 
-function getCmdId(cmdName: string) {
-  return `${CodeTelescopeGlobals.EXTENSION_NAME}.${cmdName}`;
+/**
+ * Produces a command id based in a parts array
+ */
+function getCmdId(...parts: string[]) {
+  return `${CodeTelescopeGlobals.EXTENSION_NAME}.${parts.join(".")}`;
 }
 
-function registerAndSubscribeCmd(cmdId: string, cb: CmdCallback, ctx: ExtCtx) {
-  const cmdDisposable = vscode.commands.registerCommand(getCmdId("health"), () => {
-    vscode.window.showInformationMessage("code-telescope is running");
-  });
+function registerAndSubscribeCmd(cmdId: string, cb: CmdCallback, ctx: ExtensionCtx) {
+  const cmdDisposable = vscode.commands.registerCommand(cmdId, cb);
   ctx.subscriptions.push(cmdDisposable);
 }
 
-export function activate(context: ExtCtx) {
+export function activate(context: ExtensionCtx) {
   console.log(`${CodeTelescopeGlobals.EXTENSION_NAME} activated!`);
-  const healthCommandId = getCmdId("health");
 
   registerAndSubscribeCmd(
-    healthCommandId,
+    getCmdId("fuzzy"),
     () => {
-      vscode.window.showInformationMessage("code-telescope is running");
+      const panel = vscode.window.createWebviewPanel("code-telescope", "Telescope - File Fuzzy Finder", vscode.ViewColumn.Beside, {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+      });
+      vscode.window.showInformationMessage("code-telescope is started!");
+      panel.title = "File Fuzzy Finder";
+      panel.webview.html = "<h1>hello world</h1>";
     },
     context,
   );
