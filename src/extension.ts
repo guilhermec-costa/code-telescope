@@ -1,18 +1,29 @@
 import * as vscode from "vscode";
-
-const extensionName = "code-telescope";
+import { CodeTelescopeGlobals } from "./globals";
+import { CmdCallback, ExtCtx } from "./types";
 
 function getCmdId(cmdName: string) {
-  return `${extensionName}.${cmdName}`;
+  return `${CodeTelescopeGlobals.EXTENSION_NAME}.${cmdName}`;
 }
 
-export function activate(context: vscode.ExtensionContext) {
-  console.log(`${extensionName} activated!`);
-  const disposable = vscode.commands.registerCommand(getCmdId("helloWorld"), () => {
-    vscode.window.showInformationMessage("Hello World from code-telescope!!");
+function registerAndSubscribeCmd(cmdId: string, cb: CmdCallback, ctx: ExtCtx) {
+  const cmdDisposable = vscode.commands.registerCommand(getCmdId("health"), () => {
+    vscode.window.showInformationMessage("code-telescope is running");
   });
+  ctx.subscriptions.push(cmdDisposable);
+}
 
-  context.subscriptions.push(disposable);
+export function activate(context: ExtCtx) {
+  console.log(`${CodeTelescopeGlobals.EXTENSION_NAME} activated!`);
+  const healthCommandId = getCmdId("health");
+
+  registerAndSubscribeCmd(
+    healthCommandId,
+    () => {
+      vscode.window.showInformationMessage("code-telescope is running");
+    },
+    context,
+  );
 }
 
 export function deactivate() {}

@@ -32,7 +32,7 @@
       "recommended": false,
       "suspicious": {
         "noExplicitAny": {
-          "level": "warn"
+          "level": "off"
         },
         "noEmptyBlock": {
           "level": "warn"

@@ -9,13 +9,15 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:code-telescope.health"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "code-telescope.helloWorld",
-        "title": "Hello World"
+        "command": "code-telescope.health",
+        "title": "Code Telescope Health"
       }
     ]
   },
