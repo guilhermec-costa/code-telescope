@@ -17,7 +17,7 @@
     "commands": [
       {
         "command": "code-telescope.fuzzy",
-        "title": "Telescope Fuzzy"
+        "title": "Code Telescope: File Fuzzy Finder"
       }
     ]
   },

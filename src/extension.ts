@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { CodeTelescopeGlobals } from "./globals";
 import type { CmdCallback, ExtensionCtx } from "./types";
+import { FuzzyPanel } from "./fuzzy-panel";
 
 /**
  * Produces a command id based in a parts array
@@ -19,14 +20,8 @@ export function activate(context: ExtensionCtx) {
 
   registerAndSubscribeCmd(
     getCmdId("fuzzy"),
-    () => {
-      const panel = vscode.window.createWebviewPanel("code-telescope", "Telescope - File Fuzzy Finder", vscode.ViewColumn.Beside, {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-      });
-      vscode.window.showInformationMessage("code-telescope is started!");
-      panel.title = "File Fuzzy Finder";
-      panel.webview.html = "<h1>hello world</h1>";
+    async () => {
+      FuzzyPanel.createOrShow(context);
     },
     context,
   );

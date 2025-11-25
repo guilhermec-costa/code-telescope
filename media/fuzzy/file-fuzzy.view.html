@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Telescope - File fuzzy</title>
+  <link rel="stylesheet" type="text/css" href="{{root}}/style.css">
+</head>
+
+<body>
+  <script>
+    (function() {
+      const vscode = acquireVsCodeApi();
+      setTimeout(() => {
+        vscode.postMessage({
+          command: "post message"
+        })
+      }, 10000);
+    }())
+  </script>
+</body>
+
+</html>
