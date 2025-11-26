@@ -5,7 +5,7 @@ import { getCmdId, registerAndSubscribeCmd } from "./utils/commands";
 
 export function activate(context: ExtensionCtx) {
   console.log(`${Globals.EXTENSION_NAME} activated!`);
-  Globals.extensionUri = context.extensionUri;
+  Globals.EXTENSION_URI = context.extensionUri;
 
   registerAndSubscribeCmd(
     getCmdId("fuzzy"),
