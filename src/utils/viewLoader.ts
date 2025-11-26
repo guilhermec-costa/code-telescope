@@ -1,16 +1,16 @@
 import * as vscode from "vscode";
 import { Globals } from "../globals";
 
-export async function loadWebviewHtml(relativePath: string): Promise<string> {
-  const diskPath = joinPath(Globals.EXTENSION_URI, relativePath);
+export async function loadWebviewHtml(...relativePaths: string[]): Promise<string> {
+  const diskPath = joinPath(Globals.EXTENSION_URI, ...relativePaths);
   let rawHtml = await vscode.workspace.fs.readFile(diskPath);
   return rawHtml.toString();
 }
 
 export function replaceRootDirStrInHtml(wv: vscode.Webview, html: string, relativePath: string) {
   const resourcePath = joinPath(Globals.EXTENSION_URI, relativePath);
-  const rootSubstPath = wv.asWebviewUri(resourcePath).toString();
-  return html.replace(/{{root}}/g, rootSubstPath);
+  const rootReplacerPath = wv.asWebviewUri(resourcePath).toString();
+  return html.replace(/{{root}}/g, rootReplacerPath);
 }
 
 export function joinPath(baseUri: vscode.Uri, ...paths: string[]): vscode.Uri {
