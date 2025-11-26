@@ -1,0 +1,1 @@
+console.log("Hello html from script!")

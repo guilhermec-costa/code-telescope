@@ -1,15 +1,14 @@
 import * as vscode from "vscode";
-import { loadWebviewHtml, replaceRootDirStr } from "./utils/viewLoader";
+import { loadWebviewHtml, replaceRootDirStrInHtml } from "./utils/viewLoader";
 
 export class FuzzyPanel {
   public static currentPanel: FuzzyPanel | undefined;
 
   private readonly panel: vscode.WebviewPanel;
-  private readonly extensionUri: vscode.Uri;
 
-  static createOrShow(context: vscode.ExtensionContext) {
+  static createOrShow() {
     if (FuzzyPanel.currentPanel) {
-      FuzzyPanel.currentPanel.panel.reveal();
+      FuzzyPanel.currentPanel.panel.reveal(vscode.ViewColumn.Beside);
       return;
     }
 
@@ -20,12 +19,11 @@ export class FuzzyPanel {
       { enableScripts: true },
     );
 
-    FuzzyPanel.currentPanel = new FuzzyPanel(panel, context);
+    FuzzyPanel.currentPanel = new FuzzyPanel(panel);
   }
 
-  private constructor(panel: vscode.WebviewPanel, context: vscode.ExtensionContext) {
+  private constructor(panel: vscode.WebviewPanel) {
     this.panel = panel;
-    this.extensionUri = context.extensionUri;
 
     this._updateHtml();
 
@@ -39,12 +37,7 @@ export class FuzzyPanel {
   }
 
   private async _updateHtml() {
-    const rawHtml = await loadWebviewHtml(this.extensionUri, "media/fuzzy/file-fuzzy.view.html");
-    this.panel.webview.html = replaceRootDirStr(
-      this.panel.webview,
-      this.extensionUri,
-      "media/fuzzy/",
-      rawHtml,
-    );
+    const rawHtml = await loadWebviewHtml("media/fuzzy/file-fuzzy.view.html");
+    this.panel.webview.html = replaceRootDirStrInHtml(this.panel.webview, rawHtml, "media/fuzzy/");
   }
 }
