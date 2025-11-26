@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { loadWebviewHtml, replaceRootDirStrInHtml } from "./utils/viewLoader";
+import { WorkspaceFileFinder } from "./finders/workspace-files.finder";
 
 export class FuzzyPanel {
   public static currentPanel: FuzzyPanel | undefined;
@@ -37,7 +38,12 @@ export class FuzzyPanel {
   }
 
   private async _updateHtml() {
-    const rawHtml = await loadWebviewHtml("media/fuzzy/file-fuzzy.view.html");
+    const files = await WorkspaceFileFinder.findFilePaths();
+    console.log(files);
+    const rawHtml = await loadWebviewHtml("media", "fuzzy", "file-fuzzy.view.html");
+    await this.panel.webview.postMessage({
+      data: files,
+    });
     this.panel.webview.html = replaceRootDirStrInHtml(this.panel.webview, rawHtml, "media/fuzzy/");
   }
 }
