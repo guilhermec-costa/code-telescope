@@ -46,7 +46,7 @@
     "typescript-eslint": "^8.46.3"
   },
   "lint-staged": {
-    "*.{js,ts,md}": [
+    "*.{js,ts}": [
       "pnpm lint",
       "pnpm format:write"
     ]

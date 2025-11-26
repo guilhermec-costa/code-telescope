@@ -7,7 +7,14 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["*.ts", "*.html", "src/**/*.ts", "media/**/*.html|css|js"]
+    "includes": [
+      "**/*.ts",
+      "**/*.html",
+      "src/**/*.ts",
+      "media/**/*.html",
+      "media/**/*.css",
+      "media/**/*.js"
+    ]
   },
   "formatter": {
     "enabled": true,
