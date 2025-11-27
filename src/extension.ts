@@ -14,7 +14,10 @@ export function activate(context: ExtensionCtx) {
       FuzzyPanel.currentPanel?.panel.webview.onDidReceiveMessage(async (msg) => {
         if (msg.type === "ready") {
           const files = await panel.wsFinder.findFilePaths();
-          console.log(files);
+          panel.panel.webview.postMessage({
+            type: "fileList",
+            data: files,
+          });
         }
       });
     },
