@@ -9,7 +9,7 @@ export class VSCodeGitBranchFinder implements FuzzyProvider {
     this.gitApi = this.getGitApi();
   }
 
-  async findSelectableOptions(): Promise<string[]> {
+  async querySelectableOptions(): Promise<string[]> {
     const branches = await this.findBranches();
     return branches.map((branch) => branch.name || "");
   }

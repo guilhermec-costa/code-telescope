@@ -1,6 +1,6 @@
 import { VSCodeGitBranchFinder } from "./finders/vscode-git-branch.finder";
 import { WorkspaceFileFinder } from "./finders/workspace-files.finder";
-import { FuzzyPanel } from "./fuzzy-panel";
+import { FuzzyPanel } from "./fuzzy/fuzzy-panel";
 import { Globals } from "./globals";
 import type { ExtensionCtx } from "./types";
 import { getCmdId, registerAndSubscribeCmd } from "./utils/commands";

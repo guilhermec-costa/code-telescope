@@ -1,13 +1,14 @@
 import * as vscode from "vscode";
-import { FuzzyProvider } from "./finders/fuzzy-provider";
-import { WorkspaceFileFinder } from "./finders/workspace-files.finder";
-import { loadWebviewHtml, replaceRootDirStrInHtml } from "./utils/viewLoader";
+import { FuzzyProvider } from "../finders/fuzzy-provider";
+import { WorkspaceFileFinder } from "../finders/workspace-files.finder";
+import { loadWebviewHtml, replaceRootDirStrInHtml } from "../utils/viewLoader";
+import { WebviewManager } from "./webview-util";
 
 export class FuzzyPanel {
   public static currentPanel: FuzzyPanel | undefined;
 
   public readonly panel: vscode.WebviewPanel;
-
+  private readonly wvManager: WebviewManager;
   private provider: FuzzyProvider = new WorkspaceFileFinder();
 
   static createOrShow() {
@@ -29,6 +30,7 @@ export class FuzzyPanel {
 
   private constructor(panel: vscode.WebviewPanel) {
     this.panel = panel;
+    this.wvManager = new WebviewManager(this.panel.webview);
 
     this._updateHtml();
     this.listenWebview();
@@ -40,9 +42,15 @@ export class FuzzyPanel {
 
   public async setProvider(provider: FuzzyProvider) {
     this.provider = provider;
+    const items = await provider.querySelectableOptions();
+    await this.sendFileListEvent(items);
+  }
 
-    const items = await provider.findSelectableOptions();
-    this.sendItems(items);
+  private async sendFileListEvent(files: string[]) {
+    await this.wvManager.sendMessage({
+      type: "fileList",
+      data: files,
+    });
   }
 
   private async _updateHtml() {
@@ -52,10 +60,9 @@ export class FuzzyPanel {
 
   public listenWebview() {
     this.panel.webview.onDidReceiveMessage(async (msg: WebviewMessage) => {
-      Set;
       if (msg.type === "ready") {
-        const items = await this.provider.findSelectableOptions();
-        this.sendItems(items);
+        const items = await this.provider.querySelectableOptions();
+        await this.sendFileListEvent(items);
       }
 
       if (msg.type === "fileSelected") {
@@ -81,24 +88,17 @@ export class FuzzyPanel {
           const contentBytes = await vscode.workspace.fs.readFile(uri);
           const content = new TextDecoder("utf8").decode(contentBytes);
 
-          this.panel.webview.postMessage({
+          await this.wvManager.sendMessage({
             type: "previewUpdate",
             data: { content },
           });
-        } catch (err) {
-          this.panel.webview.postMessage({
+        } catch (_err) {
+          await this.wvManager.sendMessage({
             type: "previewUpdate",
             data: { content: "[Unable to read file]" },
           });
         }
       }
-    });
-  }
-
-  private sendItems(items: string[]) {
-    this.panel.webview.postMessage({
-      type: "fileList",
-      data: items,
     });
   }
 }

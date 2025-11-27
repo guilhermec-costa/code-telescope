@@ -6,7 +6,7 @@ import { FuzzyProvider } from "./fuzzy-provider";
 export class WorkspaceFileFinder implements FuzzyProvider {
   constructor(private overrideConfig?: Partial<FinderSearchConfig>) {}
 
-  async findSelectableOptions(): Promise<string[]> {
+  async querySelectableOptions(): Promise<string[]> {
     const cfg = this.getFinderConfig();
     const files = await this.getWorkspaceFiles(cfg);
     return files.map((f) => f.path);

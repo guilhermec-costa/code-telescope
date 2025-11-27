@@ -3,7 +3,7 @@ export interface FuzzyProvider {
    * Retorna a lista de itens a serem exibidos no fuzzy.
    * Ex: files, branches, symbols, commands...
    */
-  findSelectableOptions(): Promise<string[]>;
+  querySelectableOptions(): Promise<string[]>;
 
   /**
    * Quando o usuário seleciona um item (Enter).
