@@ -6,13 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Code Telescope - File fuzzy</title>
   <link rel="stylesheet" type="text/css" href="{{root}}/style.css">
-  <script defer src="{{root}}/index.js"></script>
+  <script type="module" src="{{root}}/index.js"></script>
 </head>
 
 <body>
-  hello from telescope
-  <input id="search" type="text" placeholder="Search..."/>
-  <ul id="file-list"></ul>
+  <div id="container">
+    <input id="search" type="text" placeholder="🔍 Search files…" autofocus />
+    <ul id="file-list"></ul>
+  </div>
 </body>
 
 </html>

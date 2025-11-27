@@ -2,6 +2,7 @@ import { FuzzyPanel } from "./fuzzy-panel";
 import { Globals } from "./globals";
 import type { ExtensionCtx } from "./types";
 import { getCmdId, registerAndSubscribeCmd } from "./utils/commands";
+import * as vscode from "vscode";
 
 export function activate(context: ExtensionCtx) {
   console.log(`${Globals.EXTENSION_NAME} activated!`);
@@ -18,6 +19,11 @@ export function activate(context: ExtensionCtx) {
             type: "fileList",
             data: files,
           });
+        }
+
+        if (msg.type === "fileSelected") {
+          const uri = vscode.Uri.file(msg.payload);
+          vscode.commands.executeCommand("vscode.open", uri);
         }
       });
     },

@@ -3,46 +3,120 @@
 /** @type {ReturnType<typeof acquireVsCodeApi>} */
 const vscode = acquireVsCodeApi();
 
-/** @type{string[]} */
-let allFilesPaths = [];
+let allFiles = [];
+let filteredFiles = [];
+let selectedIndex = 0;
+
+const listEl = document.getElementById("file-list");
+const searchEl = document.getElementById("search");
 
 window.addEventListener("DOMContentLoaded", () => {
-  vscode.postMessage({
-    type: "ready",
-  });
+  vscode.postMessage({ type: "ready" });
 });
 
 window.addEventListener("message", (event) => {
   const { type, data } = event.data;
+
   if (type === "fileList") {
-    allFilesPaths = data;
-    renderList(allFilesPaths);
+    allFiles = data;
+    filteredFiles = allFiles;
+    renderList();
   }
 });
 
-window.addEventListener("input", (event) => {
-  if (event.target.id === "search") {
-    const query = event.target.value.toLowerCase();
-    const filtered = allFilesPaths.filter((path) => path.toLowerCase().includes(query));
-    renderList(filtered);
-  }
-});
+// ----------------------------
+// Rendering
+// ----------------------------
+function renderList() {
+  listEl.innerHTML = "";
 
-function renderList(files) {
-  const ul = document.getElementById("file-list");
-  if (!ul) return;
+  const query = searchEl.value.toLowerCase();
 
-  ul.innerHTML = ""; // clears html
-  for (const filePath of files) {
+  filteredFiles.forEach((file, idx) => {
     const li = document.createElement("li");
-    li.textContent = filePath;
-    ul.appendChild(li);
+    li.className = "file-item";
+    if (idx === selectedIndex) li.classList.add("selected");
+
+    li.innerHTML = highlightMatch(file, query);
 
     li.addEventListener("click", () => {
-      vscode.postMessage({
-        type: "fileSelected",
-        payload: filePath,
-      });
+      selectedIndex = idx;
+      openSelectedFile();
     });
+
+    listEl.appendChild(li);
+  });
+
+  scrollSelectedIntoView();
+}
+
+/**
+ * @param {string} text
+ * @param {string} query
+ */
+function highlightMatch(text, query) {
+  if (!query) return escapeHtml(text);
+
+  const i = text.toLowerCase().indexOf(query);
+  if (i === -1) return escapeHtml(text);
+
+  const before = escapeHtml(text.slice(0, i));
+  const match = escapeHtml(text.slice(i, i + query.length));
+  const after = escapeHtml(text.slice(i + query.length));
+
+  return `${before}<span class="highlight">${match}</span>${after}`;
+}
+
+function escapeHtml(str) {
+  return str.replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c],
+  );
+}
+
+searchEl.addEventListener("input", () => {
+  const query = searchEl.value.toLowerCase();
+
+  filteredFiles = allFiles.filter((f) => f.toLowerCase().includes(query));
+  selectedIndex = 0;
+  renderList();
+});
+
+document.addEventListener("keydown", (ev) => {
+  if (ev.ctrlKey && ev.key === "j") {
+    ev.preventDefault();
+    moveSelection(1);
   }
+  if (ev.ctrlKey && ev.key === "k") {
+    ev.preventDefault();
+    moveSelection(-1);
+  }
+  if (ev.key === "Enter") {
+    ev.preventDefault();
+    openSelectedFile();
+  }
+});
+
+function moveSelection(dir) {
+  if (filteredFiles.length === 0) return;
+
+  selectedIndex = (selectedIndex + dir + filteredFiles.length) % filteredFiles.length;
+  renderList();
+}
+
+function openSelectedFile() {
+  const file = filteredFiles[selectedIndex];
+  vscode.postMessage({ type: "fileSelected", payload: file });
+}
+
+function scrollSelectedIntoView() {
+  const selected = listEl.querySelector(".selected");
+  if (selected) selected.scrollIntoView({ block: "nearest" });
 }
