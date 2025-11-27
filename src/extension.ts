@@ -1,3 +1,4 @@
+import { GitBranchFinder } from "./finders/git-branch.finder";
 import { FuzzyPanel } from "./fuzzy-panel";
 import { Globals } from "./globals";
 import type { ExtensionCtx } from "./types";
@@ -12,20 +13,20 @@ export function activate(context: ExtensionCtx) {
     getCmdId("fuzzy"),
     async () => {
       const panel = FuzzyPanel.createOrShow();
-      FuzzyPanel.currentPanel?.panel.webview.onDidReceiveMessage(async (msg) => {
-        if (msg.type === "ready") {
-          const files = await panel.wsFinder.findFilePaths();
-          panel.panel.webview.postMessage({
-            type: "fileList",
-            data: files,
-          });
-        }
+      panel.listenWebview();
+    },
+    context,
+  );
 
-        if (msg.type === "fileSelected") {
-          const uri = vscode.Uri.file(msg.payload);
-          vscode.commands.executeCommand("vscode.open", uri);
-        }
+  registerAndSubscribeCmd(
+    getCmdId("fuzzy", "branch"),
+    async () => {
+      const finder = new GitBranchFinder();
+      const branches = await finder.find({
+        includeRemotes: true,
       });
+      console.log(branches);
+      vscode.window.showInformationMessage("Branch command called");
     },
     context,
   );

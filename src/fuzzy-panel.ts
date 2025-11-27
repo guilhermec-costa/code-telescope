@@ -45,4 +45,21 @@ export class FuzzyPanel {
     const rawHtml = await loadWebviewHtml("media", "fuzzy", "file-fuzzy.view.html");
     this.panel.webview.html = replaceRootDirStrInHtml(this.panel.webview, rawHtml, "media/fuzzy/");
   }
+
+  public listenWebview() {
+    this.panel.webview.onDidReceiveMessage(async (msg) => {
+      if (msg.type === "ready") {
+        const files = await this.wsFinder.findFilePaths();
+        this.panel.webview.postMessage({
+          type: "fileList",
+          data: files,
+        });
+      }
+
+      if (msg.type === "fileSelected") {
+        const uri = vscode.Uri.file(msg.payload);
+        vscode.commands.executeCommand("vscode.open", uri);
+      }
+    });
+  }
 }

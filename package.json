@@ -16,8 +16,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "code-telescope.fuzzy",
+        "command": "code-telescope.fuzzy.file",
         "title": "Code Telescope: File Fuzzy Finder"
+      },
+      {
+        "command": "code-telescope.fuzzy.branch",
+        "title": "Code Telescope: Branch Fuzzy Finder"
       }
     ],
     "configuration": {
