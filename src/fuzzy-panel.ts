@@ -1,16 +1,17 @@
 import * as vscode from "vscode";
-import { loadWebviewHtml, replaceRootDirStrInHtml } from "./utils/viewLoader";
 import { WorkspaceFileFinder } from "./finders/workspace-files.finder";
+import { loadWebviewHtml, replaceRootDirStrInHtml } from "./utils/viewLoader";
 
 export class FuzzyPanel {
   public static currentPanel: FuzzyPanel | undefined;
 
-  private readonly panel: vscode.WebviewPanel;
+  public readonly panel: vscode.WebviewPanel;
+  public readonly wsFinder: WorkspaceFileFinder;
 
   static createOrShow() {
     if (FuzzyPanel.currentPanel) {
       FuzzyPanel.currentPanel.panel.reveal(vscode.ViewColumn.Beside);
-      return;
+      return FuzzyPanel.currentPanel;
     }
 
     const panel = vscode.window.createWebviewPanel(
@@ -21,15 +22,18 @@ export class FuzzyPanel {
     );
 
     FuzzyPanel.currentPanel = new FuzzyPanel(panel);
+
+    return FuzzyPanel.currentPanel;
   }
 
   private constructor(panel: vscode.WebviewPanel) {
     this.panel = panel;
+    this.wsFinder = new WorkspaceFileFinder();
 
     this._updateHtml();
 
     panel.webview.onDidReceiveMessage((msg) => {
-      console.log(msg);
+      console.log("Message from webview:", msg);
     });
 
     panel.onDidDispose(() => {
@@ -38,12 +42,7 @@ export class FuzzyPanel {
   }
 
   private async _updateHtml() {
-    const files = await WorkspaceFileFinder.findFilePaths();
-    console.log(files);
     const rawHtml = await loadWebviewHtml("media", "fuzzy", "file-fuzzy.view.html");
-    await this.panel.webview.postMessage({
-      data: files,
-    });
     this.panel.webview.html = replaceRootDirStrInHtml(this.panel.webview, rawHtml, "media/fuzzy/");
   }
 }

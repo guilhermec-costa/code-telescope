@@ -9,8 +9,14 @@ export function activate(context: ExtensionCtx) {
 
   registerAndSubscribeCmd(
     getCmdId("fuzzy"),
-    () => {
-      FuzzyPanel.createOrShow();
+    async () => {
+      const panel = FuzzyPanel.createOrShow();
+      FuzzyPanel.currentPanel?.panel.webview.onDidReceiveMessage(async (msg) => {
+        if (msg.type === "ready") {
+          const files = await panel.wsFinder.findFilePaths();
+          console.log(files);
+        }
+      });
     },
     context,
   );

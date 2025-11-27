@@ -19,7 +19,36 @@
         "command": "code-telescope.fuzzy",
         "title": "Code Telescope: File Fuzzy Finder"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Code Telescope",
+      "properties": {
+        "codeTelescope.finder.excludeHidden": {
+          "type": "boolean",
+          "default": true,
+          "description": "Exclude hidden files from results"
+        },
+        "codeTelescope.finder.includePatterns": {
+          "type": "array",
+          "default": [
+            "**/*"
+          ],
+          "description": "Glob patterns to include"
+        },
+        "codeTelescope.finder.excludePatterns": {
+          "type": "array",
+          "default": [
+            "**/node_modules/**"
+          ],
+          "description": "Glob patterns to exclude"
+        },
+        "codeTelescope.finder.maxResults": {
+          "type": "number",
+          "default": 2000,
+          "description": "Max number of results to list"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run compile",

@@ -1,37 +1,55 @@
 import * as vscode from "vscode";
-import { isHiddenFile } from "../utils/files";
-
-type FinderSearchConfig = {
-  blobPattern?: string;
-  excludePattern?: string;
-  pageSize?: number;
-  includeHidden?: boolean;
-};
+import { Globals } from "../globals";
+import { findWorkspaceFiles } from "../utils/files";
 
 export class WorkspaceFileFinder {
-  private static readonly DEFAULT_SEARCH_CONFIG: FinderSearchConfig = {
-    blobPattern: "**/*",
-    excludePattern: "**/node_modules/**",
-    pageSize: 100,
-    includeHidden: true,
-  };
+  constructor(private overrideConfig?: Partial<FinderSearchConfig>) {}
 
-  static async findFilePaths(searchConfig: FinderSearchConfig = this.DEFAULT_SEARCH_CONFIG) {
-    const _files = await this.getWorkspaceFiles(searchConfig);
-    const paths = _files.reduce<Array<string>>((paths, file) => {
-      if (searchConfig.includeHidden) {
-        paths.push(file.path);
-        return paths;
-      }
-
-      if (!isHiddenFile(file.path)) paths.push(file.path);
-      return paths;
-    }, []);
-    return paths;
+  async findFilePaths(cfg = this.getFinderConfig()) {
+    const files = await this.getWorkspaceFiles(cfg);
+    return files.map((f) => f.path);
   }
 
-  private static async getWorkspaceFiles(searchConfig: FinderSearchConfig) {
-    const { blobPattern, excludePattern, pageSize } = searchConfig;
-    return await vscode.workspace.findFiles(blobPattern!, excludePattern, pageSize);
+  private async getWorkspaceFiles(cfg: FinderSearchConfig) {
+    const { excludePatterns, excludeHidden, includePatterns, maxResults } = cfg;
+
+    const excludes = [...excludePatterns];
+    if (excludeHidden) excludes.push("**/.*");
+
+    const results: vscode.Uri[] = [];
+
+    const finalExcludeGlob = `{${excludes.join(",")}}`;
+
+    await Promise.all(
+      includePatterns.map(async (pattern) => {
+        const found = await findWorkspaceFiles(pattern, finalExcludeGlob, maxResults);
+        results.push(...found);
+      }),
+    );
+
+    return results;
+  }
+
+  private getFinderConfig(): FinderSearchConfig {
+    const cfg = vscode.workspace.getConfiguration(`${Globals.EXTENSION_CONFIGURATION_PREFIX_NAME}.finder`);
+
+    const baseConfig: FinderSearchConfig = {
+      excludeHidden: cfg.get("excludeHidden", true),
+      includePatterns: cfg.get("includePatterns", ["**/*"]),
+      excludePatterns: cfg.get("excludePatterns", ["**/node_modules/**"]),
+      maxResults: cfg.get("maxResults", 2000),
+    };
+
+    return {
+      ...baseConfig,
+      ...this.overrideConfig,
+    };
   }
 }
+
+export type FinderSearchConfig = {
+  includePatterns: string[];
+  excludePatterns: string[];
+  maxResults: number;
+  excludeHidden: boolean;
+};
