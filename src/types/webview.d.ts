@@ -4,9 +4,9 @@ declare function acquireVsCodeApi(): {
   setState(state: any): void;
 };
 
-type FuzzyPanelEvents = "ready" | "fileSelected" | "closePanel";
+type FuzzyPanelEvents = "ready" | "fileSelected" | "closePanel" | "previewRequest";
 
 interface WebviewMessage {
   type: FuzzyPanelEvents;
-  payload?: any;
+  data?: any;
 }

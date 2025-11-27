@@ -19,7 +19,7 @@ export class FuzzyPanel {
     const panel = vscode.window.createWebviewPanel(
       "code-telescope-fuzzy",
       "Telescope – Fuzzy Finder",
-      vscode.ViewColumn.Beside,
+      vscode.ViewColumn.One,
       { enableScripts: true },
     );
 
@@ -59,7 +59,7 @@ export class FuzzyPanel {
       }
 
       if (msg.type === "fileSelected") {
-        const selected = msg.payload;
+        const selected = msg.data;
 
         if (this.provider.onSelect) {
           await this.provider.onSelect(selected);
@@ -71,8 +71,26 @@ export class FuzzyPanel {
       }
 
       if (msg.type === "closePanel") {
-        console.log("Closing panel");
         this.panel.dispose();
+      }
+
+      if (msg.type === "previewRequest") {
+        const uri = vscode.Uri.file(msg.data);
+
+        try {
+          const contentBytes = await vscode.workspace.fs.readFile(uri);
+          const content = new TextDecoder("utf8").decode(contentBytes);
+
+          this.panel.webview.postMessage({
+            type: "previewUpdate",
+            data: { content },
+          });
+        } catch (err) {
+          this.panel.webview.postMessage({
+            type: "previewUpdate",
+            data: { content: "[Unable to read file]" },
+          });
+        }
       }
     });
   }

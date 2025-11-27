@@ -21,7 +21,7 @@ body {
   background: transparent;
   color: var(--fg);
   font-family: var(--vscode-editor-font-family), "Fira Code", Consolas, monospace;
-  font-size: var(--vscode-editor-font-size, 13px);
+  font-size: 16;
   margin: 0;
   padding: 0;
   height: 100vh;
@@ -44,7 +44,7 @@ body {
 #search {
   width: 100%;
   padding: 14px 16px;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--input-fg);
   background: var(--input-bg);
   border: none;
@@ -72,6 +72,30 @@ body {
   scrollbar-width: thin;
 }
 
+#split {
+  display: flex;
+  flex-direction: row;
+  height: 70vh;
+}
+
+/* PREVIEW */
+#preview {
+  width: 50%;
+  background: #1c1c1c;
+  border-right: 1px solid #333;
+  padding: 12px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  font-size: 13px;
+}
+
+/* RIGHT SIDE (search + list) */
+#right-side {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
 #file-list::-webkit-scrollbar {
   width: 8px;
 }
@@ -93,7 +117,7 @@ body {
   padding: 6px 16px;
   cursor: pointer;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 16px;
   color: var(--fg);
   transition: background 0.1s ease;
   display: flex;
@@ -112,7 +136,7 @@ body {
 
 .highlight {
   background: var(--highlight);
-  color: var(--highlight-fg);
+  color: var(--highlight-bg);
   font-weight: 600;
   padding: 1px 2px;
   border-radius: 2px;

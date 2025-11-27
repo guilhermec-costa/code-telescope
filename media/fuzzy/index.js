@@ -6,6 +6,7 @@ const vscode = acquireVsCodeApi();
 let allOptions = [];
 let filteredOptions = [];
 let selectedIndex = 0;
+let lastPreviewedFile = null;
 
 const listEl = document.getElementById("file-list");
 const searchEl = document.getElementById("search");
@@ -21,7 +22,16 @@ window.addEventListener("message", (event) => {
   if (type === "fileList") {
     allOptions = data;
     filteredOptions = allOptions;
+    selectedIndex = 0;
     renderList();
+
+    const first = filteredOptions[0];
+    requestPreviewIfNeeded(first);
+  }
+
+  if (type === "previewUpdate") {
+    const previewEl = document.getElementById("preview");
+    previewEl.textContent = data.content;
   }
 });
 
@@ -68,35 +78,26 @@ function highlightMatch(text, query) {
   return `${before}<span class="highlight">${match}</span>${after}`;
 }
 
-function escapeHtml(str) {
-  return str.replace(
-    /[&<>"']/g,
-    (c) =>
-      ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;",
-      })[c],
-  );
-}
-
 searchEl.addEventListener("input", () => {
   const query = searchEl.value.toLowerCase();
 
   filteredOptions = allOptions.filter((f) => f.toLowerCase().includes(query));
   selectedIndex = 0;
   renderList();
+
+  const first = filteredOptions[0];
+  requestPreviewIfNeeded(first);
 });
 
 document.addEventListener("keydown", (ev) => {
   if (ev.ctrlKey && ev.key === "j") {
     ev.preventDefault();
+    ev.stopPropagation();
     moveSelection(1);
   }
   if (ev.ctrlKey && ev.key === "k") {
     ev.preventDefault();
+    ev.stopPropagation();
     moveSelection(-1);
   }
   if (ev.key === "Enter") {
@@ -114,11 +115,14 @@ function moveSelection(dir) {
 
   selectedIndex = (selectedIndex + dir + filteredOptions.length) % filteredOptions.length;
   renderList();
+
+  const file = filteredOptions[selectedIndex];
+  requestPreviewIfNeeded(file);
 }
 
 function openSelectedFile() {
   const file = filteredOptions[selectedIndex];
-  vscode.postMessage({ type: "fileSelected", payload: file });
+  vscode.postMessage({ type: "fileSelected", data: file });
 }
 
 function closePanel() {
@@ -128,4 +132,27 @@ function closePanel() {
 function scrollSelectedIntoView() {
   const selected = listEl.querySelector(".selected");
   if (selected) selected.scrollIntoView({ block: "nearest" });
+}
+
+function requestPreviewIfNeeded(file) {
+  if (!file) return;
+
+  if (lastPreviewedFile !== file) {
+    lastPreviewedFile = file;
+    vscode.postMessage({ type: "previewRequest", data: file });
+  }
+}
+
+function escapeHtml(str) {
+  return str.replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c],
+  );
 }
