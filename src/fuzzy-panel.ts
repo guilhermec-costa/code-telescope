@@ -51,7 +51,8 @@ export class FuzzyPanel {
   }
 
   public listenWebview() {
-    this.panel.webview.onDidReceiveMessage(async (msg) => {
+    this.panel.webview.onDidReceiveMessage(async (msg: WebviewMessage) => {
+      Set;
       if (msg.type === "ready") {
         const items = await this.provider.findSelectableOptions();
         this.sendItems(items);
@@ -67,6 +68,11 @@ export class FuzzyPanel {
 
         const uri = vscode.Uri.file(selected);
         vscode.commands.executeCommand("vscode.open", uri);
+      }
+
+      if (msg.type === "closePanel") {
+        console.log("Closing panel");
+        this.panel.dispose();
       }
     });
   }

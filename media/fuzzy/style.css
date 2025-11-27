@@ -1,60 +1,119 @@
+:root {
+  --bg: var(--vscode-editor-background);
+  --fg: var(--vscode-editor-foreground);
+  --border: var(--vscode-editorWidget-border);
+  --input-bg: var(--vscode-input-background);
+  --input-fg: var(--vscode-input-foreground);
+  --input-border: var(--vscode-focusBorder);
+  --item-hover: var(--vscode-list-hoverBackground);
+  --item-selected: var(--vscode-list-activeSelectionBackground);
+  --item-selected-fg: var(--vscode-list-activeSelectionForeground);
+  --highlight: var(--vscode-editor-findMatchHighlightBackground);
+  --highlight-fg: var(--vscode-textPreformat-foreground);
+  --muted: var(--vscode-descriptionForeground);
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  background: #1e1e1e;
-  color: #ddd;
-  font-family: Consolas, "Fira Code", monospace;
+  background: transparent;
+  color: var(--fg);
+  font-family: var(--vscode-editor-font-family), "Fira Code", Consolas, monospace;
+  font-size: var(--vscode-editor-font-size, 13px);
   margin: 0;
   padding: 0;
   height: 100vh;
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
 }
 
 #container {
-  width: 100%;
-  max-width: 850px;
-  margin: 30px auto;
-  background: #252526;
-  border-radius: 6px;
+  width: 90%;
+  max-width: 900px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #333;
-  box-shadow: 0 0 20px #0006;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 #search {
   width: 100%;
-  padding: 12px 14px;
-  font-size: 15px;
-  color: #fff;
-  background: #1e1e1e;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--input-fg);
+  background: var(--input-bg);
   border: none;
-  border-bottom: 1px solid #333;
+  border-bottom: 2px solid var(--input-border);
   outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+#search::placeholder {
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+#search:focus {
+  border-bottom-color: var(--input-border);
 }
 
 #file-list {
   list-style: none;
   margin: 0;
-  padding: 0;
-  max-height: 60vh;
+  padding: 4px 0;
+  max-height: 500px;
   overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+#file-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+#file-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#file-list::-webkit-scrollbar-thumb {
+  background: var(--vscode-scrollbarSlider-background);
+  border-radius: 4px;
+}
+
+#file-list::-webkit-scrollbar-thumb:hover {
+  background: var(--vscode-scrollbarSlider-hoverBackground);
 }
 
 .file-item {
-  padding: 8px 12px;
+  padding: 6px 16px;
   cursor: pointer;
-  white-space: pre;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--fg);
+  transition: background 0.1s ease;
+  display: flex;
+  align-items: center;
+  line-height: 1.5;
 }
 
 .file-item:hover {
-  background: #2a2a2a;
+  background: var(--item-hover);
 }
 
 .file-item.selected {
-  background: #3d3d3d;
-  color: #fff;
+  background: var(--item-selected);
+  color: var(--item-selected-fg);
 }
 
 .highlight {
-  color: #4fc3f7;
-  font-weight: bold;
+  background: var(--highlight);
+  color: var(--highlight-fg);
+  font-weight: 600;
+  padding: 1px 2px;
+  border-radius: 2px;
 }

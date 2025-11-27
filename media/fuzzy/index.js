@@ -103,6 +103,10 @@ document.addEventListener("keydown", (ev) => {
     ev.preventDefault();
     openSelectedFile();
   }
+  if (ev.key == "Escape") {
+    ev.preventDefault();
+    closePanel();
+  }
 });
 
 function moveSelection(dir) {
@@ -115,6 +119,10 @@ function moveSelection(dir) {
 function openSelectedFile() {
   const file = filteredOptions[selectedIndex];
   vscode.postMessage({ type: "fileSelected", payload: file });
+}
+
+function closePanel() {
+  vscode.postMessage({ type: "closePanel" });
 }
 
 function scrollSelectedIntoView() {
