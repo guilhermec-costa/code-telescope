@@ -13,6 +13,9 @@
     "onCommand:code-telescope.health"
   ],
   "main": "./out/extension.js",
+  "extensionDependencies": [
+    "vscode.git"
+  ],
   "contributes": {
     "commands": [
       {

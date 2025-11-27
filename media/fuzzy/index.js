@@ -1,4 +1,4 @@
-/// <reference path="../../src/webview.d.ts" />
+/// <reference path="../../src/types/webview.d.ts" />
 
 /** @type {ReturnType<typeof acquireVsCodeApi>} */
 const vscode = acquireVsCodeApi();
@@ -11,6 +11,7 @@ const listEl = document.getElementById("file-list");
 const searchEl = document.getElementById("search");
 
 window.addEventListener("DOMContentLoaded", () => {
+  searchEl.focus();
   vscode.postMessage({ type: "ready" });
 });
 

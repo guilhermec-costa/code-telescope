@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
+import { API, GitExtension, Ref } from "../types/git";
 import { FuzzyProvider } from "./fuzzy-provider";
 
 export class VSCodeGitBranchFinder implements FuzzyProvider {
-  private readonly gitApi: any | null;
+  private readonly gitApi: API | null;
 
   constructor(private options: GitBranchFinderOptions = {}) {
     this.gitApi = this.getGitApi();
@@ -10,7 +11,7 @@ export class VSCodeGitBranchFinder implements FuzzyProvider {
 
   async findSelectableOptions(): Promise<string[]> {
     const branches = await this.findBranches();
-    return branches.map((branch) => branch.name);
+    return branches.map((branch) => branch.name || "");
   }
 
   public async findBranches() {
@@ -19,9 +20,9 @@ export class VSCodeGitBranchFinder implements FuzzyProvider {
     if (!repo) return [];
 
     const includeRemotes = this.options?.includeRemotes ?? false;
-    const refs: BranchInfo[] = await repo.getRefs();
+    const refs = await repo.getRefs({});
 
-    const branches = refs.reduce<{ local: BranchInfo[]; remote: BranchInfo[] }>(
+    const branches = refs.reduce<{ local: Ref[]; remote: Ref[] }>(
       (acc, branch) => {
         branch.type == 0 ? acc.local.push(branch) : includeRemotes && acc.remote.push(branch);
         return acc;
@@ -32,7 +33,7 @@ export class VSCodeGitBranchFinder implements FuzzyProvider {
   }
 
   private getGitApi() {
-    const gitExtension = vscode.extensions.getExtension("vscode.git");
+    const gitExtension = vscode.extensions.getExtension<GitExtension>("vscode.git");
     if (!gitExtension) return null;
 
     const git = gitExtension.exports;
@@ -43,8 +44,3 @@ export class VSCodeGitBranchFinder implements FuzzyProvider {
 type GitBranchFinderOptions = {
   includeRemotes?: boolean;
 };
-
-export interface BranchInfo {
-  name: string;
-  type: number;
-}
