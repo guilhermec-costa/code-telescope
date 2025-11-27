@@ -1,13 +1,20 @@
 import * as vscode from "vscode";
 import { Globals } from "../globals";
 import { findWorkspaceFiles } from "../utils/files";
+import { FuzzyProvider } from "./fuzzy-provider";
 
-export class WorkspaceFileFinder {
+export class WorkspaceFileFinder implements FuzzyProvider {
   constructor(private overrideConfig?: Partial<FinderSearchConfig>) {}
 
-  async findFilePaths(cfg = this.getFinderConfig()) {
+  async findSelectableOptions(): Promise<string[]> {
+    const cfg = this.getFinderConfig();
     const files = await this.getWorkspaceFiles(cfg);
     return files.map((f) => f.path);
+  }
+
+  async onSelect(filePath: string) {
+    const uri = vscode.Uri.file(filePath);
+    await vscode.commands.executeCommand("vscode.open", uri);
   }
 
   private async getWorkspaceFiles(cfg: FinderSearchConfig) {

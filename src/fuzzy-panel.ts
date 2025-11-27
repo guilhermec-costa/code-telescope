@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { FuzzyProvider } from "./finders/fuzzy-provider";
 import { WorkspaceFileFinder } from "./finders/workspace-files.finder";
 import { loadWebviewHtml, replaceRootDirStrInHtml } from "./utils/viewLoader";
 
@@ -6,7 +7,8 @@ export class FuzzyPanel {
   public static currentPanel: FuzzyPanel | undefined;
 
   public readonly panel: vscode.WebviewPanel;
-  public readonly wsFinder: WorkspaceFileFinder;
+
+  private provider: FuzzyProvider = new WorkspaceFileFinder();
 
   static createOrShow() {
     if (FuzzyPanel.currentPanel) {
@@ -22,23 +24,25 @@ export class FuzzyPanel {
     );
 
     FuzzyPanel.currentPanel = new FuzzyPanel(panel);
-
     return FuzzyPanel.currentPanel;
   }
 
   private constructor(panel: vscode.WebviewPanel) {
     this.panel = panel;
-    this.wsFinder = new WorkspaceFileFinder();
 
     this._updateHtml();
-
-    panel.webview.onDidReceiveMessage((msg) => {
-      console.log("Message from webview:", msg);
-    });
+    this.listenWebview();
 
     panel.onDidDispose(() => {
       FuzzyPanel.currentPanel = undefined;
     });
+  }
+
+  public async setProvider(provider: FuzzyProvider) {
+    this.provider = provider;
+
+    const items = await provider.findSelectableOptions();
+    this.sendItems(items);
   }
 
   private async _updateHtml() {
@@ -49,17 +53,28 @@ export class FuzzyPanel {
   public listenWebview() {
     this.panel.webview.onDidReceiveMessage(async (msg) => {
       if (msg.type === "ready") {
-        const files = await this.wsFinder.findFilePaths();
-        this.panel.webview.postMessage({
-          type: "fileList",
-          data: files,
-        });
+        const items = await this.provider.findSelectableOptions();
+        this.sendItems(items);
       }
 
       if (msg.type === "fileSelected") {
-        const uri = vscode.Uri.file(msg.payload);
+        const selected = msg.payload;
+
+        if (this.provider.onSelect) {
+          await this.provider.onSelect(selected);
+          return;
+        }
+
+        const uri = vscode.Uri.file(selected);
         vscode.commands.executeCommand("vscode.open", uri);
       }
+    });
+  }
+
+  private sendItems(items: string[]) {
+    this.panel.webview.postMessage({
+      type: "fileList",
+      data: items,
     });
   }
 }

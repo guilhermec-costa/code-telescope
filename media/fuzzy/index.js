@@ -3,8 +3,8 @@
 /** @type {ReturnType<typeof acquireVsCodeApi>} */
 const vscode = acquireVsCodeApi();
 
-let allFiles = [];
-let filteredFiles = [];
+let allOptions = [];
+let filteredOptions = [];
 let selectedIndex = 0;
 
 const listEl = document.getElementById("file-list");
@@ -18,8 +18,8 @@ window.addEventListener("message", (event) => {
   const { type, data } = event.data;
 
   if (type === "fileList") {
-    allFiles = data;
-    filteredFiles = allFiles;
+    allOptions = data;
+    filteredOptions = allOptions;
     renderList();
   }
 });
@@ -32,7 +32,7 @@ function renderList() {
 
   const query = searchEl.value.toLowerCase();
 
-  filteredFiles.forEach((file, idx) => {
+  filteredOptions.forEach((file, idx) => {
     const li = document.createElement("li");
     li.className = "file-item";
     if (idx === selectedIndex) li.classList.add("selected");
@@ -84,7 +84,7 @@ function escapeHtml(str) {
 searchEl.addEventListener("input", () => {
   const query = searchEl.value.toLowerCase();
 
-  filteredFiles = allFiles.filter((f) => f.toLowerCase().includes(query));
+  filteredOptions = allOptions.filter((f) => f.toLowerCase().includes(query));
   selectedIndex = 0;
   renderList();
 });
@@ -105,14 +105,14 @@ document.addEventListener("keydown", (ev) => {
 });
 
 function moveSelection(dir) {
-  if (filteredFiles.length === 0) return;
+  if (filteredOptions.length === 0) return;
 
-  selectedIndex = (selectedIndex + dir + filteredFiles.length) % filteredFiles.length;
+  selectedIndex = (selectedIndex + dir + filteredOptions.length) % filteredOptions.length;
   renderList();
 }
 
 function openSelectedFile() {
-  const file = filteredFiles[selectedIndex];
+  const file = filteredOptions[selectedIndex];
   vscode.postMessage({ type: "fileSelected", payload: file });
 }
 
