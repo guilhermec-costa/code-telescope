@@ -6,4 +6,8 @@ export class WebviewManager {
   public async sendMessage(msg: WebviewMessage) {
     await this.wv.postMessage(msg);
   }
+
+  public async onMessage(cb: (msg: WebviewMessage) => Promise<void>) {
+    this.wv.onDidReceiveMessage(cb);
+  }
 }

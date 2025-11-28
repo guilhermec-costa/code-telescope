@@ -21,24 +21,39 @@ body {
   background: transparent;
   color: var(--fg);
   font-family: var(--vscode-editor-font-family), "Fira Code", Consolas, monospace;
-  font-size: 16;
+  font-size: 16px;
   margin: 0;
   padding: 0;
   height: 100vh;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 15vh;
+  padding-top: 10vh;
 }
 
 #container {
   width: 90%;
-  max-width: 900px;
+  max-width: 1200px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+#split {
+  display: flex;
+  flex-direction: row;
+  height: 75vh;
+}
+
+#left-side {
+  width: 38%;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  resize: horizontal;
+  overflow-x: auto;
 }
 
 #search {
@@ -48,10 +63,11 @@ body {
   color: var(--input-fg);
   background: var(--input-bg);
   border: none;
-  border-bottom: 2px solid var(--input-border);
+  border-bottom: 2px solid transparent;
   outline: none;
   font-family: inherit;
   transition: border-color 0.2s;
+  order: 1;
 }
 
 #search::placeholder {
@@ -63,57 +79,33 @@ body {
   border-bottom-color: var(--input-border);
 }
 
-#file-list {
+#option-list {
   list-style: none;
   margin: 0;
   padding: 4px 0;
-  max-height: 500px;
+  flex-grow: 1;
+  max-height: 100%;
   overflow-y: auto;
   scrollbar-width: thin;
+  padding-right: 2px;
 }
 
-#split {
-  display: flex;
-  flex-direction: row;
-  height: 70vh;
-}
-
-/* PREVIEW */
-#preview {
-  width: 50%;
-  background: #1c1c1c;
-  border-right: 1px solid #333;
-  padding: 12px;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  font-size: 13px;
-}
-
-/* RIGHT SIDE (search + list) */
-#right-side {
-  display: flex;
-  flex-direction: column;
-  width: 50%;
-}
-
-#file-list::-webkit-scrollbar {
+#option-list::-webkit-scrollbar {
   width: 8px;
 }
 
-#file-list::-webkit-scrollbar-track {
+#option-list::-webkit-scrollbar-track {
   background: transparent;
 }
-
-#file-list::-webkit-scrollbar-thumb {
+#option-list::-webkit-scrollbar-thumb {
   background: var(--vscode-scrollbarSlider-background);
   border-radius: 4px;
 }
-
-#file-list::-webkit-scrollbar-thumb:hover {
+#option-list::-webkit-scrollbar-thumb:hover {
   background: var(--vscode-scrollbarSlider-hoverBackground);
 }
 
-.file-item {
+.option-item {
   padding: 6px 16px;
   cursor: pointer;
   font-family: inherit;
@@ -123,21 +115,42 @@ body {
   display: flex;
   align-items: center;
   line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.file-item:hover {
+.option-item:hover {
   background: var(--item-hover);
 }
 
-.file-item.selected {
+.option-item.selected {
   background: var(--item-selected);
   color: var(--item-selected-fg);
 }
 
 .highlight {
   background: var(--highlight);
-  color: var(--highlight-bg);
+  color: var(--highlight-fg);
   font-weight: 600;
-  padding: 1px 2px;
+  padding: 0 1px;
   border-radius: 2px;
+}
+
+#right-side {
+  display: flex;
+  flex-direction: column;
+  width: 62%;
+  height: 100%;
+}
+
+#preview {
+  width: 100%;
+  flex: 1;
+  background: var(--bg);
+  border: none;
+  padding: 12px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  font-size: 17px;
 }

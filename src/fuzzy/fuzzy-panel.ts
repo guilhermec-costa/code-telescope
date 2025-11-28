@@ -3,6 +3,8 @@ import { FuzzyProvider } from "../finders/fuzzy-provider";
 import { WorkspaceFileFinder } from "../finders/workspace-files.finder";
 import { loadWebviewHtml, replaceRootDirStrInHtml } from "../utils/viewLoader";
 import { WebviewManager } from "./webview-util";
+import { Globals } from "../globals";
+import { execCmd } from "../utils/commands";
 
 export class FuzzyPanel {
   public static currentPanel: FuzzyPanel | undefined;
@@ -13,14 +15,14 @@ export class FuzzyPanel {
 
   static createOrShow() {
     if (FuzzyPanel.currentPanel) {
-      FuzzyPanel.currentPanel.panel.reveal(vscode.ViewColumn.Beside);
+      FuzzyPanel.currentPanel.panel.reveal(vscode.ViewColumn.Active);
       return FuzzyPanel.currentPanel;
     }
 
     const panel = vscode.window.createWebviewPanel(
       "code-telescope-fuzzy",
       "Telescope – Fuzzy Finder",
-      vscode.ViewColumn.One,
+      vscode.ViewColumn.Active,
       { enableScripts: true },
     );
 
@@ -43,12 +45,12 @@ export class FuzzyPanel {
   public async setProvider(provider: FuzzyProvider) {
     this.provider = provider;
     const items = await provider.querySelectableOptions();
-    await this.sendFileListEvent(items);
+    await this.sendOptionsListEvent(items);
   }
 
-  private async sendFileListEvent(files: string[]) {
+  private async sendOptionsListEvent(files: string[]) {
     await this.wvManager.sendMessage({
-      type: "fileList",
+      type: "optionList",
       data: files,
     });
   }
@@ -59,13 +61,13 @@ export class FuzzyPanel {
   }
 
   public listenWebview() {
-    this.panel.webview.onDidReceiveMessage(async (msg: WebviewMessage) => {
+    this.wvManager.onMessage(async (msg: WebviewMessage) => {
       if (msg.type === "ready") {
         const items = await this.provider.querySelectableOptions();
-        await this.sendFileListEvent(items);
+        await this.sendOptionsListEvent(items);
       }
 
-      if (msg.type === "fileSelected") {
+      if (msg.type === "optionSelected") {
         const selected = msg.data;
 
         if (this.provider.onSelect) {
@@ -74,7 +76,7 @@ export class FuzzyPanel {
         }
 
         const uri = vscode.Uri.file(selected);
-        vscode.commands.executeCommand("vscode.open", uri);
+        await execCmd(Globals.cmds.openFile, uri);
       }
 
       if (msg.type === "closePanel") {

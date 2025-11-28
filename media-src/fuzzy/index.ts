@@ -1,37 +1,37 @@
-/// <reference path="../../src/types/webview.d.ts" />
+import { escapeHtml } from "media-src/utils/html";
 
-/** @type {ReturnType<typeof acquireVsCodeApi>} */
 const vscode = acquireVsCodeApi();
 
-let allOptions = [];
-let filteredOptions = [];
+let allOptions: string[] = [];
+let filteredOptions: string[] = [];
 let selectedIndex = 0;
-let lastPreviewedFile = null;
+let lastPreviewedOption: string | null = null;
 
-const listEl = document.getElementById("file-list");
-const searchEl = document.getElementById("search");
+const listEl = document.getElementById("option-list") as HTMLUListElement;
+const searchEl = document.getElementById("search") as HTMLInputElement;
 
 window.addEventListener("DOMContentLoaded", () => {
-  searchEl.focus();
   vscode.postMessage({ type: "ready" });
+  searchEl.focus();
 });
 
 window.addEventListener("message", (event) => {
-  const { type, data } = event.data;
+  const msg = event.data as WebviewMessage;
 
-  if (type === "fileList") {
-    allOptions = data;
+  if (msg.type === "optionList") {
+    allOptions = msg.data.relative;
     filteredOptions = allOptions;
-    selectedIndex = 0;
+
+    selectedIndex = filteredOptions.length - 1;
     renderList();
 
-    const first = filteredOptions[0];
-    requestPreviewIfNeeded(first);
+    const lastElement = filteredOptions.at(-1);
+    if (lastElement) requestPreviewIfNeeded(lastElement);
   }
 
-  if (type === "previewUpdate") {
-    const previewEl = document.getElementById("preview");
-    previewEl.textContent = data.content;
+  if (msg.type === "previewUpdate") {
+    const previewEl = document.getElementById("preview") as HTMLElement;
+    previewEl.textContent = msg.data.content;
   }
 });
 
@@ -43,17 +43,16 @@ function renderList() {
 
   const query = searchEl.value.toLowerCase();
 
-  filteredOptions.forEach((file, idx) => {
+  filteredOptions.forEach((option, idx) => {
     const li = document.createElement("li");
-    li.className = "file-item";
+    li.className = "option-item";
     if (idx === selectedIndex) li.classList.add("selected");
 
-    li.innerHTML = highlightMatch(file, query);
-
-    li.addEventListener("click", () => {
+    li.innerHTML = highlightMatch(option, query);
+    li.onclick = () => {
       selectedIndex = idx;
-      openSelectedFile();
-    });
+      openSelectedOption();
+    };
 
     listEl.appendChild(li);
   });
@@ -61,11 +60,7 @@ function renderList() {
   scrollSelectedIntoView();
 }
 
-/**
- * @param {string} text
- * @param {string} query
- */
-function highlightMatch(text, query) {
+function highlightMatch(text: string, query: string) {
   if (!query) return escapeHtml(text);
 
   const i = text.toLowerCase().indexOf(query);
@@ -80,13 +75,13 @@ function highlightMatch(text, query) {
 
 searchEl.addEventListener("input", () => {
   const query = searchEl.value.toLowerCase();
-
   filteredOptions = allOptions.filter((f) => f.toLowerCase().includes(query));
-  selectedIndex = 0;
+
+  selectedIndex = filteredOptions.length - 1;
   renderList();
 
-  const first = filteredOptions[0];
-  requestPreviewIfNeeded(first);
+  const lastElement = filteredOptions.at(-1);
+  if (lastElement) requestPreviewIfNeeded(lastElement);
 });
 
 document.addEventListener("keydown", (ev) => {
@@ -102,7 +97,7 @@ document.addEventListener("keydown", (ev) => {
   }
   if (ev.key === "Enter") {
     ev.preventDefault();
-    openSelectedFile();
+    openSelectedOption();
   }
   if (ev.key == "Escape") {
     ev.preventDefault();
@@ -110,49 +105,33 @@ document.addEventListener("keydown", (ev) => {
   }
 });
 
-function moveSelection(dir) {
-  if (filteredOptions.length === 0) return;
+function moveSelection(dir: number) {
+  if (!filteredOptions.length) return;
 
   selectedIndex = (selectedIndex + dir + filteredOptions.length) % filteredOptions.length;
   renderList();
 
-  const file = filteredOptions[selectedIndex];
-  requestPreviewIfNeeded(file);
+  const option = filteredOptions[selectedIndex];
+  requestPreviewIfNeeded(option);
 }
 
-function openSelectedFile() {
-  const file = filteredOptions[selectedIndex];
-  vscode.postMessage({ type: "fileSelected", data: file });
+function openSelectedOption() {
+  vscode.postMessage({ type: "optionSelected", data: filteredOptions[selectedIndex] });
 }
 
 function closePanel() {
   vscode.postMessage({ type: "closePanel" });
+  searchEl.blur();
 }
 
 function scrollSelectedIntoView() {
   const selected = listEl.querySelector(".selected");
-  if (selected) selected.scrollIntoView({ block: "nearest" });
+  selected?.scrollIntoView({ block: "nearest" });
 }
 
-function requestPreviewIfNeeded(file) {
-  if (!file) return;
-
-  if (lastPreviewedFile !== file) {
-    lastPreviewedFile = file;
-    vscode.postMessage({ type: "previewRequest", data: file });
+function requestPreviewIfNeeded(option: string) {
+  if (lastPreviewedOption !== option) {
+    lastPreviewedOption = option;
+    vscode.postMessage({ type: "previewRequest", data: option });
   }
-}
-
-function escapeHtml(str) {
-  return str.replace(
-    /[&<>"']/g,
-    (c) =>
-      ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;",
-      })[c],
-  );
 }

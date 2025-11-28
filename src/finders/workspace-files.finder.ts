@@ -1,22 +1,47 @@
 import * as vscode from "vscode";
 import { Globals } from "../globals";
-import { findWorkspaceFiles } from "../utils/files";
+import { findWorkspaceFiles, relativizeFilePath } from "../utils/files";
 import { FuzzyProvider } from "./fuzzy-provider";
+import { execCmd } from "../utils/commands";
 
+/**
+ * Fuzzy provider that retrieves files from the current workspace.
+ *
+ * This provider allows filtering files using include/exclude patterns,
+ * hiding dotfiles, and limiting the maximum number of results.
+ */
 export class WorkspaceFileFinder implements FuzzyProvider {
   constructor(private overrideConfig?: Partial<FinderSearchConfig>) {}
 
-  async querySelectableOptions(): Promise<string[]> {
+  /**
+   * Returns the list of file paths to display in the fuzzy finder.
+   */
+  async querySelectableOptions() {
     const cfg = this.getFinderConfig();
     const files = await this.getWorkspaceFiles(cfg);
     return files.map((f) => f.path);
+    // return files.reduce<FindResult>(
+    //   (obj, file) => {
+    //     obj.relative.push(relativizeFilePath(file.path));
+    //     obj.absolute.push(file.path);
+    //     return obj;
+    //   },
+    //   { relative: [], absolute: [] },
+    // );
   }
 
+  /**
+   * Opens the selected file in VS Code when the user chooses an item.
+   */
   async onSelect(filePath: string) {
     const uri = vscode.Uri.file(filePath);
-    await vscode.commands.executeCommand("vscode.open", uri);
+    await execCmd(Globals.cmds.openFile, uri);
   }
 
+  /**
+   * Executes the search for workspace files based on configured patterns.
+   * Merges exclude patterns and optionally filters out hidden files.
+   */
   private async getWorkspaceFiles(cfg: FinderSearchConfig) {
     const { excludePatterns, excludeHidden, includePatterns, maxResults } = cfg;
 
@@ -37,6 +62,10 @@ export class WorkspaceFileFinder implements FuzzyProvider {
     return results;
   }
 
+  /**
+   * Loads the configuration for the workspace file finder from
+   * the VS Code settings and merges it with any overrides.
+   */
   private getFinderConfig(): FinderSearchConfig {
     const cfg = vscode.workspace.getConfiguration(`${Globals.EXTENSION_CONFIGURATION_PREFIX_NAME}.finder`);
 
@@ -45,6 +74,7 @@ export class WorkspaceFileFinder implements FuzzyProvider {
       includePatterns: cfg.get("includePatterns", ["**/*"]),
       excludePatterns: cfg.get("excludePatterns", ["**/node_modules/**"]),
       maxResults: cfg.get("maxResults", 2000),
+      asRelativePath: cfg.get("asRelativePath", true),
     };
 
     return {
@@ -54,9 +84,27 @@ export class WorkspaceFileFinder implements FuzzyProvider {
   }
 }
 
-export type FinderSearchConfig = {
+/**
+ * Configuration object used to control how workspace files are searched.
+ */
+type FinderSearchConfig = {
+  /** Glob patterns of files/directories to include. */
   includePatterns: string[];
+
+  /** Glob patterns of files/directories to exclude. */
   excludePatterns: string[];
+
+  /** Maximum number of file results returned by the search. */
   maxResults: number;
+
+  /** Whether hidden files (dotfiles) should be excluded automatically. */
   excludeHidden: boolean;
+
+  /** Whether to get files as relative paths */
+  asRelativePath: boolean;
+};
+
+type FindResult = {
+  relative: string[];
+  absolute: string[];
 };
