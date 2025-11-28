@@ -7,10 +7,15 @@ export async function loadWebviewHtml(...relativePaths: string[]): Promise<strin
   return rawHtml.toString();
 }
 
-export function replaceRootDirStrInHtml(wv: vscode.Webview, html: string, relativePath: string) {
+export function replaceLocalResourcePathInHtml(
+  wv: vscode.Webview,
+  html: string,
+  searchValue: RegExp,
+  relativePath: string,
+) {
   const resourcePath = joinPath(Globals.EXTENSION_URI, relativePath);
   const rootReplacerPath = wv.asWebviewUri(resourcePath).toString();
-  return html.replace(/{{root}}/g, rootReplacerPath);
+  return html.replace(searchValue, rootReplacerPath);
 }
 
 export function joinPath(baseUri: vscode.Uri, ...paths: string[]): vscode.Uri {

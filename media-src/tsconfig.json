@@ -19,7 +19,8 @@
   },
   "include": [
     "./**/*.ts",
-    "../shared/**/*.ts"
+    "../shared/**/*.ts",
+    "../shared/**/*.d.ts"
   ],
   "exclude": []
 }

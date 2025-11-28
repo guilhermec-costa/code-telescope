@@ -1,3 +1,29 @@
+body.vscode-light {
+  color: black;
+}
+
+body.vscode-dark {
+  color: white;
+}
+
+body.vscode-high-contrast {
+  color: red;
+}
+
+body {
+  color: var(--fg);
+  font-family: var(--vscode-editor-font-family), "Fira Code", Consolas, monospace;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10vh;
+}
+
+
 :root {
   --bg: var(--vscode-editor-background);
   --fg: var(--vscode-editor-foreground);
@@ -15,20 +41,6 @@
 
 * {
   box-sizing: border-box;
-}
-
-body {
-  background: transparent;
-  color: var(--fg);
-  font-family: var(--vscode-editor-font-family), "Fira Code", Consolas, monospace;
-  font-size: 16px;
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 10vh;
 }
 
 #container {

@@ -14,10 +14,11 @@
         "shared/*"
       ]
     },
-    "strict": true,
+    "strict": true
   },
   "include": [
-    "src"
+    "./src/**/*",
+    "./shared/**/*"
   ],
   "exclude": [
     "media-src"

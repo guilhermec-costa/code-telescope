@@ -1,10 +1,11 @@
 import * as vscode from "vscode";
 import { FuzzyProvider } from "../finders/fuzzy-provider";
 import { WorkspaceFileFinder } from "../finders/workspace-files.finder";
-import { loadWebviewHtml, replaceRootDirStrInHtml } from "../utils/viewLoader";
-import { WebviewManager } from "./webview-util";
 import { Globals } from "../globals";
 import { execCmd } from "../utils/commands";
+import { loadWebviewHtml, replaceLocalResourcePathInHtml } from "../utils/viewLoader";
+import { WebviewManager } from "./webview-util";
+import type { WebviewMessage } from "@shared/webview";
 
 export class FuzzyPanel {
   public static currentPanel: FuzzyPanel | undefined;
@@ -23,7 +24,13 @@ export class FuzzyPanel {
       "code-telescope-fuzzy",
       "Telescope – Fuzzy Finder",
       vscode.ViewColumn.Active,
-      { enableScripts: true },
+      {
+        enableScripts: true,
+        localResourceRoots: [
+          vscode.Uri.joinPath(Globals.EXTENSION_URI, "media-src"),
+          vscode.Uri.joinPath(Globals.EXTENSION_URI, "media-dist"),
+        ],
+      },
     );
 
     FuzzyPanel.currentPanel = new FuzzyPanel(panel);
@@ -56,8 +63,17 @@ export class FuzzyPanel {
   }
 
   private async _updateHtml() {
-    const rawHtml = await loadWebviewHtml("media", "fuzzy", "file-fuzzy.view.html");
-    this.panel.webview.html = replaceRootDirStrInHtml(this.panel.webview, rawHtml, "media/fuzzy/");
+    let rawHtml = await loadWebviewHtml("media-src", "fuzzy", "file-fuzzy.view.html");
+
+    const replace = (search: string, distPath: string) => {
+      const fullUri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
+      rawHtml = rawHtml.replace(search, fullUri.toString());
+    };
+
+    replace("{{style}}", "media-src/fuzzy/style.css");
+    replace("{{script}}", "media-dist/index.js");
+
+    this.panel.webview.html = rawHtml;
   }
 
   public listenWebview() {

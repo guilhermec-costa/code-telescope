@@ -1,4 +1,11 @@
+import { type WebviewMessage } from "@shared/webview";
 import { escapeHtml } from "media-src/utils/html";
+
+declare function acquireVsCodeApi(): {
+  postMessage(message: WebviewMessage): void;
+  getState(): any;
+  setState(state: any): void;
+};
 
 const vscode = acquireVsCodeApi();
 
@@ -11,15 +18,15 @@ const listEl = document.getElementById("option-list") as HTMLUListElement;
 const searchEl = document.getElementById("search") as HTMLInputElement;
 
 window.addEventListener("DOMContentLoaded", () => {
-  vscode.postMessage({ type: "ready" });
   searchEl.focus();
+  vscode.postMessage({ type: "ready" });
 });
 
 window.addEventListener("message", (event) => {
   const msg = event.data as WebviewMessage;
 
   if (msg.type === "optionList") {
-    allOptions = msg.data.relative;
+    allOptions = msg.data;
     filteredOptions = allOptions;
 
     selectedIndex = filteredOptions.length - 1;
