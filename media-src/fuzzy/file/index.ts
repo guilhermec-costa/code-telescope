@@ -1,6 +1,11 @@
 import { type WebviewMessage } from "@shared/extension-webview-protocol";
 import { escapeHtml } from "media-src/utils/html";
-import { acquireVsCodeApi } from "media-src/webview-api";
+
+declare function acquireVsCodeApi(): {
+  postMessage(message: WebviewMessage): void;
+  getState(): any;
+  setState(state: any): void;
+};
 
 const vscode = acquireVsCodeApi();
 

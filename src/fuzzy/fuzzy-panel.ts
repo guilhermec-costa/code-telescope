@@ -5,7 +5,7 @@ import { Globals } from "../globals";
 import { execCmd } from "../utils/commands";
 import { loadWebviewHtml, replaceLocalResourcePathInHtml } from "../utils/viewLoader";
 import { WebviewManager } from "./webview-util";
-import type { WebviewMessage } from "@shared/webview";
+import type { WebviewMessage } from "@shared/extension-webview-protocol";
 
 export class FuzzyPanel {
   public static currentPanel: FuzzyPanel | undefined;

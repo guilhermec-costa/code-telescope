@@ -1,4 +1,4 @@
-import { WebviewMessage } from "@shared/webview";
+import { WebviewMessage } from "@shared/extension-webview-protocol";
 import * as vscode from "vscode";
 
 export class WebviewManager {

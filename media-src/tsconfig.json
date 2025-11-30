@@ -19,6 +19,7 @@
   },
   "include": [
     "./**/*.ts",
+    "./webiew-api.d.ts",
     "../shared/**/*.ts",
     "../shared/**/*.d.ts"
   ],
