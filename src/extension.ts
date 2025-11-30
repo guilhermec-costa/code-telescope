@@ -4,7 +4,6 @@ import { FuzzyPanel } from "./fuzzy/fuzzy-panel";
 import { Globals } from "./globals";
 import type { ExtensionCtx } from "./types";
 import { getCmdId, registerAndSubscribeCmd } from "./utils/commands";
-import * as vscode from "vscode";
 
 export function activate(context: ExtensionCtx) {
   console.log(`${Globals.EXTENSION_NAME} activated!`);

@@ -1,3 +1,4 @@
+import { WebviewMessage } from "@shared/webview";
 import * as vscode from "vscode";
 
 export class WebviewManager {
