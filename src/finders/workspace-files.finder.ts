@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import { Globals } from "../globals";
-import { findWorkspaceFiles, relativizeFilePath } from "../utils/files";
-import { FuzzyProvider } from "./fuzzy-provider";
 import { execCmd } from "../utils/commands";
+import { findWorkspaceFiles } from "../utils/files";
+import { FuzzyProvider } from "./fuzzy-provider";
 
 /**
  * Fuzzy provider that retrieves files from the current workspace.
@@ -20,14 +20,6 @@ export class WorkspaceFileFinder implements FuzzyProvider {
     const cfg = this.getFinderConfig();
     const files = await this.getWorkspaceFiles(cfg);
     return files.map((f) => f.path);
-    // return files.reduce<FindResult>(
-    //   (obj, file) => {
-    //     obj.relative.push(relativizeFilePath(file.path));
-    //     obj.absolute.push(file.path);
-    //     return obj;
-    //   },
-    //   { relative: [], absolute: [] },
-    // );
   }
 
   /**
