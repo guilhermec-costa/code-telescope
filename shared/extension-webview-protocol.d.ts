@@ -20,3 +20,12 @@ export interface WebviewMessage {
   /** Optional additional data related to the event. */
   data?: any;
 }
+
+export interface PreviewUpdateMessage extends WebviewMessage {
+  type: "previewUpdate";
+  data: {
+    content: string;
+    language?: string;
+    theme?: string;
+  };
+}

@@ -10,8 +10,11 @@ function findEntryPoints() {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const e of entries) {
       const full = path.join(dir, e.name);
-      if (e.isDirectory()) walk(full);
-      else if (e.isFile() && e.name === "index.ts") result.push(full);
+      if (e.isDirectory()) {
+        walk(full);
+      } else if (e.isFile() && e.name === "index.ts") {
+        result.push(full);
+      }
     }
   }
 
@@ -20,24 +23,28 @@ function findEntryPoints() {
 }
 
 const entryPoints = findEntryPoints();
-
-console.log("Building webview with esbuild...");
 console.log("Entry points:", entryPoints);
 
-esbuild
-  .build({
-    entryPoints,
-    outdir: "media-dist",
-    bundle: true,
-    format: "iife",
-    sourcemap: true,
-    target: ["chrome110"],
-    minify: false,
-    loader: {
-      ".css": "css",
-      ".ts": "ts",
-    },
+Promise.all(
+  entryPoints.map((entry) => {
+    const relDir = path.dirname(path.relative("media-src", entry));
+    const outdir = path.join("media-dist", relDir);
+
+    return esbuild.build({
+      entryPoints: [entry],
+      outfile: path.join(outdir, "index.js"),
+      bundle: true,
+      format: "iife",
+      sourcemap: true,
+      target: ["chrome110"],
+      minify: false,
+      loader: {
+        ".css": "css",
+        ".ts": "ts",
+      },
+    });
   })
+)
   .then(() => console.log("Webview build completed"))
   .catch((e) => {
     console.error(e);

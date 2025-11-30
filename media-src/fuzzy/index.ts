@@ -1,6 +1,6 @@
-import { type WebviewMessage } from "@shared/extension-webview-protocol";
+import { PreviewUpdateMessage, type WebviewMessage } from "@shared/extension-webview-protocol";
 import { escapeHtml } from "media-src/utils/html";
-import { acquireVsCodeApi } from "media-src/webview-api";
+import { codeToHtml } from "shiki";
 
 const vscode = acquireVsCodeApi();
 
@@ -17,7 +17,7 @@ window.addEventListener("DOMContentLoaded", () => {
   vscode.postMessage({ type: "ready" });
 });
 
-window.addEventListener("message", (event) => {
+window.addEventListener("message", async (event) => {
   const msg = event.data as WebviewMessage;
 
   if (msg.type === "optionList") {
@@ -32,10 +32,23 @@ window.addEventListener("message", (event) => {
   }
 
   if (msg.type === "previewUpdate") {
-    const previewEl = document.getElementById("preview") as HTMLElement;
-    previewEl.textContent = msg.data.content;
+    const {
+      data: { content, language, theme },
+    } = msg as PreviewUpdateMessage;
+    await updatePreview(content, language, theme);
   }
 });
+
+async function updatePreview(content: string, language: string = "text", theme: string = "Default Dark+") {
+  const previewEl = document.getElementById("preview");
+  if (!previewEl) return;
+
+  const html = await codeToHtml(content, {
+    lang: language,
+    theme: theme,
+  });
+  previewEl.innerHTML = html;
+}
 
 // ----------------------------
 // Rendering
@@ -137,3 +150,9 @@ function requestPreviewIfNeeded(option: string) {
     vscode.postMessage({ type: "previewRequest", data: option });
   }
 }
+
+declare function acquireVsCodeApi(): {
+  postMessage(message: WebviewMessage): void;
+  getState(): any;
+  setState(state: any): void;
+};

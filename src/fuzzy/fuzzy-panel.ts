@@ -3,9 +3,11 @@ import { FuzzyProvider } from "../finders/fuzzy-provider";
 import { WorkspaceFileFinder } from "../finders/workspace-files.finder";
 import { Globals } from "../globals";
 import { execCmd } from "../utils/commands";
-import { loadWebviewHtml, replaceLocalResourcePathInHtml } from "../utils/viewLoader";
+import { getLanguageFromPath } from "../utils/files";
+import { loadWebviewHtml } from "../utils/viewLoader";
 import { WebviewManager } from "./webview-util";
-import type { WebviewMessage } from "@shared/extension-webview-protocol";
+import { getShikiTheme } from "../syntax-highlight/shiki-utils";
+import { PreviewUpdateMessage, WebviewMessage } from "../../shared/extension-webview-protocol";
 
 export class FuzzyPanel {
   public static currentPanel: FuzzyPanel | undefined;
@@ -71,7 +73,7 @@ export class FuzzyPanel {
     };
 
     replace("{{style}}", "media-src/fuzzy/style.css");
-    replace("{{script}}", "media-dist/index.js");
+    replace("{{script}}", "media-dist/fuzzy/index.js");
 
     this.panel.webview.html = rawHtml;
   }
@@ -105,11 +107,13 @@ export class FuzzyPanel {
         try {
           const contentBytes = await vscode.workspace.fs.readFile(uri);
           const content = new TextDecoder("utf8").decode(contentBytes);
+          const language = getLanguageFromPath(msg.data);
 
+          const shikiTheme = getShikiTheme(Globals.USER_THEME);
           await this.wvManager.sendMessage({
             type: "previewUpdate",
-            data: { content },
-          });
+            data: { content, language, filePath: msg.data, theme: shikiTheme },
+          } as PreviewUpdateMessage);
         } catch (_err) {
           await this.wvManager.sendMessage({
             type: "previewUpdate",
