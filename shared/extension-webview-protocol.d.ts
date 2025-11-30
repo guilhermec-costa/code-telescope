@@ -1,6 +1,5 @@
 /**
- * Enumeration of all event types exchanged between the webview UI
- * and the extension backend.
+ * Event names for all messages exchanged between extension ⇄ webview.
  */
 export type FuzzyPanelEvents =
   | "ready"
@@ -8,20 +7,15 @@ export type FuzzyPanelEvents =
   | "closePanel"
   | "previewRequest"
   | "optionList"
-  | "previewUpdate";
+  | "previewUpdate"
+  | "themeUpdate";
 
-/**
- * Message format used in communication between the webview and the extension.
- */
-export interface WebviewMessage {
-  /** The specific event type being sent. */
-  type: FuzzyPanelEvents;
+/* ----------------------------------------------------------
+ * SUBTYPES FOR STRUCTURED MESSAGES
+ * ---------------------------------------------------------- */
 
-  /** Optional additional data related to the event. */
-  data?: any;
-}
-
-export interface PreviewUpdateMessage extends WebviewMessage {
+/** Message sent by the extension to update the preview pane */
+export interface PreviewUpdateMessage {
   type: "previewUpdate";
   data: {
     content: string;
@@ -29,3 +23,36 @@ export interface PreviewUpdateMessage extends WebviewMessage {
     theme?: string;
   };
 }
+
+/** Message sent to update the theme applied in the webview */
+export interface ThemeUpdateMessage {
+  type: "themeUpdate";
+  data: {
+    theme: string;
+  };
+}
+
+/** Message containing an updated list of options */
+export interface OptionListMessage {
+  type: "optionList";
+  data: any[];
+}
+
+/** Message informing which option was selected */
+export interface OptionSelectedMessage {
+  type: "optionSelected";
+  data: any;
+}
+
+/* ----------------------------------------------------------
+ * DISCRIMINATED UNION
+ * ---------------------------------------------------------- */
+
+export type WebviewMessage =
+  | { type: "ready"; data?: undefined }
+  | { type: "closePanel"; data?: undefined }
+  | { type: "previewRequest"; data: any }
+  | OptionListMessage
+  | OptionSelectedMessage
+  | PreviewUpdateMessage
+  | ThemeUpdateMessage;

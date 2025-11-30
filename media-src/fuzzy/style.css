@@ -1,41 +1,34 @@
-body.vscode-light {
-  color: black;
-}
-
-body.vscode-dark {
-  color: white;
-}
-
-body.vscode-high-contrast {
-  color: red;
-}
-
 body {
   font-family: var(--vscode-editor-font-family), "Fira Code", Consolas, monospace;
-  font-size: 16px;
+  font-size: 14px; 
   margin: 0;
   padding: 0;
   height: 100vh;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding-top: 10vh;
+  background-color: var(--vscode-editor-background);
+  color: var(--vscode-editor-foreground);
+  overflow: hidden;
 }
-
 
 :root {
   --bg: var(--vscode-editor-background);
   --fg: var(--vscode-editor-foreground);
-  --border: var(--vscode-editorWidget-border);
+  --border-color: var(--vscode-editorWidget-border); 
+  --status-bar-bg: var(--vscode-statusBar-background);
+  --status-bar-fg: var(--vscode-statusBar-foreground);
   --input-bg: var(--vscode-input-background);
   --input-fg: var(--vscode-input-foreground);
-  --input-border: var(--vscode-focusBorder);
-  --item-hover: var(--vscode-list-hoverBackground);
-  --item-selected: var(--vscode-list-activeSelectionBackground);
-  --item-selected-fg: var(--vscode-list-activeSelectionForeground);
-  --highlight: var(--vscode-editor-findMatchHighlightBackground);
-  --highlight-fg: var(--vscode-textPreformat-foreground);
-  --muted: var(--vscode-descriptionForeground);
+  --focus-border: var(--vscode-focusBorder);
+  --list-hover: var(--vscode-list-hoverBackground);
+  --list-selected: var(--vscode-list-activeSelectionBackground);
+  --list-selected-fg: var(--vscode-list-activeSelectionForeground);
+  --highlight-bg: var(--vscode-editor-findMatchHighlightBackground);
+  --highlight-fg: var(--vscode-editor-foreground); 
+  --muted-fg: var(--vscode-descriptionForeground);
+  --scrollbar-thumb: var(--vscode-scrollbarSlider-background);
+  --scrollbar-thumb-hover: var(--vscode-scrollbarSlider-hoverBackground);
 }
 
 * {
@@ -44,124 +37,160 @@ body {
 
 #container {
   width: 90%;
-  max-width: 1200px;
+  max-width: 1300px;
+  height: 600px;
   background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--border-color); 
+  border-radius: 2px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); 
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 #split {
   display: flex;
   flex-direction: row;
-  height: 75vh;
+  flex-grow: 1; 
+  height: 100%;
+  min-width: 0; 
+  min-height: 0;
 }
 
 #left-side {
-  width: 38%;
+  width: 50%; 
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--border);
-  resize: horizontal;
-  overflow-x: auto;
+  overflow-x: hidden;
+  min-width: 250px;
+}
+
+#right-side {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  overflow: hidden;
+  box-shadow: inset 1px 0 0 var(--border-color); 
+  min-width: 0;
+}
+
+#status-bar {
+  order: 1; 
+  width: 100%;
+  padding: 5px 15px; 
+  font-size: 12px; 
+  font-weight: 500;
+  color: var(--status-bar-fg);
+  background-color: var(--vscode-statusBar-background);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color); 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 #search {
   width: 100%;
-  padding: 14px 16px;
-  font-size: 16px;
+  padding: 12px 15px; 
   color: var(--input-fg);
   background: var(--input-bg);
   border: none;
-  border-bottom: 2px solid transparent;
   outline: none;
   font-family: inherit;
-  transition: border-color 0.2s;
-  order: 1;
+  order: 4;
 }
 
 #search::placeholder {
-  color: var(--muted);
-  opacity: 0.6;
+  color: var(--muted-fg);
+  opacity: 0.8;
 }
 
 #search:focus {
-  border-bottom-color: var(--input-border);
+  border-top-color: transparent; 
+}
+
+
+#spacer {
+  background-color: transparent;
+  flex-grow: 3;
+  order: 2;
 }
 
 #option-list {
   list-style: none;
   margin: 0;
-  padding: 4px 0;
-  flex-grow: 1;
-  max-height: 100%;
+  padding: 0;
+  flex-grow: 0;
   overflow-y: auto;
-  scrollbar-width: thin;
   padding-right: 2px;
+  order: 3;
 }
 
 #option-list::-webkit-scrollbar {
   width: 8px;
 }
-
 #option-list::-webkit-scrollbar-track {
   background: transparent;
 }
 #option-list::-webkit-scrollbar-thumb {
-  background: var(--vscode-scrollbarSlider-background);
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 #option-list::-webkit-scrollbar-thumb:hover {
-  background: var(--vscode-scrollbarSlider-hoverBackground);
+  background: var(--scrollbar-thumb-hover);
 }
 
 .option-item {
-  padding: 6px 16px;
+  padding: 4px 15px;
   cursor: pointer;
-  font-family: inherit;
-  font-size: 16px;
+  font-family: var(--vscode-editor-font-family), monospace;
+  font-size: 14px;
   color: var(--fg);
-  transition: background 0.1s ease;
-  display: flex;
+  transition: background-color 0.1s ease;
+  display: flex; 
   align-items: center;
-  line-height: 1.5;
+  line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.option-item:hover {
-  background: var(--item-hover);
-}
-
 .option-item.selected {
-  background: var(--item-selected);
-  color: var(--item-selected-fg);
+  background-color: var(--list-selected);
+  color: var(--list-selected-fg); 
+  border-left: none; 
+  padding: 4px 15px;
 }
 
 .highlight {
-  background: var(--highlight);
-  color: var(--highlight-fg);
+  background-color: var(--highlight-bg);
+  color: var(--fg); 
   font-weight: 600;
   padding: 0 1px;
-  border-radius: 2px;
-}
-
-#right-side {
-  display: flex;
-  flex-direction: column;
-  width: 62%;
-  height: 100%;
+  border-radius: 1px;
 }
 
 #preview {
   width: 100%;
-  flex: 1;
+  height: 100%;
   background: var(--bg);
-  border: none;
-  padding: 12px;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  font-size: 17px;
+  color: var(--fg);
+  padding: 10px 15px;
+  overflow: auto;
+  white-space: pre;
+  font-family: var(--vscode-editor-font-family), "Fira Code", Consolas, monospace;
+  font-size: 14px; 
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+#preview pre,
+#preview code {
+    background-color: transparent !important;
+    padding: 0; 
+    margin: 0;
+}
+#preview pre span {
+    background-color: transparent !important;
 }

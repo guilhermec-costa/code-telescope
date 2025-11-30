@@ -1,4 +1,4 @@
-import { PreviewUpdateMessage, type WebviewMessage } from "@shared/extension-webview-protocol";
+import { type WebviewMessage } from "@shared/extension-webview-protocol";
 import { escapeHtml } from "media-src/utils/html";
 import { codeToHtml } from "shiki";
 
@@ -7,13 +7,17 @@ const vscode = acquireVsCodeApi();
 let allOptions: string[] = [];
 let filteredOptions: string[] = [];
 let selectedIndex = 0;
-let lastPreviewedOption: string | null = null;
+
+const lastPreviewedData: LastPreviewedData = {
+  option: null,
+  content: null,
+  language: null,
+};
 
 const listEl = document.getElementById("option-list") as HTMLUListElement;
 const searchEl = document.getElementById("search") as HTMLInputElement;
 
 window.addEventListener("DOMContentLoaded", () => {
-  searchEl.focus();
   vscode.postMessage({ type: "ready" });
 });
 
@@ -34,8 +38,14 @@ window.addEventListener("message", async (event) => {
   if (msg.type === "previewUpdate") {
     const {
       data: { content, language, theme },
-    } = msg as PreviewUpdateMessage;
+    } = msg;
+    lastPreviewedData.content = content;
     await updatePreview(content, language, theme);
+  }
+
+  if (msg.type === "themeUpdate") {
+    console.log("Theme updated on webview");
+    await updatePanelTheme(msg.data.theme);
   }
 });
 
@@ -45,6 +55,18 @@ async function updatePreview(content: string, language: string = "text", theme: 
 
   const html = await codeToHtml(content, {
     lang: language,
+    theme: theme,
+  });
+  previewEl.innerHTML = html;
+}
+
+async function updatePanelTheme(theme: string) {
+  const previewEl = document.getElementById("preview");
+  console.log("Preview element");
+
+  if (!previewEl || !lastPreviewedData.content || !lastPreviewedData.language) return;
+  const html = await codeToHtml(lastPreviewedData.content, {
+    lang: lastPreviewedData.language,
     theme: theme,
   });
   previewEl.innerHTML = html;
@@ -72,6 +94,7 @@ function renderList() {
     listEl.appendChild(li);
   });
 
+  listEl.scrollTop = listEl.scrollHeight;
   scrollSelectedIntoView();
 }
 
@@ -136,7 +159,6 @@ function openSelectedOption() {
 
 function closePanel() {
   vscode.postMessage({ type: "closePanel" });
-  searchEl.blur();
 }
 
 function scrollSelectedIntoView() {
@@ -145,8 +167,8 @@ function scrollSelectedIntoView() {
 }
 
 function requestPreviewIfNeeded(option: string) {
-  if (lastPreviewedOption !== option) {
-    lastPreviewedOption = option;
+  if (lastPreviewedData.option !== option) {
+    lastPreviewedData.option = option;
     vscode.postMessage({ type: "previewRequest", data: option });
   }
 }
@@ -156,3 +178,9 @@ declare function acquireVsCodeApi(): {
   getState(): any;
   setState(state: any): void;
 };
+
+export interface LastPreviewedData {
+  option: string | null;
+  content: string | null;
+  language: string | null;
+}

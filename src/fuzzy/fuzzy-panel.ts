@@ -1,13 +1,13 @@
 import * as vscode from "vscode";
+import { PreviewUpdateMessage, WebviewMessage } from "../../shared/extension-webview-protocol";
 import { FuzzyProvider } from "../finders/fuzzy-provider";
 import { WorkspaceFileFinder } from "../finders/workspace-files.finder";
 import { Globals } from "../globals";
+import { getShikiTheme } from "../syntax-highlight/shiki-utils";
 import { execCmd } from "../utils/commands";
 import { getLanguageFromPath } from "../utils/files";
 import { loadWebviewHtml } from "../utils/viewLoader";
 import { WebviewManager } from "./webview-util";
-import { getShikiTheme } from "../syntax-highlight/shiki-utils";
-import { PreviewUpdateMessage, WebviewMessage } from "../../shared/extension-webview-protocol";
 
 export class FuzzyPanel {
   public static currentPanel: FuzzyPanel | undefined;
@@ -64,6 +64,13 @@ export class FuzzyPanel {
     });
   }
 
+  public async emitThemeChangeEvent(theme: string) {
+    await this.wvManager.sendMessage({
+      type: "themeUpdate",
+      data: { theme: theme },
+    });
+  }
+
   private async _updateHtml() {
     let rawHtml = await loadWebviewHtml("media-src", "fuzzy", "file-fuzzy.view.html");
 
@@ -99,6 +106,7 @@ export class FuzzyPanel {
 
       if (msg.type === "closePanel") {
         this.panel.dispose();
+        await vscode.commands.executeCommand("workbench.action.focusActiveEditorGroup");
       }
 
       if (msg.type === "previewRequest") {

@@ -6,6 +6,7 @@ import { Globals } from "./globals";
 import type { ExtensionCtx } from "./types";
 import { getCmdId, registerAndSubscribeCmd } from "./utils/commands";
 import { getConfigurationSection } from "./utils/configuration";
+import { getShikiTheme } from "./syntax-highlight/shiki-utils";
 
 export function activate(context: ExtensionCtx) {
   console.log(`${Globals.EXTENSION_NAME} activated!`);
@@ -14,16 +15,20 @@ export function activate(context: ExtensionCtx) {
 
   vscode.workspace.onDidChangeConfiguration((e) => {
     if (e.affectsConfiguration(Globals.cfgSections.colorTheme)) {
-      Globals.USER_THEME = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
+      const newTheme = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
+      Globals.USER_THEME = getShikiTheme(newTheme);
       console.log(`The color theme changed to: ${Globals.USER_THEME}`);
+      const fuzzyPanel = FuzzyPanel.currentPanel;
+      if (!fuzzyPanel) return;
+      fuzzyPanel.emitThemeChangeEvent(Globals.USER_THEME);
     }
   });
 
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "file"),
     async () => {
-      const panel = FuzzyPanel.createOrShow();
-      panel.setProvider(new WorkspaceFileFinder());
+      const fuzzyPanel = FuzzyPanel.createOrShow();
+      fuzzyPanel.setProvider(new WorkspaceFileFinder());
     },
     context,
   );
@@ -31,11 +36,13 @@ export function activate(context: ExtensionCtx) {
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "branch"),
     async () => {
-      const panel = FuzzyPanel.createOrShow();
-      panel.setProvider(new VSCodeGitBranchFinder({ includeRemotes: true }));
+      const fuzzyPanel = FuzzyPanel.createOrShow();
+      fuzzyPanel.setProvider(new VSCodeGitBranchFinder({ includeRemotes: true }));
     },
     context,
   );
 }
 
-export function deactivate() {}
+export function deactivate() {
+  console.log("code-telescope deactivated");
+}
