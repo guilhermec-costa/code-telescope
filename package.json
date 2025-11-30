@@ -64,6 +64,7 @@
     "pretest": "pnpm run compile && pnpm run lint",
     "lint": "biome lint",
     "check": "biome check",
+    "check:write": "biome check --write",
     "format:write": "biome format --write",
     "test": "vscode-test",
     "prepare": "husky",
@@ -86,8 +87,7 @@
   },
   "lint-staged": {
     "*.{js,ts}": [
-      "pnpm lint",
-      "pnpm format:write"
+      "pnpm check:write"
     ]
   }
 }
