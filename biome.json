@@ -7,13 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": [
-      "**/*.ts",
-      "src/**/*.ts",
-      "media-src/**/*.html",
-      "media-src/**/*.css",
-      "media-src/**/*.js"
-    ]
+    "includes": ["**/*.ts", "src/**/*.ts", "media-src/**/*.html", "media-src/**/*.css", "media-src/**/*.js"]
   },
   "formatter": {
     "enabled": true,
@@ -53,6 +47,15 @@
       "indentStyle": "space",
       "lineWidth": 120,
       "indentWidth": 2
+    }
+  },
+  "html": {
+    "formatter": {
+      "enabled": true,
+      "bracketSameLine": false,
+      "whitespaceSensitivity": "css",
+      "indentScriptAndStyle": false,
+      "selfCloseVoidElements": "never"
     }
   },
   "assist": {

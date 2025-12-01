@@ -14,16 +14,31 @@ export class FuzzyPanel {
   private readonly wvManager: WebviewManager;
   private provider!: FuzzyProvider;
 
+  private static revealPosition = vscode.ViewColumn.Active;
+
+  private constructor(panel: vscode.WebviewPanel) {
+    this.panel = panel;
+    this.wvManager = new WebviewManager(this.panel.webview);
+    this.listenWebview();
+
+    panel.onDidDispose(() => {
+      FuzzyPanel.currentPanel = undefined;
+    });
+  }
+
   static createOrShow() {
     if (FuzzyPanel.currentPanel) {
-      FuzzyPanel.currentPanel.panel.reveal(vscode.ViewColumn.Active);
+      FuzzyPanel.currentPanel.panel.reveal(this.revealPosition, false);
       return FuzzyPanel.currentPanel;
     }
 
     const panel = vscode.window.createWebviewPanel(
       "code-telescope-fuzzy",
       "Telescope – Fuzzy Finder",
-      vscode.ViewColumn.Active,
+      {
+        viewColumn: this.revealPosition,
+        preserveFocus: false,
+      },
       {
         enableScripts: true,
         localResourceRoots: [
@@ -35,16 +50,6 @@ export class FuzzyPanel {
 
     FuzzyPanel.currentPanel = new FuzzyPanel(panel);
     return FuzzyPanel.currentPanel;
-  }
-
-  private constructor(panel: vscode.WebviewPanel) {
-    this.panel = panel;
-    this.wvManager = new WebviewManager(this.panel.webview);
-    this.listenWebview();
-
-    panel.onDidDispose(() => {
-      FuzzyPanel.currentPanel = undefined;
-    });
   }
 
   public async setProvider(provider: FuzzyProvider) {

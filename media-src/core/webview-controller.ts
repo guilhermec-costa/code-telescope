@@ -24,11 +24,23 @@ export class WebviewController {
 
   initialize(): void {
     window.addEventListener("DOMContentLoaded", () => {
+      this.focusSearchInput();
       this.vscodeService.notifyReady();
     });
 
     window.addEventListener("message", async (event) => {
       await this.handleMessage(event.data as WebviewMessage);
+    });
+    this.focusSearchInput();
+  }
+
+  private focusSearchInput() {
+    this.searchElement?.focus();
+    setTimeout(() => {
+      this.searchElement?.focus();
+    }, 100);
+    requestAnimationFrame(() => {
+      this.searchElement?.focus();
     });
   }
 

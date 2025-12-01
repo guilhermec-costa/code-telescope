@@ -7,9 +7,6 @@ interface LastPreviewedData {
   language: string | null;
 }
 
-/**
- * Gerencia a visualização de preview do código
- */
 export class PreviewManager {
   private lastPreviewedData: LastPreviewedData = {
     option: null,
