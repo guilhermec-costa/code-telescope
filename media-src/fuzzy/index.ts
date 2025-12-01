@@ -27,6 +27,7 @@ window.addEventListener("message", async (event) => {
   if (msg.type === "optionList") {
     allOptions = msg.data;
     filteredOptions = allOptions;
+    updateFileCount(filteredOptions.length, allOptions.length);
 
     selectedIndex = filteredOptions.length - 1;
     renderList();
@@ -114,6 +115,7 @@ function highlightMatch(text: string, query: string) {
 searchEl.addEventListener("input", () => {
   const query = searchEl.value.toLowerCase();
   filteredOptions = allOptions.filter((f) => f.toLowerCase().includes(query));
+  updateFileCount(filteredOptions.length, allOptions.length);
 
   selectedIndex = filteredOptions.length - 1;
   renderList();
@@ -170,6 +172,14 @@ function requestPreviewIfNeeded(option: string) {
   if (lastPreviewedData.option !== option) {
     lastPreviewedData.option = option;
     vscode.postMessage({ type: "previewRequest", data: option });
+  }
+}
+
+function updateFileCount(visibleCount: number, totalCount: number) {
+  console.log(visibleCount, totalCount);
+  const fileCountEl = document.getElementById("file-count");
+  if (fileCountEl) {
+    fileCountEl.textContent = `${visibleCount} / ${totalCount}`;
   }
 }
 
