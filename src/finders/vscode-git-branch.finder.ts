@@ -20,15 +20,15 @@ export class VSCodeGitBranchFinder implements FuzzyProvider {
   }
 
   async loadWebviewHtml() {
-    let rawHtml = await loadWebviewHtml("media-src", "fuzzy", "branch-fuzzy.view.html");
+    let rawHtml = await loadWebviewHtml("media-src", "views", "branch-fuzzy.view.html");
 
     const replace = (search: string, distPath: string) => {
       const fullUri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
       rawHtml = rawHtml.replace(search, fullUri.toString());
     };
 
-    replace("{{style}}", "media-src/fuzzy/style.css");
-    replace("{{script}}", "media-dist/fuzzy/index.js");
+    replace("{{style}}", "media-src/style/style.css");
+    replace("{{script}}", "media-dist/index.js");
     return rawHtml;
   }
 

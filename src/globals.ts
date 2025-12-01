@@ -8,6 +8,7 @@ export namespace Globals {
 
   export const cmds = {
     openFile: "vscode.open",
+    focusActiveFile: "workbench.action.focusActiveEditorGroup",
   };
 
   export const cfgSections = {

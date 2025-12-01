@@ -19,8 +19,8 @@ export interface PreviewUpdateMessage {
   type: "previewUpdate";
   data: {
     content: string;
-    language?: string;
-    theme?: string;
+    language: string;
+    theme: string;
   };
 }
 

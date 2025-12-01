@@ -89,7 +89,7 @@ export class FuzzyPanel {
 
       if (msg.type === "closePanel") {
         this.panel.dispose();
-        await vscode.commands.executeCommand("workbench.action.focusActiveEditorGroup");
+        await execCmd(Globals.cmds.focusActiveFile);
       }
 
       if (msg.type === "previewRequest") {
@@ -108,7 +108,7 @@ export class FuzzyPanel {
         } catch (_err) {
           await this.wvManager.sendMessage({
             type: "previewUpdate",
-            data: { content: "[Unable to read file]" },
+            data: { content: "[Unable to read file]", language: "", theme: "" },
           });
         }
       }
