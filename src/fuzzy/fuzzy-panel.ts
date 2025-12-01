@@ -1,12 +1,10 @@
 import * as vscode from "vscode";
 import { PreviewUpdateMessage, WebviewMessage } from "../../shared/extension-webview-protocol";
 import { FuzzyProvider } from "../finders/fuzzy-provider";
-import { WorkspaceFileFinder } from "../finders/workspace-files.finder";
 import { Globals } from "../globals";
 import { getShikiTheme } from "../syntax-highlight/shiki-utils";
 import { execCmd } from "../utils/commands";
 import { getLanguageFromPath } from "../utils/files";
-import { loadWebviewHtml } from "../utils/viewLoader";
 import { WebviewManager } from "./webview-util";
 
 export class FuzzyPanel {
@@ -14,7 +12,7 @@ export class FuzzyPanel {
 
   public readonly panel: vscode.WebviewPanel;
   private readonly wvManager: WebviewManager;
-  private provider: FuzzyProvider = new WorkspaceFileFinder();
+  private provider!: FuzzyProvider;
 
   static createOrShow() {
     if (FuzzyPanel.currentPanel) {
@@ -42,8 +40,6 @@ export class FuzzyPanel {
   private constructor(panel: vscode.WebviewPanel) {
     this.panel = panel;
     this.wvManager = new WebviewManager(this.panel.webview);
-
-    this._updateHtml();
     this.listenWebview();
 
     panel.onDidDispose(() => {
@@ -53,6 +49,7 @@ export class FuzzyPanel {
 
   public async setProvider(provider: FuzzyProvider) {
     this.provider = provider;
+    this.panel.webview.html = await this.provider.loadWebviewHtml();
     const items = await provider.querySelectableOptions();
     await this.sendOptionsListEvent(items);
   }
@@ -69,20 +66,6 @@ export class FuzzyPanel {
       type: "themeUpdate",
       data: { theme: theme },
     });
-  }
-
-  private async _updateHtml() {
-    let rawHtml = await loadWebviewHtml("media-src", "fuzzy", "file-fuzzy.view.html");
-
-    const replace = (search: string, distPath: string) => {
-      const fullUri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
-      rawHtml = rawHtml.replace(search, fullUri.toString());
-    };
-
-    replace("{{style}}", "media-src/fuzzy/style.css");
-    replace("{{script}}", "media-dist/fuzzy/index.js");
-
-    this.panel.webview.html = rawHtml;
   }
 
   public listenWebview() {

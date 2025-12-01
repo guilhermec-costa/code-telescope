@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Globals } from "../globals";
 import { execCmd } from "../utils/commands";
-import { findWorkspaceFiles } from "../utils/files";
+import { findWorkspaceFiles, loadWebviewHtml } from "../utils/files";
 import { FuzzyProvider } from "./fuzzy-provider";
 
 /**
@@ -11,7 +11,23 @@ import { FuzzyProvider } from "./fuzzy-provider";
  * hiding dotfiles, and limiting the maximum number of results.
  */
 export class WorkspaceFileFinder implements FuzzyProvider {
-  constructor(private overrideConfig?: Partial<FinderSearchConfig>) {}
+  constructor(
+    private readonly panel: vscode.WebviewPanel,
+    private overrideConfig?: Partial<FinderSearchConfig>,
+  ) {}
+
+  async loadWebviewHtml() {
+    let rawHtml = await loadWebviewHtml("media-src", "fuzzy", "file-fuzzy.view.html");
+
+    const replace = (search: string, distPath: string) => {
+      const fullUri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
+      rawHtml = rawHtml.replace(search, fullUri.toString());
+    };
+
+    replace("{{style}}", "media-src/fuzzy/style.css");
+    replace("{{script}}", "media-dist/fuzzy/index.js");
+    return rawHtml;
+  }
 
   /**
    * Returns the list of file paths to display in the fuzzy finder.

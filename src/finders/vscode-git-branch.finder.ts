@@ -1,13 +1,35 @@
 import * as vscode from "vscode";
+import { Globals } from "../globals";
 import { API, GitExtension, Ref } from "../types/git";
+import { loadWebviewHtml } from "../utils/files";
 import { FuzzyProvider } from "./fuzzy-provider";
 
 export class VSCodeGitBranchFinder implements FuzzyProvider {
   /** Reference to the Git API exported by the official VS Code Git extension. */
   private readonly gitApi: API | null;
 
-  constructor(private options: GitBranchFinderOptions = {}) {
+  constructor(
+    private readonly panel: vscode.WebviewPanel,
+    private options: GitBranchFinderOptions = {},
+  ) {
     this.gitApi = this.getGitApi();
+  }
+
+  onSelect?(item: string): void | Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  async loadWebviewHtml() {
+    let rawHtml = await loadWebviewHtml("media-src", "fuzzy", "branch-fuzzy.view.html");
+
+    const replace = (search: string, distPath: string) => {
+      const fullUri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
+      rawHtml = rawHtml.replace(search, fullUri.toString());
+    };
+
+    replace("{{style}}", "media-src/fuzzy/style.css");
+    replace("{{script}}", "media-dist/fuzzy/index.js");
+    return rawHtml;
   }
 
   /**

@@ -10,4 +10,9 @@ export interface FuzzyProvider {
    * Can open a file, switch branches, execute a command...
    */
   onSelect?(item: string): void | Promise<void>;
+
+  /**
+   *
+   */
+  loadWebviewHtml(): Promise<string>;
 }

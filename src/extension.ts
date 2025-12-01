@@ -3,10 +3,10 @@ import { VSCodeGitBranchFinder } from "./finders/vscode-git-branch.finder";
 import { WorkspaceFileFinder } from "./finders/workspace-files.finder";
 import { FuzzyPanel } from "./fuzzy/fuzzy-panel";
 import { Globals } from "./globals";
+import { getShikiTheme } from "./syntax-highlight/shiki-utils";
 import type { ExtensionCtx } from "./types";
 import { getCmdId, registerAndSubscribeCmd } from "./utils/commands";
 import { getConfigurationSection } from "./utils/configuration";
-import { getShikiTheme } from "./syntax-highlight/shiki-utils";
 
 export function activate(context: ExtensionCtx) {
   console.log(`${Globals.EXTENSION_NAME} activated!`);
@@ -28,7 +28,7 @@ export function activate(context: ExtensionCtx) {
     getCmdId("fuzzy", "file"),
     async () => {
       const fuzzyPanel = FuzzyPanel.createOrShow();
-      fuzzyPanel.setProvider(new WorkspaceFileFinder());
+      fuzzyPanel.setProvider(new WorkspaceFileFinder(fuzzyPanel.panel));
     },
     context,
   );
@@ -37,7 +37,7 @@ export function activate(context: ExtensionCtx) {
     getCmdId("fuzzy", "branch"),
     async () => {
       const fuzzyPanel = FuzzyPanel.createOrShow();
-      fuzzyPanel.setProvider(new VSCodeGitBranchFinder({ includeRemotes: true }));
+      fuzzyPanel.setProvider(new VSCodeGitBranchFinder(fuzzyPanel.panel, { includeRemotes: true }));
     },
     context,
   );
