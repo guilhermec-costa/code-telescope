@@ -11,11 +11,36 @@ export class OptionListManager {
   private fileCountElement: HTMLElement | null;
   private previewManager: PreviewManager;
 
+  private readonly ITEM_HEIGHT = 22;
+  private readonly BUFFER_SIZE = 5;
+  private visibleStartIndex = 0;
+  private visibleEndIndex = 0;
+  private containerHeight = 0;
+
   constructor(previewManager: PreviewManager) {
     this.previewManager = previewManager;
     this.listElement = document.getElementById("option-list") as HTMLUListElement;
     this.searchElement = document.getElementById("search") as HTMLInputElement;
     this.fileCountElement = document.getElementById("file-count");
+
+    this.setupVirtualization();
+  }
+
+  private setupVirtualization(): void {
+    this.updateContainerHeight();
+
+    this.listElement.addEventListener("scroll", () => {
+      this.renderVisible();
+    });
+
+    window.addEventListener("resize", () => {
+      this.updateContainerHeight();
+      this.renderVisible();
+    });
+  }
+
+  private updateContainerHeight(): void {
+    this.containerHeight = this.listElement.clientHeight;
   }
 
   setOptions(options: string[]): void {
@@ -34,6 +59,7 @@ export class OptionListManager {
 
   filter(query: string): void {
     const lowerQuery = query.toLowerCase();
+
     this.filteredOptions = this.allOptions.filter((option) => option.toLowerCase().includes(lowerQuery));
     this.selectedIndex = this.filteredOptions.length - 1;
 
@@ -51,7 +77,8 @@ export class OptionListManager {
 
     this.selectedIndex = (this.selectedIndex + direction + this.filteredOptions.length) % this.filteredOptions.length;
 
-    this.render();
+    this.ensureSelectedVisible();
+    this.renderVisible();
 
     const option = this.filteredOptions[this.selectedIndex];
     this.previewManager.requestPreviewIfNeeded(option);
@@ -62,28 +89,71 @@ export class OptionListManager {
   }
 
   private render(): void {
-    this.listElement.innerHTML = "";
+    const totalHeight = this.filteredOptions.length * this.ITEM_HEIGHT;
+    this.listElement.style.height = `${totalHeight}px`;
+    this.listElement.style.position = "relative";
 
+    this.listElement.scrollTop = totalHeight;
+
+    this.renderVisible();
+  }
+
+  private renderVisible(): void {
+    const scrollTop = this.listElement.scrollTop;
+
+    this.visibleStartIndex = Math.max(0, Math.floor(scrollTop / this.ITEM_HEIGHT) - this.BUFFER_SIZE);
+    this.visibleEndIndex = Math.min(
+      this.filteredOptions.length,
+      Math.ceil((scrollTop + this.containerHeight) / this.ITEM_HEIGHT) + this.BUFFER_SIZE,
+    );
+
+    this.listElement.innerHTML = "";
     const query = this.searchElement.value.toLowerCase();
 
-    this.filteredOptions.forEach((option, idx) => {
+    const fragment = document.createDocumentFragment();
+
+    for (let idx = this.visibleStartIndex; idx < this.visibleEndIndex; idx++) {
+      const option = this.filteredOptions[idx];
       const li = document.createElement("li");
       li.className = "option-item";
+
+      li.style.position = "absolute";
+      li.style.top = `${idx * this.ITEM_HEIGHT}px`;
+      li.style.height = `${this.ITEM_HEIGHT}px`;
+      li.style.width = "100%";
+      li.style.boxSizing = "border-box";
+
       if (idx === this.selectedIndex) {
         li.classList.add("selected");
       }
 
       li.innerHTML = this.highlightMatch(option, query);
-      li.onclick = () => {
-        this.selectedIndex = idx;
-        this.notifySelection();
-      };
 
-      this.listElement.appendChild(li);
-    });
+      ((index) => {
+        li.onclick = () => {
+          this.selectedIndex = index;
+          this.renderVisible();
+          this.notifySelection();
+        };
+      })(idx);
 
-    this.listElement.scrollTop = this.listElement.scrollHeight;
-    this.scrollSelectedIntoView();
+      fragment.appendChild(li);
+    }
+
+    this.listElement.appendChild(fragment);
+  }
+
+  private ensureSelectedVisible(): void {
+    const selectedTop = this.selectedIndex * this.ITEM_HEIGHT;
+    const selectedBottom = selectedTop + this.ITEM_HEIGHT;
+    const scrollTop = this.listElement.scrollTop;
+    const scrollBottom = scrollTop + this.containerHeight;
+
+    if (selectedTop < scrollTop) {
+      this.listElement.scrollTop = selectedTop;
+    } else if (selectedBottom > scrollBottom) {
+      this.listElement.scrollTop = selectedBottom - this.containerHeight;
+    }
   }
 
   private highlightMatch(text: string, query: string): string {
@@ -99,11 +169,6 @@ export class OptionListManager {
     return `${before}<span class="highlight">${match}</span>${after}`;
   }
 
-  private scrollSelectedIntoView(): void {
-    const selected = this.listElement.querySelector(".selected");
-    selected?.scrollIntoView({ block: "nearest" });
-  }
-
   private updateFileCount(): void {
     if (this.fileCountElement) {
       this.fileCountElement.textContent = `${this.filteredOptions.length} / ${this.allOptions.length}`;
@@ -111,8 +176,7 @@ export class OptionListManager {
   }
 
   private notifySelection(): void {
-    // Este método será chamado pelo controlador principal
-    // através de um callback registrado
+    this.onSelectionConfirmed?.();
   }
 
   onSelectionConfirmed?: () => void;

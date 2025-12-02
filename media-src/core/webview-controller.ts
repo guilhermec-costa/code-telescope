@@ -1,4 +1,5 @@
 import { type WebviewMessage } from "@shared/extension-webview-protocol";
+import { debounce } from "../utils/debounce";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { PreviewManager } from "./preview-manager";
@@ -31,14 +32,21 @@ export class WebviewController {
     window.addEventListener("message", async (event) => {
       await this.handleMessage(event.data as WebviewMessage);
     });
+
+    window.addEventListener("focus", () => {
+      this.focusSearchInput();
+    });
+
     this.focusSearchInput();
   }
 
-  private focusSearchInput() {
+  private focusSearchInput(): void {
     this.searchElement?.focus();
+
     setTimeout(() => {
       this.searchElement?.focus();
     }, 100);
+
     requestAnimationFrame(() => {
       this.searchElement?.focus();
     });
@@ -48,6 +56,7 @@ export class WebviewController {
     switch (msg.type) {
       case "optionList":
         this.optionListManager.setOptions(msg.data);
+        this.focusSearchInput();
         break;
 
       case "previewUpdate":
@@ -63,9 +72,13 @@ export class WebviewController {
   }
 
   private setupEventListeners(): void {
+    const debouncedFilter = debounce((query: string) => {
+      this.optionListManager.filter(query);
+    }, 300);
+
     this.searchElement.addEventListener("input", () => {
       const query = this.searchElement.value;
-      this.optionListManager.filter(query);
+      debouncedFilter(query);
     });
 
     this.optionListManager.onSelectionConfirmed = () => {
