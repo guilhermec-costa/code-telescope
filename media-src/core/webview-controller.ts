@@ -74,7 +74,7 @@ export class WebviewController {
   private setupEventListeners(): void {
     const debouncedFilter = debounce((query: string) => {
       this.optionListManager.filter(query);
-    }, 300);
+    }, 150);
 
     this.searchElement.addEventListener("input", () => {
       const query = this.searchElement.value;

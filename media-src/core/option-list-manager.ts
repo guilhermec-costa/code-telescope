@@ -16,6 +16,7 @@ export class OptionListManager {
   private visibleStartIndex = 0;
   private visibleEndIndex = 0;
   private containerHeight = 0;
+  private scrollContainer: HTMLElement;
 
   constructor(previewManager: PreviewManager) {
     this.previewManager = previewManager;
@@ -23,24 +24,33 @@ export class OptionListManager {
     this.searchElement = document.getElementById("search") as HTMLInputElement;
     this.fileCountElement = document.getElementById("file-count");
 
+    // O scroll é no próprio elemento da lista
+    this.scrollContainer = this.listElement;
+
     this.setupVirtualization();
   }
 
   private setupVirtualization(): void {
+    // Calcula a altura do container
     this.updateContainerHeight();
 
-    this.listElement.addEventListener("scroll", () => {
+    // Listener para scroll no container
+    this.scrollContainer.addEventListener("scroll", () => {
       this.renderVisible();
     });
 
+    // Atualiza altura quando a janela muda
     window.addEventListener("resize", () => {
       this.updateContainerHeight();
-      this.renderVisible();
+      this.renderVisible(); // Apenas re-renderiza os visíveis, não chama render()
     });
   }
 
   private updateContainerHeight(): void {
-    this.containerHeight = this.listElement.clientHeight;
+    // Força o recálculo do tamanho
+    requestAnimationFrame(() => {
+      this.containerHeight = this.scrollContainer.clientHeight;
+    });
   }
 
   setOptions(options: string[]): void {
@@ -61,14 +71,15 @@ export class OptionListManager {
     const lowerQuery = query.toLowerCase();
 
     this.filteredOptions = this.allOptions.filter((option) => option.toLowerCase().includes(lowerQuery));
-    this.selectedIndex = this.filteredOptions.length - 1;
+
+    this.selectedIndex = Math.min(this.selectedIndex, Math.max(0, this.filteredOptions.length - 1));
 
     this.updateFileCount();
     this.render();
 
-    const lastElement = this.filteredOptions.at(-1);
-    if (lastElement) {
-      this.previewManager.requestPreviewIfNeeded(lastElement);
+    const selectedOption = this.filteredOptions[this.selectedIndex];
+    if (selectedOption) {
+      this.previewManager.requestPreviewIfNeeded(selectedOption);
     }
   }
 
@@ -89,17 +100,32 @@ export class OptionListManager {
   }
 
   private render(): void {
-    const totalHeight = this.filteredOptions.length * this.ITEM_HEIGHT;
-    this.listElement.style.height = `${totalHeight}px`;
-    this.listElement.style.position = "relative";
+    // Remove estilos antigos
+    this.listElement.style.position = "";
+    this.listElement.style.height = "";
 
-    this.listElement.scrollTop = totalHeight;
+    // Limpa a lista
+    this.listElement.innerHTML = "";
 
+    // Cria um wrapper virtual interno
+    const virtualWrapper = document.createElement("div");
+    virtualWrapper.style.position = "relative";
+    virtualWrapper.style.height = `${this.filteredOptions.length * this.ITEM_HEIGHT}px`;
+    virtualWrapper.id = "virtual-wrapper";
+
+    this.listElement.appendChild(virtualWrapper);
+
+    // Scroll para o item selecionado
+    this.scrollToSelected();
+
+    // Renderiza itens visíveis
     this.renderVisible();
   }
 
   private renderVisible(): void {
-    const scrollTop = this.listElement.scrollTop;
+    const scrollTop = this.scrollContainer.scrollTop;
+
+    this.containerHeight = this.scrollContainer.clientHeight;
 
     this.visibleStartIndex = Math.max(0, Math.floor(scrollTop / this.ITEM_HEIGHT) - this.BUFFER_SIZE);
     this.visibleEndIndex = Math.min(
@@ -107,7 +133,21 @@ export class OptionListManager {
       Math.ceil((scrollTop + this.containerHeight) / this.ITEM_HEIGHT) + this.BUFFER_SIZE,
     );
 
-    this.listElement.innerHTML = "";
+    // Busca ou cria o wrapper virtual
+    let virtualWrapper = this.listElement.querySelector("#virtual-wrapper") as HTMLElement;
+    if (!virtualWrapper) {
+      virtualWrapper = document.createElement("div");
+      virtualWrapper.style.position = "relative";
+      virtualWrapper.style.height = `${this.filteredOptions.length * this.ITEM_HEIGHT}px`;
+      virtualWrapper.id = "virtual-wrapper";
+      this.listElement.appendChild(virtualWrapper);
+    }
+
+    // Atualiza a altura do wrapper caso tenha mudado
+    virtualWrapper.style.height = `${this.filteredOptions.length * this.ITEM_HEIGHT}px`;
+
+    // Limpa e renderiza apenas itens visíveis
+    virtualWrapper.innerHTML = "";
     const query = this.searchElement.value.toLowerCase();
 
     const fragment = document.createDocumentFragment();
@@ -117,10 +157,12 @@ export class OptionListManager {
       const li = document.createElement("li");
       li.className = "option-item";
 
+      // Posiciona o item absolutamente dentro do wrapper
       li.style.position = "absolute";
       li.style.top = `${idx * this.ITEM_HEIGHT}px`;
       li.style.height = `${this.ITEM_HEIGHT}px`;
       li.style.width = "100%";
+      li.style.left = "0";
       li.style.boxSizing = "border-box";
 
       if (idx === this.selectedIndex) {
@@ -129,6 +171,7 @@ export class OptionListManager {
 
       li.innerHTML = this.highlightMatch(option, query);
 
+      // Closure para capturar o índice correto
       ((index) => {
         li.onclick = () => {
           this.selectedIndex = index;
@@ -140,19 +183,27 @@ export class OptionListManager {
       fragment.appendChild(li);
     }
 
-    this.listElement.appendChild(fragment);
+    virtualWrapper.appendChild(fragment);
+  }
+
+  private scrollToSelected(): void {
+    const selectedTop = this.selectedIndex * this.ITEM_HEIGHT;
+    this.scrollContainer.scrollTop = Math.max(0, selectedTop - this.containerHeight + this.ITEM_HEIGHT * 3);
   }
 
   private ensureSelectedVisible(): void {
     const selectedTop = this.selectedIndex * this.ITEM_HEIGHT;
     const selectedBottom = selectedTop + this.ITEM_HEIGHT;
-    const scrollTop = this.listElement.scrollTop;
+    const scrollTop = this.scrollContainer.scrollTop;
     const scrollBottom = scrollTop + this.containerHeight;
 
-    if (selectedTop < scrollTop) {
-      this.listElement.scrollTop = selectedTop;
-    } else if (selectedBottom > scrollBottom) {
-      this.listElement.scrollTop = selectedBottom - this.containerHeight;
+    // Margem de 1 item
+    const margin = this.ITEM_HEIGHT;
+
+    if (selectedTop < scrollTop + margin) {
+      this.scrollContainer.scrollTop = Math.max(0, selectedTop - margin);
+    } else if (selectedBottom > scrollBottom - margin) {
+      this.scrollContainer.scrollTop = selectedBottom - this.containerHeight + margin;
     }
   }
 
