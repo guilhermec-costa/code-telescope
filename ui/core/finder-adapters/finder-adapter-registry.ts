@@ -1,6 +1,6 @@
 import { FuzzyAdapter } from "../../../shared/adapters-namespace";
-import { IFinderAdapter } from "../../finder-adapter";
 import { BranchFinderAdapter } from "./branch-finder.adapter";
+import { IFinderAdapter } from "./finder-adapter";
 import { FileFinderAdapter } from "./workspace-file.adapter";
 
 /**

@@ -1,5 +1,5 @@
 import { FuzzyAdapter } from "../../../shared/adapters-namespace";
-import { IFinderAdapter } from "../../finder-adapter";
+import { IFinderAdapter } from "./finder-adapter";
 
 export interface BranchFinderData {
   branches: BranchInfo[];
@@ -62,12 +62,7 @@ export class BranchFinderAdapter implements IFinderAdapter<BranchFinderData, Bra
     return displayText.includes(lowerQuery);
   }
 
-  getPreviewData(option: BranchOption): string {
-    switch (option.type) {
-      case "branch":
-        return JSON.stringify(option.data, null, 2);
-      default:
-        return "";
-    }
+  getPreviewIdentifier(option: BranchOption): string {
+    return this.getDisplayText(option);
   }
 }

@@ -1,5 +1,5 @@
 import { escapeHtml } from "ui/utils/html";
-import { IFinderAdapter } from "../finder-adapter";
+import { IFinderAdapter } from "./finder-adapters/finder-adapter";
 import { PreviewManager } from "./preview-manager";
 
 export class OptionListManager<TOption = any> {
@@ -223,8 +223,8 @@ export class OptionListManager<TOption = any> {
   private requestPreview(option: TOption): void {
     if (!this.currentAdapter) return;
 
-    if (this.currentAdapter.getPreviewData) {
-      const previewData = this.currentAdapter.getPreviewData(option);
+    if (this.currentAdapter.getPreviewIdentifier) {
+      const previewData = this.currentAdapter.getPreviewIdentifier(option);
       this.previewManager.requestPreviewIfNeeded(previewData);
     } else {
       const displayText = this.currentAdapter.getDisplayText(option);

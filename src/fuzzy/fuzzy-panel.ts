@@ -63,7 +63,7 @@ export class FuzzyPanel {
     await this.sendOptionsListEvent(items);
   }
 
-  private async sendOptionsListEvent(options: string[]) {
+  private async sendOptionsListEvent(options: any) {
     console.log(`[FuzzyPanel] Sending optionList event with ${options.length} options`);
 
     await this.wvManager.sendMessage({

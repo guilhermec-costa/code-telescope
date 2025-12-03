@@ -1,5 +1,5 @@
 import { FuzzyAdapter } from "../../../shared/adapters-namespace";
-import { IFinderAdapter } from "../../finder-adapter";
+import { IFinderAdapter } from "./finder-adapter";
 
 export interface FileFinderData {
   abs: string[];
@@ -40,7 +40,7 @@ export class FileFinderAdapter implements IFinderAdapter<FileFinderData, FileOpt
     return option.relative.toLowerCase().includes(lowerQuery);
   }
 
-  getPreviewData(option: FileOption): string {
+  getPreviewIdentifier(option: FileOption) {
     return option.absolute;
   }
 }

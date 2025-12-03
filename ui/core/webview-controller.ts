@@ -1,9 +1,9 @@
 import { OptionListMessage, type WebviewMessage } from "@shared/extension-webview-protocol";
 import { debounce } from "../utils/debounce";
-import { FinderAdapterRegistry } from "./adapters/finder-adapter-registry";
+import { FinderAdapterRegistry } from "./finder-adapters/finder-adapter-registry";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
-import { PreviewUpdateMessage } from "./preview/preview-adapter";
+import { PreviewUpdateMessage } from "./preview-adapters/preview-adapter";
 import { PreviewManager } from "./preview-manager";
 import { VSCodeApiService } from "./vscode-api-service";
 

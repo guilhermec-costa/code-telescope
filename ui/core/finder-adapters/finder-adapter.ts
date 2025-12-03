@@ -1,4 +1,4 @@
-import { FuzzyAdapter } from "../shared/adapters-namespace";
+import { FuzzyAdapter } from "../../../shared/adapters-namespace";
 
 export interface IFinderAdapter<TData = any, TOption = string> {
   /**
@@ -31,7 +31,7 @@ export interface IFinderAdapter<TData = any, TOption = string> {
   /**
    * Optional: Returns additional data used for preview
    */
-  getPreviewData?(option: TOption): string;
+  getPreviewIdentifier?(option: TOption): string;
 }
 
 export interface OptionListMessage<TData = any> {

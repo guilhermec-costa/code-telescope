@@ -1,8 +1,8 @@
 import { codeToHtml } from "shiki";
 import { FuzzyAdapter } from "../../shared/adapters-namespace";
 import { PreviewData } from "../../shared/extension-webview-protocol";
-import { IPreviewAdapter } from "./preview/preview-adapter";
-import { PreviewAdapterRegistry } from "./preview/preview-adapter-registry";
+import { IPreviewAdapter } from "./preview-adapters/preview-adapter";
+import { PreviewAdapterRegistry } from "./preview-adapters/preview-adapter-registry";
 import { VSCodeApiService } from "./vscode-api-service";
 
 export class PreviewManager {
