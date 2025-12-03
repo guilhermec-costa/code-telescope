@@ -45,6 +45,7 @@ export class PreviewManager {
     this.setAdapter(adapter);
 
     await this.adapter!.render(this.previewElement, data, theme);
+    this.scrollToTop();
     this.lastPreviewedData = data;
     console.log("[PreviewManager] Preview rendered");
   }
@@ -56,5 +57,34 @@ export class PreviewManager {
 
   requestPreview(option: string): void {
     this.vscodeService.requestPreview(option);
+  }
+
+  scrollToTop() {
+    if (!this.previewElement) return;
+    this.previewElement.scrollTop = 0;
+  }
+
+  scrollUp(): void {
+    if (!this.previewElement) return;
+    const height = this.previewElement.clientHeight;
+    this.previewElement.scrollTop -= height / 2;
+  }
+
+  scrollDown(): void {
+    if (!this.previewElement) return;
+    const height = this.previewElement.clientHeight;
+    this.previewElement.scrollTop += height / 2;
+  }
+
+  scrollLeft(): void {
+    if (!this.previewElement) return;
+    const width = this.previewElement.clientWidth;
+    this.previewElement.scrollLeft -= width / 2;
+  }
+
+  scrollRight(): void {
+    if (!this.previewElement) return;
+    const width = this.previewElement.clientWidth;
+    this.previewElement.scrollLeft += width / 2;
   }
 }

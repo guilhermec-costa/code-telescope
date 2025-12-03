@@ -93,7 +93,7 @@ export class WorkspaceFileFinder implements FuzzyProvider {
       excludeHidden: cfg.get("excludeHidden", true),
       includePatterns: cfg.get("includePatterns", ["**/*"]),
       excludePatterns: cfg.get("excludePatterns", ["**/node_modules/**"]),
-      maxResults: cfg.get("maxResults", 2000),
+      maxResults: cfg.get("maxResults", 50000),
       asRelativePath: cfg.get("asRelativePath", true),
     };
 

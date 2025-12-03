@@ -1,8 +1,14 @@
+type KeydownHandler = () => void;
+
 export class KeyboardHandler {
-  private onMoveUp?: () => void;
-  private onMoveDown?: () => void;
-  private onConfirm?: () => void;
-  private onClose?: () => void;
+  private onMoveUp?: KeydownHandler;
+  private onMoveDown?: KeydownHandler;
+  private onScrollUp?: KeydownHandler;
+  private onScrollDown?: KeydownHandler;
+  private onScrollRight?: KeydownHandler;
+  private onScrollLeft?: KeydownHandler;
+  private onConfirm?: KeydownHandler;
+  private onClose?: KeydownHandler;
 
   constructor() {
     this.setupListeners();
@@ -31,22 +37,58 @@ export class KeyboardHandler {
         event.preventDefault();
         this.onClose?.();
       }
+
+      if (event.ctrlKey && event.key === "u") {
+        event.preventDefault();
+        this.onScrollUp?.();
+      }
+
+      if (event.ctrlKey && event.key === "d") {
+        event.preventDefault();
+        this.onScrollDown?.();
+      }
+
+      if (event.ctrlKey && event.key === "l") {
+        event.preventDefault();
+        this.onScrollRight?.();
+      }
+
+      if (event.ctrlKey && event.key === "h") {
+        event.preventDefault();
+        this.onScrollLeft?.();
+      }
     });
   }
 
-  setMoveUpHandler(handler: () => void): void {
+  setMoveUpHandler(handler: KeydownHandler): void {
     this.onMoveUp = handler;
   }
 
-  setMoveDownHandler(handler: () => void): void {
+  setMoveDownHandler(handler: KeydownHandler): void {
     this.onMoveDown = handler;
   }
 
-  setConfirmHandler(handler: () => void): void {
+  setScrollUpHandler(handler: KeydownHandler): void {
+    this.onScrollUp = handler;
+  }
+
+  setScrollDownHandler(handler: KeydownHandler): void {
+    this.onScrollDown = handler;
+  }
+
+  setScrollRight(handler: KeydownHandler): void {
+    this.onScrollRight = handler;
+  }
+
+  setScrollLeft(handler: KeydownHandler): void {
+    this.onScrollLeft = handler;
+  }
+
+  setConfirmHandler(handler: KeydownHandler): void {
     this.onConfirm = handler;
   }
 
-  setCloseHandler(handler: () => void): void {
+  setCloseHandler(handler: KeydownHandler): void {
     this.onClose = handler;
   }
 }

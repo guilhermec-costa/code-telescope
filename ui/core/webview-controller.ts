@@ -122,6 +122,22 @@ export class WebviewController {
       this.optionListManager.moveSelection(1);
     });
 
+    this.keyboardHandler.setScrollUpHandler(() => {
+      this.previewManager.scrollUp();
+    });
+
+    this.keyboardHandler.setScrollDownHandler(() => {
+      this.previewManager.scrollDown();
+    });
+
+    this.keyboardHandler.setScrollRight(() => {
+      this.previewManager.scrollRight();
+    });
+
+    this.keyboardHandler.setScrollLeft(() => {
+      this.previewManager.scrollLeft();
+    });
+
     this.keyboardHandler.setConfirmHandler(() => {
       this.confirmSelection();
     });
