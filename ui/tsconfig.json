@@ -2,7 +2,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "rootDir": "..",
-    "outDir": "../media-dist",
+    "outDir": "../ui-dist",
     "noEmit": false,
     "moduleResolution": "Bundler",
     "module": "ESNext",

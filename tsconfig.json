@@ -21,6 +21,6 @@
     "./shared/**/*"
   ],
   "exclude": [
-    "media-src"
+    "ui"
   ]
 }

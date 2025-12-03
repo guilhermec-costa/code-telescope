@@ -1,4 +1,4 @@
-import { escapeHtml } from "media-src/utils/html";
+import { escapeHtml } from "ui/utils/html";
 import { IFinderAdapter } from "../finder-adapter";
 import { PreviewManager } from "./preview-manager";
 

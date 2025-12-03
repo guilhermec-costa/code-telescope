@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 
 function findEntryPoints() {
-  const root = "media-src";
+  const root = "ui";
   const result = [];
 
   function walk(dir) {
@@ -27,8 +27,8 @@ console.log("Entry points:", entryPoints);
 
 Promise.all(
   entryPoints.map((entry) => {
-    const relDir = path.dirname(path.relative("media-src", entry));
-    const outdir = path.join("media-dist", relDir);
+    const relDir = path.dirname(path.relative("ui", entry));
+    const outdir = path.join("ui-dist", relDir);
 
     return esbuild.build({
       entryPoints: [entry],

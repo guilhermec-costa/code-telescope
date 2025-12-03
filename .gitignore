@@ -1,6 +1,6 @@
 out
 dist
-media-dist
+ui-dist
 node_modules
 .vscode-test/
 *.vsix
