@@ -1,4 +1,3 @@
-import { codeToHtml } from "shiki";
 import { FuzzyAdapter } from "../../shared/adapters-namespace";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 import { IPreviewAdapter } from "./preview-adapters/preview-adapter";
@@ -44,23 +43,18 @@ export class PreviewManager {
 
     console.log("[PreviewManager] Adapter found, rendering preview");
     this.setAdapter(adapter);
+
     await this.adapter!.render(this.previewElement, data, theme);
+    this.lastPreviewedData = data;
     console.log("[PreviewManager] Preview rendered");
   }
 
   async updateTheme(theme: string): Promise<void> {
-    if (!this.previewElement || !this.lastPreviewedData.content || !this.lastPreviewedData.language) {
-      return;
-    }
-
-    const html = await codeToHtml(this.lastPreviewedData.content, {
-      lang: this.lastPreviewedData.language,
-      theme: theme,
-    });
-    this.previewElement.innerHTML = html;
+    if (!this.adapter || !this.previewElement) return;
+    await this.adapter.render(this.previewElement, this.lastPreviewedData, theme);
   }
 
-  requestPreviewIfNeeded(option: string): void {
+  requestPreview(option: string): void {
     this.vscodeService.requestPreview(option);
   }
 }

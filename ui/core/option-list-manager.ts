@@ -225,10 +225,10 @@ export class OptionListManager<TOption = any> {
 
     if (this.currentAdapter.getPreviewIdentifier) {
       const previewData = this.currentAdapter.getPreviewIdentifier(option);
-      this.previewManager.requestPreviewIfNeeded(previewData);
+      this.previewManager.requestPreview(previewData);
     } else {
       const displayText = this.currentAdapter.getDisplayText(option);
-      this.previewManager.requestPreviewIfNeeded(displayText);
+      this.previewManager.requestPreview(displayText);
     }
   }
 
