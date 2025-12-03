@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { PreviewData } from "../../shared/extension-webview-protocol";
 import { Globals } from "../globals";
 import { API, GitExtension, Ref } from "../types/git";
 import { loadWebviewHtml } from "../utils/files";
@@ -81,6 +82,12 @@ export class VSCodeGitBranchFinder implements FuzzyProvider {
 
     const git = gitExtension.exports;
     return git.getAPI(1);
+  }
+
+  async getPreviewData(identifier: string): Promise<PreviewData> {
+    return {
+      content: identifier,
+    };
   }
 }
 

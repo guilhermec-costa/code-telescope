@@ -1,38 +1,51 @@
 import { codeToHtml } from "shiki";
+import { FuzzyAdapter } from "../../shared/adapters-namespace";
+import { PreviewData } from "../../shared/extension-webview-protocol";
+import { IPreviewAdapter } from "./preview/preview-adapter";
+import { PreviewAdapterRegistry } from "./preview/preview-adapter-registry";
 import { VSCodeApiService } from "./vscode-api-service";
 
-interface LastPreviewedData {
-  option: string | null;
-  content: string | null;
-  language: string | null;
-}
-
 export class PreviewManager {
-  private lastPreviewedData: LastPreviewedData = {
-    option: null,
-    content: null,
-    language: null,
+  private lastPreviewedData: PreviewData = {
+    content: "",
+    language: "",
+    metadata: {},
   };
 
   private previewElement: HTMLElement | null;
-  private vscodeService: VSCodeApiService;
+  private readonly vscodeService: VSCodeApiService;
+  private readonly previewAdapterRegistry: PreviewAdapterRegistry;
+  private adapter: IPreviewAdapter | null = null;
 
   constructor(vscodeService: VSCodeApiService) {
+    console.log("[PreviewManager] Initializing");
     this.vscodeService = vscodeService;
     this.previewElement = document.getElementById("preview");
+    this.previewAdapterRegistry = new PreviewAdapterRegistry();
   }
 
-  async updatePreview(content: string, language: string = "text", theme: string = "Default Dark+"): Promise<void> {
-    if (!this.previewElement) return;
+  setAdapter(adapter: IPreviewAdapter) {
+    this.adapter = adapter;
+  }
 
-    this.lastPreviewedData.content = content;
-    this.lastPreviewedData.language = language;
+  async updatePreview(data: PreviewData, finderType: FuzzyAdapter, theme: string): Promise<void> {
+    if (!this.previewElement) {
+      console.warn("[PreviewManager] Cannot update preview: adapter or previewElement missing");
+      return;
+    }
 
-    const html = await codeToHtml(content, {
-      lang: language,
-      theme: theme,
-    });
-    this.previewElement.innerHTML = html;
+    const adapter = this.previewAdapterRegistry.getAdapter(finderType);
+
+    if (!adapter) {
+      console.error(`No adapter found for finder type: ${finderType}`);
+      console.log("Available adapters:", this.previewAdapterRegistry.getRegisteredTypes());
+      return;
+    }
+
+    console.log("[PreviewManager] Adapter found, rendering preview");
+    this.setAdapter(adapter);
+    await this.adapter!.render(this.previewElement, data, theme);
+    console.log("[PreviewManager] Preview rendered");
   }
 
   async updateTheme(theme: string): Promise<void> {
@@ -48,13 +61,6 @@ export class PreviewManager {
   }
 
   requestPreviewIfNeeded(option: string): void {
-    if (this.lastPreviewedData.option !== option) {
-      this.lastPreviewedData.option = option;
-      this.vscodeService.requestPreview(option);
-    }
-  }
-
-  getLastPreviewedOption(): string | null {
-    return this.lastPreviewedData.option;
+    this.vscodeService.requestPreview(option);
   }
 }

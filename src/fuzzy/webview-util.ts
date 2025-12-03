@@ -4,7 +4,7 @@ import { WebviewMessage } from "../../shared/extension-webview-protocol";
 export class WebviewManager {
   constructor(private readonly wv: vscode.Webview) {}
 
-  public async sendMessage(msg: any) {
+  public async sendMessage(msg: WebviewMessage) {
     await this.wv.postMessage(msg);
   }
 

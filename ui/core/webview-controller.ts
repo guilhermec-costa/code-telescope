@@ -3,6 +3,7 @@ import { debounce } from "../utils/debounce";
 import { FinderAdapterRegistry } from "./adapters/finder-adapter-registry";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
+import { PreviewUpdateMessage } from "./preview/preview-adapter";
 import { PreviewManager } from "./preview-manager";
 import { VSCodeApiService } from "./vscode-api-service";
 
@@ -15,6 +16,7 @@ export class WebviewController {
   private adapterRegistry: FinderAdapterRegistry;
 
   constructor() {
+    console.log("[WebviewController] Initializing controller");
     this.vscodeService = new VSCodeApiService();
     this.previewManager = new PreviewManager(this.vscodeService);
     this.optionListManager = new OptionListManager(this.previewManager);
@@ -56,17 +58,20 @@ export class WebviewController {
   }
 
   private async handleMessage(msg: WebviewMessage): Promise<void> {
+    console.log(`[WebviewController] Handling message: ${msg}`);
     if (msg.type === "optionList" && "finderType" in msg) {
       await this.handleOptionListMessage(msg);
       return;
     }
 
-    switch (msg.type) {
-      case "previewUpdate":
-        const { content, language, theme } = msg.data;
-        await this.previewManager.updatePreview(content, language, theme);
-        break;
+    if (msg.type === "previewUpdate" && "finderType" in msg) {
+      console.log("[WebviewController] Processing previewUpdate message", msg.data);
+      const { finderType, data, theme } = msg as PreviewUpdateMessage;
+      await this.previewManager.updatePreview(data, finderType, theme);
+      return;
+    }
 
+    switch (msg.type) {
       case "themeUpdate":
         console.log("Theme updated on webview");
         await this.previewManager.updateTheme(msg.data.theme);

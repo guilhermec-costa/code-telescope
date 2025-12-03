@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
+import { PreviewData } from "../../shared/extension-webview-protocol";
 import { Globals } from "../globals";
 import { execCmd } from "../utils/commands";
-import { findWorkspaceFiles, loadWebviewHtml, relativizeFilePath } from "../utils/files";
+import { findWorkspaceFiles, getLanguageFromPath, loadWebviewHtml, relativizeFilePath } from "../utils/files";
 import { FuzzyProvider } from "./fuzzy-provider";
 
 /**
@@ -101,6 +102,16 @@ export class WorkspaceFileFinder implements FuzzyProvider {
       ...this.overrideConfig,
     };
   }
+
+  async getPreviewData(identifier: string): Promise<PreviewData> {
+    const contentBytes = await vscode.workspace.fs.readFile(vscode.Uri.file(identifier));
+    const content = new TextDecoder("utf8").decode(contentBytes);
+    const language = getLanguageFromPath(identifier);
+    return {
+      content,
+      language,
+    };
+  }
 }
 
 /**
@@ -121,9 +132,4 @@ type FinderSearchConfig = {
 
   /** Whether to get files as relative paths */
   asRelativePath: boolean;
-};
-
-type FindResult = {
-  relative: string[];
-  absolute: string[];
 };

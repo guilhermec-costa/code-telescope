@@ -12,18 +12,10 @@ export type FuzzyPanelEvents =
   | "previewUpdate"
   | "themeUpdate";
 
-/* ----------------------------------------------------------
- * SUBTYPES FOR STRUCTURED MESSAGES
- * ---------------------------------------------------------- */
-
-/** Message sent by the extension to update the preview pane */
-export interface PreviewUpdateMessage {
-  type: "previewUpdate";
-  data: {
-    content: string;
-    language: string;
-    theme: string;
-  };
+export interface PreviewData {
+  content: string;
+  language?: string;
+  metadata?: Record<string, any>;
 }
 
 /** Message sent to update the theme applied in the webview */
@@ -41,21 +33,24 @@ export interface OptionListMessage {
   finderType: FuzzyAdapter;
 }
 
+export interface PreviewUpdateMessage {
+  type: "previewUpdate";
+  data: PreviewData;
+  theme: string;
+  finderType: FuzzyAdapter;
+}
+
 /** Message informing which option was selected */
 export interface OptionSelectedMessage {
   type: "optionSelected";
   data: any;
 }
 
-/* ----------------------------------------------------------
- * DISCRIMINATED UNION
- * ---------------------------------------------------------- */
-
 export type WebviewMessage =
   | { type: "ready"; data?: undefined }
   | { type: "closePanel"; data?: undefined }
   | { type: "previewRequest"; data: any }
+  | PreviewUpdateMessage
   | OptionListMessage
   | OptionSelectedMessage
-  | PreviewUpdateMessage
   | ThemeUpdateMessage;

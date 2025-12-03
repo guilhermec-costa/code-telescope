@@ -1,5 +1,8 @@
+import { FuzzyAdapter } from "../../shared/adapters-namespace";
+import { PreviewData } from "../../shared/extension-webview-protocol";
+
 export interface FuzzyProvider {
-  readonly type: string;
+  readonly type: FuzzyAdapter;
   /**
    * Returns the list of items to be displayed in the fuzzy finder.
    * Example: files, branches, symbols, commands...
@@ -12,8 +15,7 @@ export interface FuzzyProvider {
    */
   onSelect?(item: string): void | Promise<void>;
 
-  /**
-   *
-   */
   loadWebviewHtml(): Promise<string>;
+
+  getPreviewData(identifier: string): Promise<PreviewData>;
 }
