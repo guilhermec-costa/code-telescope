@@ -5,6 +5,8 @@ import { loadWebviewHtml } from "../utils/files";
 import { FuzzyProvider } from "./fuzzy-provider";
 
 export class VSCodeGitBranchFinder implements FuzzyProvider {
+  public readonly type = "vscode-branch-finder";
+
   /** Reference to the Git API exported by the official VS Code Git extension. */
   private readonly gitApi: API | null;
 
@@ -35,9 +37,16 @@ export class VSCodeGitBranchFinder implements FuzzyProvider {
   /**
    * Returns the list of branches to display in the fuzzy finder.
    */
-  async querySelectableOptions(): Promise<string[]> {
+  async querySelectableOptions() {
     const branches = await this.findBranches();
-    return branches.map((branch) => branch.name || "");
+    return {
+      branches: branches.map((ref) => ({
+        name: ref.name || "",
+        remote: ref.remote,
+        current: false,
+        type: ref.type,
+      })),
+    };
   }
 
   /**

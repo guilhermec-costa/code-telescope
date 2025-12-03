@@ -1,5 +1,6 @@
-import { type WebviewMessage } from "@shared/extension-webview-protocol";
+import { OptionListMessage, type WebviewMessage } from "@shared/extension-webview-protocol";
 import { debounce } from "../utils/debounce";
+import { FinderAdapterRegistry } from "./adapters/finder-adapter-registry";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { PreviewManager } from "./preview-manager";
@@ -11,6 +12,7 @@ export class WebviewController {
   private optionListManager: OptionListManager;
   private keyboardHandler: KeyboardHandler;
   private searchElement: HTMLInputElement;
+  private adapterRegistry: FinderAdapterRegistry;
 
   constructor() {
     this.vscodeService = new VSCodeApiService();
@@ -18,6 +20,7 @@ export class WebviewController {
     this.optionListManager = new OptionListManager(this.previewManager);
     this.keyboardHandler = new KeyboardHandler();
     this.searchElement = document.getElementById("search") as HTMLInputElement;
+    this.adapterRegistry = new FinderAdapterRegistry();
 
     this.setupEventListeners();
     this.setupKeyboardHandlers();
@@ -53,12 +56,12 @@ export class WebviewController {
   }
 
   private async handleMessage(msg: WebviewMessage): Promise<void> {
-    switch (msg.type) {
-      case "optionList":
-        this.optionListManager.setOptions(msg.data);
-        this.focusSearchInput();
-        break;
+    if (msg.type === "optionList" && "finderType" in msg) {
+      await this.handleOptionListMessage(msg);
+      return;
+    }
 
+    switch (msg.type) {
       case "previewUpdate":
         const { content, language, theme } = msg.data;
         await this.previewManager.updatePreview(content, language, theme);
@@ -71,10 +74,29 @@ export class WebviewController {
     }
   }
 
+  private async handleOptionListMessage(msg: OptionListMessage) {
+    const { finderType, data } = msg;
+
+    const adapter = this.adapterRegistry.getAdapter(finderType);
+
+    if (!adapter) {
+      console.error(`No adapter found for finder type: ${finderType}`);
+      console.log("Available adapters:", this.adapterRegistry.getRegisteredTypes());
+      return;
+    }
+
+    this.optionListManager.setAdapter(adapter);
+
+    const options = adapter.parseOptions(data);
+    this.optionListManager.setOptions(options);
+
+    this.focusSearchInput();
+  }
+
   private setupEventListeners(): void {
     const debouncedFilter = debounce((query: string) => {
       this.optionListManager.filter(query);
-    }, 150);
+    }, 50);
 
     this.searchElement.addEventListener("input", () => {
       const query = this.searchElement.value;
@@ -105,9 +127,9 @@ export class WebviewController {
   }
 
   private confirmSelection(): void {
-    const selectedOption = this.optionListManager.getSelectedOption();
-    if (selectedOption) {
-      this.vscodeService.selectOption(selectedOption);
+    const selectedValue = this.optionListManager.getSelectedValue();
+    if (selectedValue) {
+      this.vscodeService.selectOption(selectedValue);
     }
   }
 }

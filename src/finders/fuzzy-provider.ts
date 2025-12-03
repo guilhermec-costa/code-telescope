@@ -1,9 +1,10 @@
 export interface FuzzyProvider {
+  readonly type: string;
   /**
    * Returns the list of items to be displayed in the fuzzy finder.
    * Example: files, branches, symbols, commands...
    */
-  querySelectableOptions(): Promise<string[]>;
+  querySelectableOptions(): Promise<any>;
 
   /**
    * Triggered when the user selects an item (Enter).

@@ -1,3 +1,5 @@
+import { FuzzyAdapter } from "./adapters-namespace";
+
 /**
  * Event names for all messages exchanged between extension ⇄ webview.
  */
@@ -36,6 +38,7 @@ export interface ThemeUpdateMessage {
 export interface OptionListMessage {
   type: "optionList";
   data: any[];
+  finderType: FuzzyAdapter;
 }
 
 /** Message informing which option was selected */

@@ -63,6 +63,7 @@ export class FuzzyPanel {
     await this.wvManager.sendMessage({
       type: "optionList",
       data: files,
+      finderType: this.provider.type,
     });
   }
 

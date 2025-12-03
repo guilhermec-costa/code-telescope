@@ -1,22 +1,24 @@
 import { escapeHtml } from "media-src/utils/html";
+import { IFinderAdapter } from "../finder-adapter";
 import { PreviewManager } from "./preview-manager";
 
-export class OptionListManager {
-  private allOptions: string[] = [];
-  private filteredOptions: string[] = [];
+export class OptionListManager<TOption = any> {
+  private allOptions: TOption[] = [];
+  private filteredOptions: TOption[] = [];
   private selectedIndex: number = 0;
+  private currentAdapter: IFinderAdapter<any, TOption> | null = null;
 
   private listElement: HTMLUListElement;
   private searchElement: HTMLInputElement;
   private fileCountElement: HTMLElement | null;
   private previewManager: PreviewManager;
 
+  // virtualization
   private readonly ITEM_HEIGHT = 22;
   private readonly BUFFER_SIZE = 5;
   private visibleStartIndex = 0;
   private visibleEndIndex = 0;
   private containerHeight = 0;
-  private scrollContainer: HTMLElement;
 
   constructor(previewManager: PreviewManager) {
     this.previewManager = previewManager;
@@ -24,36 +26,25 @@ export class OptionListManager {
     this.searchElement = document.getElementById("search") as HTMLInputElement;
     this.fileCountElement = document.getElementById("file-count");
 
-    // O scroll é no próprio elemento da lista
-    this.scrollContainer = this.listElement;
-
     this.setupVirtualization();
   }
 
-  private setupVirtualization(): void {
-    // Calcula a altura do container
-    this.updateContainerHeight();
-
-    // Listener para scroll no container
-    this.scrollContainer.addEventListener("scroll", () => {
-      this.renderVisible();
-    });
-
-    // Atualiza altura quando a janela muda
-    window.addEventListener("resize", () => {
-      this.updateContainerHeight();
-      this.renderVisible(); // Apenas re-renderiza os visíveis, não chama render()
-    });
+  /**
+   * Define o adapter a ser usado e as opções
+   */
+  setAdapter(adapter: IFinderAdapter<any, TOption>): void {
+    this.currentAdapter = adapter;
   }
 
-  private updateContainerHeight(): void {
-    // Força o recálculo do tamanho
-    requestAnimationFrame(() => {
-      this.containerHeight = this.scrollContainer.clientHeight;
-    });
-  }
+  /**
+   * Define as opções usando o adapter atual
+   */
+  setOptions(options: TOption[]): void {
+    if (!this.currentAdapter) {
+      console.error("No adapter set for GenericOptionListManager");
+      return;
+    }
 
-  setOptions(options: string[]): void {
     this.allOptions = options;
     this.filteredOptions = options;
     this.selectedIndex = this.filteredOptions.length - 1;
@@ -63,23 +54,37 @@ export class OptionListManager {
 
     const lastElement = this.filteredOptions.at(-1);
     if (lastElement) {
-      this.previewManager.requestPreviewIfNeeded(lastElement);
+      this.requestPreview(lastElement);
     }
   }
 
   filter(query: string): void {
+    if (!this.currentAdapter) return;
+
     const lowerQuery = query.toLowerCase();
 
-    this.filteredOptions = this.allOptions.filter((option) => option.toLowerCase().includes(lowerQuery));
+    if (this.currentAdapter.filterOption) {
+      this.filteredOptions = this.allOptions
+        .filter((option) => this.currentAdapter!.filterOption!(option, lowerQuery))
+        .sort();
+    } else {
+      // default filter (by text)
+      this.filteredOptions = this.allOptions
+        .filter((option) => {
+          const displayText = this.currentAdapter!.getDisplayText(option);
+          return displayText.toLowerCase().includes(lowerQuery);
+        })
+        .sort();
+    }
 
-    this.selectedIndex = Math.min(this.selectedIndex, Math.max(0, this.filteredOptions.length - 1));
+    this.selectedIndex = this.filteredOptions.length - 1;
 
     this.updateFileCount();
     this.render();
 
-    const selectedOption = this.filteredOptions[this.selectedIndex];
-    if (selectedOption) {
-      this.previewManager.requestPreviewIfNeeded(selectedOption);
+    const lastElement = this.filteredOptions.at(-1);
+    if (lastElement) {
+      this.requestPreview(lastElement);
     }
   }
 
@@ -92,40 +97,57 @@ export class OptionListManager {
     this.renderVisible();
 
     const option = this.filteredOptions[this.selectedIndex];
-    this.previewManager.requestPreviewIfNeeded(option);
+    this.requestPreview(option);
   }
 
-  getSelectedOption(): string | undefined {
+  getSelectedOption(): TOption | undefined {
     return this.filteredOptions[this.selectedIndex];
   }
 
+  /**
+   * Retorna o valor de seleção formatado pelo adapter
+   */
+  getSelectedValue(): string | undefined {
+    if (!this.currentAdapter) return undefined;
+
+    const option = this.getSelectedOption();
+    if (!option) return undefined;
+
+    return this.currentAdapter.getSelectionValue(option);
+  }
+
+  private setupVirtualization(): void {
+    this.updateContainerHeight();
+
+    this.listElement.addEventListener("scroll", () => {
+      this.renderVisible();
+    });
+
+    window.addEventListener("resize", () => {
+      this.updateContainerHeight();
+      this.renderVisible();
+    });
+  }
+
+  private updateContainerHeight(): void {
+    this.containerHeight = this.listElement.clientHeight;
+  }
+
   private render(): void {
-    // Remove estilos antigos
-    this.listElement.style.position = "";
-    this.listElement.style.height = "";
+    const totalHeight = this.filteredOptions.length * this.ITEM_HEIGHT;
+    this.listElement.style.height = `${totalHeight}px`;
+    this.listElement.style.position = "relative";
 
-    // Limpa a lista
-    this.listElement.innerHTML = "";
+    this.listElement.scrollTop = totalHeight;
 
-    // Cria um wrapper virtual interno
-    const virtualWrapper = document.createElement("div");
-    virtualWrapper.style.position = "relative";
-    virtualWrapper.style.height = `${this.filteredOptions.length * this.ITEM_HEIGHT}px`;
-    virtualWrapper.id = "virtual-wrapper";
-
-    this.listElement.appendChild(virtualWrapper);
-
-    // Scroll para o item selecionado
-    this.scrollToSelected();
-
-    // Renderiza itens visíveis
     this.renderVisible();
   }
 
   private renderVisible(): void {
-    const scrollTop = this.scrollContainer.scrollTop;
+    if (!this.currentAdapter) return;
 
-    this.containerHeight = this.scrollContainer.clientHeight;
+    const scrollTop = this.listElement.scrollTop;
+    this.containerHeight = this.listElement.clientHeight;
 
     this.visibleStartIndex = Math.max(0, Math.floor(scrollTop / this.ITEM_HEIGHT) - this.BUFFER_SIZE);
     this.visibleEndIndex = Math.min(
@@ -133,21 +155,7 @@ export class OptionListManager {
       Math.ceil((scrollTop + this.containerHeight) / this.ITEM_HEIGHT) + this.BUFFER_SIZE,
     );
 
-    // Busca ou cria o wrapper virtual
-    let virtualWrapper = this.listElement.querySelector("#virtual-wrapper") as HTMLElement;
-    if (!virtualWrapper) {
-      virtualWrapper = document.createElement("div");
-      virtualWrapper.style.position = "relative";
-      virtualWrapper.style.height = `${this.filteredOptions.length * this.ITEM_HEIGHT}px`;
-      virtualWrapper.id = "virtual-wrapper";
-      this.listElement.appendChild(virtualWrapper);
-    }
-
-    // Atualiza a altura do wrapper caso tenha mudado
-    virtualWrapper.style.height = `${this.filteredOptions.length * this.ITEM_HEIGHT}px`;
-
-    // Limpa e renderiza apenas itens visíveis
-    virtualWrapper.innerHTML = "";
+    this.listElement.innerHTML = "";
     const query = this.searchElement.value.toLowerCase();
 
     const fragment = document.createDocumentFragment();
@@ -157,21 +165,19 @@ export class OptionListManager {
       const li = document.createElement("li");
       li.className = "option-item";
 
-      // Posiciona o item absolutamente dentro do wrapper
       li.style.position = "absolute";
       li.style.top = `${idx * this.ITEM_HEIGHT}px`;
       li.style.height = `${this.ITEM_HEIGHT}px`;
       li.style.width = "100%";
-      li.style.left = "0";
       li.style.boxSizing = "border-box";
 
       if (idx === this.selectedIndex) {
         li.classList.add("selected");
       }
 
-      li.innerHTML = this.highlightMatch(option, query);
+      const displayText = this.currentAdapter.getDisplayText(option);
+      li.innerHTML = this.highlightMatch(displayText, query);
 
-      // Closure para capturar o índice correto
       ((index) => {
         li.onclick = () => {
           this.selectedIndex = index;
@@ -183,27 +189,21 @@ export class OptionListManager {
       fragment.appendChild(li);
     }
 
-    virtualWrapper.appendChild(fragment);
-  }
-
-  private scrollToSelected(): void {
-    const selectedTop = this.selectedIndex * this.ITEM_HEIGHT;
-    this.scrollContainer.scrollTop = Math.max(0, selectedTop - this.containerHeight + this.ITEM_HEIGHT * 3);
+    this.listElement.appendChild(fragment);
   }
 
   private ensureSelectedVisible(): void {
     const selectedTop = this.selectedIndex * this.ITEM_HEIGHT;
     const selectedBottom = selectedTop + this.ITEM_HEIGHT;
-    const scrollTop = this.scrollContainer.scrollTop;
+    const scrollTop = this.listElement.scrollTop;
     const scrollBottom = scrollTop + this.containerHeight;
 
-    // Margem de 1 item
     const margin = this.ITEM_HEIGHT;
 
     if (selectedTop < scrollTop + margin) {
-      this.scrollContainer.scrollTop = Math.max(0, selectedTop - margin);
+      this.listElement.scrollTop = Math.max(0, selectedTop - margin);
     } else if (selectedBottom > scrollBottom - margin) {
-      this.scrollContainer.scrollTop = selectedBottom - this.containerHeight + margin;
+      this.listElement.scrollTop = selectedBottom - this.containerHeight + margin;
     }
   }
 
@@ -218,6 +218,18 @@ export class OptionListManager {
     const after = escapeHtml(text.slice(i + query.length));
 
     return `${before}<span class="highlight">${match}</span>${after}`;
+  }
+
+  private requestPreview(option: TOption): void {
+    if (!this.currentAdapter) return;
+
+    if (this.currentAdapter.getPreviewData) {
+      const previewData = this.currentAdapter.getPreviewData(option);
+      this.previewManager.requestPreviewIfNeeded(previewData);
+    } else {
+      const displayText = this.currentAdapter.getDisplayText(option);
+      this.previewManager.requestPreviewIfNeeded(displayText);
+    }
   }
 
   private updateFileCount(): void {

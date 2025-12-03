@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Globals } from "../globals";
 import { execCmd } from "../utils/commands";
-import { findWorkspaceFiles, loadWebviewHtml } from "../utils/files";
+import { findWorkspaceFiles, loadWebviewHtml, relativizeFilePath } from "../utils/files";
 import { FuzzyProvider } from "./fuzzy-provider";
 
 /**
@@ -11,6 +11,8 @@ import { FuzzyProvider } from "./fuzzy-provider";
  * hiding dotfiles, and limiting the maximum number of results.
  */
 export class WorkspaceFileFinder implements FuzzyProvider {
+  public readonly type = "workspace-file-finder";
+
   constructor(
     private readonly panel: vscode.WebviewPanel,
     private overrideConfig?: Partial<FinderSearchConfig>,
@@ -35,7 +37,16 @@ export class WorkspaceFileFinder implements FuzzyProvider {
   async querySelectableOptions() {
     const cfg = this.getFinderConfig();
     const files = await this.getWorkspaceFiles(cfg);
-    return files.map((f) => f.path);
+
+    // Retorna no formato esperado pelo FileFinderAdapter
+    return files.reduce<{ abs: string[]; relative: string[] }>(
+      (result, file) => {
+        result.abs.push(file.path);
+        result.relative.push(relativizeFilePath(file.path));
+        return result;
+      },
+      { abs: [], relative: [] },
+    );
   }
 
   /**
