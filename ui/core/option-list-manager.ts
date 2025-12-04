@@ -29,16 +29,10 @@ export class OptionListManager<TOption = any> {
     this.setupVirtualization();
   }
 
-  /**
-   * Define o adapter a ser usado e as opções
-   */
   setAdapter(adapter: IFinderAdapter<any, TOption>): void {
     this.currentAdapter = adapter;
   }
 
-  /**
-   * Define as opções usando o adapter atual
-   */
   setOptions(options: TOption[]): void {
     if (!this.currentAdapter) {
       console.error("No adapter set for GenericOptionListManager");

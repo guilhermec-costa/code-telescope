@@ -2,6 +2,7 @@ import { FuzzyAdapter } from "../../../shared/adapters-namespace";
 import { BranchFinderAdapter } from "./branch-finder.adapter";
 import { IFinderAdapter } from "./finder-adapter";
 import { FileFinderAdapter } from "./workspace-file.adapter";
+import { WorkspaceTextSearchAdapter } from "./workspace-text-search.adapter";
 
 /**
  * Registry/Factory to manager fuzzy finders apdaters
@@ -12,6 +13,7 @@ export class FinderAdapterRegistry {
   constructor() {
     this.register(new FileFinderAdapter());
     this.register(new BranchFinderAdapter());
+    this.register(new WorkspaceTextSearchAdapter());
   }
 
   /**

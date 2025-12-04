@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { VSCodeGitBranchFinder } from "./finders/vscode-git-branch.finder";
 import { WorkspaceFileFinder } from "./finders/workspace-files.finder";
+import { WorkspaceTextSearchProvider } from "./finders/workspace-text.finder";
 import { FuzzyPanel } from "./fuzzy/fuzzy-panel";
 import { Globals } from "./globals";
 import { getShikiTheme } from "./syntax-highlight/shiki-utils";
@@ -38,6 +39,15 @@ export function activate(context: ExtensionCtx) {
     async () => {
       const fuzzyPanel = FuzzyPanel.createOrShow();
       fuzzyPanel.setProvider(new VSCodeGitBranchFinder(fuzzyPanel.panel, { includeRemotes: true }));
+    },
+    context,
+  );
+
+  registerAndSubscribeCmd(
+    getCmdId("fuzzy", "wsText"),
+    async () => {
+      const fuzzyPanel = FuzzyPanel.createOrShow();
+      fuzzyPanel.setProvider(new WorkspaceTextSearchProvider(fuzzyPanel.panel));
     },
     context,
   );
