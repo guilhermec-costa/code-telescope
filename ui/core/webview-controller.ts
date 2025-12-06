@@ -1,4 +1,4 @@
-import { OptionListMessage, PreviewUpdateMessage, type WebviewMessage } from "@shared/extension-webview-protocol";
+import { OptionListMessage, PreviewUpdateMessage, ToWebviewKindMessage } from "@shared/extension-webview-protocol";
 import { debounce } from "../utils/debounce";
 import { FinderAdapterRegistry } from "./finder-adapters/finder-adapter-registry";
 import { KeyboardHandler } from "./kbd-handler";
@@ -34,7 +34,7 @@ export class WebviewController {
     });
 
     window.addEventListener("message", async (event) => {
-      await this.handleMessage(event.data as WebviewMessage);
+      await this.handleMessage(event.data as ToWebviewKindMessage);
     });
 
     window.addEventListener("focus", () => {
@@ -56,7 +56,7 @@ export class WebviewController {
     });
   }
 
-  private async handleMessage(msg: WebviewMessage): Promise<void> {
+  private async handleMessage(msg: ToWebviewKindMessage): Promise<void> {
     console.log(`[WebviewController] Handling message: ${msg}`);
     if (msg.type === "optionList" && "finderType" in msg) {
       await this.handleOptionListMessage(msg);

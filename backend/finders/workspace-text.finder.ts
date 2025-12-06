@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { FuzzyAdapter, PreviewAdapter } from "../../shared/adapters-namespace";
+import { TextSearchMatch } from "../../shared/exchange/workspace-text-search";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 import { Globals } from "../globals";
 import { loadWebviewHtml } from "../utils/files";
@@ -86,7 +87,7 @@ export class WorkspaceTextSearchProvider implements FuzzyProvider {
           }
 
           if (matches.length >= 200) break;
-        } catch (error) {
+        } catch (_error) {
           continue;
         }
       }
@@ -159,12 +160,4 @@ export class WorkspaceTextSearchProvider implements FuzzyProvider {
       vscode.window.showErrorMessage(`Failed to open file: ${error}`);
     }
   }
-}
-
-interface TextSearchMatch {
-  file: string;
-  line: number;
-  column: number;
-  text: string;
-  preview: string;
 }

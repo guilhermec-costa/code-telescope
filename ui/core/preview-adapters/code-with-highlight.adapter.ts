@@ -41,7 +41,7 @@ export class CodeWithHighlightPreviewAdapter implements IPreviewAdapter {
     const style = doc.createElement("style");
     style.textContent = `
       .shiki .line.highlighted {
-        background-color: rgba(255, 200, 0, 0.15);
+        background-color: rgba(255, 0, 0, 0.15);
         border-left: 3px solid rgba(255, 200, 0, 0.8);
         padding-left: 1em;
         margin-left: -1em;

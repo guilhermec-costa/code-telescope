@@ -1,4 +1,4 @@
-import { type WebviewMessage } from "@shared/extension-webview-protocol";
+import { FromWebviewKindMessage } from "../../shared/extension-webview-protocol";
 
 export class VSCodeApiService {
   private vscode: ReturnType<typeof acquireVsCodeApi>;
@@ -7,7 +7,7 @@ export class VSCodeApiService {
     this.vscode = acquireVsCodeApi();
   }
 
-  postMessage(message: WebviewMessage): void {
+  postMessage(message: FromWebviewKindMessage): void {
     this.vscode.postMessage(message);
   }
 

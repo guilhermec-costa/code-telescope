@@ -1,18 +1,6 @@
 import { FuzzyAdapter, PreviewAdapter } from "../../../shared/adapters-namespace";
+import { TextSearchData } from "../../../shared/exchange/workspace-text-search";
 import { IFinderAdapter } from "./finder-adapter";
-
-interface TextSearchData {
-  results: TextSearchMatch[];
-  query: string;
-}
-
-interface TextSearchMatch {
-  file: string;
-  line: number;
-  column: number;
-  text: string;
-  preview: string;
-}
 
 interface SearchOption {
   identifier: string;

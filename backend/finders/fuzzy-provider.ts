@@ -1,10 +1,6 @@
 import { FuzzyAdapter, PreviewAdapter } from "../../shared/adapters-namespace";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 
-export type SearchResult = {
-  previewData?: any;
-} & Record<string, any>;
-
 export interface FuzzyProvider {
   readonly fuzzyAdapterType: FuzzyAdapter;
   readonly previewAdapterType: PreviewAdapter;
@@ -12,7 +8,7 @@ export interface FuzzyProvider {
    * Returns the list of items to be displayed in the fuzzy finder.
    * Example: files, branches, symbols, commands...
    */
-  querySelectableOptions(): Promise<SearchResult>;
+  querySelectableOptions(): Promise<any>;
 
   /**
    * Triggered when the user selects an item (Enter).

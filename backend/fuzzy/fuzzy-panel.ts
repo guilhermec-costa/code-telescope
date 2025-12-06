@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { WebviewMessage } from "../../shared/extension-webview-protocol";
+import { FromWebviewKindMessage } from "../../shared/extension-webview-protocol";
 import { FuzzyProvider } from "../finders/fuzzy-provider";
 import { Globals } from "../globals";
 import { getShikiTheme } from "../syntax-highlight/shiki-utils";
@@ -82,7 +82,7 @@ export class FuzzyPanel {
 
   public listenWebview() {
     console.log("[FuzzyPanel] Listening for webview messages!!!!!!!!!!");
-    this.wvManager.onMessage(async (msg: WebviewMessage) => {
+    this.wvManager.onMessage(async (msg: FromWebviewKindMessage) => {
       console.log(`[FuzzyPanel] Received message of type: ${msg.type}`);
 
       if (msg.type === "ready") {

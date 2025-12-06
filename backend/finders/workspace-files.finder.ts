@@ -4,7 +4,7 @@ import { PreviewData } from "../../shared/extension-webview-protocol";
 import { Globals } from "../globals";
 import { execCmd } from "../utils/commands";
 import { findWorkspaceFiles, getLanguageFromPath, loadWebviewHtml, relativizeFilePath } from "../utils/files";
-import { FuzzyProvider, SearchResult } from "./fuzzy-provider";
+import { FuzzyProvider } from "./fuzzy-provider";
 
 /**
  * Fuzzy provider that retrieves files from the current workspace.
@@ -37,7 +37,7 @@ export class WorkspaceFileFinder implements FuzzyProvider {
   /**
    * Returns the list of file paths to display in the fuzzy finder.
    */
-  async querySelectableOptions(): Promise<SearchResult> {
+  async querySelectableOptions() {
     const cfg = this.getFinderConfig();
     const files = await this.getWorkspaceFiles(cfg);
 

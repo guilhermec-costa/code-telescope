@@ -12,13 +12,19 @@ export type FuzzyPanelEvents =
   | "previewUpdate"
   | "themeUpdate";
 
+/**
+ * Data that can be previewed by a {@link PreviewAdapter}.
+ * Represents the content and optional metadata required to render a preview.
+ */
 export interface PreviewData {
   content: string;
   language?: string;
   metadata?: Record<string, any>;
 }
 
-/** Message sent to update the theme applied in the webview */
+/**
+ * Message sent from the backend to update the theme applied in the webview.
+ */
 export interface ThemeUpdateMessage {
   type: "themeUpdate";
   data: {
@@ -26,13 +32,19 @@ export interface ThemeUpdateMessage {
   };
 }
 
-/** Message containing an updated list of options */
+/**
+ * Message sent from the backend containing an updated list of options.
+ */
 export interface OptionListMessage {
   type: "optionList";
   data: any[];
   finderType: FuzzyAdapter;
 }
 
+/**
+ * Message sent from the backend to update the current preview data.
+ * Includes the raw preview content, theme, and the adapter type used to render it.
+ */
 export interface PreviewUpdateMessage {
   type: "previewUpdate";
   data: PreviewData;
@@ -40,18 +52,64 @@ export interface PreviewUpdateMessage {
   previewAdapterType: PreviewAdapter;
 }
 
-/** Message informing which option was selected */
+/**
+ * Message sent from the webview informing which option was selected.
+ */
 export interface OptionSelectedMessage {
   type: "optionSelected";
   data: any;
 }
 
-export type WebviewMessage =
-  | { type: "ready"; data?: undefined }
-  | { type: "closePanel"; data?: undefined }
-  | { type: "previewRequest"; data: any }
-  | { type: "dynamicSearch"; data: any }
-  | PreviewUpdateMessage
-  | OptionListMessage
-  | OptionSelectedMessage
-  | ThemeUpdateMessage;
+/**
+ * Message sent from the webview indicating that it is ready to receive data.
+ */
+export interface WebviewReadyMessage {
+  type: "ready";
+  data?: undefined;
+}
+
+/**
+ * Message sent from the webview requesting the backend to close the panel.
+ */
+export interface ClosePanelMessage {
+  type: "closePanel";
+  data?: undefined;
+}
+
+/**
+ * Message sent from the webview requesting a preview for a given item.
+ */
+export interface PreviewRequestMessage {
+  type: "previewRequest";
+  data: any;
+}
+
+/**
+ * Message sent from the webview containing dynamic search input,
+ * typically used to request updated option lists while the user types.
+ */
+export interface DynamicSearchMessage {
+  type: "dynamicSearch";
+  data: any;
+}
+
+/**
+ * Represents all messages that **the backend sends to the webview**.
+ *
+ * Note: the "To" prefix is from the backend’s perspective.
+ * These messages originate in the backend and are delivered to the webview.
+ */
+export type ToWebviewKindMessage = PreviewUpdateMessage | OptionListMessage | ThemeUpdateMessage;
+
+/**
+ * Represents all messages that **the webview sends to the backend**.
+ *
+ * Note: the "From" prefix is from the backend’s perspective.
+ * These messages originate in the webview and are received by the backend.
+ */
+export type FromWebviewKindMessage =
+  | WebviewReadyMessage
+  | ClosePanelMessage
+  | PreviewRequestMessage
+  | DynamicSearchMessage
+  | OptionSelectedMessage;
