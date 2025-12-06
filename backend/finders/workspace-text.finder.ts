@@ -118,14 +118,10 @@ export class WorkspaceTextSearchProvider implements FuzzyProvider {
 
       const lineNum = parseInt(line) - 1;
       const startLine = Math.max(0, lineNum - 5);
-      const endLine = Math.min(document.lineCount - 1, lineNum + 5);
-
-      const content = document.getText(new vscode.Range(startLine, 0, endLine + 1, 0));
-
       const language = document.languageId;
 
       return {
-        content,
+        content: document.getText(),
         language,
         metadata: {
           filePath,

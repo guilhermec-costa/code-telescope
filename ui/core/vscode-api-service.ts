@@ -19,8 +19,8 @@ export class VSCodeApiService {
     this.vscode.setState(state);
   }
 
-  notifyReady(): void {
-    this.postMessage({ type: "ready" });
+  notifyDOMReady(): void {
+    this.postMessage({ type: "webviewDOMReady" });
   }
 
   selectOption(option: string): void {

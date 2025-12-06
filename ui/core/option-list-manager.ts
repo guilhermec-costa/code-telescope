@@ -80,6 +80,11 @@ export class OptionListManager<TOption = any> {
     if (lastElement) {
       this.requestPreview(lastElement);
     }
+
+    if (!lastElement) {
+      this.previewManager.clearPreview();
+      this.previewManager.renderNoPreviewData();
+    }
   }
 
   moveSelection(direction: number): void {
@@ -87,7 +92,7 @@ export class OptionListManager<TOption = any> {
 
     this.selectedIndex = (this.selectedIndex + direction + this.filteredOptions.length) % this.filteredOptions.length;
 
-    this.renderVisible();
+    this.render();
 
     const option = this.filteredOptions[this.selectedIndex];
     this.requestPreview(option);
@@ -113,12 +118,12 @@ export class OptionListManager<TOption = any> {
     this.updateContainerHeight();
 
     this.listElement.addEventListener("scroll", () => {
-      this.renderVisible();
+      this.render();
     });
 
     window.addEventListener("resize", () => {
       this.updateContainerHeight();
-      this.renderVisible();
+      this.render();
     });
   }
 
@@ -131,7 +136,6 @@ export class OptionListManager<TOption = any> {
     this.listElement.style.height = `${totalHeight}px`;
     this.listElement.style.position = "relative";
 
-    console.log("Total height: ", totalHeight);
     this.listElement.scrollTop = totalHeight;
 
     this.renderVisible();
@@ -175,7 +179,7 @@ export class OptionListManager<TOption = any> {
       ((index) => {
         li.onclick = () => {
           this.selectedIndex = index;
-          this.renderVisible();
+          this.render();
           this.notifySelection();
         };
       })(idx);

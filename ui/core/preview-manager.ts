@@ -11,7 +11,7 @@ export class PreviewManager {
     metadata: {},
   };
 
-  private previewElement: HTMLElement | null;
+  private previewElement: HTMLElement;
   private readonly vscodeService: VSCodeApiService;
   private readonly previewAdapterRegistry: PreviewAdapterRegistry;
   private adapter: IPreviewAdapter | null = null;
@@ -19,7 +19,7 @@ export class PreviewManager {
   constructor(vscodeService: VSCodeApiService) {
     console.log("[PreviewManager] Initializing");
     this.vscodeService = vscodeService;
-    this.previewElement = document.getElementById("preview");
+    this.previewElement = document.getElementById("preview")!;
     this.previewAdapterRegistry = new PreviewAdapterRegistry();
   }
 
@@ -28,11 +28,6 @@ export class PreviewManager {
   }
 
   async updatePreview(data: PreviewData, finderType: PreviewRendererType, theme: string): Promise<void> {
-    if (!this.previewElement) {
-      console.warn("[PreviewManager] Cannot update preview: adapter or previewElement missing");
-      return;
-    }
-
     const adapter = this.previewAdapterRegistry.getAdapter(finderType);
 
     if (!adapter) {
@@ -50,8 +45,21 @@ export class PreviewManager {
     console.log("[PreviewManager] Preview rendered");
   }
 
+  clearPreview() {
+    this.previewElement.innerHTML = "";
+  }
+
+  renderNoPreviewData() {
+    if (!this.adapter) return;
+    if (this.adapter.renderNoPreviewData) {
+      this.adapter.renderNoPreviewData(this.previewElement);
+      return;
+    }
+    this.previewElement.innerHTML = "No data to preview";
+  }
+
   async updateTheme(theme: string): Promise<void> {
-    if (!this.adapter || !this.previewElement) return;
+    if (!this.adapter) return;
     await this.adapter.render(this.previewElement, this.lastPreviewedData, theme);
   }
 
@@ -60,30 +68,25 @@ export class PreviewManager {
   }
 
   scrollToTop() {
-    if (!this.previewElement) return;
     this.previewElement.scrollTop = 0;
   }
 
   scrollUp(): void {
-    if (!this.previewElement) return;
     const height = this.previewElement.clientHeight;
     this.previewElement.scrollTop -= height / 2;
   }
 
   scrollDown(): void {
-    if (!this.previewElement) return;
     const height = this.previewElement.clientHeight;
     this.previewElement.scrollTop += height / 2;
   }
 
   scrollLeft(): void {
-    if (!this.previewElement) return;
     const width = this.previewElement.clientWidth;
     this.previewElement.scrollLeft -= width / 2;
   }
 
   scrollRight(): void {
-    if (!this.previewElement) return;
     const width = this.previewElement.clientWidth;
     this.previewElement.scrollLeft += width / 2;
   }

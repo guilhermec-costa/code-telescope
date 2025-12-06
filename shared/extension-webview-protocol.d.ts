@@ -1,18 +1,6 @@
 import { FuzzyProviderType, PreviewRendererType } from "./adapters-namespace";
 
 /**
- * Event names for all messages exchanged between extension ⇄ webview.
- */
-export type FuzzyPanelEvents =
-  | "ready"
-  | "optionSelected"
-  | "closePanel"
-  | "previewRequest"
-  | "optionList"
-  | "previewUpdate"
-  | "themeUpdate";
-
-/**
  * Data that can be previewed by a {@link PreviewRendererType}.
  * Represents the content and optional metadata required to render a preview.
  */
@@ -38,7 +26,7 @@ export interface ThemeUpdateMessage {
 export interface OptionListMessage {
   type: "optionList";
   data: any[];
-  finderType: FuzzyProviderType;
+  fuzzyProviderType: FuzzyProviderType;
 }
 
 /**
@@ -50,6 +38,10 @@ export interface PreviewUpdateMessage {
   data: PreviewData;
   theme: string;
   previewAdapterType: PreviewRendererType;
+}
+
+export interface ResetFuzzyPanel {
+  type: "resetWebview";
 }
 
 /**
@@ -64,7 +56,7 @@ export interface OptionSelectedMessage {
  * Message sent from the webview indicating that it is ready to receive data.
  */
 export interface WebviewReadyMessage {
-  type: "ready";
+  type: "webviewDOMReady";
   data?: undefined;
 }
 
@@ -99,7 +91,7 @@ export interface DynamicSearchMessage {
  * Note: the "To" prefix is from the backend’s perspective.
  * These messages originate in the backend and are delivered to the webview.
  */
-export type ToWebviewKindMessage = PreviewUpdateMessage | OptionListMessage | ThemeUpdateMessage;
+export type ToWebviewKindMessage = PreviewUpdateMessage | OptionListMessage | ThemeUpdateMessage | ResetFuzzyPanel;
 
 /**
  * Represents all messages that **the webview sends to the backend**.

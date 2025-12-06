@@ -4,13 +4,13 @@ import { FuzzyProvider } from "../finders/fuzzy-provider";
 import { Globals } from "../globals";
 import { getShikiTheme } from "../syntax-highlight/shiki-utils";
 import { execCmd } from "../utils/commands";
-import { WebviewManager } from "./webview-util";
+import { WebviewController } from "./webview-util";
 
 export class FuzzyPanel {
   public static currentPanel: FuzzyPanel | undefined;
 
   public readonly panel: vscode.WebviewPanel;
-  private readonly wvManager: WebviewManager;
+  private readonly wvController: WebviewController;
   private provider!: FuzzyProvider;
 
   private static revealPosition = vscode.ViewColumn.Active;
@@ -18,7 +18,7 @@ export class FuzzyPanel {
   private constructor(panel: vscode.WebviewPanel) {
     console.log("[FuzzyPanel] Creating a new panel instance");
     this.panel = panel;
-    this.wvManager = new WebviewManager(this.panel.webview);
+    this.wvController = new WebviewController(this.panel.webview);
     this.listenWebview();
 
     panel.onDidDispose(() => {
@@ -37,7 +37,7 @@ export class FuzzyPanel {
     console.log("[FuzzyPanel] Creating a new WebviewPanel");
     const panel = vscode.window.createWebviewPanel(
       "code-telescope-fuzzy",
-      "Telescope – Fuzzy Finder",
+      "Telescope - Fuzzy Finder",
       {
         viewColumn: this.revealPosition,
         preserveFocus: false,
@@ -60,32 +60,39 @@ export class FuzzyPanel {
     this.provider = provider;
     this.panel.webview.html = await this.provider.loadWebviewHtml();
     const items = await provider.querySelectableOptions();
+    await this.sendResetWebviewEvent();
     await this.sendOptionsListEvent(items);
   }
 
+  private async sendResetWebviewEvent() {
+    console.log(`[FuzzyPanel] Sending ClearPreview event`);
+    await this.wvController.sendMessage({
+      type: "resetWebview",
+    });
+  }
   private async sendOptionsListEvent(options: any) {
     console.log(`[FuzzyPanel] Sending optionList event with ${options.length} options`);
 
-    await this.wvManager.sendMessage({
+    await this.wvController.sendMessage({
       type: "optionList",
       data: options,
-      finderType: this.provider.fuzzyAdapterType,
+      fuzzyProviderType: this.provider.fuzzyAdapterType,
     });
   }
 
   public async emitThemeChangeEvent(theme: string) {
-    await this.wvManager.sendMessage({
+    await this.wvController.sendMessage({
       type: "themeUpdate",
-      data: { theme: theme },
+      data: { theme },
     });
   }
 
   public listenWebview() {
-    console.log("[FuzzyPanel] Listening for webview messages!!!!!!!!!!");
-    this.wvManager.onMessage(async (msg: FromWebviewKindMessage) => {
+    console.log("[FuzzyPanel] Listening for webview messages");
+    this.wvController.onMessage(async (msg: FromWebviewKindMessage) => {
       console.log(`[FuzzyPanel] Received message of type: ${msg.type}`);
 
-      if (msg.type === "ready") {
+      if (msg.type === "webviewDOMReady") {
         console.log("[FuzzyPanel] Webview is ready, sending initial options");
         const items = await this.provider.querySelectableOptions();
         await this.sendOptionsListEvent(items);
@@ -100,7 +107,6 @@ export class FuzzyPanel {
       }
 
       if (msg.type === "optionSelected") {
-        this.dispose();
         const selected = msg.data;
 
         if (this.provider.onSelect) {
@@ -108,6 +114,7 @@ export class FuzzyPanel {
           return;
         }
 
+        this.dispose();
         const uri = vscode.Uri.file(selected);
         await execCmd(Globals.cmds.openFile, uri);
       }
@@ -135,7 +142,7 @@ export class FuzzyPanel {
     const shikiTheme = getShikiTheme(Globals.USER_THEME);
 
     console.log("[FuzzyPanel] Sending previewUpdate event");
-    await this.wvManager.sendMessage({
+    await this.wvController.sendMessage({
       type: "previewUpdate",
       previewAdapterType: this.provider.previewAdapterType,
       data: previewData,

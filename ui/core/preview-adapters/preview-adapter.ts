@@ -6,5 +6,7 @@ export interface IPreviewAdapter {
 
   render(previewElement: HTMLElement, data: PreviewData, theme: string): Promise<void>;
 
+  renderNoPreviewData?(previewElement: HTMLElement): Promise<void>;
+
   clear?(previewElement: HTMLElement): void;
 }

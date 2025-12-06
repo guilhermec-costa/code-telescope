@@ -1,4 +1,4 @@
-import { OptionListMessage, PreviewUpdateMessage, ToWebviewKindMessage } from "@shared/extension-webview-protocol";
+import { OptionListMessage, ToWebviewKindMessage } from "@shared/extension-webview-protocol";
 import { debounce } from "../utils/debounce";
 import { FinderAdapterRegistry } from "./finder-adapters/finder-adapter-registry";
 import { KeyboardHandler } from "./kbd-handler";
@@ -30,7 +30,7 @@ export class WebviewController {
   initialize(): void {
     window.addEventListener("DOMContentLoaded", () => {
       this.focusSearchInput();
-      this.vscodeService.notifyReady();
+      this.vscodeService.notifyDOMReady();
     });
 
     window.addEventListener("message", async (event) => {
@@ -58,28 +58,39 @@ export class WebviewController {
 
   private async handleMessage(msg: ToWebviewKindMessage): Promise<void> {
     console.log(`[WebviewController] Handling message: ${msg}`);
-    if (msg.type === "optionList" && "finderType" in msg) {
-      await this.handleOptionListMessage(msg);
-      return;
-    }
-
-    if (msg.type === "previewUpdate" && "previewAdapterType" in msg) {
-      console.log("[WebviewController] Processing previewUpdate message", msg.data);
-      const { previewAdapterType, data, theme } = msg as PreviewUpdateMessage;
-      await this.previewManager.updatePreview(data, previewAdapterType, theme);
-      return;
-    }
-
     switch (msg.type) {
-      case "themeUpdate":
+      case "resetWebview": {
+        await this.handleResetWebview();
+        break;
+      }
+
+      case "optionList": {
+        await this.handleOptionListMessage(msg);
+        break;
+      }
+
+      case "previewUpdate": {
+        console.log("[WebviewController] Processing previewUpdate message", msg.data);
+        const { previewAdapterType, data, theme } = msg;
+        await this.previewManager.updatePreview(data, previewAdapterType, theme);
+        break;
+      }
+
+      case "themeUpdate": {
         console.log("Theme updated on webview");
         await this.previewManager.updateTheme(msg.data.theme);
         break;
+      }
     }
   }
 
+  private async handleResetWebview() {
+    this.searchElement.value = "";
+    this.previewManager.clearPreview();
+  }
+
   private async handleOptionListMessage(msg: OptionListMessage) {
-    const { finderType, data } = msg;
+    const { fuzzyProviderType: finderType, data } = msg;
 
     const adapter = this.adapterRegistry.getAdapter(finderType);
 
