@@ -48,7 +48,7 @@ export class WorkspaceTextSearchAdapter implements IFinderAdapter<TextSearchData
     return option.file.toLowerCase().includes(lowerQuery) || option.preview.toLowerCase().includes(lowerQuery);
   }
 
-  getPreviewData(option: SearchOption): string {
+  getPreviewIdentifier(option: SearchOption): string {
     return option.identifier;
   }
 

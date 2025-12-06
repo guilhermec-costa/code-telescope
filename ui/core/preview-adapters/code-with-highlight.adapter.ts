@@ -8,6 +8,7 @@ export class CodeWithHighlightPreviewAdapter implements IPreviewAdapter {
 
   async render(previewElement: HTMLElement, data: PreviewData, theme: string): Promise<void> {
     const { content, language = "text", metadata } = data;
+    console.log("Content in code with hight: ", content);
 
     try {
       let html = await codeToHtml(content, {

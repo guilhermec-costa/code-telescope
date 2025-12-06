@@ -63,7 +63,7 @@ export class WebviewController {
       return;
     }
 
-    if (msg.type === "previewUpdate" && "finderType" in msg) {
+    if (msg.type === "previewUpdate" && "previewAdapterType" in msg) {
       console.log("[WebviewController] Processing previewUpdate message", msg.data);
       const { previewAdapterType, data, theme } = msg as PreviewUpdateMessage;
       await this.previewManager.updatePreview(data, previewAdapterType, theme);

@@ -1,6 +1,5 @@
 import { PreviewAdapter } from "../../shared/adapters-namespace";
 import { PreviewData } from "../../shared/extension-webview-protocol";
-import { CodeWithHighlightPreviewAdapter } from "./preview-adapters/code-with-highlight.adapter";
 import { IPreviewAdapter } from "./preview-adapters/preview-adapter";
 import { PreviewAdapterRegistry } from "./preview-adapters/preview-adapter-registry";
 import { VSCodeApiService } from "./vscode-api-service";
@@ -45,8 +44,7 @@ export class PreviewManager {
     console.log("[PreviewManager] Adapter found, rendering preview");
     this.setAdapter(adapter);
 
-    // await this.adapter!.render(this.previewElement, data, theme);
-    new CodeWithHighlightPreviewAdapter();
+    await this.adapter!.render(this.previewElement, data, theme);
     this.scrollToTop();
     this.lastPreviewedData = data;
     console.log("[PreviewManager] Preview rendered");

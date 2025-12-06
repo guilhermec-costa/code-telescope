@@ -1,10 +1,6 @@
 import { FuzzyAdapter, PreviewAdapter } from "../../../shared/adapters-namespace";
+import { FileFinderData } from "../../../shared/exchange/file-search";
 import { IFinderAdapter } from "./finder-adapter";
-
-export interface FileFinderData {
-  abs: string[];
-  relative: string[];
-}
 
 export interface FileOption {
   absolute: string;
