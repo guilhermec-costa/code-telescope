@@ -1,9 +1,9 @@
 import { OptionListMessage, ToWebviewKindMessage } from "@shared/extension-webview-protocol";
 import { debounce } from "../utils/debounce";
-import { FinderAdapterRegistry } from "./finder-adapters/finder-adapter-registry";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { PreviewManager } from "./preview-manager";
+import { FinderAdapterRegistry } from "./registries/finder-adapter-registry";
 import { VSCodeApiService } from "./vscode-api-service";
 
 export class WebviewController {
@@ -30,7 +30,7 @@ export class WebviewController {
   initialize(): void {
     window.addEventListener("DOMContentLoaded", () => {
       this.focusSearchInput();
-      this.vscodeService.notifyDOMReady();
+      this.vscodeService.onDOMReady();
     });
 
     window.addEventListener("message", async (event) => {
@@ -40,17 +40,9 @@ export class WebviewController {
     window.addEventListener("focus", () => {
       this.focusSearchInput();
     });
-
-    this.focusSearchInput();
   }
 
   private focusSearchInput(): void {
-    this.searchElement?.focus();
-
-    setTimeout(() => {
-      this.searchElement?.focus();
-    }, 100);
-
     requestAnimationFrame(() => {
       this.searchElement?.focus();
     });
@@ -71,8 +63,8 @@ export class WebviewController {
 
       case "previewUpdate": {
         console.log("[WebviewController] Processing previewUpdate message", msg.data);
-        const { previewAdapterType, data, theme } = msg;
-        await this.previewManager.updatePreview(data, previewAdapterType, theme);
+        const { previewAdapterType, data } = msg;
+        await this.previewManager.updatePreview(data, previewAdapterType);
         break;
       }
 
@@ -110,7 +102,7 @@ export class WebviewController {
 
   private setupEventListeners(): void {
     const debouncedFilter = debounce((query: string) => {
-      this.vscodeService.sendDynamicSearch(query);
+      this.vscodeService.requestDynamicSearch(query);
       this.optionListManager.filter(query);
     }, 50);
 
@@ -154,14 +146,14 @@ export class WebviewController {
     });
 
     this.keyboardHandler.setCloseHandler(() => {
-      this.vscodeService.closePanel();
+      this.vscodeService.requestClosePanel();
     });
   }
 
   private confirmSelection(): void {
     const selectedValue = this.optionListManager.getSelectedValue();
     if (selectedValue) {
-      this.vscodeService.selectOption(selectedValue);
+      this.vscodeService.onOptionSelected(selectedValue);
     }
   }
 }

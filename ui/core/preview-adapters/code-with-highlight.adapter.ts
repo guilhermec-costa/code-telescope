@@ -1,19 +1,18 @@
 import { codeToHtml } from "shiki";
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
-import { IPreviewAdapter } from "./preview-adapter";
+import { IPreviewAdapter } from "../abstractions/preview-adapter";
 
 export class CodeWithHighlightPreviewAdapter implements IPreviewAdapter {
   readonly type: PreviewRendererType = "preview.codeHighlighted";
 
   async render(previewElement: HTMLElement, data: PreviewData, theme: string): Promise<void> {
     const { content, language = "text", metadata } = data;
-    console.log("Content in code with hight: ", content);
 
     try {
       let html = await codeToHtml(content, {
         lang: language,
-        theme: theme,
+        theme,
       });
 
       if (metadata?.highlightLine !== undefined) {

@@ -36,7 +36,6 @@ export interface OptionListMessage {
 export interface PreviewUpdateMessage {
   type: "previewUpdate";
   data: PreviewData;
-  theme: string;
   previewAdapterType: PreviewRendererType;
 }
 
@@ -65,7 +64,6 @@ export interface WebviewReadyMessage {
  */
 export interface ClosePanelMessage {
   type: "closePanel";
-  data?: undefined;
 }
 
 /**
@@ -82,7 +80,7 @@ export interface PreviewRequestMessage {
  */
 export interface DynamicSearchMessage {
   type: "dynamicSearch";
-  data: any;
+  query: string;
 }
 
 /**

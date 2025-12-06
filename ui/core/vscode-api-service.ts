@@ -11,34 +11,29 @@ export class VSCodeApiService {
     this.vscode.postMessage(message);
   }
 
-  getState(): any {
-    return this.vscode.getState();
-  }
-
-  setState(state: any): void {
-    this.vscode.setState(state);
-  }
-
-  notifyDOMReady(): void {
+  onDOMReady(): void {
     this.postMessage({ type: "webviewDOMReady" });
   }
 
-  selectOption(option: string): void {
+  onOptionSelected(option: string): void {
     this.postMessage({ type: "optionSelected", data: option });
   }
 
-  requestPreview(option: string): void {
-    this.postMessage({ type: "previewRequest", data: option });
-  }
-
-  closePanel(): void {
+  requestClosePanel(): void {
     this.postMessage({ type: "closePanel" });
   }
 
-  sendDynamicSearch(query: string): void {
+  requestSelectionPreviewData(selection: string): void {
+    this.postMessage({
+      type: "previewRequest",
+      data: selection,
+    });
+  }
+
+  requestDynamicSearch(query: string): void {
     this.postMessage({
       type: "dynamicSearch",
-      data: { query },
-    } as any);
+      query,
+    });
   }
 }

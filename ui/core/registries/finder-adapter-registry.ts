@@ -1,8 +1,8 @@
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
-import { BranchFinderAdapter } from "./branch-finder.adapter";
-import { IFinderAdapter } from "./finder-adapter";
-import { FileFinderAdapter } from "./workspace-file.adapter";
-import { WorkspaceTextSearchAdapter } from "./workspace-text-search.adapter";
+import { IFinderAdapter } from "../abstractions/finder-adapter";
+import { BranchFinderAdapter } from "../finder-adapters/branch-finder.adapter";
+import { FileFinderAdapter } from "../finder-adapters/workspace-file.adapter";
+import { WorkspaceTextSearchAdapter } from "../finder-adapters/workspace-text-search.adapter";
 
 /**
  * Registry/Factory to manager fuzzy finders apdaters

@@ -1,6 +1,6 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { BranchFinderData, BranchInfo } from "../../../shared/exchange/branch-search";
-import { IFinderAdapter } from "./finder-adapter";
+import { IFinderAdapter } from "../abstractions/finder-adapter";
 
 export type BranchOption = { type: "branch"; data: BranchInfo };
 
@@ -45,9 +45,5 @@ export class BranchFinderAdapter implements IFinderAdapter<BranchFinderData, Bra
     const lowerQuery = query.toLowerCase();
     const displayText = this.getDisplayText(option).toLowerCase();
     return displayText.includes(lowerQuery);
-  }
-
-  getPreviewIdentifier(option: BranchOption): string {
-    return this.getDisplayText(option);
   }
 }

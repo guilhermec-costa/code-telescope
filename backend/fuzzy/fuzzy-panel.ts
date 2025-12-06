@@ -80,7 +80,7 @@ export class FuzzyPanel {
     });
   }
 
-  public async emitThemeChangeEvent(theme: string) {
+  public async sendThemeUpdateEvent(theme: string) {
     await this.wvController.sendMessage({
       type: "themeUpdate",
       data: { theme },
@@ -94,14 +94,15 @@ export class FuzzyPanel {
 
       if (msg.type === "webviewDOMReady") {
         console.log("[FuzzyPanel] Webview is ready, sending initial options");
+        const userTheme = getShikiTheme(Globals.USER_THEME);
+        await this.sendThemeUpdateEvent(userTheme);
         const items = await this.provider.querySelectableOptions();
         await this.sendOptionsListEvent(items);
       }
 
       if (msg.type === "dynamicSearch") {
         if (this.provider.supportsDynamicSearch && this.provider.searchOptions) {
-          const query = msg.data.query;
-          const results = await this.provider.searchOptions(query);
+          const results = await this.provider.searchOptions(msg.query);
           await this.sendOptionsListEvent(results);
         }
       }
@@ -139,14 +140,12 @@ export class FuzzyPanel {
   private async handlePreviewRequest(identifier: string) {
     console.log(`[FuzzyPanel] Getting preview data for: ${identifier}`);
     const previewData = await this.provider.getPreviewData(identifier);
-    const shikiTheme = getShikiTheme(Globals.USER_THEME);
 
     console.log("[FuzzyPanel] Sending previewUpdate event");
     await this.wvController.sendMessage({
       type: "previewUpdate",
       previewAdapterType: this.provider.previewAdapterType,
       data: previewData,
-      theme: shikiTheme,
     });
   }
 }

@@ -1,20 +1,22 @@
 import { PreviewRendererType } from "../../shared/adapters-namespace";
 import { PreviewData } from "../../shared/extension-webview-protocol";
-import { IPreviewAdapter } from "./preview-adapters/preview-adapter";
-import { PreviewAdapterRegistry } from "./preview-adapters/preview-adapter-registry";
+import { IPreviewAdapter } from "./abstractions/preview-adapter";
+import { PreviewAdapterRegistry } from "./registries/preview-adapter-registry";
 import { VSCodeApiService } from "./vscode-api-service";
 
 export class PreviewManager {
+  private readonly vscodeService: VSCodeApiService;
+  private readonly previewAdapterRegistry: PreviewAdapterRegistry;
+
+  private previewElement: HTMLElement;
+  private currentTheme: string = "dark-plus";
+  private adapter: IPreviewAdapter | null = null;
+
   private lastPreviewedData: PreviewData = {
     content: "",
     language: "",
     metadata: {},
   };
-
-  private previewElement: HTMLElement;
-  private readonly vscodeService: VSCodeApiService;
-  private readonly previewAdapterRegistry: PreviewAdapterRegistry;
-  private adapter: IPreviewAdapter | null = null;
 
   constructor(vscodeService: VSCodeApiService) {
     console.log("[PreviewManager] Initializing");
@@ -27,7 +29,7 @@ export class PreviewManager {
     this.adapter = adapter;
   }
 
-  async updatePreview(data: PreviewData, finderType: PreviewRendererType, theme: string): Promise<void> {
+  async updatePreview(data: PreviewData, finderType: PreviewRendererType): Promise<void> {
     const adapter = this.previewAdapterRegistry.getAdapter(finderType);
 
     if (!adapter) {
@@ -39,7 +41,7 @@ export class PreviewManager {
     console.log("[PreviewManager] Adapter found, rendering preview");
     this.setAdapter(adapter);
 
-    await this.adapter!.render(this.previewElement, data, theme);
+    await this.adapter!.render(this.previewElement, data, this.currentTheme);
     this.scrollToTop();
     this.lastPreviewedData = data;
     console.log("[PreviewManager] Preview rendered");
@@ -59,12 +61,14 @@ export class PreviewManager {
   }
 
   async updateTheme(theme: string): Promise<void> {
+    this.currentTheme = theme;
     if (!this.adapter) return;
-    await this.adapter.render(this.previewElement, this.lastPreviewedData, theme);
+    console.log(`[PreviewManager] Updating user theme to ${theme}`);
+    this.adapter.render(this.previewElement, this.lastPreviewedData, this.currentTheme);
   }
 
-  requestPreview(option: string): void {
-    this.vscodeService.requestPreview(option);
+  requestPreview(selection: string): void {
+    this.vscodeService.requestSelectionPreviewData(selection);
   }
 
   scrollToTop() {

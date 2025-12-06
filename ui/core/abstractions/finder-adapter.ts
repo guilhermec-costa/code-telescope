@@ -28,11 +28,6 @@ export interface IFinderAdapter<TData = any, TOption = string> {
    * Optional: Custom filter logic for a single option
    */
   filterOption?(option: TOption, query: string): boolean;
-
-  /**
-   * Optional: Returns additional data used for preview
-   */
-  getPreviewIdentifier?(option: TOption): string;
 }
 
 export interface OptionListMessage<TData = any> {

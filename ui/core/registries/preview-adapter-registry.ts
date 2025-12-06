@@ -1,8 +1,8 @@
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
-import { BranchPreviewAdapter } from "./branch-preview.adapter";
-import { CodeWithHighlightPreviewAdapter } from "./code-with-highlight.adapter";
-import { FilePreviewAdapter } from "./file-preview.adapter";
-import { IPreviewAdapter } from "./preview-adapter";
+import { IPreviewAdapter } from "../abstractions/preview-adapter";
+import { BranchPreviewAdapter } from "../preview-adapters/branch-preview.adapter";
+import { CodeWithHighlightPreviewAdapter } from "../preview-adapters/code-with-highlight.adapter";
+import { FilePreviewAdapter } from "../preview-adapters/file-preview.adapter";
 
 export class PreviewAdapterRegistry {
   private adapters = new Map<string, IPreviewAdapter>();

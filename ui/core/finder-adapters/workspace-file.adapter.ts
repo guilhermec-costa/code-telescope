@@ -1,6 +1,6 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { FileFinderData } from "../../../shared/exchange/file-search";
-import { IFinderAdapter } from "./finder-adapter";
+import { IFinderAdapter } from "../abstractions/finder-adapter";
 
 export interface FileOption {
   absolute: string;
@@ -35,9 +35,5 @@ export class FileFinderAdapter implements IFinderAdapter<FileFinderData, FileOpt
   filterOption(option: FileOption, query: string): boolean {
     const lowerQuery = query.toLowerCase();
     return option.relative.toLowerCase().includes(lowerQuery);
-  }
-
-  getPreviewIdentifier(option: FileOption) {
-    return option.absolute;
   }
 }

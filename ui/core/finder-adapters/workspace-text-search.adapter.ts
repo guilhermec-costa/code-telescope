@@ -1,6 +1,6 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { TextSearchData } from "../../../shared/exchange/workspace-text-search";
-import { IFinderAdapter } from "./finder-adapter";
+import { IFinderAdapter } from "../abstractions/finder-adapter";
 
 interface SearchOption {
   identifier: string;
@@ -34,10 +34,6 @@ export class WorkspaceTextSearchAdapter implements IFinderAdapter<TextSearchData
   filterOption(option: SearchOption, query: string): boolean {
     const lowerQuery = query.toLowerCase();
     return option.file.toLowerCase().includes(lowerQuery) || option.preview.toLowerCase().includes(lowerQuery);
-  }
-
-  getPreviewIdentifier(option: SearchOption): string {
-    return option.identifier;
   }
 
   private getFileName(path: string): string {

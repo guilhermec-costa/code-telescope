@@ -1,11 +1,12 @@
 import { escapeHtml } from "ui/utils/html";
-import { IFinderAdapter } from "./finder-adapters/finder-adapter";
+import { IFinderAdapter } from "./abstractions/finder-adapter";
 import { PreviewManager } from "./preview-manager";
 
 export class OptionListManager<TOption = any> {
   private allOptions: TOption[] = [];
   private filteredOptions: TOption[] = [];
   private selectedIndex: number = 0;
+
   private currentAdapter: IFinderAdapter<any, TOption> | null = null;
 
   private listElement: HTMLUListElement;
@@ -19,6 +20,9 @@ export class OptionListManager<TOption = any> {
   private visibleStartIndex = 0;
   private visibleEndIndex = 0;
   private containerHeight = 0;
+
+  // calllbacks
+  onSelectionConfirmed?: () => void;
 
   constructor(previewManager: PreviewManager) {
     this.previewManager = previewManager;
@@ -117,10 +121,6 @@ export class OptionListManager<TOption = any> {
   private setupVirtualization(): void {
     this.updateContainerHeight();
 
-    this.listElement.addEventListener("scroll", () => {
-      this.render();
-    });
-
     window.addEventListener("resize", () => {
       this.updateContainerHeight();
       this.render();
@@ -180,7 +180,7 @@ export class OptionListManager<TOption = any> {
         li.onclick = () => {
           this.selectedIndex = index;
           this.render();
-          this.notifySelection();
+          this.onSelectionConfirmed?.();
         };
       })(idx);
 
@@ -222,13 +222,8 @@ export class OptionListManager<TOption = any> {
   private requestPreview(option: TOption): void {
     if (!this.currentAdapter) return;
 
-    if (this.currentAdapter.getPreviewIdentifier) {
-      const previewData = this.currentAdapter.getPreviewIdentifier(option);
-      this.previewManager.requestPreview(previewData);
-    } else {
-      const displayText = this.currentAdapter.getDisplayText(option);
-      this.previewManager.requestPreview(displayText);
-    }
+    const selection = this.currentAdapter.getSelectionValue(option);
+    this.previewManager.requestPreview(selection);
   }
 
   private updateFileCount(): void {
@@ -236,10 +231,4 @@ export class OptionListManager<TOption = any> {
       this.fileCountElement.textContent = `${this.filteredOptions.length} / ${this.allOptions.length}`;
     }
   }
-
-  private notifySelection(): void {
-    this.onSelectionConfirmed?.();
-  }
-
-  onSelectionConfirmed?: () => void;
 }

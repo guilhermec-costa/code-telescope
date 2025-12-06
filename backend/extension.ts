@@ -21,7 +21,7 @@ export function activate(context: ExtensionCtx) {
       console.log(`The color theme changed to: ${Globals.USER_THEME}`);
       const fuzzyPanel = FuzzyPanel.currentPanel;
       if (!fuzzyPanel) return;
-      fuzzyPanel.emitThemeChangeEvent(Globals.USER_THEME);
+      fuzzyPanel.sendThemeUpdateEvent(Globals.USER_THEME);
     }
   });
 

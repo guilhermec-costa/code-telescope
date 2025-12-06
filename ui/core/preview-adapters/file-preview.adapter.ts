@@ -1,7 +1,7 @@
 import { codeToHtml } from "shiki";
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
-import { IPreviewAdapter } from "./preview-adapter";
+import { IPreviewAdapter } from "../abstractions/preview-adapter";
 
 export class FilePreviewAdapter implements IPreviewAdapter {
   readonly type: PreviewRendererType = "preview.workspaceFile";
