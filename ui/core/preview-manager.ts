@@ -5,9 +5,6 @@ import { PreviewAdapterRegistry } from "./registries/preview-adapter-registry";
 import { VSCodeApiService } from "./vscode-api-service";
 
 export class PreviewManager {
-  private readonly vscodeService: VSCodeApiService;
-  private readonly previewAdapterRegistry: PreviewAdapterRegistry;
-
   private previewElement: HTMLElement;
   private currentTheme: string = "dark-plus";
   private adapter: IPreviewAdapter | null = null;
@@ -18,11 +15,12 @@ export class PreviewManager {
     metadata: {},
   };
 
-  constructor(vscodeService: VSCodeApiService) {
+  constructor(
+    private readonly vscodeService: VSCodeApiService,
+    private readonly previewAdapterRegistry: PreviewAdapterRegistry,
+  ) {
     console.log("[PreviewManager] Initializing");
-    this.vscodeService = vscodeService;
     this.previewElement = document.getElementById("preview")!;
-    this.previewAdapterRegistry = new PreviewAdapterRegistry();
   }
 
   setAdapter(adapter: IPreviewAdapter) {

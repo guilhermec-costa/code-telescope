@@ -27,9 +27,4 @@ export type FuzzyProviderType =
   | "extensions.all"
   | "snippets.all";
 
-export type PreviewRendererType =
-  | "preview.workspaceFile"
-  | "preview.gitBranch"
-  | "preview.gitCommit"
-  | "preview.extension"
-  | "preview.codeHighlighted";
+export type PreviewRendererType = "preview.codeHighlighted";

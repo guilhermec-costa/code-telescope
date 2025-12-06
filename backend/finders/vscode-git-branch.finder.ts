@@ -8,7 +8,7 @@ import { FuzzyProvider } from "./fuzzy-provider";
 
 export class VSCodeGitBranchFinder implements FuzzyProvider {
   public readonly fuzzyAdapterType: FuzzyProviderType = "git.branches";
-  public readonly previewAdapterType: PreviewRendererType = "preview.gitBranch";
+  public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
 
   /** Reference to the Git API exported by the official VS Code Git extension. */
   private readonly gitApi: API | null;

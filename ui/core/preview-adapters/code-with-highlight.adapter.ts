@@ -1,16 +1,23 @@
-import { codeToHtml } from "shiki";
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { IPreviewAdapter } from "../abstractions/preview-adapter";
+import { SyntaxHighlighter } from "../registries/preview-adapter-registry";
 
 export class CodeWithHighlightPreviewAdapter implements IPreviewAdapter {
   readonly type: PreviewRendererType = "preview.codeHighlighted";
 
+  constructor(private highlighter: SyntaxHighlighter) {}
+
   async render(previewElement: HTMLElement, data: PreviewData, theme: string): Promise<void> {
     const { content, language = "text", metadata } = data;
 
+    if (!this.highlighter) {
+      previewElement.innerHTML = `<pre style="padding: 1rem; overflow: auto;">${this.escapeHtml(content)}</pre>`;
+      return;
+    }
+
     try {
-      let html = await codeToHtml(content, {
+      let html = this.highlighter.codeToHtml(content, {
         lang: language,
         theme,
       });
@@ -54,6 +61,10 @@ export class CodeWithHighlightPreviewAdapter implements IPreviewAdapter {
     }
 
     return doc.documentElement.outerHTML;
+  }
+
+  setHighlighter(highlighter: SyntaxHighlighter): void {
+    this.highlighter = highlighter;
   }
 
   private escapeHtml(text: string): string {

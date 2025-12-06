@@ -7,31 +7,36 @@ import { FinderAdapterRegistry } from "./registries/finder-adapter-registry";
 import { VSCodeApiService } from "./vscode-api-service";
 
 export class WebviewController {
-  private vscodeService: VSCodeApiService;
-  private previewManager: PreviewManager;
-  private optionListManager: OptionListManager;
-  private keyboardHandler: KeyboardHandler;
   private searchElement: HTMLInputElement;
-  private adapterRegistry: FinderAdapterRegistry;
 
-  constructor() {
+  constructor(
+    private readonly vscodeService: VSCodeApiService,
+    private readonly previewManager: PreviewManager,
+    private readonly optionListManager: OptionListManager,
+    private readonly keyboardHandler: KeyboardHandler,
+    private readonly adapterRegistry: FinderAdapterRegistry,
+  ) {
     console.log("[WebviewController] Initializing controller");
-    this.vscodeService = new VSCodeApiService();
-    this.previewManager = new PreviewManager(this.vscodeService);
-    this.optionListManager = new OptionListManager(this.previewManager);
-    this.keyboardHandler = new KeyboardHandler();
     this.searchElement = document.getElementById("search") as HTMLInputElement;
-    this.adapterRegistry = new FinderAdapterRegistry();
-
     this.setupEventListeners();
     this.setupKeyboardHandlers();
   }
 
-  initialize(): void {
-    window.addEventListener("DOMContentLoaded", () => {
+  async initialize() {
+    const onDOMReady = () => {
+      console.log("[WebviewController] DOM is ready!");
       this.focusSearchInput();
       this.vscodeService.onDOMReady();
-    });
+      console.log("[WebviewController] Sent 'webviewDOMReady' message to extension");
+    };
+
+    if (document.readyState === "loading") {
+      console.log("[WebviewController] DOM still loading, waiting for DOMContentLoaded...");
+      window.addEventListener("DOMContentLoaded", onDOMReady);
+    } else {
+      console.log("[WebviewController] DOM already loaded, initializing immediately");
+      onDOMReady();
+    }
 
     window.addEventListener("message", async (event) => {
       await this.handleMessage(event.data as ToWebviewKindMessage);

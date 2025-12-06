@@ -14,7 +14,7 @@ import { FuzzyProvider } from "./fuzzy-provider";
  */
 export class WorkspaceFileFinder implements FuzzyProvider {
   public readonly fuzzyAdapterType: FuzzyProviderType = "workspace.files";
-  public readonly previewAdapterType: PreviewRendererType = "preview.workspaceFile";
+  public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
 
   constructor(
     private readonly panel: vscode.WebviewPanel,

@@ -1,4 +1,4 @@
-export function getShikiTheme(vscodeTheme: string): string {
+export function getShikiTheme(vscodeTheme: string) {
   const themeName = vscodeTheme.toLowerCase();
 
   if (themeName.includes("dark+") || themeName.includes("dark plus")) {

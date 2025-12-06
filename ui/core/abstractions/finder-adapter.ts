@@ -1,10 +1,8 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 
 export interface IFinderAdapter<TData = any, TOption = string> {
-  /**
-   * Unique identifier/type of the finder
-   */
   readonly previewAdapterType: PreviewRendererType;
+
   readonly fuzzyAdapterType: FuzzyProviderType;
 
   /**
@@ -28,14 +26,4 @@ export interface IFinderAdapter<TData = any, TOption = string> {
    * Optional: Custom filter logic for a single option
    */
   filterOption?(option: TOption, query: string): boolean;
-}
-
-export interface OptionListMessage<TData = any> {
-  type: "optionList";
-  finderType: string;
-
-  /**
-   * Raw data provided by the extension before parsing
-   */
-  data: TData;
 }

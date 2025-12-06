@@ -8,7 +8,7 @@ export interface FileOption {
 }
 
 export class FileFinderAdapter implements IFinderAdapter<FileFinderData, FileOption> {
-  public readonly previewAdapterType: PreviewRendererType = "preview.workspaceFile";
+  public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
   public readonly fuzzyAdapterType: FuzzyProviderType = "workspace.files";
 
   parseOptions(data: FileFinderData): FileOption[] {

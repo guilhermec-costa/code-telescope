@@ -2,9 +2,12 @@ import { codeToHtml } from "shiki";
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { IPreviewAdapter } from "../abstractions/preview-adapter";
+import { SyntaxHighlighter } from "../registries/preview-adapter-registry";
 
 export class BranchPreviewAdapter implements IPreviewAdapter {
-  readonly type: PreviewRendererType = "preview.gitBranch";
+  readonly type: PreviewRendererType = "preview.codeHighlighted";
+
+  constructor(private readonly highlighter: SyntaxHighlighter) {}
 
   async render(previewElement: HTMLElement, data: PreviewData, theme: string): Promise<void> {
     const { content } = data;
