@@ -87,7 +87,6 @@ export class OptionListManager<TOption = any> {
 
     this.selectedIndex = (this.selectedIndex + direction + this.filteredOptions.length) % this.filteredOptions.length;
 
-    this.ensureSelectedVisible();
     this.renderVisible();
 
     const option = this.filteredOptions[this.selectedIndex];
@@ -132,6 +131,7 @@ export class OptionListManager<TOption = any> {
     this.listElement.style.height = `${totalHeight}px`;
     this.listElement.style.position = "relative";
 
+    console.log("Total height: ", totalHeight);
     this.listElement.scrollTop = totalHeight;
 
     this.renderVisible();
@@ -184,6 +184,7 @@ export class OptionListManager<TOption = any> {
     }
 
     this.listElement.appendChild(fragment);
+    this.ensureSelectedVisible();
   }
 
   private ensureSelectedVisible(): void {

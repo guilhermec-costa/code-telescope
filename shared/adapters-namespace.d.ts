@@ -1,35 +1,35 @@
 /**
- * Represents a provider in the backend that supplies
- * fuzzy-searchable data to the webview.
+ * Fuzzy Adapters Namespace
+ * Each type here connects a provider (extension) with its adapter (webview).
  */
 export type FuzzyProviderType =
   // File & Workspace
-  | "workspace-file-finder"
-  | "workspace-text-search"
-  | "recent-files-finder"
+  | "workspace.files"
+  | "workspace.text"
+  | "workspace.recentFiles"
 
   // Git
-  | "vscode-branch-finder"
-  | "git-commit-search"
-  | "git-file-history"
+  | "git.branches"
+  | "git.commits"
+  | "git.fileHistory"
 
   // Code Navigation
-  | "workspace-symbol-finder"
-  | "document-symbol-finder"
-  | "goto-definition-finder"
+  | "code.workspaceSymbols"
+  | "code.documentSymbols"
+  | "code.gotoDefinition"
 
   // Tasks & Commands
-  | "task-finder"
-  | "command-palette-finder"
-  | "npm-script-finder"
+  | "tasks.all"
+  | "commands.all"
+  | "npm.scripts"
 
   // Extensions
-  | "extension-finder"
-  | "snippet-finder";
+  | "extensions.all"
+  | "snippets.all";
 
 export type PreviewRendererType =
-  | "workspace-file-finder"
-  | "vscode-branch-finder"
-  | "git-commit-search"
-  | "extension-finder"
-  | "code-with-highlight";
+  | "preview.workspaceFile"
+  | "preview.gitBranch"
+  | "preview.gitCommit"
+  | "preview.extension"
+  | "preview.codeHighlighted";

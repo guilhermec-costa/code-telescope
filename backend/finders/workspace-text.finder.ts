@@ -7,8 +7,8 @@ import { loadWebviewHtml } from "../utils/files";
 import { FuzzyProvider } from "./fuzzy-provider";
 
 export class WorkspaceTextSearchProvider implements FuzzyProvider {
-  public readonly fuzzyAdapterType: FuzzyProviderType = "workspace-text-search";
-  public readonly previewAdapterType: PreviewRendererType = "code-with-highlight";
+  public readonly fuzzyAdapterType: FuzzyProviderType = "workspace.text";
+  public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
   public readonly supportsDynamicSearch = true;
 
   constructor(private readonly panel: vscode.WebviewPanel) {}

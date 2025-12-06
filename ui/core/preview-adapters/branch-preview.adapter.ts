@@ -4,7 +4,7 @@ import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { IPreviewAdapter } from "./preview-adapter";
 
 export class BranchPreviewAdapter implements IPreviewAdapter {
-  readonly type: PreviewRendererType = "vscode-branch-finder";
+  readonly type: PreviewRendererType = "preview.gitBranch";
 
   async render(previewElement: HTMLElement, data: PreviewData, theme: string): Promise<void> {
     const { content } = data;

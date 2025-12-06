@@ -10,8 +10,8 @@ interface SearchOption {
 }
 
 export class WorkspaceTextSearchAdapter implements IFinderAdapter<TextSearchData, SearchOption> {
-  readonly previewAdapterType: PreviewRendererType = "code-with-highlight";
-  readonly fuzzyAdapterType: FuzzyProviderType = "workspace-text-search";
+  readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
+  readonly fuzzyAdapterType: FuzzyProviderType = "workspace.text";
 
   parseOptions(data: TextSearchData): SearchOption[] {
     return data.results.map((match) => ({

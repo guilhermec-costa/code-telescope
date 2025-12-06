@@ -4,7 +4,7 @@ import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { IPreviewAdapter } from "./preview-adapter";
 
 export class FilePreviewAdapter implements IPreviewAdapter {
-  readonly type: PreviewRendererType = "workspace-file-finder";
+  readonly type: PreviewRendererType = "preview.workspaceFile";
 
   async render(previewElement: HTMLElement, data: PreviewData, theme: string): Promise<void> {
     const { content, language = "text" } = data;

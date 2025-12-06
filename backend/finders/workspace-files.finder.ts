@@ -13,8 +13,8 @@ import { FuzzyProvider } from "./fuzzy-provider";
  * hiding dotfiles, and limiting the maximum number of results.
  */
 export class WorkspaceFileFinder implements FuzzyProvider {
-  public readonly fuzzyAdapterType: FuzzyProviderType = "workspace-file-finder";
-  public readonly previewAdapterType: PreviewRendererType = "workspace-file-finder";
+  public readonly fuzzyAdapterType: FuzzyProviderType = "workspace.files";
+  public readonly previewAdapterType: PreviewRendererType = "preview.workspaceFile";
 
   constructor(
     private readonly panel: vscode.WebviewPanel,

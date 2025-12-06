@@ -5,8 +5,8 @@ import { IFinderAdapter } from "./finder-adapter";
 export type BranchOption = { type: "branch"; data: BranchInfo };
 
 export class BranchFinderAdapter implements IFinderAdapter<BranchFinderData, BranchOption> {
-  public readonly previewAdapterType: PreviewRendererType = "vscode-branch-finder";
-  public readonly fuzzyAdapterType: FuzzyProviderType = "vscode-branch-finder";
+  public readonly previewAdapterType: PreviewRendererType = "preview.gitBranch";
+  public readonly fuzzyAdapterType: FuzzyProviderType = "git.branches";
 
   parseOptions(data: BranchFinderData): BranchOption[] {
     const options: BranchOption[] = [];

@@ -4,7 +4,7 @@ import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { IPreviewAdapter } from "./preview-adapter";
 
 export class CodeWithHighlightPreviewAdapter implements IPreviewAdapter {
-  readonly type: PreviewRendererType = "code-with-highlight";
+  readonly type: PreviewRendererType = "preview.codeHighlighted";
 
   async render(previewElement: HTMLElement, data: PreviewData, theme: string): Promise<void> {
     const { content, language = "text", metadata } = data;
