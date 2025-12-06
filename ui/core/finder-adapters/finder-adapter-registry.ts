@@ -20,7 +20,7 @@ export class FinderAdapterRegistry {
    * Register a new adapter
    */
   register(adapter: IFinderAdapter<any, any>) {
-    this.adapters.set(adapter.type, adapter);
+    this.adapters.set(adapter.fuzzyAdapterType, adapter);
   }
 
   /**

@@ -1,9 +1,8 @@
-import { OptionListMessage, type WebviewMessage } from "@shared/extension-webview-protocol";
+import { OptionListMessage, PreviewUpdateMessage, type WebviewMessage } from "@shared/extension-webview-protocol";
 import { debounce } from "../utils/debounce";
 import { FinderAdapterRegistry } from "./finder-adapters/finder-adapter-registry";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
-import { PreviewUpdateMessage } from "./preview-adapters/preview-adapter";
 import { PreviewManager } from "./preview-manager";
 import { VSCodeApiService } from "./vscode-api-service";
 
@@ -66,8 +65,8 @@ export class WebviewController {
 
     if (msg.type === "previewUpdate" && "finderType" in msg) {
       console.log("[WebviewController] Processing previewUpdate message", msg.data);
-      const { finderType, data, theme } = msg as PreviewUpdateMessage;
-      await this.previewManager.updatePreview(data, finderType, theme);
+      const { previewAdapterType, data, theme } = msg as PreviewUpdateMessage;
+      await this.previewManager.updatePreview(data, previewAdapterType, theme);
       return;
     }
 
@@ -100,6 +99,7 @@ export class WebviewController {
 
   private setupEventListeners(): void {
     const debouncedFilter = debounce((query: string) => {
+      this.vscodeService.sendDynamicSearch(query);
       this.optionListManager.filter(query);
     }, 50);
 

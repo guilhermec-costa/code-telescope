@@ -1,4 +1,4 @@
-import { FuzzyAdapter } from "../../../shared/adapters-namespace";
+import { FuzzyAdapter, PreviewAdapter } from "../../../shared/adapters-namespace";
 import { IFinderAdapter } from "./finder-adapter";
 
 export interface FileFinderData {
@@ -12,7 +12,8 @@ export interface FileOption {
 }
 
 export class FileFinderAdapter implements IFinderAdapter<FileFinderData, FileOption> {
-  public readonly type: FuzzyAdapter = "workspace-file-finder";
+  public readonly previewAdapterType: PreviewAdapter = "workspace-file-finder";
+  public readonly fuzzyAdapterType: FuzzyAdapter = "workspace-file-finder";
 
   parseOptions(data: FileFinderData): FileOption[] {
     const options: FileOption[] = [];

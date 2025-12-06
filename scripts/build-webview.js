@@ -22,31 +22,35 @@ function findEntryPoints() {
   return result;
 }
 
-const entryPoints = findEntryPoints();
-console.log("Entry points:", entryPoints);
+async function start() {
+  const entryPoints = findEntryPoints();
+  console.log("Entry points:", entryPoints);
 
-Promise.all(
-  entryPoints.map((entry) => {
-    const relDir = path.dirname(path.relative("ui", entry));
-    const outdir = path.join("ui-dist", relDir);
+  await Promise.all(
+    entryPoints.map(async (entry) => {
+      const relDir = path.dirname(path.relative("ui", entry));
+      const outdir = path.join("ui-dist", relDir);
 
-    return esbuild.build({
-      entryPoints: [entry],
-      outfile: path.join(outdir, "index.js"),
-      bundle: true,
-      format: "iife",
-      sourcemap: true,
-      target: ["chrome110"],
-      minify: false,
-      loader: {
-        ".css": "css",
-        ".ts": "ts",
-      },
-    });
-  })
-)
-  .then(() => console.log("Webview build completed"))
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
+      const ctx = await esbuild.context({
+        entryPoints: [entry],
+        outfile: path.join(outdir, "index.js"),
+        bundle: true,
+        format: "iife",
+        sourcemap: true,
+        target: ["chrome110"],
+        minify: false,
+        loader: { ".css": "css", ".ts": "ts" },
+      });
+
+      await ctx.watch();
+      console.log(`👀 Watching ${entry}`);
+    })
+  );
+
+  console.log("✔️ Webview watch started");
+}
+
+start().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

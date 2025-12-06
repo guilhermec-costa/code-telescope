@@ -1,20 +1,16 @@
 import * as vscode from "vscode";
-import { FuzzyAdapter } from "../../shared/adapters-namespace";
+import { FuzzyAdapter, PreviewAdapter } from "../../shared/adapters-namespace";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 import { Globals } from "../globals";
 import { loadWebviewHtml } from "../utils/files";
 import { FuzzyProvider } from "./fuzzy-provider";
 
 export class WorkspaceTextSearchProvider implements FuzzyProvider {
-  public readonly type: FuzzyAdapter = "workspace-text-search";
-  private searchQuery: string = "scheduler";
+  public readonly fuzzyAdapterType: FuzzyAdapter = "workspace-text-search";
+  public readonly previewAdapterType: PreviewAdapter = "code-with-highlight";
+  public readonly supportsDynamicSearch = true;
 
-  constructor(
-    private readonly panel: vscode.WebviewPanel,
-    private readonly initialQuery: string = "",
-  ) {
-    // this.searchQuery = initialQuery;
-  }
+  constructor(private readonly panel: vscode.WebviewPanel) {}
 
   async loadWebviewHtml() {
     let rawHtml = await loadWebviewHtml("ui", "views", "file-fuzzy.view.html");
@@ -30,22 +26,90 @@ export class WorkspaceTextSearchProvider implements FuzzyProvider {
     return rawHtml;
   }
 
+  /**
+   * Retorna lista vazia inicialmente
+   */
   async querySelectableOptions() {
-    if (!this.searchQuery) {
-      return { results: [] };
+    return {
+      results: [],
+      query: "",
+      message: "Type to search in workspace...",
+    };
+  }
+
+  async searchOptions(query: string): Promise<any> {
+    if (!query || query.trim().length === 0) {
+      return {
+        results: [],
+        query: "",
+      };
     }
 
-    await vscode.workspace.findTextInFiles({ pattern: this.searchQuery }, (results) => {
-      const matches: TextSearchMatch[] = [];
-      const casted = results as vscode.TextSearchMatch;
-      console.log(casted);
-    });
+    if (query.length < 2) {
+      return {
+        results: [],
+        query: query,
+      };
+    }
 
-    return { results: [], query: this.searchQuery };
+    const matches: TextSearchMatch[] = [];
+    const searchTerm = query.toLowerCase();
+
+    try {
+      const files = await vscode.workspace.findFiles("**/*", "**/node_modules/**", 1000);
+
+      for (const uri of files) {
+        try {
+          const document = await vscode.workspace.openTextDocument(uri);
+
+          const text = document.getText();
+          if (text.length > 500000) continue;
+
+          const lines = text.split("\n");
+          for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+            const line = lines[lineIndex];
+            const lowerLine = line.toLowerCase();
+
+            if (lowerLine.includes(searchTerm)) {
+              const column = lowerLine.indexOf(searchTerm);
+
+              matches.push({
+                file: uri.fsPath,
+                line: lineIndex + 1,
+                column: column + 1,
+                text: line,
+                preview: line.trim(),
+              });
+
+              if (matches.length >= 200) break;
+            }
+          }
+
+          if (matches.length >= 200) break;
+        } catch (error) {
+          continue;
+        }
+      }
+
+      return {
+        results: matches,
+        query: query,
+        message: matches.length === 0 ? `No results found for "${query}"` : undefined,
+      };
+    } catch (error) {
+      console.error("Search error:", error);
+      return {
+        results: [],
+        query: query,
+        message: "Search failed. Please try again.",
+      };
+    }
   }
 
   async getPreviewData(identifier: string): Promise<PreviewData> {
-    const [filePath, line] = identifier.split(":");
+    const parts = identifier.split(":");
+    const filePath = parts[0];
+    const line = parts[1];
 
     try {
       const uri = vscode.Uri.file(filePath);
@@ -77,17 +141,23 @@ export class WorkspaceTextSearchProvider implements FuzzyProvider {
   }
 
   async onSelect(identifier: string) {
-    // identifier format: "file:line:column"
-    const [filePath, line, column] = identifier.split(":");
+    const parts = identifier.split(":");
+    const filePath = parts[0];
+    const line = parts[1];
+    const column = parts[2] || "1";
 
-    const uri = vscode.Uri.file(filePath);
-    const position = new vscode.Position(parseInt(line) - 1, parseInt(column) - 1);
+    try {
+      const uri = vscode.Uri.file(filePath);
+      const position = new vscode.Position(parseInt(line) - 1, parseInt(column) - 1);
 
-    const editor = await vscode.window.showTextDocument(uri, {
-      selection: new vscode.Range(position, position),
-    });
+      const editor = await vscode.window.showTextDocument(uri, {
+        selection: new vscode.Range(position, position),
+      });
 
-    editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
+      editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
+    } catch (error) {
+      vscode.window.showErrorMessage(`Failed to open file: ${error}`);
+    }
   }
 }
 

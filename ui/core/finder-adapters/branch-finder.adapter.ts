@@ -1,4 +1,4 @@
-import { FuzzyAdapter } from "../../../shared/adapters-namespace";
+import { FuzzyAdapter, PreviewAdapter } from "../../../shared/adapters-namespace";
 import { IFinderAdapter } from "./finder-adapter";
 
 export interface BranchFinderData {
@@ -21,7 +21,8 @@ export interface CommitInfo {
 export type BranchOption = { type: "branch"; data: BranchInfo };
 
 export class BranchFinderAdapter implements IFinderAdapter<BranchFinderData, BranchOption> {
-  public readonly type: FuzzyAdapter = "vscode-branch-finder";
+  public readonly previewAdapterType: PreviewAdapter = "vscode-branch-finder";
+  public readonly fuzzyAdapterType: FuzzyAdapter = "vscode-branch-finder";
 
   parseOptions(data: BranchFinderData): BranchOption[] {
     const options: BranchOption[] = [];

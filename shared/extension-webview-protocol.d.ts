@@ -1,4 +1,4 @@
-import { FuzzyAdapter } from "./adapters-namespace";
+import { FuzzyAdapter, PreviewAdapter } from "./adapters-namespace";
 
 /**
  * Event names for all messages exchanged between extension ⇄ webview.
@@ -37,7 +37,7 @@ export interface PreviewUpdateMessage {
   type: "previewUpdate";
   data: PreviewData;
   theme: string;
-  finderType: FuzzyAdapter;
+  previewAdapterType: PreviewAdapter;
 }
 
 /** Message informing which option was selected */
@@ -50,6 +50,7 @@ export type WebviewMessage =
   | { type: "ready"; data?: undefined }
   | { type: "closePanel"; data?: undefined }
   | { type: "previewRequest"; data: any }
+  | { type: "dynamicSearch"; data: any }
   | PreviewUpdateMessage
   | OptionListMessage
   | OptionSelectedMessage

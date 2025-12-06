@@ -34,4 +34,11 @@ export class VSCodeApiService {
   closePanel(): void {
     this.postMessage({ type: "closePanel" });
   }
+
+  sendDynamicSearch(query: string): void {
+    this.postMessage({
+      type: "dynamicSearch",
+      data: { query },
+    } as any);
+  }
 }

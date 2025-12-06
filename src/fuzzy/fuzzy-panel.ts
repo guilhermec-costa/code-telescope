@@ -56,7 +56,7 @@ export class FuzzyPanel {
   }
 
   public async setProvider(provider: FuzzyProvider) {
-    console.log(`[FuzzyPanel] Setting provider of type "${provider.type}"`);
+    console.log(`[FuzzyPanel] Setting provider of type "${provider.fuzzyAdapterType}"`);
     this.provider = provider;
     this.panel.webview.html = await this.provider.loadWebviewHtml();
     const items = await provider.querySelectableOptions();
@@ -69,7 +69,7 @@ export class FuzzyPanel {
     await this.wvManager.sendMessage({
       type: "optionList",
       data: options,
-      finderType: this.provider.type,
+      finderType: this.provider.fuzzyAdapterType,
     });
   }
 
@@ -81,7 +81,7 @@ export class FuzzyPanel {
   }
 
   public listenWebview() {
-    console.log("[FuzzyPanel] Listening for webview messages");
+    console.log("[FuzzyPanel] Listening for webview messages!!!!!!!!!!");
     this.wvManager.onMessage(async (msg: WebviewMessage) => {
       console.log(`[FuzzyPanel] Received message of type: ${msg.type}`);
 
@@ -91,7 +91,16 @@ export class FuzzyPanel {
         await this.sendOptionsListEvent(items);
       }
 
+      if (msg.type === "dynamicSearch") {
+        if (this.provider.supportsDynamicSearch && this.provider.searchOptions) {
+          const query = msg.data.query;
+          const results = await this.provider.searchOptions(query);
+          await this.sendOptionsListEvent(results);
+        }
+      }
+
       if (msg.type === "optionSelected") {
+        this.dispose();
         const selected = msg.data;
 
         if (this.provider.onSelect) {
@@ -104,8 +113,7 @@ export class FuzzyPanel {
       }
 
       if (msg.type === "closePanel") {
-        console.log("[FuzzyPanel] Closing panel");
-        this.panel.dispose();
+        this.dispose();
         await execCmd(Globals.cmds.focusActiveFile);
       }
 
@@ -116,6 +124,11 @@ export class FuzzyPanel {
     });
   }
 
+  private dispose() {
+    console.log("[FuzzyPanel] Closing panel");
+    this.panel.dispose();
+  }
+
   private async handlePreviewRequest(identifier: string) {
     console.log(`[FuzzyPanel] Getting preview data for: ${identifier}`);
     const previewData = await this.provider.getPreviewData(identifier);
@@ -124,7 +137,7 @@ export class FuzzyPanel {
     console.log("[FuzzyPanel] Sending previewUpdate event");
     await this.wvManager.sendMessage({
       type: "previewUpdate",
-      finderType: this.provider.type,
+      previewAdapterType: this.provider.previewAdapterType,
       data: previewData,
       theme: shikiTheme,
     });

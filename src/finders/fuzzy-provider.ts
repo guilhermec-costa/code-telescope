@@ -1,4 +1,4 @@
-import { FuzzyAdapter } from "../../shared/adapters-namespace";
+import { FuzzyAdapter, PreviewAdapter } from "../../shared/adapters-namespace";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 
 export type SearchResult = {
@@ -6,7 +6,8 @@ export type SearchResult = {
 } & Record<string, any>;
 
 export interface FuzzyProvider {
-  readonly type: FuzzyAdapter;
+  readonly fuzzyAdapterType: FuzzyAdapter;
+  readonly previewAdapterType: PreviewAdapter;
   /**
    * Returns the list of items to be displayed in the fuzzy finder.
    * Example: files, branches, symbols, commands...
@@ -22,4 +23,11 @@ export interface FuzzyProvider {
   loadWebviewHtml(): Promise<string>;
 
   getPreviewData(identifier: string): Promise<PreviewData>;
+
+  supportsDynamicSearch?: boolean;
+  /**
+   * Optional: dynamic search based on user's query
+   * It's only called when supportsDynamicSearch is true.
+   */
+  searchOptions?(query: string): Promise<any>;
 }

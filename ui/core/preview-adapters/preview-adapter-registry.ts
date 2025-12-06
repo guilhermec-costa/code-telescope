@@ -1,5 +1,6 @@
-import { FuzzyAdapter } from "../../../shared/adapters-namespace";
+import { PreviewAdapter } from "../../../shared/adapters-namespace";
 import { BranchPreviewAdapter } from "./branch-preview.adapter";
+import { CodeWithHighlightPreviewAdapter } from "./code-with-highlight.adapter";
 import { FilePreviewAdapter } from "./file-preview.adapter";
 import { IPreviewAdapter } from "./preview-adapter";
 
@@ -9,13 +10,14 @@ export class PreviewAdapterRegistry {
   constructor() {
     this.register(new FilePreviewAdapter());
     this.register(new BranchPreviewAdapter());
+    this.register(new CodeWithHighlightPreviewAdapter());
   }
 
   register(adapter: IPreviewAdapter): void {
     this.adapters.set(adapter.type, adapter);
   }
 
-  getAdapter(finderType: FuzzyAdapter): IPreviewAdapter | undefined {
+  getAdapter(finderType: PreviewAdapter): IPreviewAdapter | undefined {
     return this.adapters.get(finderType);
   }
 

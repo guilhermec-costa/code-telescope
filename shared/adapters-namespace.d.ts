@@ -26,3 +26,10 @@ export type FuzzyAdapter =
   // Extensions
   | "extension-finder"
   | "snippet-finder";
+
+export type PreviewAdapter =
+  | "workspace-file-finder"
+  | "vscode-branch-finder"
+  | "git-commit-search"
+  | "extension-finder"
+  | "code-with-highlight";

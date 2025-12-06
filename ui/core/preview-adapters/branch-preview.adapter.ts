@@ -1,10 +1,10 @@
 import { codeToHtml } from "shiki";
-import { FuzzyAdapter } from "../../../shared/adapters-namespace";
+import { PreviewAdapter } from "../../../shared/adapters-namespace";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { IPreviewAdapter } from "./preview-adapter";
 
 export class BranchPreviewAdapter implements IPreviewAdapter {
-  readonly type: FuzzyAdapter = "vscode-branch-finder";
+  readonly type: PreviewAdapter = "vscode-branch-finder";
 
   async render(previewElement: HTMLElement, data: PreviewData, theme: string): Promise<void> {
     const { content } = data;

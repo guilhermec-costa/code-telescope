@@ -1,5 +1,6 @@
-import { FuzzyAdapter } from "../../shared/adapters-namespace";
+import { PreviewAdapter } from "../../shared/adapters-namespace";
 import { PreviewData } from "../../shared/extension-webview-protocol";
+import { CodeWithHighlightPreviewAdapter } from "./preview-adapters/code-with-highlight.adapter";
 import { IPreviewAdapter } from "./preview-adapters/preview-adapter";
 import { PreviewAdapterRegistry } from "./preview-adapters/preview-adapter-registry";
 import { VSCodeApiService } from "./vscode-api-service";
@@ -27,7 +28,7 @@ export class PreviewManager {
     this.adapter = adapter;
   }
 
-  async updatePreview(data: PreviewData, finderType: FuzzyAdapter, theme: string): Promise<void> {
+  async updatePreview(data: PreviewData, finderType: PreviewAdapter, theme: string): Promise<void> {
     if (!this.previewElement) {
       console.warn("[PreviewManager] Cannot update preview: adapter or previewElement missing");
       return;
@@ -44,7 +45,8 @@ export class PreviewManager {
     console.log("[PreviewManager] Adapter found, rendering preview");
     this.setAdapter(adapter);
 
-    await this.adapter!.render(this.previewElement, data, theme);
+    // await this.adapter!.render(this.previewElement, data, theme);
+    new CodeWithHighlightPreviewAdapter();
     this.scrollToTop();
     this.lastPreviewedData = data;
     console.log("[PreviewManager] Preview rendered");
