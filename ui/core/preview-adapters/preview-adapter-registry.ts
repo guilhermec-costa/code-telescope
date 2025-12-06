@@ -1,4 +1,4 @@
-import { PreviewAdapter } from "../../../shared/adapters-namespace";
+import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { BranchPreviewAdapter } from "./branch-preview.adapter";
 import { CodeWithHighlightPreviewAdapter } from "./code-with-highlight.adapter";
 import { FilePreviewAdapter } from "./file-preview.adapter";
@@ -17,7 +17,7 @@ export class PreviewAdapterRegistry {
     this.adapters.set(adapter.type, adapter);
   }
 
-  getAdapter(finderType: PreviewAdapter): IPreviewAdapter | undefined {
+  getAdapter(finderType: PreviewRendererType): IPreviewAdapter | undefined {
     return this.adapters.get(finderType);
   }
 

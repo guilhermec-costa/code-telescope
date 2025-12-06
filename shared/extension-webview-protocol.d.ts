@@ -1,4 +1,4 @@
-import { FuzzyAdapter, PreviewAdapter } from "./adapters-namespace";
+import { FuzzyProviderType, PreviewRendererType } from "./adapters-namespace";
 
 /**
  * Event names for all messages exchanged between extension ⇄ webview.
@@ -13,7 +13,7 @@ export type FuzzyPanelEvents =
   | "themeUpdate";
 
 /**
- * Data that can be previewed by a {@link PreviewAdapter}.
+ * Data that can be previewed by a {@link PreviewRendererType}.
  * Represents the content and optional metadata required to render a preview.
  */
 export interface PreviewData {
@@ -38,7 +38,7 @@ export interface ThemeUpdateMessage {
 export interface OptionListMessage {
   type: "optionList";
   data: any[];
-  finderType: FuzzyAdapter;
+  finderType: FuzzyProviderType;
 }
 
 /**
@@ -49,7 +49,7 @@ export interface PreviewUpdateMessage {
   type: "previewUpdate";
   data: PreviewData;
   theme: string;
-  previewAdapterType: PreviewAdapter;
+  previewAdapterType: PreviewRendererType;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { FuzzyAdapter, PreviewAdapter } from "../../../shared/adapters-namespace";
+import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { TextSearchData } from "../../../shared/exchange/workspace-text-search";
 import { IFinderAdapter } from "./finder-adapter";
 
@@ -10,8 +10,8 @@ interface SearchOption {
 }
 
 export class WorkspaceTextSearchAdapter implements IFinderAdapter<TextSearchData, SearchOption> {
-  readonly previewAdapterType: PreviewAdapter = "code-with-highlight";
-  readonly fuzzyAdapterType: FuzzyAdapter = "workspace-text-search";
+  readonly previewAdapterType: PreviewRendererType = "code-with-highlight";
+  readonly fuzzyAdapterType: FuzzyProviderType = "workspace-text-search";
 
   parseOptions(data: TextSearchData): SearchOption[] {
     return data.results.map((match) => ({

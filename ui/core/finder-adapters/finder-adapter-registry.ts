@@ -1,4 +1,4 @@
-import { FuzzyAdapter } from "../../../shared/adapters-namespace";
+import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { BranchFinderAdapter } from "./branch-finder.adapter";
 import { IFinderAdapter } from "./finder-adapter";
 import { FileFinderAdapter } from "./workspace-file.adapter";
@@ -26,7 +26,7 @@ export class FinderAdapterRegistry {
   /**
    * Gets adapter by its type
    */
-  getAdapter(finderType: FuzzyAdapter): IFinderAdapter | undefined {
+  getAdapter(finderType: FuzzyProviderType): IFinderAdapter | undefined {
     return this.adapters.get(finderType);
   }
 

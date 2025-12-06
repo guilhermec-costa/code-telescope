@@ -1,4 +1,4 @@
-import { PreviewAdapter } from "../../shared/adapters-namespace";
+import { PreviewRendererType } from "../../shared/adapters-namespace";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 import { IPreviewAdapter } from "./preview-adapters/preview-adapter";
 import { PreviewAdapterRegistry } from "./preview-adapters/preview-adapter-registry";
@@ -27,7 +27,7 @@ export class PreviewManager {
     this.adapter = adapter;
   }
 
-  async updatePreview(data: PreviewData, finderType: PreviewAdapter, theme: string): Promise<void> {
+  async updatePreview(data: PreviewData, finderType: PreviewRendererType, theme: string): Promise<void> {
     if (!this.previewElement) {
       console.warn("[PreviewManager] Cannot update preview: adapter or previewElement missing");
       return;

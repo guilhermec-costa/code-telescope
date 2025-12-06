@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { PreviewAdapter } from "../../shared/adapters-namespace";
+import { PreviewRendererType } from "../../shared/adapters-namespace";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 import { Globals } from "../globals";
 import { API, GitExtension, Ref } from "../types/git";
@@ -8,7 +8,7 @@ import { FuzzyProvider } from "./fuzzy-provider";
 
 export class VSCodeGitBranchFinder implements FuzzyProvider {
   public readonly fuzzyAdapterType = "vscode-branch-finder";
-  public readonly previewAdapterType: PreviewAdapter = "vscode-branch-finder";
+  public readonly previewAdapterType: PreviewRendererType = "vscode-branch-finder";
 
   /** Reference to the Git API exported by the official VS Code Git extension. */
   private readonly gitApi: API | null;

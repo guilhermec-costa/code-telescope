@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { FuzzyAdapter, PreviewAdapter } from "../../shared/adapters-namespace";
+import { FuzzyProviderType, PreviewRendererType } from "../../shared/adapters-namespace";
 import { TextSearchMatch } from "../../shared/exchange/workspace-text-search";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 import { Globals } from "../globals";
@@ -7,8 +7,8 @@ import { loadWebviewHtml } from "../utils/files";
 import { FuzzyProvider } from "./fuzzy-provider";
 
 export class WorkspaceTextSearchProvider implements FuzzyProvider {
-  public readonly fuzzyAdapterType: FuzzyAdapter = "workspace-text-search";
-  public readonly previewAdapterType: PreviewAdapter = "code-with-highlight";
+  public readonly fuzzyAdapterType: FuzzyProviderType = "workspace-text-search";
+  public readonly previewAdapterType: PreviewRendererType = "code-with-highlight";
   public readonly supportsDynamicSearch = true;
 
   constructor(private readonly panel: vscode.WebviewPanel) {}

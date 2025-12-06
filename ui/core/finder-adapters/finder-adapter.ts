@@ -1,11 +1,11 @@
-import { FuzzyAdapter, PreviewAdapter } from "../../../shared/adapters-namespace";
+import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 
 export interface IFinderAdapter<TData = any, TOption = string> {
   /**
    * Unique identifier/type of the finder
    */
-  readonly previewAdapterType: PreviewAdapter;
-  readonly fuzzyAdapterType: FuzzyAdapter;
+  readonly previewAdapterType: PreviewRendererType;
+  readonly fuzzyAdapterType: FuzzyProviderType;
 
   /**
    * Processes the raw data coming from the extension

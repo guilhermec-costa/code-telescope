@@ -1,8 +1,8 @@
 /**
- * Fuzzy Adapters Namespace
- * Each type here connects a provider (extension) with its adapter (webview).
+ * Represents a provider in the backend that supplies
+ * fuzzy-searchable data to the webview.
  */
-export type FuzzyAdapter =
+export type FuzzyProviderType =
   // File & Workspace
   | "workspace-file-finder"
   | "workspace-text-search"
@@ -27,7 +27,7 @@ export type FuzzyAdapter =
   | "extension-finder"
   | "snippet-finder";
 
-export type PreviewAdapter =
+export type PreviewRendererType =
   | "workspace-file-finder"
   | "vscode-branch-finder"
   | "git-commit-search"

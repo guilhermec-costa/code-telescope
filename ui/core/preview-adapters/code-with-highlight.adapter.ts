@@ -1,10 +1,10 @@
 import { codeToHtml } from "shiki";
-import { PreviewAdapter } from "../../../shared/adapters-namespace";
+import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { IPreviewAdapter } from "./preview-adapter";
 
 export class CodeWithHighlightPreviewAdapter implements IPreviewAdapter {
-  readonly type: PreviewAdapter = "code-with-highlight";
+  readonly type: PreviewRendererType = "code-with-highlight";
 
   async render(previewElement: HTMLElement, data: PreviewData, theme: string): Promise<void> {
     const { content, language = "text", metadata } = data;
