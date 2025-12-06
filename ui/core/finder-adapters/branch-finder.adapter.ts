@@ -1,22 +1,6 @@
 import { FuzzyAdapter, PreviewAdapter } from "../../../shared/adapters-namespace";
+import { BranchFinderData, BranchInfo } from "../../../shared/exchange/branch-search";
 import { IFinderAdapter } from "./finder-adapter";
-
-export interface BranchFinderData {
-  branches: BranchInfo[];
-}
-
-export interface BranchInfo {
-  name: string;
-  remote?: string;
-  current?: boolean;
-}
-
-export interface CommitInfo {
-  hash: string;
-  message: string;
-  author: string;
-  date: string;
-}
 
 export type BranchOption = { type: "branch"; data: BranchInfo };
 
