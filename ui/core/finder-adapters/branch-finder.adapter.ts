@@ -5,7 +5,7 @@ import { IFinderAdapter } from "../abstractions/finder-adapter";
 export type BranchOption = { type: "branch"; data: BranchInfo };
 
 export class BranchFinderAdapter implements IFinderAdapter<BranchFinderData, BranchOption> {
-  public readonly previewAdapterType: PreviewRendererType = "preview.gitBranch";
+  public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
   public readonly fuzzyAdapterType: FuzzyProviderType = "git.branches";
 
   parseOptions(data: BranchFinderData): BranchOption[] {

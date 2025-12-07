@@ -29,7 +29,7 @@ async function start() {
   await Promise.all(
     entryPoints.map(async (entry) => {
       const relDir = path.dirname(path.relative("ui", entry));
-      const outdir = path.join("ui-dist", relDir);
+      const outdir = path.join("./ui/dist", relDir);
 
       const ctx = await esbuild.context({
         entryPoints: [entry],

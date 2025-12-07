@@ -46,7 +46,7 @@ export class FuzzyPanel {
         enableScripts: true,
         localResourceRoots: [
           vscode.Uri.joinPath(Globals.EXTENSION_URI, "ui"),
-          vscode.Uri.joinPath(Globals.EXTENSION_URI, "ui-dist"),
+          vscode.Uri.joinPath(Globals.EXTENSION_URI, "ui/dist"),
         ],
       },
     );

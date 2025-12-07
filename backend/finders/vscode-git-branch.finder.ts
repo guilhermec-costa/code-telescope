@@ -33,7 +33,7 @@ export class VSCodeGitBranchFinder implements FuzzyProvider {
     };
 
     replace("{{style}}", "ui/style/style.css");
-    replace("{{script}}", "ui-dist/index.js");
+    replace("{{script}}", "ui/dist/index.js");
     return rawHtml;
   }
 

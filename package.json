@@ -12,7 +12,7 @@
   "activationEvents": [
     "onCommand:code-telescope.health"
   ],
-  "main": "./out/extension.js",
+  "main": "./backend/dist/extension.js",
   "extensionDependencies": [
     "vscode.git"
   ],
@@ -67,9 +67,9 @@
   },
   "scripts": {
     "vscode:prepublish": "pnpm run compile",
-    "update-proposed-types": "./scripts/download-api-proposals-types.sh",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "build": "tsc -b ./",
+    "watch": "tsc -b -w ./",
+    "compile": "tsc -b ./",
     "pretest": "pnpm run compile && pnpm run lint",
     "lint": "biome lint",
     "check": "biome check",

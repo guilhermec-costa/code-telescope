@@ -1,27 +1,6 @@
 {
-  "compilerOptions": {
-    "module": "Node16",
-    "moduleResolution": "node16",
-    "target": "ES2022",
-    "outDir": "out",
-    "lib": [
-      "ES2022"
-    ],
-    "sourceMap": true,
-    "rootDir": "backend",
-    "baseUrl": ".",
-    "paths": {
-      "@shared/*": [
-        "shared/*"
-      ]
-    },
-    "strict": true
-  },
-  "include": [
-    "backend/**/*",
-    "./shared/**/*"
-  ],
-  "exclude": [
-    "ui"
+  "files": [],
+  "references": [
+    { "path": "./backend" }
   ]
 }
