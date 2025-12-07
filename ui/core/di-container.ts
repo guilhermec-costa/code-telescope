@@ -1,8 +1,8 @@
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { PreviewManager } from "./preview-manager";
-import { FinderAdapterRegistry } from "./registries/finder-adapter-registry";
-import { PreviewAdapterRegistry } from "./registries/preview-adapter-registry";
+import { FuzzyFinderAdapterRegistry } from "./registries/finder-adapter.registry";
+import { PreviewRendererAdapterRegistry } from "./registries/preview-adapter.registry";
 import { VSCodeApiService } from "./vscode-api-service";
 
 export class DIContainer {
@@ -10,29 +10,29 @@ export class DIContainer {
   previewManager!: PreviewManager;
   optionListManager!: OptionListManager;
   keyboardHandler!: KeyboardHandler;
-  adapterRegistry!: FinderAdapterRegistry;
+  adapterRegistry!: FuzzyFinderAdapterRegistry;
 
   async init() {
     try {
-      console.log("[DIContainer] Initializing VSCodeApiService...");
+      console.log("[DIContainer] Initializing VSCodeApiService");
       this.vscodeService = new VSCodeApiService();
 
-      console.log("[DIContainer] Initializing PreviewAdapterRegistry...");
-      const previewAdapterRegistry = new PreviewAdapterRegistry();
+      console.log("[DIContainer] Initializing PreviewAdapterRegistry");
+      const previewAdapterRegistry = new PreviewRendererAdapterRegistry();
       await previewAdapterRegistry.init();
       console.log("[DIContainer] PreviewAdapterRegistry initialized");
 
-      console.log("[DIContainer] Initializing PreviewManager...");
+      console.log("[DIContainer] Initializing PreviewManager");
       this.previewManager = new PreviewManager(this.vscodeService, previewAdapterRegistry);
 
-      console.log("[DIContainer] Initializing OptionListManager...");
+      console.log("[DIContainer] Initializing OptionListManager");
       this.optionListManager = new OptionListManager(this.previewManager);
 
-      console.log("[DIContainer] Initializing KeyboardHandler...");
+      console.log("[DIContainer] Initializing KeyboardHandler");
       this.keyboardHandler = new KeyboardHandler();
 
-      console.log("[DIContainer] Initializing FinderAdapterRegistry...");
-      this.adapterRegistry = new FinderAdapterRegistry();
+      console.log("[DIContainer] Initializing FinderAdapterRegistry");
+      this.adapterRegistry = new FuzzyFinderAdapterRegistry();
 
       console.log("[DIContainer] All services initialized successfully!");
     } catch (error) {

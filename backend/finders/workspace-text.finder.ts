@@ -4,20 +4,20 @@ import { TextSearchMatch } from "../../shared/exchange/workspace-text-search";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 import { Globals } from "../globals";
 import { loadWebviewHtml } from "../utils/files";
-import { FuzzyProvider } from "./fuzzy-provider";
+import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
 
-export class WorkspaceTextSearchProvider implements FuzzyProvider {
+export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
   public readonly fuzzyAdapterType: FuzzyProviderType = "workspace.text";
   public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
   public readonly supportsDynamicSearch = true;
 
-  constructor(private readonly panel: vscode.WebviewPanel) {}
+  constructor(private readonly wvPanel: vscode.WebviewPanel) {}
 
   async loadWebviewHtml() {
     let rawHtml = await loadWebviewHtml("ui", "views", "file-fuzzy.view.html");
 
     const replace = (search: string, distPath: string) => {
-      const fullUri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
+      const fullUri = this.wvPanel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
       rawHtml = rawHtml.replace(search, fullUri.toString());
     };
 
@@ -27,9 +27,6 @@ export class WorkspaceTextSearchProvider implements FuzzyProvider {
     return rawHtml;
   }
 
-  /**
-   * Retorna lista vazia inicialmente
-   */
   async querySelectableOptions() {
     return {
       results: [],
@@ -108,6 +105,7 @@ export class WorkspaceTextSearchProvider implements FuzzyProvider {
   }
 
   async getPreviewData(identifier: string): Promise<PreviewData> {
+    console.log("Identifier: ", identifier);
     const parts = identifier.split(":");
     const filePath = parts[0];
     const line = parts[1];
@@ -125,7 +123,7 @@ export class WorkspaceTextSearchProvider implements FuzzyProvider {
         language,
         metadata: {
           filePath,
-          highlightLine: lineNum - startLine,
+          highlightLine: lineNum,
           totalLines: document.lineCount,
         },
       };

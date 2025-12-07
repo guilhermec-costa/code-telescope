@@ -1,12 +1,13 @@
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../shared/adapters-namespace";
+import { BranchFinderData } from "../../shared/exchange/branch-search";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 import { Globals } from "../globals";
 import { API, GitExtension, Ref } from "../types/git";
 import { loadWebviewHtml } from "../utils/files";
-import { FuzzyProvider } from "./fuzzy-provider";
+import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
 
-export class VSCodeGitBranchFinder implements FuzzyProvider {
+export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
   public readonly fuzzyAdapterType: FuzzyProviderType = "git.branches";
   public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
 
@@ -14,7 +15,7 @@ export class VSCodeGitBranchFinder implements FuzzyProvider {
   private readonly gitApi: API | null;
 
   constructor(
-    private readonly panel: vscode.WebviewPanel,
+    private readonly wvPanel: vscode.WebviewPanel,
     private options: GitBranchFinderOptions = {},
   ) {
     this.gitApi = this.getGitApi();
@@ -28,7 +29,7 @@ export class VSCodeGitBranchFinder implements FuzzyProvider {
     let rawHtml = await loadWebviewHtml("ui", "views", "branch-fuzzy.view.html");
 
     const replace = (search: string, distPath: string) => {
-      const fullUri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
+      const fullUri = this.wvPanel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
       rawHtml = rawHtml.replace(search, fullUri.toString());
     };
 
@@ -40,7 +41,7 @@ export class VSCodeGitBranchFinder implements FuzzyProvider {
   /**
    * Returns the list of branches to display in the fuzzy finder.
    */
-  async querySelectableOptions() {
+  async querySelectableOptions(): Promise<BranchFinderData> {
     const branches = await this.findBranches();
     return {
       branches: branches.map((ref) => ({

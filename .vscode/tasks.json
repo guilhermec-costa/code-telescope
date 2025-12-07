@@ -30,7 +30,7 @@
       "dependsOn": [
         "tsc watch",
       ],
-      "dependsOrder": "sequence"
+      "dependsOrder": "parallel"
     }
   ]
 }

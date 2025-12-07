@@ -1,5 +1,4 @@
 body {
-  font-family: var(--vscode-editor-font-family), "Fira Code", Consolas, monospace;
   font-size: 14px; 
   margin: 0;
   padding: 0;
@@ -15,6 +14,7 @@ body {
 :root {
   --bg: var(--vscode-editor-background);
   --fg: var(--vscode-editor-foreground);
+  --font-family: var(--vscode-editor-font-family);
   --border-color: var(--vscode-editorWidget-border); 
   --status-bar-bg: var(--vscode-statusBar-background);
   --status-bar-fg: var(--vscode-statusBar-foreground);
@@ -41,7 +41,7 @@ body {
   height: 600px;
   background: var(--bg);
   border: 1px solid var(--border-color); 
-  border-radius: 2px;
+  border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); 
   display: flex;
   flex-direction: column;
@@ -80,6 +80,7 @@ body {
   order: 1; 
   width: 100%;
   padding: 5px 15px; 
+  font-family: var(--font-family), monospace;
   font-size: 12px; 
   font-weight: 500;
   color: var(--status-bar-fg);
@@ -104,7 +105,7 @@ body {
   background: var(--input-bg);
   border: none;
   outline: none;
-  font-family: inherit;
+  font-family: var(--font-family), monospace;
 }
 
 #file-count {
@@ -116,6 +117,7 @@ body {
   font-size: 12px;
   font-weight: 500;
   color: var(--muted-fg);
+  font-family: var(--font-family), monospace;
   pointer-events: none; 
 }
 
@@ -146,7 +148,7 @@ body {
 }
 
 #option-list::-webkit-scrollbar {
-  width: 8px;
+  width: 2px;
 }
 #option-list::-webkit-scrollbar-track {
   background: transparent;
@@ -162,8 +164,9 @@ body {
 .option-item {
   padding: 4px 15px;
   cursor: pointer;
-  font-family: var(--vscode-editor-font-family), "Fira Code", monospace;
-  font-size: 14px;
+  font-family: var(--font-family), "Fira Code";
+  font-size: 15px;
+  font-weight: 500;
   color: var(--fg);
   transition: background-color 0.1s ease;
   display: flex; 
@@ -191,24 +194,25 @@ body {
 
 #preview {
   width: 100%;
+  font-family: var(--font-family), "Fira Code";
   height: 100%;
   background: var(--bg);
   color: var(--fg);
   padding: 10px 15px;
   overflow: auto;
   white-space: pre;
-  font-family: var(--vscode-editor-font-family), "Fira Code", Consolas, monospace;
   font-size: 16px; 
-  font-weight: 500;
   line-height: 1.3;
 }
 
 #preview pre,
 #preview code {
     background-color: transparent !important;
+    font-family: var(--font-family), "Fira Code";
     padding: 0; 
     margin: 0;
 }
 #preview pre span {
     background-color: transparent !important;
+    font-family: var(--font-family), "Fira Code";
 }

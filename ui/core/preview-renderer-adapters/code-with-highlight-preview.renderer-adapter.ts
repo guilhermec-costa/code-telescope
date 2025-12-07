@@ -1,9 +1,9 @@
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
-import { IPreviewAdapter } from "../abstractions/preview-adapter";
-import { SyntaxHighlighter } from "../registries/preview-adapter-registry";
+import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
+import { SyntaxHighlighter } from "../registries/preview-adapter.registry";
 
-export class CodeWithHighlightPreviewAdapter implements IPreviewAdapter {
+export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRendererAdapter {
   readonly type: PreviewRendererType = "preview.codeHighlighted";
 
   constructor(private highlighter: SyntaxHighlighter) {}
@@ -47,7 +47,7 @@ export class CodeWithHighlightPreviewAdapter implements IPreviewAdapter {
     const style = doc.createElement("style");
     style.textContent = `
       .shiki .line.highlighted {
-        background-color: rgba(255, 0, 0, 0.15);
+        background-color: var(--highlight-bg) !important; 
         border-left: 3px solid rgba(255, 200, 0, 0.8);
         padding-left: 1em;
         margin-left: -1em;

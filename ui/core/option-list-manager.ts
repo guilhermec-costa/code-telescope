@@ -1,5 +1,5 @@
 import { escapeHtml } from "ui/utils/html";
-import { IFinderAdapter } from "./abstractions/finder-adapter";
+import { IFuzzyFinderDataAdapter } from "./abstractions/fuzzy-finder-data-adapter";
 import { PreviewManager } from "./preview-manager";
 
 export class OptionListManager<TOption = any> {
@@ -7,7 +7,7 @@ export class OptionListManager<TOption = any> {
   private filteredOptions: TOption[] = [];
   private selectedIndex: number = 0;
 
-  private currentAdapter: IFinderAdapter<any, TOption> | null = null;
+  private currentAdapter: IFuzzyFinderDataAdapter<any, TOption> | null = null;
 
   private listElement: HTMLUListElement;
   private searchElement: HTMLInputElement;
@@ -21,7 +21,9 @@ export class OptionListManager<TOption = any> {
   private visibleEndIndex = 0;
   private containerHeight = 0;
 
-  // calllbacks
+  /**
+   * Callback invoked when the user confirms a selection
+   */
   onSelectionConfirmed?: () => void;
 
   constructor(previewManager: PreviewManager) {
@@ -33,7 +35,7 @@ export class OptionListManager<TOption = any> {
     this.setupVirtualization();
   }
 
-  setAdapter(adapter: IFinderAdapter<any, TOption>): void {
+  setAdapter(adapter: IFuzzyFinderDataAdapter<any, TOption>): void {
     this.currentAdapter = adapter;
   }
 
@@ -102,17 +104,13 @@ export class OptionListManager<TOption = any> {
     this.requestPreview(option);
   }
 
-  getSelectedOption(): TOption | undefined {
-    return this.filteredOptions[this.selectedIndex];
-  }
-
   /**
-   * Retorna o valor de seleção formatado pelo adapter
+   * @returns The adapter-defined selection value
    */
   getSelectedValue(): string | undefined {
     if (!this.currentAdapter) return undefined;
 
-    const option = this.getSelectedOption();
+    const option = this.filteredOptions[this.selectedIndex];
     if (!option) return undefined;
 
     return this.currentAdapter.getSelectionValue(option);
@@ -136,11 +134,15 @@ export class OptionListManager<TOption = any> {
     this.listElement.style.height = `${totalHeight}px`;
     this.listElement.style.position = "relative";
 
+    // Always scroll to bottom when rendering new results
     this.listElement.scrollTop = totalHeight;
 
     this.renderVisible();
   }
 
+  /**
+   * Renders only the visible portion of the list using virtualization.
+   */
   private renderVisible(): void {
     if (!this.currentAdapter) return;
 
@@ -191,6 +193,7 @@ export class OptionListManager<TOption = any> {
     this.ensureSelectedVisible();
   }
 
+  /** Ensures the selected item remains visible inside the scroll viewport. */
   private ensureSelectedVisible(): void {
     const selectedTop = this.selectedIndex * this.ITEM_HEIGHT;
     const selectedBottom = selectedTop + this.ITEM_HEIGHT;
@@ -206,6 +209,12 @@ export class OptionListManager<TOption = any> {
     }
   }
 
+  /**
+   * Highlights the matched substring inside option text.
+   *
+   * @param text - Raw option text.
+   * @param query - Search query.
+   */
   private highlightMatch(text: string, query: string): string {
     if (!query) return escapeHtml(text);
 

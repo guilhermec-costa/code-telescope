@@ -1,7 +1,7 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../shared/adapters-namespace";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 
-export interface FuzzyProvider {
+export interface FuzzyFinderProvider {
   readonly fuzzyAdapterType: FuzzyProviderType;
   readonly previewAdapterType: PreviewRendererType;
   /**

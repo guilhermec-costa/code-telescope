@@ -1,10 +1,11 @@
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../shared/adapters-namespace";
+import { FileFinderData } from "../../shared/exchange/file-search";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 import { Globals } from "../globals";
 import { execCmd } from "../utils/commands";
 import { findWorkspaceFiles, getLanguageFromPath, loadWebviewHtml, relativizeFilePath } from "../utils/files";
-import { FuzzyProvider } from "./fuzzy-provider";
+import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
 
 /**
  * Fuzzy provider that retrieves files from the current workspace.
@@ -12,12 +13,12 @@ import { FuzzyProvider } from "./fuzzy-provider";
  * This provider allows filtering files using include/exclude patterns,
  * hiding dotfiles, and limiting the maximum number of results.
  */
-export class WorkspaceFileFinder implements FuzzyProvider {
+export class WorkspaceFileFinder implements FuzzyFinderProvider {
   public readonly fuzzyAdapterType: FuzzyProviderType = "workspace.files";
   public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
 
   constructor(
-    private readonly panel: vscode.WebviewPanel,
+    private readonly wvPanel: vscode.WebviewPanel,
     private overrideConfig?: Partial<FinderSearchConfig>,
   ) {}
 
@@ -25,7 +26,7 @@ export class WorkspaceFileFinder implements FuzzyProvider {
     let rawHtml = await loadWebviewHtml("ui", "views", "file-fuzzy.view.html");
 
     const replace = (search: string, distPath: string) => {
-      const fullUri = this.panel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
+      const fullUri = this.wvPanel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
       rawHtml = rawHtml.replace(search, fullUri.toString());
     };
 
@@ -41,8 +42,7 @@ export class WorkspaceFileFinder implements FuzzyProvider {
     const cfg = this.getFinderConfig();
     const files = await this.getWorkspaceFiles(cfg);
 
-    // Retorna no formato esperado pelo FileFinderAdapter
-    return files.reduce<{ abs: string[]; relative: string[] }>(
+    return files.reduce<FileFinderData>(
       (result, file) => {
         result.abs.push(file.path);
         result.relative.push(relativizeFilePath(file.path));
@@ -89,7 +89,7 @@ export class WorkspaceFileFinder implements FuzzyProvider {
    * the VS Code settings and merges it with any overrides.
    */
   private getFinderConfig(): FinderSearchConfig {
-    const cfg = vscode.workspace.getConfiguration(`${Globals.EXTENSION_CONFIGURATION_PREFIX_NAME}.finder`);
+    const cfg = vscode.workspace.getConfiguration(`${Globals.EXTENSION_CONFIGURATION_PREFIX}.finder`);
 
     const baseConfig: FinderSearchConfig = {
       excludeHidden: cfg.get("excludeHidden", true),

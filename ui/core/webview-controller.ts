@@ -3,10 +3,14 @@ import { debounce } from "../utils/debounce";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { PreviewManager } from "./preview-manager";
-import { FinderAdapterRegistry } from "./registries/finder-adapter-registry";
+import { FuzzyFinderAdapterRegistry } from "./registries/finder-adapter.registry";
 import { VSCodeApiService } from "./vscode-api-service";
 
+/**
+ * Controller responsible for orchestrating all webview-side logic.
+ */
 export class WebviewController {
+  /** Search input HTML element used for filtering options. */
   private searchElement: HTMLInputElement;
 
   constructor(
@@ -14,7 +18,7 @@ export class WebviewController {
     private readonly previewManager: PreviewManager,
     private readonly optionListManager: OptionListManager,
     private readonly keyboardHandler: KeyboardHandler,
-    private readonly adapterRegistry: FinderAdapterRegistry,
+    private readonly adapterRegistry: FuzzyFinderAdapterRegistry,
   ) {
     console.log("[WebviewController] Initializing controller");
     this.searchElement = document.getElementById("search") as HTMLInputElement;
@@ -53,6 +57,11 @@ export class WebviewController {
     });
   }
 
+  /**
+   * Handles a message received from the VS Code extension.
+   *
+   * @param msg - The message payload sent from the extension.
+   */
   private async handleMessage(msg: ToWebviewKindMessage): Promise<void> {
     console.log(`[WebviewController] Handling message: ${msg}`);
     switch (msg.type) {
@@ -81,18 +90,26 @@ export class WebviewController {
     }
   }
 
+  /**
+   * Clears the search input and the preview section.
+   */
   private async handleResetWebview() {
     this.searchElement.value = "";
     this.previewManager.clearPreview();
   }
 
+  /**
+   * Processes a list of options received from the extension.
+   *
+   * @param msg - Message containing the finder type and option data.
+   */
   private async handleOptionListMessage(msg: OptionListMessage) {
-    const { fuzzyProviderType: finderType, data } = msg;
+    const { fuzzyProviderType, data } = msg;
 
-    const adapter = this.adapterRegistry.getAdapter(finderType);
+    const adapter = this.adapterRegistry.getAdapter(fuzzyProviderType);
 
     if (!adapter) {
-      console.error(`No adapter found for finder type: ${finderType}`);
+      console.error(`No adapter found for finder type: ${fuzzyProviderType}`);
       console.log("Available adapters:", this.adapterRegistry.getRegisteredTypes());
       return;
     }
@@ -105,6 +122,9 @@ export class WebviewController {
     this.focusSearchInput();
   }
 
+  /**
+   * Registers DOM events
+   */
   private setupEventListeners(): void {
     const debouncedFilter = debounce((query: string) => {
       this.vscodeService.requestDynamicSearch(query);
@@ -121,6 +141,9 @@ export class WebviewController {
     };
   }
 
+  /**
+   * Registers keyboard shortcuts for:
+   */
   private setupKeyboardHandlers(): void {
     this.keyboardHandler.setMoveUpHandler(() => {
       this.optionListManager.moveSelection(-1);
@@ -155,6 +178,9 @@ export class WebviewController {
     });
   }
 
+  /**
+   * Confirms the currently selected option and notifies the extension.
+   */
   private confirmSelection(): void {
     const selectedValue = this.optionListManager.getSelectedValue();
     if (selectedValue) {

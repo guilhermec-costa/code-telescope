@@ -1,10 +1,10 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { BranchFinderData, BranchInfo } from "../../../shared/exchange/branch-search";
-import { IFinderAdapter } from "../abstractions/finder-adapter";
+import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
 
 export type BranchOption = { type: "branch"; data: BranchInfo };
 
-export class BranchFinderAdapter implements IFinderAdapter<BranchFinderData, BranchOption> {
+export class BranchFinderDataAdapter implements IFuzzyFinderDataAdapter<BranchFinderData, BranchOption> {
   public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
   public readonly fuzzyAdapterType: FuzzyProviderType = "git.branches";
 

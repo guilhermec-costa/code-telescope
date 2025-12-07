@@ -1,13 +1,13 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { FileFinderData } from "../../../shared/exchange/file-search";
-import { IFinderAdapter } from "../abstractions/finder-adapter";
+import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
 
 export interface FileOption {
   absolute: string;
   relative: string;
 }
 
-export class FileFinderAdapter implements IFinderAdapter<FileFinderData, FileOption> {
+export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<FileFinderData, FileOption> {
   public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
   public readonly fuzzyAdapterType: FuzzyProviderType = "workspace.files";
 

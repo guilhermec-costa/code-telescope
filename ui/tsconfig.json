@@ -5,6 +5,7 @@
     "outDir": "./dist",
     "noEmit": false,
     "moduleResolution": "Bundler",
+    "target": "es2017",
     "module": "ESNext",
     "lib": [
       "DOM",

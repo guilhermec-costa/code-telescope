@@ -1,6 +1,6 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { TextSearchData } from "../../../shared/exchange/workspace-text-search";
-import { IFinderAdapter } from "../abstractions/finder-adapter";
+import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
 
 interface SearchOption {
   identifier: string;
@@ -9,7 +9,7 @@ interface SearchOption {
   preview: string;
 }
 
-export class WorkspaceTextSearchAdapter implements IFinderAdapter<TextSearchData, SearchOption> {
+export class WorkspaceTextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearchData, SearchOption> {
   readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
   readonly fuzzyAdapterType: FuzzyProviderType = "workspace.text";
 

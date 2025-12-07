@@ -37,6 +37,9 @@ export function getShikiTheme(vscodeTheme: string) {
   if (themeName.includes("tokyo night")) {
     return "tokyo-night";
   }
+  if (themeName.includes("kanagawa wave")) {
+    return "kanagawa-wave";
+  }
 
   return themeName.includes("dark") ? "dark-plus" : "light-plus";
 }
