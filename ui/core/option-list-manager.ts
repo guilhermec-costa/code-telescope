@@ -14,13 +14,6 @@ export class OptionListManager<TOption = any> {
   private fileCountElement: HTMLElement | null;
   private previewManager: PreviewManager;
 
-  // virtualization
-  private readonly ITEM_HEIGHT = 22;
-  private readonly BUFFER_SIZE = 5;
-  private visibleStartIndex = 0;
-  private visibleEndIndex = 0;
-  private containerHeight = 0;
-
   /**
    * Callback invoked when the user confirms a selection
    */
@@ -31,8 +24,6 @@ export class OptionListManager<TOption = any> {
     this.listElement = document.getElementById("option-list") as HTMLUListElement;
     this.searchElement = document.getElementById("search") as HTMLInputElement;
     this.fileCountElement = document.getElementById("file-count");
-
-    this.setupVirtualization();
   }
 
   setAdapter(adapter: IFuzzyFinderDataAdapter<any, TOption>): void {
@@ -41,13 +32,13 @@ export class OptionListManager<TOption = any> {
 
   setOptions(options: TOption[]): void {
     if (!this.currentAdapter) {
-      console.error("No adapter set for GenericOptionListManager");
+      console.error("[OptionListManager] No adapter set");
       return;
     }
 
     this.allOptions = options;
     this.filteredOptions = options;
-    this.selectedIndex = this.filteredOptions.length - 1;
+    this.selectedIndex = 0;
 
     this.updateFileCount();
     this.render();
@@ -64,25 +55,20 @@ export class OptionListManager<TOption = any> {
     const lowerQuery = query.toLowerCase();
 
     if (this.currentAdapter.filterOption) {
-      this.filteredOptions = this.allOptions
-        .filter((option) => this.currentAdapter!.filterOption!(option, lowerQuery))
-        .sort();
+      this.filteredOptions = this.allOptions.filter((option) => this.currentAdapter!.filterOption!(option, lowerQuery));
     } else {
-      // default filter (by text)
-      this.filteredOptions = this.allOptions
-        .filter((option) => {
-          const displayText = this.currentAdapter!.getDisplayText(option);
-          return displayText.toLowerCase().includes(lowerQuery);
-        })
-        .sort();
+      // Default filter (by text)
+      this.filteredOptions = this.allOptions.filter((option) => {
+        const displayText = this.currentAdapter!.getDisplayText(option);
+        return displayText.toLowerCase().includes(lowerQuery);
+      });
     }
 
-    this.selectedIndex = this.filteredOptions.length - 1;
-
+    this.selectedIndex = 0;
     this.updateFileCount();
     this.render();
 
-    const lastElement = this.filteredOptions.at(-1);
+    const lastElement = this.filteredOptions.at(0);
     if (lastElement) {
       this.requestPreview(lastElement);
     }
@@ -116,104 +102,51 @@ export class OptionListManager<TOption = any> {
     return this.currentAdapter.getSelectionValue(option);
   }
 
-  private setupVirtualization(): void {
-    this.updateContainerHeight();
-
-    window.addEventListener("resize", () => {
-      this.updateContainerHeight();
-      this.render();
-    });
-  }
-
-  private updateContainerHeight(): void {
-    this.containerHeight = this.listElement.clientHeight;
-  }
-
   private render(): void {
-    const totalHeight = this.filteredOptions.length * this.ITEM_HEIGHT;
-    this.listElement.style.height = `${totalHeight}px`;
-    this.listElement.style.position = "relative";
-
-    // Always scroll to bottom when rendering new results
-    this.listElement.scrollTop = totalHeight;
-
-    this.renderVisible();
-  }
-
-  /**
-   * Renders only the visible portion of the list using virtualization.
-   */
-  private renderVisible(): void {
     if (!this.currentAdapter) return;
-
-    const scrollTop = this.listElement.scrollTop;
-    this.containerHeight = this.listElement.clientHeight;
-
-    this.visibleStartIndex = Math.max(0, Math.floor(scrollTop / this.ITEM_HEIGHT) - this.BUFFER_SIZE);
-    this.visibleEndIndex = Math.min(
-      this.filteredOptions.length,
-      Math.ceil((scrollTop + this.containerHeight) / this.ITEM_HEIGHT) + this.BUFFER_SIZE,
-    );
 
     this.listElement.innerHTML = "";
     const query = this.searchElement.value.toLowerCase();
 
     const fragment = document.createDocumentFragment();
 
-    for (let idx = this.visibleStartIndex; idx < this.visibleEndIndex; idx++) {
-      const option = this.filteredOptions[idx];
+    this.filteredOptions.forEach((option, idx) => {
       const li = document.createElement("li");
       li.className = "option-item";
-
-      li.style.position = "absolute";
-      li.style.top = `${idx * this.ITEM_HEIGHT}px`;
-      li.style.height = `${this.ITEM_HEIGHT}px`;
-      li.style.width = "100%";
-      li.style.boxSizing = "border-box";
 
       if (idx === this.selectedIndex) {
         li.classList.add("selected");
       }
 
-      const displayText = this.currentAdapter.getDisplayText(option);
+      const displayText = this.currentAdapter!.getDisplayText(option);
       li.innerHTML = this.highlightMatch(displayText, query);
 
-      ((index) => {
-        li.onclick = () => {
-          this.selectedIndex = index;
-          this.render();
-          this.onSelectionConfirmed?.();
-        };
-      })(idx);
+      li.onclick = () => {
+        this.selectedIndex = idx;
+        this.render();
+        this.onSelectionConfirmed?.();
+      };
 
       fragment.appendChild(li);
-    }
+    });
 
     this.listElement.appendChild(fragment);
-    this.ensureSelectedVisible();
+    this.scrollToSelected();
   }
 
-  /** Ensures the selected item remains visible inside the scroll viewport. */
-  private ensureSelectedVisible(): void {
-    const selectedTop = this.selectedIndex * this.ITEM_HEIGHT;
-    const selectedBottom = selectedTop + this.ITEM_HEIGHT;
-    const scrollTop = this.listElement.scrollTop;
-    const scrollBottom = scrollTop + this.containerHeight;
-
-    const margin = this.ITEM_HEIGHT;
-
-    if (selectedTop < scrollTop + margin) {
-      this.listElement.scrollTop = Math.max(0, selectedTop - margin);
-    } else if (selectedBottom > scrollBottom - margin) {
-      this.listElement.scrollTop = selectedBottom - this.containerHeight + margin;
+  public scrollToSelected(): void {
+    const selectedElement = this.listElement.querySelector(".option-item.selected");
+    console.log("Selected element: ", selectedElement);
+    if (selectedElement) {
+      selectedElement.scrollIntoView({
+        block: "nearest",
+        behavior: "instant",
+      });
     }
   }
 
   /**
    * Highlights the matched substring inside option text.
-   *
-   * @param text - Raw option text.
-   * @param query - Search query.
    */
   private highlightMatch(text: string, query: string): string {
     if (!query) return escapeHtml(text);

@@ -79,6 +79,7 @@ export class WebviewController {
         console.log("[WebviewController] Processing previewUpdate message", msg.data);
         const { previewAdapterType, data } = msg;
         await this.previewManager.updatePreview(data, previewAdapterType);
+        this.optionListManager.scrollToSelected();
         break;
       }
 
@@ -146,11 +147,11 @@ export class WebviewController {
    */
   private setupKeyboardHandlers(): void {
     this.keyboardHandler.setMoveUpHandler(() => {
-      this.optionListManager.moveSelection(-1);
+      this.optionListManager.moveSelection(1);
     });
 
     this.keyboardHandler.setMoveDownHandler(() => {
-      this.optionListManager.moveSelection(1);
+      this.optionListManager.moveSelection(-1);
     });
 
     this.keyboardHandler.setScrollUpHandler(() => {
