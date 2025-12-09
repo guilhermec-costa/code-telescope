@@ -39,6 +39,7 @@ export class PreviewManager {
     console.log("[PreviewManager] Adapter found, rendering preview");
     this.setAdapter(adapter);
 
+    this.clearPreview();
     await this.adapter.render(this.previewElement, data, this.currentTheme);
     this.scrollToHighlighted();
     this.lastPreviewedData = data;

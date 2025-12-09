@@ -20,9 +20,4 @@ export interface IPreviewRendererAdapter {
    * (Optional) Renders a fallback state when there is no preview data available.
    */
   renderNoPreviewData?(previewElement: HTMLElement): Promise<void>;
-
-  /**
-   * (Optional) Clears the preview area, removing previously rendered content.
-   */
-  clear?(previewElement: HTMLElement): void;
 }

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../shared/adapters-namespace";
-import { BranchFinderData } from "../../shared/exchange/branch-search";
+import { BranchInfo, CommitInfo } from "../../shared/exchange/branch-search";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 import { Globals } from "../globals";
 import { API, GitExtension, Ref } from "../types/git";
@@ -9,7 +9,7 @@ import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
 
 export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
   public readonly fuzzyAdapterType: FuzzyProviderType = "git.branches";
-  public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
+  public readonly previewAdapterType: PreviewRendererType = "preview.branch";
 
   /** Reference to the Git API exported by the official VS Code Git extension. */
   private readonly gitApi: API | null;
@@ -41,16 +41,14 @@ export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
   /**
    * Returns the list of branches to display in the fuzzy finder.
    */
-  async querySelectableOptions(): Promise<BranchFinderData> {
+  async querySelectableOptions(): Promise<BranchInfo[]> {
     const branches = await this.findBranches();
-    return {
-      branches: branches.map((ref) => ({
-        name: ref.name || "",
-        remote: ref.remote,
-        current: false,
-        type: ref.type,
-      })),
-    };
+    return branches.map((ref) => ({
+      name: ref.name || "",
+      remote: ref.remote,
+      current: false,
+      type: ref.type,
+    }));
   }
 
   /**
@@ -75,6 +73,17 @@ export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
     return [...branches.local, ...branches.remote];
   }
 
+  public async findCommitsFromBranch(branch: string) {
+    if (!this.gitApi) return [];
+    const repo = this.gitApi.repositories[0];
+    const log = await repo.log({ refNames: [branch] });
+    return log.map((commit) => ({
+      hash: commit.hash,
+      message: commit.message,
+      author: commit.authorName || "",
+      date: commit.authorDate?.toISOString() || "",
+    }));
+  }
   /**
    * Loads the Git extension and returns its exposed API instance.
    * If the extension is unavailable, `null` is returned.
@@ -87,9 +96,10 @@ export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
     return git.getAPI(1);
   }
 
-  async getPreviewData(identifier: string): Promise<PreviewData> {
+  async getPreviewData(branchName: string): Promise<PreviewData<CommitInfo[]>> {
+    const commits = await this.findCommitsFromBranch(branchName);
     return {
-      content: identifier,
+      content: commits,
     };
   }
 }

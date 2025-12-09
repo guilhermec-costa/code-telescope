@@ -1,5 +1,6 @@
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
+import { toInnerHTML } from "../../utils/html";
 import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
 import { SyntaxHighlighter } from "../registries/preview-adapter.registry";
 
@@ -8,11 +9,11 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
 
   constructor(private highlighter: SyntaxHighlighter) {}
 
-  async render(previewElement: HTMLElement, data: PreviewData, theme: string): Promise<void> {
+  async render(previewElement: HTMLElement, data: PreviewData<string>, theme: string): Promise<void> {
     const { content, language = "text", metadata } = data;
 
     if (!this.highlighter) {
-      previewElement.innerHTML = `<pre style="padding: 1rem; overflow: auto;">${this.escapeHtml(content)}</pre>`;
+      previewElement.innerHTML = `<pre style="padding: 1rem; overflow: auto;">${toInnerHTML(content)}</pre>`;
       return;
     }
 
@@ -29,12 +30,8 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
       previewElement.innerHTML = html;
     } catch (error) {
       console.error("Failed to render code preview:", error);
-      previewElement.innerHTML = `<pre>${this.escapeHtml(content)}</pre>`;
+      previewElement.innerHTML = `<pre>${toInnerHTML(content)}</pre>`;
     }
-  }
-
-  clear(previewElement: HTMLElement): void {
-    previewElement.innerHTML = "";
   }
 
   private addLineHighlight(html: string, lineIndex: number): string {
@@ -44,12 +41,10 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
 
     if (!pre) return html;
 
-    const docStyle = getComputedStyle(document.documentElement);
-    const highlightColor = docStyle.getPropertyValue("--vscode-editor-findMatchHighlightBackground").trim();
     const style = doc.createElement("style");
     style.textContent = `
       .shiki .line.highlighted {
-        background-color: ${highlightColor} !important; 
+        background-color: var(--vscode-editor-findMatchHighlightBackground) !important; 
         border-left: 3px solid rgba(255, 200, 0, 0.8);
         padding-left: 1em;
         margin-left: -1em;
@@ -67,11 +62,5 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
 
   setHighlighter(highlighter: SyntaxHighlighter): void {
     this.highlighter = highlighter;
-  }
-
-  private escapeHtml(text: string): string {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
   }
 }

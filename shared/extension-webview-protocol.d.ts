@@ -4,8 +4,8 @@ import { FuzzyProviderType, PreviewRendererType } from "./adapters-namespace";
  * Data that can be previewed by a {@link PreviewRendererType}.
  * Represents the content and optional metadata required to render a preview.
  */
-export interface PreviewData {
-  content: string;
+export interface PreviewData<C = any> {
+  content: C;
   language?: string;
   metadata?: Record<string, any>;
 }
