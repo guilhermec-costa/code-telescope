@@ -144,7 +144,6 @@ body {
   flex-shrink: 0; /* Não encolhe */
 }
 
-/* Input na parte de baixo */
 #input-container {
   position: relative;
   width: 100%;
@@ -203,12 +202,12 @@ body {
 
 #preview pre,
 #preview code {
-    background-color: transparent !important;
+    background-color: transparent;
     font-family: var(--font-family), "Fira Code";
     padding: 0; 
     margin: 0;
 }
 #preview pre span {
-    background-color: transparent !important;
+    background-color: transparent;
     font-family: var(--font-family), "Fira Code";
 }

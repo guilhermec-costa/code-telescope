@@ -1,3 +1,5 @@
+import * as fs from "fs/promises";
+import * as path from "path";
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../shared/adapters-namespace";
 import { TextSearchMatch } from "../../shared/exchange/workspace-text-search";
@@ -5,6 +7,10 @@ import { PreviewData } from "../../shared/extension-webview-protocol";
 import { Globals } from "../globals";
 import { loadWebviewHtml } from "../utils/files";
 import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
+
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
   public readonly fuzzyAdapterType: FuzzyProviderType = "workspace.text";
@@ -15,143 +21,116 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
 
   async loadWebviewHtml() {
     let rawHtml = await loadWebviewHtml("ui", "views", "file-fuzzy.view.html");
-
     const replace = (search: string, distPath: string) => {
       const fullUri = this.wvPanel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
       rawHtml = rawHtml.replace(search, fullUri.toString());
     };
-
     replace("{{style}}", "ui/style/style.css");
     replace("{{script}}", "ui/dist/index.js");
-
     return rawHtml;
   }
 
   async querySelectableOptions() {
-    return {
-      results: [],
-      query: "",
-      message: "Type to search in workspace...",
-    };
+    return { results: [], query: "", message: "Type to search..." };
   }
 
   async searchOptions(query: string): Promise<any> {
-    if (!query || query.trim().length === 0) {
-      return {
-        results: [],
-        query: "",
-      };
-    }
-
-    if (query.length < 2) {
-      return {
-        results: [],
-        query: query,
-      };
-    }
+    if (!query || query.trim().length < 2) return { results: [], query };
 
     const matches: TextSearchMatch[] = [];
-    const searchTerm = query.toLowerCase();
+    const MAX_RESULTS = 200;
+    const BATCH_SIZE = 50;
+
+    const queryRegex = new RegExp(escapeRegExp(query), "gi");
 
     try {
-      const files = await vscode.workspace.findFiles("**/*", "**/node_modules/**", 1000);
+      const uris = await vscode.workspace.findFiles(
+        "**/*",
+        "**/{node_modules,.git,dist,out,build,coverage,*.min.js,*.map}/**",
+        3000,
+      );
 
-      for (const uri of files) {
-        try {
-          const document = await vscode.workspace.openTextDocument(uri);
+      for (let i = 0; i < uris.length; i += BATCH_SIZE) {
+        if (matches.length >= MAX_RESULTS) break;
 
-          const text = document.getText();
-          if (text.length > 500000) continue;
+        const batch = uris.slice(i, i + BATCH_SIZE);
 
-          const lines = text.split("\n");
-          for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-            const line = lines[lineIndex];
-            const lowerLine = line.toLowerCase();
+        await Promise.all(
+          batch.map(async (uri) => {
+            if (matches.length >= MAX_RESULTS) return;
 
-            if (lowerLine.includes(searchTerm)) {
-              const column = lowerLine.indexOf(searchTerm);
+            try {
+              const stat = await fs.stat(uri.fsPath);
+              // files > 300kb
+              if (stat.size > 300 * 1024) return;
 
-              matches.push({
-                file: uri.fsPath,
-                line: lineIndex + 1,
-                column: column + 1,
-                text: line,
-                preview: line.trim(),
-              });
+              const content = await fs.readFile(uri.fsPath, "utf-8");
+              queryRegex.lastIndex = 0;
 
-              if (matches.length >= 200) break;
-            }
-          }
+              const match = queryRegex.exec(content);
 
-          if (matches.length >= 200) break;
-        } catch (_error) {
-          continue;
-        }
+              if (match) {
+                const matchIndex = match.index;
+                const lineStart = content.lastIndexOf("\n", matchIndex) + 1;
+
+                let lineEnd = content.indexOf("\n", matchIndex);
+                if (lineEnd === -1) lineEnd = content.length;
+
+                const lineContent = content.substring(lineStart, lineEnd);
+
+                if (lineContent.length > 500) return;
+
+                let lineNumber = 1;
+                for (let k = 0; k < lineStart; k++) {
+                  if (content[k] === "\n") lineNumber++;
+                }
+
+                matches.push({
+                  file: uri.fsPath,
+                  line: lineNumber,
+                  column: matchIndex - lineStart + 1,
+                  text: lineContent.trim(),
+                  preview: lineContent.trim(),
+                });
+              }
+            } catch (_e) {}
+          }),
+        );
       }
 
       return {
         results: matches,
         query: query,
-        message: matches.length === 0 ? `No results found for "${query}"` : undefined,
+        message: matches.length === 0 ? `No results found` : undefined,
       };
     } catch (error) {
-      console.error("Search error:", error);
-      return {
-        results: [],
-        query: query,
-        message: "Search failed. Please try again.",
-      };
+      console.error(error);
+      return { results: [], query, message: "Error" };
     }
   }
 
   async getPreviewData(identifier: string): Promise<PreviewData> {
-    console.log("Identifier: ", identifier);
     const parts = identifier.split(":");
     const filePath = parts[0];
     const line = parts[1];
-
     try {
-      const uri = vscode.Uri.file(filePath);
-      const document = await vscode.workspace.openTextDocument(uri);
-
-      const lineNum = parseInt(line) - 1;
-      const startLine = Math.max(0, lineNum - 5);
-      const language = document.languageId;
-
+      const content = await fs.readFile(filePath, "utf-8");
+      const lines = content.split("\n");
       return {
-        content: document.getText(),
-        language,
-        metadata: {
-          filePath,
-          highlightLine: lineNum,
-          totalLines: document.lineCount,
-        },
+        content,
+        language: path.extname(filePath).slice(1) || "text",
+        metadata: { filePath, highlightLine: parseInt(line) - 1, totalLines: lines.length },
       };
-    } catch (error) {
-      return {
-        content: "[Unable to read file]",
-        language: "text",
-      };
+    } catch (_e) {
+      return { content: "Error", language: "text" };
     }
   }
 
   async onSelect(identifier: string) {
     const parts = identifier.split(":");
-    const filePath = parts[0];
-    const line = parts[1];
-    const column = parts[2] || "1";
-
-    try {
-      const uri = vscode.Uri.file(filePath);
-      const position = new vscode.Position(parseInt(line) - 1, parseInt(column) - 1);
-
-      const editor = await vscode.window.showTextDocument(uri, {
-        selection: new vscode.Range(position, position),
-      });
-
-      editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
-    } catch (error) {
-      vscode.window.showErrorMessage(`Failed to open file: ${error}`);
-    }
+    const uri = vscode.Uri.file(parts[0]);
+    const pos = new vscode.Position(parseInt(parts[1]) - 1, parseInt(parts[2] || "1") - 1);
+    const editor = await vscode.window.showTextDocument(uri, { selection: new vscode.Range(pos, pos) });
+    editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
   }
 }

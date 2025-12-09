@@ -44,10 +44,12 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
 
     if (!pre) return html;
 
+    const docStyle = getComputedStyle(document.documentElement);
+    const highlightColor = docStyle.getPropertyValue("--vscode-editor-findMatchHighlightBackground").trim();
     const style = doc.createElement("style");
     style.textContent = `
       .shiki .line.highlighted {
-        background-color: var(--highlight-bg) !important; 
+        background-color: ${highlightColor} !important; 
         border-left: 3px solid rgba(255, 200, 0, 0.8);
         padding-left: 1em;
         margin-left: -1em;
