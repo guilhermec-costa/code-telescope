@@ -1,4 +1,4 @@
-import { FromWebviewKindMessage } from "../../shared/extension-webview-protocol";
+import { FromWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 
 /**
  * Wrapper service around the VS Code Webview API.

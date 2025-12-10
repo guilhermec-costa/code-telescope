@@ -1,7 +1,7 @@
-import { PreviewRendererType } from "../../shared/adapters-namespace";
-import { PreviewData } from "../../shared/extension-webview-protocol";
-import { IPreviewRendererAdapter } from "./abstractions/preview-renderer-adapter";
-import { PreviewRendererAdapterRegistry } from "./registries/preview-adapter.registry";
+import { PreviewRendererType } from "../../../shared/adapters-namespace";
+import { PreviewData } from "../../../shared/extension-webview-protocol";
+import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
+import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.registry";
 import { VSCodeApiService } from "./vscode-api-service";
 
 export class PreviewManager {

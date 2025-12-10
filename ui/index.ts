@@ -1,6 +1,6 @@
-import { DIContainer } from "./core/di-container";
-import { WebviewController } from "./core/webview-controller";
-import "./core/finder-data-adapters/data-adapter.loader";
+import { DIContainer } from "./core/services/di-container";
+import { WebviewController } from "./core/services/webview-controller";
+import "./core/adapters/data/data-adapter.loader";
 
 (async () => {
   try {

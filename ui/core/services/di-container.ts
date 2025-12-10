@@ -1,8 +1,8 @@
+import { FuzzyFinderAdapterRegistry } from "../registry/finder-adapter.registry";
+import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.registry";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { PreviewManager } from "./preview-manager";
-import { FuzzyFinderAdapterRegistry } from "./registries/finder-adapter.registry";
-import { PreviewRendererAdapterRegistry } from "./registries/preview-adapter.registry";
 import { VSCodeApiService } from "./vscode-api-service";
 
 export class DIContainer {

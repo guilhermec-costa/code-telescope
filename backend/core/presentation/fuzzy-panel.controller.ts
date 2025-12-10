@@ -11,12 +11,12 @@ import { WebviewController } from "./webview.controller";
  * Handles communication between backend (extension) and frontend (Webview UI)
  */
 export class FuzzyPanelController {
-  public static fuzzyControllerSingleton: FuzzyPanelController | undefined;
+  private readonly wvController: WebviewController;
   private static panelRevealPosition = vscode.ViewColumn.Active;
+  private provider!: FuzzyFinderProvider;
 
   public readonly wvPanel: vscode.WebviewPanel;
-  private readonly wvController: WebviewController;
-  private provider!: FuzzyFinderProvider;
+  public static fuzzyControllerSingleton: FuzzyPanelController | undefined;
 
   private constructor(_wvPanel: vscode.WebviewPanel) {
     console.log("[FuzzyPanel] Creating a new panel instance");
@@ -58,6 +58,12 @@ export class FuzzyPanelController {
     FuzzyPanelController.fuzzyControllerSingleton = new FuzzyPanelController(panel);
     return FuzzyPanelController.fuzzyControllerSingleton;
   }
+
+  // setupProvider(providerType: FuzzyProviderType) {
+  //   const fuzzyPanel = FuzzyPanelController.createOrShow();
+  //   const provider = this.providerRegistry.getProvider(providerType);
+  //   fuzzyPanel.setFuzzyProvider(provider);
+  // }
 
   /**
    * Assigns the active fuzzy provider, loads HTML, and sends the initial option list.

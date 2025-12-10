@@ -1,7 +1,7 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
-import { TextSearchData } from "../../../shared/exchange/workspace-text-search";
-import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
-import { FuzzyFinderDataAdapter } from "../decorators/fuzzy-adapter.decorator";
+import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { TextSearchData } from "../../../../shared/exchange/workspace-text-search";
+import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
+import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-adapter.decorator";
 
 interface SearchOption {
   identifier: string;

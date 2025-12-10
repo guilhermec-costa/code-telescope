@@ -1,9 +1,9 @@
 import { createHighlighter } from "shiki";
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
-import { BranchPreviewRendererAdapter } from "../preview-renderer-adapters/branch-preview.renderer-adapter";
-import { CodeWithHighlightPreviewRendererAdapter } from "../preview-renderer-adapters/code-with-highlight-preview.renderer-adapter";
-import { CommitDiffPreviewRendererAdapter } from "../preview-renderer-adapters/commit-diff-preview.renderer-adapter";
+import { BranchPreviewRendererAdapter } from "../adapters/preview-renderer/branch-preview.renderer-adapter";
+import { CodeWithHighlightPreviewRendererAdapter } from "../adapters/preview-renderer/code-with-highlight-preview.renderer-adapter";
+import { CommitDiffPreviewRendererAdapter } from "../adapters/preview-renderer/commit-diff-preview.renderer-adapter";
 
 export type SyntaxHighlighter = Awaited<ReturnType<typeof createHighlighter>> | null;
 

@@ -1,6 +1,6 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
-import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
-import { FuzzyFinderDataAdapter } from "../decorators/fuzzy-adapter.decorator";
+import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
+import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-adapter.decorator";
 
 interface CommitData {
   commits: CommitInfo[];

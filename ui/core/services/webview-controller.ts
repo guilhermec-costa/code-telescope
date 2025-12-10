@@ -1,9 +1,9 @@
 import { OptionListMessage, ToWebviewKindMessage } from "@shared/extension-webview-protocol";
-import { debounce } from "../utils/debounce";
+import { debounce } from "../../utils/debounce";
+import { FuzzyFinderAdapterRegistry } from "../registry/finder-adapter.registry";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { PreviewManager } from "./preview-manager";
-import { FuzzyFinderAdapterRegistry } from "./registries/finder-adapter.registry";
 import { VSCodeApiService } from "./vscode-api-service";
 
 /**

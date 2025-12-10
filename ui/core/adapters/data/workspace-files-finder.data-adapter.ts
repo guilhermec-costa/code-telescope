@@ -1,7 +1,7 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
-import { FileFinderData } from "../../../shared/exchange/file-search";
-import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
-import { FuzzyFinderDataAdapter } from "../decorators/fuzzy-adapter.decorator";
+import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { FileFinderData } from "../../../../shared/exchange/file-search";
+import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
+import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-adapter.decorator";
 
 export interface FileOption {
   absolute: string;

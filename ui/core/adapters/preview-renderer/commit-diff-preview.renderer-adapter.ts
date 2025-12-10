@@ -1,7 +1,7 @@
-import { PreviewRendererType } from "../../../shared/adapters-namespace";
-import { PreviewData } from "../../../shared/extension-webview-protocol";
-import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
-import { SyntaxHighlighter } from "../registries/preview-adapter.registry";
+import { PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { PreviewData } from "../../../../shared/extension-webview-protocol";
+import { IPreviewRendererAdapter } from "../../abstractions/preview-renderer-adapter";
+import { SyntaxHighlighter } from "../../registry/preview-adapter.registry";
 
 /**
  * Adapter para preview de commits com diff

@@ -1,5 +1,5 @@
 import { escapeHtml } from "ui/utils/html";
-import { IFuzzyFinderDataAdapter } from "./abstractions/fuzzy-finder-data-adapter";
+import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
 import { PreviewManager } from "./preview-manager";
 
 export class OptionListManager<TOption = any> {
