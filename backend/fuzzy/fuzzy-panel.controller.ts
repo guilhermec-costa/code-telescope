@@ -66,7 +66,7 @@ export class FuzzyPanelController {
   public async setFuzzyProvider(provider: FuzzyFinderProvider) {
     console.log(`[FuzzyPanel] Setting provider of type "${provider.fuzzyAdapterType}"`);
     this.provider = provider;
-    this.wvPanel.webview.html = await this.provider.loadWebviewHtml();
+    this.wvPanel.webview.html = await this.wvController.resolveWebviewHtml(this.provider.getHtmlLoadConfig());
     const items = await provider.querySelectableOptions();
     await this.sendResetWebviewEvent();
     await this.sendOptionsListEvent(items);

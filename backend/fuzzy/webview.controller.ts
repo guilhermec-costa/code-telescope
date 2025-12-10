@@ -1,5 +1,8 @@
 import * as vscode from "vscode";
 import { FromWebviewKindMessage, ToWebviewKindMessage } from "../../shared/extension-webview-protocol";
+import { HtmlLoadConfig } from "../finders/fuzzy-finder.provider";
+import { Globals } from "../globals";
+import { joinPath } from "../utils/files";
 
 export class WebviewController {
   constructor(private readonly wv: vscode.Webview) {}
@@ -10,5 +13,18 @@ export class WebviewController {
 
   public async onMessage(cb: (msg: FromWebviewKindMessage) => Promise<void>) {
     this.wv.onDidReceiveMessage(cb);
+  }
+
+  public async resolveWebviewHtml(cfg: HtmlLoadConfig): Promise<string> {
+    const diskPath = joinPath(Globals.EXTENSION_URI, "ui", "views", cfg.fileName);
+    let fileContent = await vscode.workspace.fs.readFile(diskPath);
+    let html = fileContent.toString();
+
+    for (const [key, distPath] of Object.entries(cfg.placeholders)) {
+      const uri = this.wv.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
+      html = html.replace(key, uri.toString());
+    }
+
+    return html;
   }
 }

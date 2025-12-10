@@ -31,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
     getCmdId("fuzzy", "file"),
     async () => {
       const fuzzyPanel = FuzzyPanelController.createOrShow();
-      fuzzyPanel.setFuzzyProvider(new WorkspaceFileFinder(fuzzyPanel.wvPanel));
+      fuzzyPanel.setFuzzyProvider(new WorkspaceFileFinder());
     },
     context,
   );
@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
     getCmdId("fuzzy", "branch"),
     async () => {
       const fuzzyPanel = FuzzyPanelController.createOrShow();
-      fuzzyPanel.setFuzzyProvider(new GitBranchFuzzyFinder(fuzzyPanel.wvPanel, { includeRemotes: true }));
+      fuzzyPanel.setFuzzyProvider(new GitBranchFuzzyFinder({ includeRemotes: true }));
     },
     context,
   );
@@ -49,7 +49,7 @@ export function activate(context: vscode.ExtensionContext) {
     getCmdId("fuzzy", "wsText"),
     async () => {
       const fuzzyPanel = FuzzyPanelController.createOrShow();
-      fuzzyPanel.setFuzzyProvider(new WorkspaceTextSearchProvider(fuzzyPanel.wvPanel));
+      fuzzyPanel.setFuzzyProvider(new WorkspaceTextSearchProvider());
     },
     context,
   );

@@ -4,8 +4,7 @@ import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../shared/adapters-namespace";
 import { TextSearchMatch } from "../../shared/exchange/workspace-text-search";
 import { PreviewData } from "../../shared/extension-webview-protocol";
-import { Globals } from "../globals";
-import { loadWebviewHtml } from "../utils/files";
+import { findWorkspaceFiles } from "../utils/files";
 import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
 
 function escapeRegExp(string: string) {
@@ -17,17 +16,14 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
   public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
   public readonly supportsDynamicSearch = true;
 
-  constructor(private readonly wvPanel: vscode.WebviewPanel) {}
-
-  async loadWebviewHtml() {
-    let rawHtml = await loadWebviewHtml("ui", "views", "file-fuzzy.view.html");
-    const replace = (search: string, distPath: string) => {
-      const fullUri = this.wvPanel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
-      rawHtml = rawHtml.replace(search, fullUri.toString());
+  getHtmlLoadConfig() {
+    return {
+      fileName: "file-fuzzy.view.html",
+      placeholders: {
+        "{{style}}": "ui/style/style.css",
+        "{{script}}": "ui/dist/index.js",
+      },
     };
-    replace("{{style}}", "ui/style/style.css");
-    replace("{{script}}", "ui/dist/index.js");
-    return rawHtml;
   }
 
   async querySelectableOptions() {
@@ -44,7 +40,7 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
     const queryRegex = new RegExp(escapeRegExp(query), "gi");
 
     try {
-      const uris = await vscode.workspace.findFiles(
+      const uris = await findWorkspaceFiles(
         "**/*",
         "**/{node_modules,.git,dist,out,build,coverage,*.min.js,*.map}/**",
         3000,

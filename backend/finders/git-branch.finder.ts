@@ -2,9 +2,7 @@ import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../shared/adapters-namespace";
 import { BranchInfo, CommitInfo } from "../../shared/exchange/branch-search";
 import { PreviewData } from "../../shared/extension-webview-protocol";
-import { Globals } from "../globals";
 import { API, GitExtension, Ref } from "../types/git";
-import { loadWebviewHtml } from "../utils/files";
 import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
 
 export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
@@ -14,10 +12,7 @@ export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
   /** Reference to the Git API exported by the official VS Code Git extension. */
   private readonly gitApi: API | null;
 
-  constructor(
-    private readonly wvPanel: vscode.WebviewPanel,
-    private options: GitBranchFinderOptions = {},
-  ) {
+  constructor(private options: GitBranchFinderOptions = {}) {
     this.gitApi = this.getGitApi();
   }
 
@@ -25,17 +20,14 @@ export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
     throw new Error("Method not implemented.");
   }
 
-  async loadWebviewHtml() {
-    let rawHtml = await loadWebviewHtml("ui", "views", "branch-fuzzy.view.html");
-
-    const replace = (search: string, distPath: string) => {
-      const fullUri = this.wvPanel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
-      rawHtml = rawHtml.replace(search, fullUri.toString());
+  getHtmlLoadConfig() {
+    return {
+      fileName: "branch-fuzzy.view.html",
+      placeholders: {
+        "{{style}}": "ui/style/style.css",
+        "{{script}}": "ui/dist/index.js",
+      },
     };
-
-    replace("{{style}}", "ui/style/style.css");
-    replace("{{script}}", "ui/dist/index.js");
-    return rawHtml;
   }
 
   /**

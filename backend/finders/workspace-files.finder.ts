@@ -4,7 +4,7 @@ import { FileFinderData } from "../../shared/exchange/file-search";
 import { PreviewData } from "../../shared/extension-webview-protocol";
 import { Globals } from "../globals";
 import { execCmd } from "../utils/commands";
-import { findWorkspaceFiles, getLanguageFromPath, loadWebviewHtml, relativizeFilePath } from "../utils/files";
+import { findWorkspaceFiles, getLanguageFromPath, relativizeFilePath } from "../utils/files";
 import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
 
 /**
@@ -17,22 +17,16 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider {
   public readonly fuzzyAdapterType: FuzzyProviderType = "workspace.files";
   public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
 
-  constructor(
-    private readonly wvPanel: vscode.WebviewPanel,
-    private overrideConfig?: Partial<FinderSearchConfig>,
-  ) {}
+  constructor(private overrideConfig?: Partial<FinderSearchConfig>) {}
 
-  async loadWebviewHtml() {
-    let rawHtml = await loadWebviewHtml("ui", "views", "file-fuzzy.view.html");
-
-    const replace = (search: string, distPath: string) => {
-      const fullUri = this.wvPanel.webview.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, distPath));
-      rawHtml = rawHtml.replace(search, fullUri.toString());
+  getHtmlLoadConfig() {
+    return {
+      fileName: "file-fuzzy.view.html",
+      placeholders: {
+        "{{style}}": "ui/style/style.css",
+        "{{script}}": "ui/dist/index.js",
+      },
     };
-
-    replace("{{style}}", "ui/style/style.css");
-    replace("{{script}}", "ui/dist/index.js");
-    return rawHtml;
   }
 
   /**

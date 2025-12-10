@@ -12,6 +12,7 @@ export class BranchPreviewRendererAdapter implements IPreviewRendererAdapter {
 
   async render(previewElement: HTMLElement, data: PreviewData<CommitInfo[]>, theme: string): Promise<void> {
     const allCommits = data.content;
+    console.log(allCommits);
 
     const searchContainer = document.createElement("div");
     searchContainer.style.padding = "10px 10px";
