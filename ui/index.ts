@@ -1,5 +1,6 @@
 import { DIContainer } from "./core/di-container";
 import { WebviewController } from "./core/webview-controller";
+import "./core/finder-data-adapters/data-adapter.loader";
 
 (async () => {
   try {

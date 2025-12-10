@@ -1,6 +1,7 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { TextSearchData } from "../../../shared/exchange/workspace-text-search";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
+import { FuzzyFinderDataAdapter } from "../decorators/fuzzy-adapter.decorator";
 
 interface SearchOption {
   identifier: string;
@@ -9,9 +10,13 @@ interface SearchOption {
   preview: string;
 }
 
+@FuzzyFinderDataAdapter({
+  fuzzy: "workspace.text",
+  preview: "preview.codeHighlighted",
+})
 export class WorkspaceTextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearchData, SearchOption> {
-  readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
-  readonly fuzzyAdapterType: FuzzyProviderType = "workspace.text";
+  previewAdapterType: PreviewRendererType;
+  fuzzyAdapterType: FuzzyProviderType;
 
   parseOptions(data: TextSearchData): SearchOption[] {
     return data.results.map((match) => ({

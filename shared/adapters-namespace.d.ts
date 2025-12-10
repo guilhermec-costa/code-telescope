@@ -27,4 +27,4 @@ export type FuzzyProviderType =
   | "extensions.all"
   | "snippets.all";
 
-export type PreviewRendererType = "preview.codeHighlighted" | "preview.branch";
+export type PreviewRendererType = "preview.codeHighlighted" | "preview.branch" | "preview.commitDiff";

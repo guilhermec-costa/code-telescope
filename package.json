@@ -33,6 +33,10 @@
       {
         "command": "code-telescope.fuzzy.wsText",
         "title": "Code Telescope: Workspace Text Finder"
+      },
+      {
+        "command": "code-telescope.fuzzy.commits",
+        "title": "Code Telescope: Commit Finder"
       }
     ],
     "configuration": {

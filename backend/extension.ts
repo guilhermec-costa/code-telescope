@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
-import { GitBranchFuzzyFinder } from "./finders/git-branch.finder";
-import { WorkspaceFileFinder } from "./finders/workspace-files.finder";
-import { WorkspaceTextSearchProvider } from "./finders/workspace-text.finder";
-import { FuzzyPanelController } from "./fuzzy/fuzzy-panel.controller";
+import { GitBranchFuzzyFinder } from "./core/finders/git-branch.finder";
+import { GitCommitFuzzyFinderProvider } from "./core/finders/git-commit.finder";
+import { WorkspaceFileFinder } from "./core/finders/workspace-files.finder";
+import { WorkspaceTextSearchProvider } from "./core/finders/workspace-text.finder";
+import { FuzzyPanelController } from "./core/presentation/fuzzy-panel.controller";
 import { Globals } from "./globals";
 import { getCmdId, registerAndSubscribeCmd } from "./utils/commands";
 import { getConfigurationSection } from "./utils/configuration";
@@ -50,6 +51,15 @@ export function activate(context: vscode.ExtensionContext) {
     async () => {
       const fuzzyPanel = FuzzyPanelController.createOrShow();
       fuzzyPanel.setFuzzyProvider(new WorkspaceTextSearchProvider());
+    },
+    context,
+  );
+
+  registerAndSubscribeCmd(
+    getCmdId("fuzzy", "commits"),
+    async () => {
+      const fuzzyPanel = FuzzyPanelController.createOrShow();
+      fuzzyPanel.setFuzzyProvider(new GitCommitFuzzyFinderProvider());
     },
     context,
   );

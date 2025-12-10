@@ -1,10 +1,10 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 import * as vscode from "vscode";
-import { FuzzyProviderType, PreviewRendererType } from "../../shared/adapters-namespace";
-import { TextSearchMatch } from "../../shared/exchange/workspace-text-search";
-import { PreviewData } from "../../shared/extension-webview-protocol";
-import { findWorkspaceFiles } from "../utils/files";
+import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { TextSearchMatch } from "../../../shared/exchange/workspace-text-search";
+import { PreviewData } from "../../../shared/extension-webview-protocol";
+import { findWorkspaceFiles } from "../../utils/files";
 import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
 
 function escapeRegExp(string: string) {

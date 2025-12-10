@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import { FromWebviewKindMessage, ToWebviewKindMessage } from "../../shared/extension-webview-protocol";
+import { FromWebviewKindMessage, ToWebviewKindMessage } from "../../../shared/extension-webview-protocol";
+import { Globals } from "../../globals";
+import { joinPath } from "../../utils/files";
 import { HtmlLoadConfig } from "../finders/fuzzy-finder.provider";
-import { Globals } from "../globals";
-import { joinPath } from "../utils/files";
 
 export class WebviewController {
   constructor(private readonly wv: vscode.Webview) {}

@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
-import { FromWebviewKindMessage } from "../../shared/extension-webview-protocol";
+import { FromWebviewKindMessage } from "../../../shared/extension-webview-protocol";
+import { Globals } from "../../globals";
+import { execCmd } from "../../utils/commands";
+import { joinPath } from "../../utils/files";
+import { getShikiTheme } from "../../utils/shiki";
 import { FuzzyFinderProvider } from "../finders/fuzzy-finder.provider";
-import { Globals } from "../globals";
-import { execCmd } from "../utils/commands";
-import { joinPath } from "../utils/files";
-import { getShikiTheme } from "../utils/shiki";
 import { WebviewController } from "./webview.controller";
 
 /**

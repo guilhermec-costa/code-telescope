@@ -3,6 +3,7 @@ import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
 import { BranchPreviewRendererAdapter } from "../preview-renderer-adapters/branch-preview.renderer-adapter";
 import { CodeWithHighlightPreviewRendererAdapter } from "../preview-renderer-adapters/code-with-highlight-preview.renderer-adapter";
+import { CommitDiffPreviewRendererAdapter } from "../preview-renderer-adapters/commit-diff-preview.renderer-adapter";
 
 export type SyntaxHighlighter = Awaited<ReturnType<typeof createHighlighter>> | null;
 
@@ -21,6 +22,7 @@ export class PreviewRendererAdapterRegistry {
     console.log("[PreviewAdapterRegistry] Registering adapters...");
     this.register(new BranchPreviewRendererAdapter(null));
     this.register(new CodeWithHighlightPreviewRendererAdapter(null));
+    this.register(new CommitDiffPreviewRendererAdapter(null));
 
     this.lazyInitHighlighter();
   }

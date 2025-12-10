@@ -1,5 +1,5 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../shared/adapters-namespace";
-import { PreviewData } from "../../shared/extension-webview-protocol";
+import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { PreviewData } from "../../../shared/extension-webview-protocol";
 
 /**
  * Represents a provider responsible for supplying data and behavior

@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import { FuzzyProviderType, PreviewRendererType } from "../../shared/adapters-namespace";
-import { BranchInfo, CommitInfo } from "../../shared/exchange/branch-search";
-import { PreviewData } from "../../shared/extension-webview-protocol";
-import { API, GitExtension, Ref } from "../types/git";
+import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { BranchInfo, CommitInfo } from "../../../shared/exchange/branch-search";
+import { PreviewData } from "../../../shared/extension-webview-protocol";
+import { API, GitExtension, Ref } from "../../@types/git";
 import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
 
 export class GitBranchFuzzyFinder implements FuzzyFinderProvider {

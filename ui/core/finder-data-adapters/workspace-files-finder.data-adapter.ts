@@ -1,15 +1,20 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { FileFinderData } from "../../../shared/exchange/file-search";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
+import { FuzzyFinderDataAdapter } from "../decorators/fuzzy-adapter.decorator";
 
 export interface FileOption {
   absolute: string;
   relative: string;
 }
 
+@FuzzyFinderDataAdapter({
+  fuzzy: "workspace.files",
+  preview: "preview.codeHighlighted",
+})
 export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<FileFinderData, FileOption> {
-  public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
-  public readonly fuzzyAdapterType: FuzzyProviderType = "workspace.files";
+  previewAdapterType: PreviewRendererType;
+  fuzzyAdapterType: FuzzyProviderType;
 
   parseOptions(data: FileFinderData): FileOption[] {
     const options: FileOption[] = [];

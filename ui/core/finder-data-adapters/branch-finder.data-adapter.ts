@@ -1,10 +1,15 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { BranchInfo } from "../../../shared/exchange/branch-search";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
+import { FuzzyFinderDataAdapter } from "../decorators/fuzzy-adapter.decorator";
 
+@FuzzyFinderDataAdapter({
+  fuzzy: "git.branches",
+  preview: "preview.branch",
+})
 export class BranchFinderDataAdapter implements IFuzzyFinderDataAdapter<BranchInfo[], BranchInfo> {
-  public readonly previewAdapterType: PreviewRendererType = "preview.branch";
-  public readonly fuzzyAdapterType: FuzzyProviderType = "git.branches";
+  previewAdapterType: PreviewRendererType;
+  fuzzyAdapterType: FuzzyProviderType;
 
   parseOptions(data: BranchInfo[]) {
     return data;
