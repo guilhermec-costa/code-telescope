@@ -81,7 +81,8 @@
     "format:write": "biome format --write",
     "test": "vscode-test",
     "prepare": "husky",
-    "build:webview": "node scripts/build-webview.js"
+    "webview:dev": "node scripts/build-webview.js --env=dev",
+    "webview:prod": "node scripts/build-webview.js --env=prod"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.7",
