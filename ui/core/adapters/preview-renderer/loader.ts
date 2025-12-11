@@ -1,0 +1,3 @@
+import "./branch-preview.renderer-adapter";
+import "./code-with-highlight-preview.renderer-adapter";
+import "./commit-diff-preview.renderer-adapter";

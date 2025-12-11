@@ -24,6 +24,28 @@
       "group": "build"
     },
     {
+      "label": "webview build dev watch",
+      "type": "shell",
+      "command": "pnpm webview:dev:watch",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "isBackground": true,
+      "group": "build"
+    },
+    {
+      "label": "webview build prod watch",
+      "type": "shell",
+      "command": "pnpm webview:prod:watch",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "isBackground": true,
+      "group": "build"
+    },
+    {
       "label": "tsc build",
       "type": "npm",
       "script": "compile",

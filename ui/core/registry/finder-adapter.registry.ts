@@ -1,6 +1,6 @@
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
-import { getRegisteredFuzzyAdapters } from "../decorators/fuzzy-adapter.decorator";
+import { getRegisteredFuzzyAdapters } from "../decorators/fuzzy-data-adapter.decorator";
 
 const GlobalFuzzyFinderDataAdapterRegistry: IFuzzyFinderDataAdapter[] = [];
 

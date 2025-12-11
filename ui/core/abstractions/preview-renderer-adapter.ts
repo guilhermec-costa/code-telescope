@@ -9,7 +9,7 @@ export interface IPreviewRendererAdapter {
    * Identifies which renderer this adapter represents.
    * Used by the system to route preview requests to the correct adapter.
    */
-  readonly type: PreviewRendererType;
+  type: PreviewRendererType;
 
   /**
    * Renders the preview content for the given data.

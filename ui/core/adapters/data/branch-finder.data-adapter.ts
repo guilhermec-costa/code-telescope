@@ -1,7 +1,7 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { BranchInfo } from "../../../../shared/exchange/branch-search";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
-import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-adapter.decorator";
+import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
 
 @FuzzyFinderDataAdapter({
   fuzzy: "git.branches",

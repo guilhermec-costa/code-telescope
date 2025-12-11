@@ -4,7 +4,9 @@ const fs = require("fs");
 
 const args = process.argv.slice(2);
 const envArg = args.find((a) => a.startsWith("--env="))?.split("=")[1] || args[0];
+const watchArg = args.find((a) => a.startsWith("--watch="))?.split("=")[1] || args[0];
 const ENV = envArg === "prod" || envArg === "production" ? "prod" : "dev";
+const WATCH = watchArg === "true" ? true : false;
 
 const isProd = ENV === "prod";
 console.log(`⚙️ Running build in ${isProd ? "PRODUCTION" : "DEV"} mode`);
@@ -39,14 +41,14 @@ async function run() {
         entryPoints: [entry],
         outfile: path.join(outdir, "index.js"),
         bundle: true,
-        format: "iife",
+        format: "esm",
         target: ["chrome110"],
         loader: { ".css": "css", ".ts": "ts" },
         minify: isProd,
         sourcemap: !isProd,
       };
 
-      if (isProd) {
+      if (!WATCH) {
         await esbuild.build(opts);
         console.log(`Built: ${entry}`);
       } else {
@@ -57,7 +59,7 @@ async function run() {
     }),
   );
 
-  console.log(isProd ? "Production build completed" : "Dev watch started");
+  console.log(isProd ? `Production bundle done. Watching: ${WATCH}` : `Dev bundle done. Watching: ${WATCH}`);
 }
 
 run().catch((err) => {

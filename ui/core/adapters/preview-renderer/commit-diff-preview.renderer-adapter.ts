@@ -1,13 +1,18 @@
 import { PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { PreviewData } from "../../../../shared/extension-webview-protocol";
 import { IPreviewRendererAdapter } from "../../abstractions/preview-renderer-adapter";
+import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapter.decorator";
 import { SyntaxHighlighter } from "../../registry/preview-adapter.registry";
 
 /**
  * Adapter para preview de commits com diff
  */
+@PreviewRendererAdapter({
+  adapter: "preview.commitDiff",
+})
 export class CommitDiffPreviewRendererAdapter implements IPreviewRendererAdapter {
-  readonly type: PreviewRendererType = "preview.commitDiff";
+  type: PreviewRendererType;
+
   private highlighter: SyntaxHighlighter;
 
   constructor(highlighter: SyntaxHighlighter) {

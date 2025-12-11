@@ -3,12 +3,13 @@ import { CommitInfo } from "../../../../shared/exchange/branch-search";
 import { PreviewData } from "../../../../shared/extension-webview-protocol";
 import { toInnerHTML } from "../../../utils/html";
 import { IPreviewRendererAdapter } from "../../abstractions/preview-renderer-adapter";
-import { SyntaxHighlighter } from "../../registry/preview-adapter.registry";
+import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapter.decorator";
 
+@PreviewRendererAdapter({
+  adapter: "preview.branch",
+})
 export class BranchPreviewRendererAdapter implements IPreviewRendererAdapter {
-  readonly type: PreviewRendererType = "preview.branch";
-
-  constructor(private readonly highlighter?: SyntaxHighlighter) {}
+  type: PreviewRendererType;
 
   async render(previewElement: HTMLElement, data: PreviewData<CommitInfo[]>, theme: string): Promise<void> {
     const allCommits = data.content;

@@ -1,9 +1,7 @@
 import { createHighlighter } from "shiki";
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
-import { BranchPreviewRendererAdapter } from "../adapters/preview-renderer/branch-preview.renderer-adapter";
-import { CodeWithHighlightPreviewRendererAdapter } from "../adapters/preview-renderer/code-with-highlight-preview.renderer-adapter";
-import { CommitDiffPreviewRendererAdapter } from "../adapters/preview-renderer/commit-diff-preview.renderer-adapter";
+import { getRegisteredPreviewRendererAdapters } from "../decorators/preview-renderer-adapter.decorator";
 
 export type SyntaxHighlighter = Awaited<ReturnType<typeof createHighlighter>> | null;
 
@@ -20,9 +18,9 @@ export class PreviewRendererAdapterRegistry {
    */
   public async init() {
     console.log("[PreviewAdapterRegistry] Registering adapters...");
-    this.register(new BranchPreviewRendererAdapter(null));
-    this.register(new CodeWithHighlightPreviewRendererAdapter(null));
-    this.register(new CommitDiffPreviewRendererAdapter(null));
+    for (const adapter of getRegisteredPreviewRendererAdapters()) {
+      this.register(adapter);
+    }
 
     this.lazyInitHighlighter();
   }
@@ -50,6 +48,8 @@ export class PreviewRendererAdapterRegistry {
     if (this.syntaxHighlighter) return;
 
     console.log("[PreviewAdapterRegistry] Loading syntax highlighter in background...");
+
+    const { createHighlighter } = await import("shiki");
 
     try {
       this.syntaxHighlighter = await createHighlighter({
