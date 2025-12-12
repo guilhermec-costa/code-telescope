@@ -31,14 +31,6 @@ export class PreviewRendererAdapterRegistry {
     return Array.from(this.adapters.keys());
   }
 
-  async loadTheme(themeModule: string) {
-    await ShikiManager.loadTheme(themeModule);
-  }
-
-  async loadLanguage(langModule: string) {
-    await ShikiManager.loadLanguage(langModule);
-  }
-
   private async lazyInitHighlighter() {
     if (this.syntaxHighlighter) return;
 

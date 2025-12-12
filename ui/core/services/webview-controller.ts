@@ -85,14 +85,14 @@ export class WebviewController {
       }
 
       case "languageUpdate": {
-        await ShikiManager.loadLanguage(msg.data.langModulePath);
+        await ShikiManager.loadLanguageFromBundle(msg.data.lang);
         break;
       }
 
       case "themeUpdate": {
         console.log("Theme updated on webview");
-        await ShikiManager.loadTheme(msg.data.themeModulePath);
-        await this.previewManager.updateTheme(msg.data.themeModulePath);
+        await ShikiManager.loadThemeFromBundle(msg.data.theme);
+        await this.previewManager.updateTheme(msg.data.theme);
         break;
       }
     }

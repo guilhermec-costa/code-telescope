@@ -43,3 +43,55 @@ export function getShikiTheme(vscodeTheme: string) {
 
   return themeName.includes("dark") ? "dark-plus" : "light-plus";
 }
+
+export function getShikiLanguage(vscodeLanguage: string) {
+  const lang = vscodeLanguage.toLowerCase();
+
+  if (lang.includes("typescript") || lang === "ts") {
+    return "ts";
+  }
+  if (lang.includes("javascript") || lang === "js") {
+    return "js";
+  }
+  if (lang.includes("json")) {
+    return "json";
+  }
+  if (lang.includes("html")) {
+    return "html";
+  }
+  if (lang.includes("css")) {
+    return "css";
+  }
+  if (lang.includes("python") || lang === "py") {
+    return "python";
+  }
+  if (lang.includes("java")) {
+    return "java";
+  }
+  if (lang.includes("c#") || lang.includes("csharp")) {
+    return "csharp";
+  }
+  if (lang.includes("c++") || lang.includes("cpp")) {
+    return "cpp";
+  }
+  if (lang.includes("rust")) {
+    return "rust";
+  }
+  if (lang.includes("go") || lang.includes("golang")) {
+    return "go";
+  }
+  if (lang.includes("ruby")) {
+    return "ruby";
+  }
+  if (lang.includes("php")) {
+    return "php";
+  }
+  if (lang.includes("swift")) {
+    return "swift";
+  }
+  if (lang.includes("kotlin")) {
+    return "kotlin";
+  }
+
+  return lang;
+}

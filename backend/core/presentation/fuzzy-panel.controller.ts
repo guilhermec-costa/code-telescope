@@ -4,6 +4,7 @@ import { FromWebviewKindMessage } from "../../../shared/extension-webview-protoc
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { joinPath } from "../../utils/files";
+import { getShikiLanguage, getShikiTheme } from "../../utils/shiki";
 import { IFuzzyFinderProvider } from "../finders/fuzzy-finder.provider";
 import { VSCodeEventsManager } from "../services/code-events.service";
 import { FuzzyFinderAdapterRegistry } from "../services/fuzzy-provider.registry";
@@ -121,22 +122,16 @@ export class FuzzyPanelController {
    * @param theme Shiki-compatible theme name (e.g., "dark-plus").
    */
   public async emitThemeUpdateEvent(theme: string) {
-    const themeUri = this.wvPanel.webview.asWebviewUri(
-      vscode.Uri.joinPath(Globals.EXTENSION_URI, themeToModulePathMap[theme]),
-    );
     await this.wvController.sendMessage({
       type: "themeUpdate",
-      data: { themeModulePath: themeUri.toString() },
+      data: { theme: getShikiTheme(theme) },
     });
   }
 
   public async emitLoadLanguageEvent(language: string) {
-    const langUri = this.wvPanel.webview.asWebviewUri(
-      vscode.Uri.joinPath(Globals.EXTENSION_URI, langToModulePathMap[language]),
-    );
     await this.wvController.sendMessage({
       type: "languageUpdate",
-      data: { langModulePath: langUri.toString() },
+      data: { lang: getShikiLanguage(language) },
     });
   }
 

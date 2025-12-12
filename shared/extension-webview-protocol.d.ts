@@ -16,14 +16,14 @@ export interface PreviewData<C = any> {
 export interface ThemeUpdateMessage {
   type: "themeUpdate";
   data: {
-    themeModulePath: string;
+    theme: string;
   };
 }
 
 export interface LanguageUpdateMessage {
   type: "languageUpdate";
   data: {
-    langModulePath: string;
+    lang: string;
   };
 }
 
