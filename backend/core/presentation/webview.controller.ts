@@ -25,6 +25,10 @@ export class WebviewController {
       html = html.replace(key, uri.toString());
     }
 
+    const shikiBasePath = this.wv.asWebviewUri(joinPath(Globals.EXTENSION_URI, "ui", "dist", "shiki"));
+
+    html = html.replace("{{__SHIKI_EXTENSION_URI__}}", shikiBasePath.toString());
+
     return html;
   }
 }

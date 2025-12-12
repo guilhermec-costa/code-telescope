@@ -1,65 +1,49 @@
 import * as vscode from "vscode";
-import { GitBranchFuzzyFinder } from "./core/finders/git-branch.finder";
-import { GitCommitFuzzyFinderProvider } from "./core/finders/git-commit.finder";
-import { WorkspaceFileFinder } from "./core/finders/workspace-files.finder";
-import { WorkspaceTextSearchProvider } from "./core/finders/workspace-text.finder";
+import { loadFuzzyProviders } from "./core/finders/loader";
 import { FuzzyPanelController } from "./core/presentation/fuzzy-panel.controller";
 import { Globals } from "./globals";
 import { getCmdId, registerAndSubscribeCmd } from "./utils/commands";
 import { getConfigurationSection } from "./utils/configuration";
-import { getShikiTheme } from "./utils/shiki";
 
 /**
  * code-telescope activation entrypoint
  */
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   console.log(`${Globals.EXTENSION_NAME} activated!`);
   Globals.EXTENSION_URI = context.extensionUri;
   Globals.USER_THEME = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
 
-  vscode.workspace.onDidChangeConfiguration((e) => {
-    if (e.affectsConfiguration(Globals.cfgSections.colorTheme)) {
-      const newTheme = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
-      Globals.USER_THEME = getShikiTheme(newTheme);
-      console.log(`The color theme changed to: ${Globals.USER_THEME}`);
-      const fuzzyPanel = FuzzyPanelController.fuzzyControllerSingleton;
-      if (!fuzzyPanel) return;
-      fuzzyPanel.sendThemeUpdateEvent(Globals.USER_THEME);
-    }
-  });
+  loadFuzzyProviders();
 
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "file"),
     async () => {
-      const fuzzyPanel = FuzzyPanelController.createOrShow();
-      fuzzyPanel.setFuzzyProvider(new WorkspaceFileFinder());
+      const instance = FuzzyPanelController.createOrShow();
+      await instance.startProvider("workspace.files");
     },
     context,
   );
-
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "branch"),
     async () => {
-      const fuzzyPanel = FuzzyPanelController.createOrShow();
-      fuzzyPanel.setFuzzyProvider(new GitBranchFuzzyFinder({ includeRemotes: true }));
+      const instance = FuzzyPanelController.createOrShow();
+      await instance.startProvider("git.branches");
     },
     context,
   );
-
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "wsText"),
     async () => {
-      const fuzzyPanel = FuzzyPanelController.createOrShow();
-      fuzzyPanel.setFuzzyProvider(new WorkspaceTextSearchProvider());
+      const instance = FuzzyPanelController.createOrShow();
+      await instance.startProvider("workspace.text");
     },
     context,
   );
-
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "commits"),
     async () => {
-      const fuzzyPanel = FuzzyPanelController.createOrShow();
-      fuzzyPanel.setFuzzyProvider(new GitCommitFuzzyFinderProvider());
+      const instance = FuzzyPanelController.createOrShow();
+      await instance.startProvider("git.commits");
     },
     context,
   );

@@ -1,20 +1,12 @@
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
-import { getRegisteredFuzzyAdapters } from "../decorators/fuzzy-data-adapter.decorator";
+import { getRegisteredFuzzyDataAdapters } from "../decorators/fuzzy-data-adapter.decorator";
 
-const GlobalFuzzyFinderDataAdapterRegistry: IFuzzyFinderDataAdapter[] = [];
-
-export function FuzzyAdapter() {
-  return function <T extends { new (...args: any[]): {} }>(constructor: T) {
-    GlobalFuzzyFinderDataAdapterRegistry.push(new constructor() as any);
-  };
-}
-
-export class FuzzyFinderAdapterRegistry {
+export class FuzzyFinderDataAdapterRegistry {
   private adapters = new Map<string, IFuzzyFinderDataAdapter>();
 
   constructor() {
-    for (const adapter of getRegisteredFuzzyAdapters()) {
+    for (const adapter of getRegisteredFuzzyDataAdapters()) {
       this.register(adapter);
     }
   }

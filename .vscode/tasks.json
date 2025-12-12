@@ -58,10 +58,18 @@
       "isBackground": true,
       "problemMatcher": "$tsc-watch"
     },
+     {
+      "label": "bundle shiki",
+      "type": "shell",
+      "command": "pnpm bundle:shiki",
+      "isBackground": true,
+      "group": "build"
+    },
     {
       "label": "build all",
       "dependsOn": [
         "tsc watch",
+        "bundle shiki"
       ],
       "dependsOrder": "parallel"
     }

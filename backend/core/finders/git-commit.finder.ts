@@ -2,11 +2,16 @@ import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { API, GitExtension, Repository } from "../../@types/git";
-import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
+import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { IFuzzyFinderProvider } from "./fuzzy-finder.provider";
 
-export class GitCommitFuzzyFinderProvider implements FuzzyFinderProvider {
-  public readonly fuzzyAdapterType: FuzzyProviderType = "git.commits";
-  public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
+@FuzzyFinderAdapter({
+  fuzzy: "git.commits",
+  previewRenderer: "preview.codeHighlighted",
+})
+export class GitCommitFuzzyFinderProvider implements IFuzzyFinderProvider {
+  fuzzyAdapterType!: FuzzyProviderType;
+  previewAdapterType!: PreviewRendererType;
 
   private readonly gitApi: API | null;
   private repository: Repository | null = null;
@@ -73,7 +78,6 @@ export class GitCommitFuzzyFinderProvider implements FuzzyFinderProvider {
         };
       }
 
-      // Formata o preview
       const content = [
         `commit ${commit.hash}`,
         `Author: ${commit.authorName} <${commit.authorEmail}>`,
@@ -99,15 +103,12 @@ export class GitCommitFuzzyFinderProvider implements FuzzyFinderProvider {
   async onSelect(commitHash: string) {
     if (!this.repository) return;
 
-    // Abre o commit no Source Control (Git Graph se disponível)
     try {
-      // Tenta usar Git Graph se instalado
       await vscode.commands.executeCommand("git-graph.view", {
         repo: this.repository.rootUri.fsPath,
         commitHash: commitHash,
       });
     } catch {
-      // Fallback: copia o hash para clipboard
       await vscode.env.clipboard.writeText(commitHash);
       vscode.window.showInformationMessage(`Commit hash copied to clipboard: ${commitHash.substring(0, 7)}`);
     }

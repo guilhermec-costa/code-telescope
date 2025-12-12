@@ -8,7 +8,7 @@ export function getCmdId(...parts: string[]) {
   return `${Globals.EXTENSION_NAME}.${parts.join(".")}`;
 }
 
-export function registerAndSubscribeCmd(cmdId: string, cb: (...args: any[]) => any, ctx: vscode.ExtensionContext) {
+export function registerAndSubscribeCmd(cmdId: string, cb: () => void, ctx: vscode.ExtensionContext) {
   const cmdDisposable = vscode.commands.registerCommand(cmdId, cb);
   ctx.subscriptions.push(cmdDisposable);
 }

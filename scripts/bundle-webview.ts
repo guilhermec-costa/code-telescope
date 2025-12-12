@@ -1,6 +1,6 @@
-const esbuild = require("esbuild");
-const path = require("path");
-const fs = require("fs");
+import esbuild from "esbuild";
+import fs from "fs";
+import path from "path";
 
 const args = process.argv.slice(2);
 const envArg = args.find((a) => a.startsWith("--env="))?.split("=")[1] || args[0];
@@ -13,9 +13,9 @@ console.log(`⚙️ Running build in ${isProd ? "PRODUCTION" : "DEV"} mode`);
 
 function findEntryPoints() {
   const root = "ui";
-  const result = [];
+  const result: string[] = [];
 
-  function walk(dir) {
+  function walk(dir: string) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const e of entries) {
       const full = path.join(dir, e.name);
@@ -37,7 +37,7 @@ async function run() {
       const relDir = path.dirname(path.relative("ui", entry));
       const outdir = path.join("./ui/dist", relDir);
 
-      const opts = {
+      const opts: esbuild.BuildOptions = {
         entryPoints: [entry],
         outfile: path.join(outdir, "index.js"),
         bundle: true,

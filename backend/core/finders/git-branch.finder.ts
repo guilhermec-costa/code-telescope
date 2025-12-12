@@ -3,11 +3,16 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters
 import { BranchInfo, CommitInfo } from "../../../shared/exchange/branch-search";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { API, GitExtension, Ref } from "../../@types/git";
-import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
+import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { IFuzzyFinderProvider } from "./fuzzy-finder.provider";
 
-export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
-  public readonly fuzzyAdapterType: FuzzyProviderType = "git.branches";
-  public readonly previewAdapterType: PreviewRendererType = "preview.branch";
+@FuzzyFinderAdapter({
+  fuzzy: "git.branches",
+  previewRenderer: "preview.branch",
+})
+export class GitBranchFuzzyFinder implements IFuzzyFinderProvider {
+  fuzzyAdapterType!: FuzzyProviderType;
+  previewAdapterType!: PreviewRendererType;
 
   /** Reference to the Git API exported by the official VS Code Git extension. */
   private readonly gitApi: API | null;

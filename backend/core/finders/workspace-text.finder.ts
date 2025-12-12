@@ -5,15 +5,21 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters
 import { TextSearchMatch } from "../../../shared/exchange/workspace-text-search";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { findWorkspaceFiles } from "../../utils/files";
-import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
+import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { IFuzzyFinderProvider } from "./fuzzy-finder.provider";
 
 function escapeRegExp(string: string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
-  public readonly fuzzyAdapterType: FuzzyProviderType = "workspace.text";
-  public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
+@FuzzyFinderAdapter({
+  fuzzy: "workspace.text",
+  previewRenderer: "preview.codeHighlighted",
+})
+export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
+  fuzzyAdapterType!: FuzzyProviderType;
+  previewAdapterType!: PreviewRendererType;
+
   public readonly supportsDynamicSearch = true;
 
   getHtmlLoadConfig() {

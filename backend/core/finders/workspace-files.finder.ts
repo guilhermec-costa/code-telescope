@@ -5,7 +5,8 @@ import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { findWorkspaceFiles, getLanguageFromPath, relativizeFilePath } from "../../utils/files";
-import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
+import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { IFuzzyFinderProvider } from "./fuzzy-finder.provider";
 
 /**
  * Fuzzy provider that retrieves files from the current workspace.
@@ -13,9 +14,13 @@ import { FuzzyFinderProvider } from "./fuzzy-finder.provider";
  * This provider allows filtering files using include/exclude patterns,
  * hiding dotfiles, and limiting the maximum number of results.
  */
-export class WorkspaceFileFinder implements FuzzyFinderProvider {
-  public readonly fuzzyAdapterType: FuzzyProviderType = "workspace.files";
-  public readonly previewAdapterType: PreviewRendererType = "preview.codeHighlighted";
+@FuzzyFinderAdapter({
+  fuzzy: "workspace.files",
+  previewRenderer: "preview.codeHighlighted",
+})
+export class WorkspaceFileFinder implements IFuzzyFinderProvider {
+  fuzzyAdapterType!: FuzzyProviderType;
+  previewAdapterType!: PreviewRendererType;
 
   constructor(private overrideConfig?: Partial<FinderSearchConfig>) {}
 

@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Code Telescope - Fuzzy Finder</title>
     <link rel="stylesheet" href="{{style}}">
+    <script>
+    const __SHIKI_EXTENSION_URI__ = "{{__SHIKI_EXTENSION_URI__}}";
+    </script>
     <script defer src="{{script}}"></script>
   </head>
   <body>
     <div id="container">
       <div id="split">
-        
         <div id="left-side">
           <div id="status-bar">Find Files</div>
           <ul id="option-list"></ul>
@@ -23,7 +25,6 @@
         <div id="right-side">
           <div id="preview"></div>
         </div>
-        
       </div>
     </div>
   </body>

@@ -9,18 +9,18 @@ import { PreviewData } from "../../../shared/extension-webview-protocol";
  * - How options are retrieved, filtered and selected
  * - How the Webview UI should be loaded
  */
-export interface FuzzyFinderProvider {
+export interface IFuzzyFinderProvider {
   /**
    * Identifies which fuzzy search provider (engine/strategy) this
    * implementation belongs to.
    */
-  readonly fuzzyAdapterType: FuzzyProviderType;
+  fuzzyAdapterType: FuzzyProviderType;
 
   /**
    * Specifies which preview adapter should visually render the preview
    * area for items handled by this provider.
    */
-  readonly previewAdapterType: PreviewRendererType;
+  previewAdapterType: PreviewRendererType;
   /**
    * Returns the list of items to be displayed in the fuzzy finder.
    * Example: files, branches, symbols, commands...

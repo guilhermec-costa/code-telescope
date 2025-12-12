@@ -1,23 +1,23 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
 
-interface FuzzyAdapterConfig {
+interface FuzzyDataAdapterConfig {
   fuzzy: FuzzyProviderType;
   preview: PreviewRendererType;
 }
 
-const GlobalFuzzyAdapterRegistry: IFuzzyFinderDataAdapter[] = [];
+const GlobalFuzzyDataAdapterRegistry: IFuzzyFinderDataAdapter[] = [];
 
-export function FuzzyFinderDataAdapter(config: FuzzyAdapterConfig) {
+export function FuzzyFinderDataAdapter(config: FuzzyDataAdapterConfig) {
   return function <T extends { new (...args: any[]) }>(constructor: T) {
     const castedPrototype = constructor.prototype as IFuzzyFinderDataAdapter;
     castedPrototype.fuzzyAdapterType = config.fuzzy;
     castedPrototype.previewAdapterType = config.preview;
 
-    GlobalFuzzyAdapterRegistry.push(new constructor());
+    GlobalFuzzyDataAdapterRegistry.push(new constructor());
   };
 }
 
-export function getRegisteredFuzzyAdapters() {
-  return GlobalFuzzyAdapterRegistry;
+export function getRegisteredFuzzyDataAdapters() {
+  return GlobalFuzzyDataAdapterRegistry;
 }

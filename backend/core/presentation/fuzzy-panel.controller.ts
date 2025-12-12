@@ -1,10 +1,12 @@
 import * as vscode from "vscode";
+import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { FromWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { joinPath } from "../../utils/files";
-import { getShikiTheme } from "../../utils/shiki";
-import { FuzzyFinderProvider } from "../finders/fuzzy-finder.provider";
+import { IFuzzyFinderProvider } from "../finders/fuzzy-finder.provider";
+import { VSCodeEventsManager } from "../services/code-events.service";
+import { FuzzyFinderAdapterRegistry } from "../services/fuzzy-provider.registry";
 import { WebviewController } from "./webview.controller";
 
 /**
@@ -12,76 +14,88 @@ import { WebviewController } from "./webview.controller";
  */
 export class FuzzyPanelController {
   private readonly wvController: WebviewController;
+  private readonly adapterRegistry: FuzzyFinderAdapterRegistry;
   private static panelRevealPosition = vscode.ViewColumn.Active;
-  private provider!: FuzzyFinderProvider;
+  private provider!: IFuzzyFinderProvider;
 
   public readonly wvPanel: vscode.WebviewPanel;
-  public static fuzzyControllerSingleton: FuzzyPanelController | undefined;
+  public static instance: FuzzyPanelController | undefined;
 
   private constructor(_wvPanel: vscode.WebviewPanel) {
     console.log("[FuzzyPanel] Creating a new panel instance");
     this.wvPanel = _wvPanel;
     this.wvController = new WebviewController(this.wvPanel.webview);
-    this.listenWebview();
+    this.adapterRegistry = new FuzzyFinderAdapterRegistry();
 
     _wvPanel.onDidDispose(() => {
       console.log("[FuzzyPanel] Panel disposed");
-      FuzzyPanelController.fuzzyControllerSingleton = undefined;
+      FuzzyPanelController.instance = undefined;
     });
+  }
+
+  private static createPanel() {
+    console.log("[FuzzyPanel] Creating a new WebviewPanel");
+
+    const panel = vscode.window.createWebviewPanel(
+      "code-telescope-fuzzy",
+      "Code Telescope - Fuzzy Finder",
+      {
+        viewColumn: this.panelRevealPosition,
+        preserveFocus: true,
+      },
+      {
+        enableScripts: true,
+        localResourceRoots: [
+          joinPath(Globals.EXTENSION_URI, "ui"),
+          joinPath(Globals.EXTENSION_URI, "ui/dist"),
+          joinPath(Globals.EXTENSION_URI, "ui/dist/shiki"),
+        ],
+      },
+    );
+
+    return panel;
   }
 
   /**
    * Shows an existing panel or creates and displays a new one.
    * @returns The active FuzzyPanelController instance.
    */
-  static createOrShow() {
-    if (FuzzyPanelController.fuzzyControllerSingleton) {
+  public static createOrShow() {
+    if (FuzzyPanelController.instance) {
       console.log("[FuzzyPanel] Reusing existing panel");
-      FuzzyPanelController.fuzzyControllerSingleton.wvPanel.reveal(this.panelRevealPosition, false);
-      return FuzzyPanelController.fuzzyControllerSingleton;
+      FuzzyPanelController.instance.wvPanel.reveal(this.panelRevealPosition, false);
+      return FuzzyPanelController.instance;
     }
 
-    console.log("[FuzzyPanel] Creating a new WebviewPanel");
-    const panel = vscode.window.createWebviewPanel(
-      "code-telescope-fuzzy",
-      "Code Telescope - Fuzzy Finder",
-      {
-        viewColumn: this.panelRevealPosition,
-        preserveFocus: false,
-      },
-      {
-        enableScripts: true,
-        localResourceRoots: [joinPath(Globals.EXTENSION_URI, "ui"), joinPath(Globals.EXTENSION_URI, "ui/dist")],
-      },
-    );
-
-    FuzzyPanelController.fuzzyControllerSingleton = new FuzzyPanelController(panel);
-    return FuzzyPanelController.fuzzyControllerSingleton;
+    const panel = this.createPanel();
+    FuzzyPanelController.instance = new FuzzyPanelController(panel);
+    VSCodeEventsManager.init();
+    FuzzyPanelController.instance.listenWebview();
+    return FuzzyPanelController.instance;
   }
 
-  // setupProvider(providerType: FuzzyProviderType) {
-  //   const fuzzyPanel = FuzzyPanelController.createOrShow();
-  //   const provider = this.providerRegistry.getProvider(providerType);
-  //   fuzzyPanel.setFuzzyProvider(provider);
-  // }
+  public async startProvider(providerType: FuzzyProviderType) {
+    const provider = this.adapterRegistry.getAdapter(providerType);
+    if (!provider) return;
+
+    this.setFuzzyProvider(provider);
+    this.wvPanel.webview.html = await this.wvController.resolveWebviewHtml(this.provider.getHtmlLoadConfig());
+    await this.emitResetWebviewEvent();
+  }
 
   /**
    * Assigns the active fuzzy provider, loads HTML, and sends the initial option list.
    * @param provider The provider responsible for options and preview logic.
    */
-  public async setFuzzyProvider(provider: FuzzyFinderProvider) {
+  private async setFuzzyProvider(provider: IFuzzyFinderProvider) {
     console.log(`[FuzzyPanel] Setting provider of type "${provider.fuzzyAdapterType}"`);
     this.provider = provider;
-    this.wvPanel.webview.html = await this.wvController.resolveWebviewHtml(this.provider.getHtmlLoadConfig());
-    const items = await provider.querySelectableOptions();
-    await this.sendResetWebviewEvent();
-    await this.sendOptionsListEvent(items);
   }
 
   /**
    * Sends an event to the Webview instructing it to clear current preview data and current input search
    */
-  private async sendResetWebviewEvent() {
+  private async emitResetWebviewEvent() {
     console.log(`[FuzzyPanel] Sending ClearPreview event`);
     await this.wvController.sendMessage({
       type: "resetWebview",
@@ -92,7 +106,7 @@ export class FuzzyPanelController {
    * Sends a new list of selectable options to the Webview.
    * @param options fuzzy-selectable items.
    */
-  private async sendOptionsListEvent(options: any) {
+  private async emitOptionsListEvent(options: any) {
     console.log(`[FuzzyPanel] Sending optionList event with ${options.length} options`);
 
     await this.wvController.sendMessage({
@@ -106,10 +120,23 @@ export class FuzzyPanelController {
    * Sends a theme change/update event to the Webview.
    * @param theme Shiki-compatible theme name (e.g., "dark-plus").
    */
-  public async sendThemeUpdateEvent(theme: string) {
+  public async emitThemeUpdateEvent(theme: string) {
+    const themeUri = this.wvPanel.webview.asWebviewUri(
+      vscode.Uri.joinPath(Globals.EXTENSION_URI, themeToModulePathMap[theme]),
+    );
     await this.wvController.sendMessage({
       type: "themeUpdate",
-      data: { theme },
+      data: { themeModulePath: themeUri.toString() },
+    });
+  }
+
+  public async emitLoadLanguageEvent(language: string) {
+    const langUri = this.wvPanel.webview.asWebviewUri(
+      vscode.Uri.joinPath(Globals.EXTENSION_URI, langToModulePathMap[language]),
+    );
+    await this.wvController.sendMessage({
+      type: "languageUpdate",
+      data: { langModulePath: langUri.toString() },
     });
   }
 
@@ -124,10 +151,9 @@ export class FuzzyPanelController {
       switch (msg.type) {
         case "webviewDOMReady": {
           console.log("[FuzzyPanel] Webview is ready, sending initial options");
-          const userTheme = getShikiTheme(Globals.USER_THEME);
-          await this.sendThemeUpdateEvent(userTheme);
+          await VSCodeEventsManager.emitInitialEvents();
           const items = await this.provider.querySelectableOptions();
-          await this.sendOptionsListEvent(items);
+          await this.emitOptionsListEvent(items);
           break;
         }
 
@@ -146,7 +172,7 @@ export class FuzzyPanelController {
         case "dynamicSearch": {
           if (this.provider.supportsDynamicSearch && this.provider.searchOptions) {
             const results = await this.provider.searchOptions(msg.query);
-            await this.sendOptionsListEvent(results);
+            await this.emitOptionsListEvent(results);
           }
           break;
         }
@@ -170,7 +196,7 @@ export class FuzzyPanelController {
   /**
    * Disposes (closes) the current panel.
    */
-  private dispose() {
+  public dispose() {
     console.log("[FuzzyPanel] Closing panel");
     this.wvPanel.dispose();
   }
@@ -191,3 +217,16 @@ export class FuzzyPanelController {
     });
   }
 }
+
+const themeToModulePathMap: Record<string, string> = {
+  "Default Dark+": "ui/dist/shiki/themes/dark-plus.mjs",
+  "Tokyo Night": "ui/dist/shiki/themes/tokyo-night.mjs",
+  Monokai: "ui/dist/shiki/themes/monokai.mjs",
+};
+
+const langToModulePathMap: Record<string, string> = {
+  javascript: "ui/dist/shiki/langs/js.mjs",
+  typescript: "ui/dist/shiki/langs/ts.mjs",
+  python: "ui/dist/shiki/langs/python.mjs",
+  json: "ui/dist/shiki/langs/json.mjs",
+};

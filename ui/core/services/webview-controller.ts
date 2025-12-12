@@ -1,9 +1,10 @@
 import { OptionListMessage, ToWebviewKindMessage } from "@shared/extension-webview-protocol";
 import { debounce } from "../../utils/debounce";
-import { FuzzyFinderAdapterRegistry } from "../registry/finder-adapter.registry";
+import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { PreviewManager } from "./preview-manager";
+import { ShikiManager } from "./shiki-manager";
 import { VSCodeApiService } from "./vscode-api-service";
 
 /**
@@ -18,7 +19,7 @@ export class WebviewController {
     private readonly previewManager: PreviewManager,
     private readonly optionListManager: OptionListManager,
     private readonly keyboardHandler: KeyboardHandler,
-    private readonly adapterRegistry: FuzzyFinderAdapterRegistry,
+    private readonly adapterRegistry: FuzzyFinderDataAdapterRegistry,
   ) {
     console.log("[WebviewController] Initializing controller");
     this.searchElement = document.getElementById("search") as HTMLInputElement;
@@ -83,9 +84,15 @@ export class WebviewController {
         break;
       }
 
+      case "languageUpdate": {
+        await ShikiManager.loadLanguage(msg.data.langModulePath);
+        break;
+      }
+
       case "themeUpdate": {
         console.log("Theme updated on webview");
-        await this.previewManager.updateTheme(msg.data.theme);
+        await ShikiManager.loadTheme(msg.data.themeModulePath);
+        await this.previewManager.updateTheme(msg.data.themeModulePath);
         break;
       }
     }

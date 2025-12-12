@@ -16,7 +16,14 @@ export interface PreviewData<C = any> {
 export interface ThemeUpdateMessage {
   type: "themeUpdate";
   data: {
-    theme: string;
+    themeModulePath: string;
+  };
+}
+
+export interface LanguageUpdateMessage {
+  type: "languageUpdate";
+  data: {
+    langModulePath: string;
   };
 }
 
@@ -89,7 +96,12 @@ export interface DynamicSearchMessage {
  * Note: the "To" prefix is from the backend’s perspective.
  * These messages originate in the backend and are delivered to the webview.
  */
-export type ToWebviewKindMessage = PreviewUpdateMessage | OptionListMessage | ThemeUpdateMessage | ResetFuzzyPanel;
+export type ToWebviewKindMessage =
+  | PreviewUpdateMessage
+  | OptionListMessage
+  | ThemeUpdateMessage
+  | LanguageUpdateMessage
+  | ResetFuzzyPanel;
 
 /**
  * Represents all messages that **the webview sends to the backend**.
