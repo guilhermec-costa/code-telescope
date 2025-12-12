@@ -15,7 +15,6 @@ import "./core/adapters/preview-renderer/loader";
     console.log("[Index] Container initialized");
 
     const controller = new WebviewController(
-      container.vscodeService,
       container.previewManager,
       container.optionListManager,
       container.keyboardHandler,

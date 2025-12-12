@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
-import { FromWebviewKindMessage } from "../../../shared/extension-webview-protocol";
+import { FromWebviewKindMessage, InitShiki } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { joinPath } from "../../utils/files";
@@ -135,6 +135,13 @@ export class FuzzyPanelController {
     });
   }
 
+  public async emitInitShikiEvent(data: InitShiki["data"]) {
+    await this.wvController.sendMessage({
+      type: "shikiInit",
+      data,
+    });
+  }
+
   /**
    * Sets up event listeners for messages sent from the Webview UI.
    */
@@ -147,6 +154,10 @@ export class FuzzyPanelController {
         case "webviewDOMReady": {
           console.log("[FuzzyPanel] Webview is ready, sending initial options");
           await VSCodeEventsManager.emitInitialEvents();
+          break;
+        }
+
+        case "shikInitDone": {
           const items = await this.provider.querySelectableOptions();
           await this.emitOptionsListEvent(items);
           break;
@@ -212,16 +223,3 @@ export class FuzzyPanelController {
     });
   }
 }
-
-const themeToModulePathMap: Record<string, string> = {
-  "Default Dark+": "ui/dist/shiki/themes/dark-plus.mjs",
-  "Tokyo Night": "ui/dist/shiki/themes/tokyo-night.mjs",
-  Monokai: "ui/dist/shiki/themes/monokai.mjs",
-};
-
-const langToModulePathMap: Record<string, string> = {
-  javascript: "ui/dist/shiki/langs/js.mjs",
-  typescript: "ui/dist/shiki/langs/ts.mjs",
-  python: "ui/dist/shiki/langs/python.mjs",
-  json: "ui/dist/shiki/langs/json.mjs",
-};

@@ -66,6 +66,10 @@ export interface WebviewReadyMessage {
   data?: undefined;
 }
 
+export interface ShikiInitDone {
+  type: "shikInitDone";
+}
+
 /**
  * Message sent from the webview requesting the backend to close the panel.
  */
@@ -90,6 +94,14 @@ export interface DynamicSearchMessage {
   query: string;
 }
 
+export interface InitShiki {
+  type: "shikiInit";
+  data: {
+    theme: string;
+    languages: string[];
+  };
+}
+
 /**
  * Represents all messages that **the backend sends to the webview**.
  *
@@ -101,6 +113,7 @@ export type ToWebviewKindMessage =
   | OptionListMessage
   | ThemeUpdateMessage
   | LanguageUpdateMessage
+  | InitShiki
   | ResetFuzzyPanel;
 
 /**
@@ -114,4 +127,5 @@ export type FromWebviewKindMessage =
   | ClosePanelMessage
   | PreviewRequestMessage
   | DynamicSearchMessage
-  | OptionSelectedMessage;
+  | OptionSelectedMessage
+  | ShikiInitDone;

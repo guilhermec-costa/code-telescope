@@ -7,9 +7,17 @@ import { FromWebviewKindMessage } from "../../../shared/extension-webview-protoc
  */
 export class VSCodeApiService {
   private vscodeApi: ReturnType<typeof acquireVsCodeApi>;
+  static service: VSCodeApiService | null = null;
 
   constructor() {
     this.vscodeApi = acquireVsCodeApi();
+  }
+
+  static get instance() {
+    if (this.service) return this.service;
+
+    this.service = new VSCodeApiService();
+    return this.service;
   }
 
   /**
@@ -66,6 +74,12 @@ export class VSCodeApiService {
     this.postMessage({
       type: "dynamicSearch",
       query,
+    });
+  }
+
+  onShikiInit() {
+    this.postMessage({
+      type: "shikInitDone",
     });
   }
 }

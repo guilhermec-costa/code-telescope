@@ -15,10 +15,7 @@ export class PreviewManager {
     metadata: {},
   };
 
-  constructor(
-    private readonly vscodeService: VSCodeApiService,
-    private readonly previewAdapterRegistry: PreviewRendererAdapterRegistry,
-  ) {
+  constructor(private readonly previewAdapterRegistry: PreviewRendererAdapterRegistry) {
     console.log("[PreviewManager] Initializing");
     this.previewElement = document.getElementById("preview")!;
   }
@@ -68,7 +65,7 @@ export class PreviewManager {
   }
 
   requestPreview(selection: string): void {
-    this.vscodeService.requestSelectionPreviewData(selection);
+    VSCodeApiService.instance.requestSelectionPreviewData(selection);
   }
 
   scrollToTop() {

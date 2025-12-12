@@ -3,10 +3,8 @@ import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.regi
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { PreviewManager } from "./preview-manager";
-import { VSCodeApiService } from "./vscode-api-service";
 
 export class DIContainer {
-  vscodeService!: VSCodeApiService;
   previewManager!: PreviewManager;
   optionListManager!: OptionListManager;
   keyboardHandler!: KeyboardHandler;
@@ -15,7 +13,6 @@ export class DIContainer {
   async init() {
     try {
       console.log("[DIContainer] Initializing VSCodeApiService");
-      this.vscodeService = new VSCodeApiService();
 
       console.log("[DIContainer] Initializing PreviewAdapterRegistry");
       const previewAdapterRegistry = new PreviewRendererAdapterRegistry();
@@ -23,7 +20,7 @@ export class DIContainer {
       console.log("[DIContainer] PreviewAdapterRegistry initialized");
 
       console.log("[DIContainer] Initializing PreviewManager");
-      this.previewManager = new PreviewManager(this.vscodeService, previewAdapterRegistry);
+      this.previewManager = new PreviewManager(previewAdapterRegistry);
 
       console.log("[DIContainer] Initializing OptionListManager");
       this.optionListManager = new OptionListManager(this.previewManager);

@@ -15,7 +15,6 @@ export class WebviewController {
   private searchElement: HTMLInputElement;
 
   constructor(
-    private readonly vscodeService: VSCodeApiService,
     private readonly previewManager: PreviewManager,
     private readonly optionListManager: OptionListManager,
     private readonly keyboardHandler: KeyboardHandler,
@@ -31,7 +30,7 @@ export class WebviewController {
     const onDOMReady = () => {
       console.log("[WebviewController] DOM is ready!");
       this.focusSearchInput();
-      this.vscodeService.onDOMReady();
+      VSCodeApiService.instance.onDOMReady();
       console.log("[WebviewController] Sent 'webviewDOMReady' message to extension");
     };
 
@@ -71,16 +70,10 @@ export class WebviewController {
         break;
       }
 
-      case "optionList": {
-        await this.handleOptionListMessage(msg);
-        break;
-      }
-
-      case "previewUpdate": {
-        console.log("[WebviewController] Processing previewUpdate message", msg.data);
-        const { previewAdapterType, data } = msg;
-        await this.previewManager.updatePreview(data, previewAdapterType);
-        this.optionListManager.scrollToSelected();
+      case "shikiInit": {
+        await Promise.all(msg.data.languages.map((language) => ShikiManager.loadLanguageFromBundle(language)));
+        await ShikiManager.loadThemeFromBundle(msg.data.theme);
+        VSCodeApiService.instance.onShikiInit();
         break;
       }
 
@@ -93,6 +86,20 @@ export class WebviewController {
         console.log("Theme updated on webview");
         await ShikiManager.loadThemeFromBundle(msg.data.theme);
         await this.previewManager.updateTheme(msg.data.theme);
+        break;
+      }
+
+      case "optionList": {
+        await this.handleOptionListMessage(msg);
+        await this.previewManager.updateTheme("tokyo-night");
+        break;
+      }
+
+      case "previewUpdate": {
+        console.log("[WebviewController] Processing previewUpdate message", msg.data);
+        const { previewAdapterType, data } = msg;
+        await this.previewManager.updatePreview(data, previewAdapterType);
+        this.optionListManager.scrollToSelected();
         break;
       }
     }
@@ -135,7 +142,7 @@ export class WebviewController {
    */
   private setupEventListeners(): void {
     const debouncedFilter = debounce((query: string) => {
-      this.vscodeService.requestDynamicSearch(query);
+      VSCodeApiService.instance.requestDynamicSearch(query);
       this.optionListManager.filter(query);
     }, 50);
 
@@ -182,7 +189,7 @@ export class WebviewController {
     });
 
     this.keyboardHandler.setCloseHandler(() => {
-      this.vscodeService.requestClosePanel();
+      VSCodeApiService.instance.requestClosePanel();
     });
   }
 
@@ -192,7 +199,7 @@ export class WebviewController {
   private confirmSelection(): void {
     const selectedValue = this.optionListManager.getSelectedValue();
     if (selectedValue) {
-      this.vscodeService.onOptionSelected(selectedValue);
+      VSCodeApiService.instance.onOptionSelected(selectedValue);
     }
   }
 }

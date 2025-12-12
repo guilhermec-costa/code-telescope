@@ -2,6 +2,7 @@ import path from "path";
 import * as vscode from "vscode";
 import { Globals } from "../../globals";
 import { getConfigurationSection } from "../../utils/configuration";
+import { getShikiLanguage, getShikiTheme } from "../../utils/shiki";
 import { FuzzyPanelController } from "../presentation/fuzzy-panel.controller";
 
 export class VSCodeEventsManager {
@@ -19,9 +20,6 @@ export class VSCodeEventsManager {
     return VSCodeEventsManager.instance;
   }
 
-  /**
-   * Monitora o editor ativo, mas IGNORA webviews.
-   */
   private handleActiveEditor() {
     vscode.window.onDidChangeActiveTextEditor(async (editor) => {
       if (!editor) return;
@@ -39,8 +37,26 @@ export class VSCodeEventsManager {
     });
   }
 
+  private handleThemeChanges() {
+    vscode.workspace.onDidChangeConfiguration(async (e) => {
+      if (!e.affectsConfiguration(Globals.cfgSections.colorTheme)) return;
+
+      const newTheme = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
+      Globals.USER_THEME = newTheme;
+
+      try {
+        if (FuzzyPanelController.instance) {
+          await FuzzyPanelController.instance.emitThemeUpdateEvent(newTheme);
+        }
+        console.log(`[Shiki] Loaded theme: ${newTheme}`);
+      } catch (err) {
+        console.error(`Failed to load theme ${newTheme}`, err);
+      }
+    });
+  }
+
   static async emitInitialEvents() {
-    const extToShikiLang: Record<string, string> = {
+    const extToLanguage: Record<string, string> = {
       ts: "typescript",
       tsx: "tsx",
       js: "javascript",
@@ -74,35 +90,16 @@ export class VSCodeEventsManager {
     }
 
     const languagesToLoad = Array.from(extensions)
-      .map((ext) => extToShikiLang[ext])
+      .map((ext) => extToLanguage[ext])
       .filter(Boolean);
 
     console.log("[FuzzyPanel] Languages detected:", languagesToLoad);
 
     if (FuzzyPanelController.instance) {
-      await FuzzyPanelController.instance.emitThemeUpdateEvent(Globals.USER_THEME);
-      await Promise.all(languagesToLoad.map((lang) => FuzzyPanelController.instance!.emitLoadLanguageEvent(lang)));
+      await FuzzyPanelController.instance.emitInitShikiEvent({
+        languages: languagesToLoad.map((l) => getShikiLanguage(l)),
+        theme: getShikiTheme(Globals.USER_THEME),
+      });
     }
-  }
-
-  /**
-   * Monitora mudanças de tema do usuário.
-   */
-  private handleThemeChanges() {
-    vscode.workspace.onDidChangeConfiguration(async (e) => {
-      if (!e.affectsConfiguration(Globals.cfgSections.colorTheme)) return;
-
-      const newTheme = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
-      Globals.USER_THEME = newTheme;
-
-      try {
-        if (FuzzyPanelController.instance) {
-          await FuzzyPanelController.instance.emitThemeUpdateEvent(newTheme);
-        }
-        console.log(`[Shiki] Loaded theme: ${newTheme}`);
-      } catch (err) {
-        console.error(`Failed to load theme ${newTheme}`, err);
-      }
-    });
   }
 }
