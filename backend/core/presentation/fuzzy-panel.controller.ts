@@ -4,7 +4,7 @@ import { FromWebviewKindMessage, InitShiki } from "../../../shared/extension-web
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { joinPath } from "../../utils/files";
-import { getShikiLanguage, getShikiTheme } from "../../utils/shiki";
+import { getShikiTheme } from "../../utils/shiki";
 import { IFuzzyFinderProvider } from "../finders/fuzzy-finder.provider";
 import { VSCodeEventsManager } from "../services/code-events.service";
 import { FuzzyFinderAdapterRegistry } from "../services/fuzzy-provider.registry";
@@ -125,13 +125,6 @@ export class FuzzyPanelController {
     await this.wvController.sendMessage({
       type: "themeUpdate",
       data: { theme: getShikiTheme(theme) },
-    });
-  }
-
-  public async emitLoadLanguageEvent(language: string) {
-    await this.wvController.sendMessage({
-      type: "languageUpdate",
-      data: { lang: getShikiLanguage(language) },
     });
   }
 

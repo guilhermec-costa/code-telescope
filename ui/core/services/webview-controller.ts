@@ -18,7 +18,6 @@ export class WebviewController {
     private readonly previewManager: PreviewManager,
     private readonly optionListManager: OptionListManager,
     private readonly keyboardHandler: KeyboardHandler,
-    private readonly adapterRegistry: FuzzyFinderDataAdapterRegistry,
   ) {
     console.log("[WebviewController] Initializing controller");
     this.searchElement = document.getElementById("search") as HTMLInputElement;
@@ -73,25 +72,21 @@ export class WebviewController {
       case "shikiInit": {
         await Promise.all(msg.data.languages.map((language) => ShikiManager.loadLanguageFromBundle(language)));
         await ShikiManager.loadThemeFromBundle(msg.data.theme);
-        VSCodeApiService.instance.onShikiInit();
-        break;
-      }
 
-      case "languageUpdate": {
-        await ShikiManager.loadLanguageFromBundle(msg.data.lang);
+        this.previewManager.setUserTheme(msg.data.theme);
+        VSCodeApiService.instance.onShikiInit();
         break;
       }
 
       case "themeUpdate": {
         console.log("Theme updated on webview");
         await ShikiManager.loadThemeFromBundle(msg.data.theme);
-        await this.previewManager.updateTheme(msg.data.theme);
+        await this.previewManager.rerenderWithTheme(msg.data.theme);
         break;
       }
 
       case "optionList": {
         await this.handleOptionListMessage(msg);
-        await this.previewManager.updateTheme("tokyo-night");
         break;
       }
 
@@ -121,11 +116,11 @@ export class WebviewController {
   private async handleOptionListMessage(msg: OptionListMessage) {
     const { fuzzyProviderType, data } = msg;
 
-    const adapter = this.adapterRegistry.getAdapter(fuzzyProviderType);
+    const adapter = FuzzyFinderDataAdapterRegistry.instance.getAdapter(fuzzyProviderType);
 
     if (!adapter) {
       console.error(`No adapter found for finder type: ${fuzzyProviderType}`);
-      console.log("Available adapters:", this.adapterRegistry.getRegisteredTypes());
+      console.log("Available adapters:", FuzzyFinderDataAdapterRegistry.instance.getRegisteredTypes());
       return;
     }
 

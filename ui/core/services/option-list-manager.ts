@@ -43,7 +43,7 @@ export class OptionListManager<TOption = any> {
     this.updateFileCount();
     this.render();
 
-    const lastElement = this.filteredOptions.at(-1);
+    const lastElement = this.filteredOptions.at(0);
     if (lastElement) {
       this.requestPreview(lastElement);
     }

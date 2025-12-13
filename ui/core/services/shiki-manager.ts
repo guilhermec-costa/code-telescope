@@ -4,8 +4,10 @@ declare const __SHIKI_EXTENSION_URI__: string;
 
 export class ShikiManager {
   private static highlighter: HighlighterCore | null = null;
+  private static loadedThemes = new Set<string>();
+  private static loadedLanguages = new Set<string>();
 
-  static async ensureHighlighter(): Promise<HighlighterCore> {
+  static async initHighlighterCore(): Promise<HighlighterCore> {
     if (this.highlighter) return this.highlighter;
 
     console.log("[ShikiManager] Initializing Shiki...");
@@ -18,28 +20,32 @@ export class ShikiManager {
       engine: createOnigurumaEngine(wasm),
     });
 
-    await this.loadThemeFromBundle("dark-plus");
+    await Promise.all([this.loadThemeFromBundle("dark-plus")]);
     console.log("[ShikiManager] Highlighter ready.");
     return this.highlighter;
   }
 
-  static async loadThemeFromBundle(themeName: string) {
-    const { themes } = await import(`${__SHIKI_EXTENSION_URI__}/shiki-bundle.js`);
-    const theme = themes?.bundledThemes?.[themeName];
-    if (!theme) throw new Error(`[ShikiManager] Theme not found: ${themeName}`);
+  static async loadThemeFromBundle(theme: string) {
+    if (this.loadedThemes.has(theme)) return;
 
-    const highlighter = await this.ensureHighlighter();
-    await highlighter.loadTheme(theme);
-    console.log(`[ShikiManager] Theme loaded from bundle: ${themeName}`);
+    const { themes } = await import(`${__SHIKI_EXTENSION_URI__}/shiki-bundle.js`);
+    const bundledTheme = themes?.bundledThemes?.[theme];
+    if (!bundledTheme) throw new Error(`[ShikiManager] Theme not found: ${theme}`);
+
+    await this.highlighter.loadTheme(bundledTheme);
+    this.loadedThemes.add(theme);
+    console.log(`[ShikiManager] Theme loaded from bundle: ${theme}`);
   }
 
-  static async loadLanguageFromBundle(langName: string) {
-    const { langs } = await import(`${__SHIKI_EXTENSION_URI__}/shiki-bundle.js`);
-    const lang = langs?.bundledLanguages?.[langName];
-    if (!lang) throw new Error(`[ShikiManager] Language not found: ${langName}`);
+  static async loadLanguageFromBundle(lang: string) {
+    if (this.loadedLanguages.has(lang)) return;
 
-    const highlighter = await this.ensureHighlighter();
-    await highlighter.loadLanguage(lang);
-    console.log(`[ShikiManager] Language loaded from bundle: ${langName}`);
+    const { langs } = await import(`${__SHIKI_EXTENSION_URI__}/shiki-bundle.js`);
+    const bundledLang = langs?.bundledLanguages?.[lang];
+    if (!lang) throw new Error(`[ShikiManager] Language not found: ${lang}`);
+
+    await this.highlighter.loadLanguage(bundledLang);
+    this.loadedLanguages.add(lang);
+    console.log(`[ShikiManager] Language loaded from bundle: ${lang}`);
   }
 }

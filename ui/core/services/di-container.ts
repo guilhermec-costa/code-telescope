@@ -1,4 +1,3 @@
-import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.registry";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
@@ -8,7 +7,6 @@ export class DIContainer {
   previewManager!: PreviewManager;
   optionListManager!: OptionListManager;
   keyboardHandler!: KeyboardHandler;
-  adapterRegistry!: FuzzyFinderDataAdapterRegistry;
 
   async init() {
     try {
@@ -27,9 +25,6 @@ export class DIContainer {
 
       console.log("[DIContainer] Initializing KeyboardHandler");
       this.keyboardHandler = new KeyboardHandler();
-
-      console.log("[DIContainer] Initializing FinderAdapterRegistry");
-      this.adapterRegistry = new FuzzyFinderDataAdapterRegistry();
 
       console.log("[DIContainer] All services initialized successfully!");
     } catch (error) {

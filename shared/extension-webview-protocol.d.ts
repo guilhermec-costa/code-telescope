@@ -20,13 +20,6 @@ export interface ThemeUpdateMessage {
   };
 }
 
-export interface LanguageUpdateMessage {
-  type: "languageUpdate";
-  data: {
-    lang: string;
-  };
-}
-
 /**
  * Message sent from the backend containing an updated list of options.
  */
@@ -112,7 +105,6 @@ export type ToWebviewKindMessage =
   | PreviewUpdateMessage
   | OptionListMessage
   | ThemeUpdateMessage
-  | LanguageUpdateMessage
   | InitShiki
   | ResetFuzzyPanel;
 

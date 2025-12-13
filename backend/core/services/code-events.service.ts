@@ -9,7 +9,6 @@ export class VSCodeEventsManager {
   private static instance: VSCodeEventsManager;
 
   private constructor() {
-    this.handleActiveEditor();
     this.handleThemeChanges();
   }
 
@@ -18,23 +17,6 @@ export class VSCodeEventsManager {
       VSCodeEventsManager.instance = new VSCodeEventsManager();
     }
     return VSCodeEventsManager.instance;
-  }
-
-  private handleActiveEditor() {
-    vscode.window.onDidChangeActiveTextEditor(async (editor) => {
-      if (!editor) return;
-
-      const lang = editor.document.languageId;
-
-      try {
-        if (FuzzyPanelController.instance) {
-          await FuzzyPanelController.instance.emitLoadLanguageEvent(lang);
-        }
-        console.log(`[Shiki] Loaded language: ${lang}`);
-      } catch (err) {
-        console.error(`Failed to load language ${lang}`, err);
-      }
-    });
   }
 
   private handleThemeChanges() {

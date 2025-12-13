@@ -7,17 +7,17 @@ import { FromWebviewKindMessage } from "../../../shared/extension-webview-protoc
  */
 export class VSCodeApiService {
   private vscodeApi: ReturnType<typeof acquireVsCodeApi>;
-  static service: VSCodeApiService | null = null;
+  private static _instance: VSCodeApiService | null = null;
 
-  constructor() {
+  private constructor() {
     this.vscodeApi = acquireVsCodeApi();
   }
 
   static get instance() {
-    if (this.service) return this.service;
+    if (this._instance) return this._instance;
 
-    this.service = new VSCodeApiService();
-    return this.service;
+    this._instance = new VSCodeApiService();
+    return this._instance;
   }
 
   /**

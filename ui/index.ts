@@ -18,7 +18,6 @@ import "./core/adapters/preview-renderer/loader";
       container.previewManager,
       container.optionListManager,
       container.keyboardHandler,
-      container.adapterRegistry,
     );
     console.log("[Index] Controller created");
 

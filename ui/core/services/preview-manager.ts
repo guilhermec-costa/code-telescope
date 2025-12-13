@@ -6,7 +6,7 @@ import { VSCodeApiService } from "./vscode-api-service";
 
 export class PreviewManager {
   private previewElement: HTMLElement;
-  private currentTheme: string = "dark-plus";
+  private userTheme: string = "dark-plus";
   private adapter: IPreviewRendererAdapter | null = null;
 
   private lastPreviewedData: PreviewData = {
@@ -37,7 +37,7 @@ export class PreviewManager {
     this.setAdapter(adapter);
 
     this.clearPreview();
-    await this.adapter.render(this.previewElement, data, this.currentTheme);
+    await this.adapter.render(this.previewElement, data, this.userTheme);
     this.scrollToHighlighted();
     this.lastPreviewedData = data;
     console.log("[PreviewManager] Preview rendered");
@@ -57,11 +57,15 @@ export class PreviewManager {
     this.previewElement.innerHTML = "No data to preview";
   }
 
-  async updateTheme(theme: string): Promise<void> {
-    this.currentTheme = theme;
+  async setUserTheme(theme: string) {
+    this.userTheme = theme;
+  }
+
+  async rerenderWithTheme(theme: string): Promise<void> {
+    this.userTheme = theme;
     if (!this.adapter) return;
     console.log(`[PreviewManager] Updating user theme to ${theme}`);
-    await this.adapter.render(this.previewElement, this.lastPreviewedData, this.currentTheme);
+    await this.adapter.render(this.previewElement, this.lastPreviewedData, this.userTheme);
   }
 
   requestPreview(selection: string): void {

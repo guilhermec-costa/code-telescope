@@ -16,7 +16,7 @@ export class PreviewRendererAdapterRegistry {
       this.register(adapter);
     }
 
-    this.lazyInitHighlighter();
+    await this.initAdapterHighlighters();
   }
 
   register(adapter: IPreviewRendererAdapter): void {
@@ -31,26 +31,20 @@ export class PreviewRendererAdapterRegistry {
     return Array.from(this.adapters.keys());
   }
 
-  private async lazyInitHighlighter() {
+  private async initAdapterHighlighters() {
     if (this.syntaxHighlighter) return;
 
     console.log("[PreviewAdapterRegistry] Loading syntax highlighter in background...");
 
     try {
-      this.syntaxHighlighter = await ShikiManager.ensureHighlighter();
-      this.updateAdaptersWithHighlighter();
+      this.syntaxHighlighter = await ShikiManager.initHighlighterCore();
+      for (const adapter of this.adapters.values()) {
+        if ("setHighlighter" in adapter && typeof adapter.setHighlighter === "function") {
+          adapter.setHighlighter(this.syntaxHighlighter);
+        }
+      }
     } catch (err) {
       console.error("[PreviewAdapterRegistry] Failed to initialize highlighter:", err);
     }
-  }
-
-  private updateAdaptersWithHighlighter() {
-    for (const adapter of this.adapters.values()) {
-      if ("setHighlighter" in adapter && typeof adapter.setHighlighter === "function") {
-        adapter.setHighlighter(this.syntaxHighlighter);
-      }
-    }
-
-    console.log("[PreviewAdapterRegistry] Adapters updated with highlighter");
   }
 }
