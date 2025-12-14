@@ -1,36 +1,52 @@
 import { escapeHtml } from "ui/utils/html";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
-import { PreviewManager } from "./preview-manager";
+import { PreviewManager } from "../render/preview-manager";
+import { Virtualizer } from "../render/virtualizer";
 
-export class OptionListManager<TOption = any> {
-  private allOptions: TOption[] = [];
-  private filteredOptions: TOption[] = [];
+export class OptionListManager {
+  private allOptions: any[] = [];
+  private filteredOptions: any[] = [];
   private selectedIndex: number = 0;
-
-  private currentAdapter: IFuzzyFinderDataAdapter<any, TOption> | null = null;
+  private currentAdapter: IFuzzyFinderDataAdapter<any, any> | null = null;
 
   private listElement: HTMLUListElement;
-  private searchElement: HTMLInputElement;
-  private fileCountElement: HTMLElement | null;
-  private previewManager: PreviewManager;
+  private itemsCountElement: HTMLElement | null;
 
-  /**
-   * Callback invoked when the user confirms a selection
-   */
-  onSelectionConfirmed?: () => void;
+  private query: string = "";
 
-  constructor(previewManager: PreviewManager) {
-    this.previewManager = previewManager;
+  private readonly RENDER_THRESHOLD = 200;
+
+  private virtualizer: Virtualizer;
+
+  public onSelectionConfirmed?: () => void;
+
+  constructor(private readonly previewManager: PreviewManager) {
     this.listElement = document.getElementById("option-list") as HTMLUListElement;
-    this.searchElement = document.getElementById("search") as HTMLInputElement;
-    this.fileCountElement = document.getElementById("file-count");
+    this.itemsCountElement = document.getElementById("items-count");
+
+    this.virtualizer = new Virtualizer(this.listElement, {
+      itemHeight: 22,
+      bufferSize: 10,
+    });
+
+    this.setupScrollListener();
   }
 
-  setAdapter(adapter: IFuzzyFinderDataAdapter<any, TOption>): void {
+  private setupScrollListener(): void {
+    this.listElement.addEventListener("scroll", () => {
+      if (this.shouldUseVirtualization()) {
+        this.virtualizer.renderVirtualized(this.filteredOptions, this.selectedIndex, this.query, (item, idx, q) =>
+          this.createListItem(item, idx, q),
+        );
+      }
+    });
+  }
+
+  public setAdapter(adapter: IFuzzyFinderDataAdapter<any, any>): void {
     this.currentAdapter = adapter;
   }
 
-  setOptions(options: TOption[]): void {
+  public setOptions(options: any[]): void {
     if (!this.currentAdapter) {
       console.error("[OptionListManager] No adapter set");
       return;
@@ -39,115 +55,124 @@ export class OptionListManager<TOption = any> {
     this.allOptions = options;
     this.filteredOptions = options;
     this.selectedIndex = 0;
-
-    this.updateFileCount();
+    this.query = "";
+    this.updateItemsCount();
     this.render();
 
-    const lastElement = this.filteredOptions.at(0);
-    if (lastElement) {
-      this.requestPreview(lastElement);
-    }
+    const first = this.filteredOptions[0];
+    if (first) this.requestPreview(first);
   }
 
-  filter(query: string): void {
+  public filter(query: string): void {
     if (!this.currentAdapter) return;
 
-    const lowerQuery = query.toLowerCase();
+    this.query = query.toLowerCase();
 
     if (this.currentAdapter.filterOption) {
-      this.filteredOptions = this.allOptions.filter((option) => this.currentAdapter!.filterOption!(option, lowerQuery));
+      this.filteredOptions = this.allOptions.filter((opt) => this.currentAdapter!.filterOption!(opt, this.query));
     } else {
-      // Default filter (by text)
-      this.filteredOptions = this.allOptions.filter((option) => {
-        const displayText = this.currentAdapter!.getDisplayText(option);
-        return displayText.toLowerCase().includes(lowerQuery);
+      this.filteredOptions = this.allOptions.filter((opt) => {
+        const text = this.currentAdapter!.getDisplayText(opt);
+        return text.toLowerCase().includes(this.query);
       });
     }
 
     this.selectedIndex = 0;
-    this.updateFileCount();
+    this.updateItemsCount();
     this.render();
 
-    const lastElement = this.filteredOptions.at(0);
-    if (lastElement) {
-      this.requestPreview(lastElement);
-    }
-
-    if (!lastElement) {
+    const first = this.filteredOptions[0];
+    if (first) {
+      this.requestPreview(first);
+    } else {
       this.previewManager.clearPreview();
       this.previewManager.renderNoPreviewData();
     }
   }
 
-  moveSelection(direction: number): void {
-    if (!this.filteredOptions.length) return;
+  public moveSelection(direction: number): void {
+    if (this.filteredOptions.length === 0) return;
 
     this.selectedIndex = (this.selectedIndex + direction + this.filteredOptions.length) % this.filteredOptions.length;
 
     this.render();
 
-    const option = this.filteredOptions[this.selectedIndex];
-    this.requestPreview(option);
+    const selectedOption = this.filteredOptions[this.selectedIndex];
+    this.requestPreview(selectedOption);
   }
 
-  /**
-   * @returns The adapter-defined selection value
-   */
-  getSelectedValue(): string | undefined {
-    if (!this.currentAdapter) return undefined;
+  public getSelectedValue(): string | undefined {
+    if (!this.currentAdapter || this.filteredOptions.length === 0) return undefined;
 
     const option = this.filteredOptions[this.selectedIndex];
-    if (!option) return undefined;
-
     return this.currentAdapter.getSelectionValue(option);
+  }
+
+  private shouldUseVirtualization(): boolean {
+    return this.filteredOptions.length > this.RENDER_THRESHOLD;
   }
 
   private render(): void {
     if (!this.currentAdapter) return;
 
-    this.listElement.innerHTML = "";
-    const query = this.searchElement.value.toLowerCase();
+    if (this.shouldUseVirtualization()) {
+      this.listElement.classList.remove("flexbox-render");
 
-    const fragment = document.createDocumentFragment();
+      this.virtualizer.renderVirtualized(this.filteredOptions, this.selectedIndex, this.query, (item, idx, q) =>
+        this.createListItem(item, idx, q),
+      );
 
-    this.filteredOptions.forEach((option, idx) => {
-      const li = document.createElement("li");
-      li.className = "option-item";
-
-      if (idx === this.selectedIndex) {
-        li.classList.add("selected");
-      }
-
-      const displayText = this.currentAdapter!.getDisplayText(option);
-      li.innerHTML = this.highlightMatch(displayText, query);
-
-      li.onclick = () => {
-        this.selectedIndex = idx;
-        this.render();
-        this.onSelectionConfirmed?.();
-      };
-
-      fragment.appendChild(li);
-    });
-
-    this.listElement.appendChild(fragment);
-    this.scrollToSelected();
-  }
-
-  public scrollToSelected(): void {
-    const selectedElement = this.listElement.querySelector(".option-item.selected");
-    console.log("Selected element: ", selectedElement);
-    if (selectedElement) {
-      selectedElement.scrollIntoView({
-        block: "nearest",
-        behavior: "instant",
+      requestAnimationFrame(() => {
+        this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
       });
+    } else {
+      this.virtualizer.clear();
+      this.listElement.classList.add("flexbox-render");
+
+      this.renderAll();
+      this.scrollToSelectedNormal();
     }
   }
 
-  /**
-   * Highlights the matched substring inside option text.
-   */
+  private renderAll(): void {
+    this.listElement.style.height = "";
+    this.listElement.innerHTML = "";
+
+    const fragment = document.createDocumentFragment();
+    this.filteredOptions.forEach((option, idx) => {
+      const li = this.createListItem(option, idx, this.query);
+      fragment.appendChild(li);
+    });
+    this.listElement.appendChild(fragment);
+  }
+
+  private createListItem(option: any, idx: number, query: string): HTMLLIElement {
+    const li = document.createElement("li");
+    li.className = "option-item";
+
+    if (idx === this.selectedIndex) {
+      li.classList.add("selected");
+    }
+
+    const displayText = this.currentAdapter!.getDisplayText(option);
+    li.innerHTML = this.highlightMatch(displayText, query);
+
+    li.onclick = () => {
+      this.selectedIndex = idx;
+      this.render();
+      this.onSelectionConfirmed?.();
+    };
+
+    return li;
+  }
+
+  private scrollToSelectedNormal(): void {
+    const selected = this.listElement.querySelector(".option-item.selected") as HTMLElement | null;
+    if (selected) {
+      selected.scrollIntoView({ block: "center", behavior: "instant" });
+    }
+  }
+
   private highlightMatch(text: string, query: string): string {
     if (!query) return escapeHtml(text);
 
@@ -161,16 +186,15 @@ export class OptionListManager<TOption = any> {
     return `${before}<span class="highlight">${match}</span>${after}`;
   }
 
-  private requestPreview(option: TOption): void {
+  private requestPreview(option: any): void {
     if (!this.currentAdapter) return;
-
-    const selection = this.currentAdapter.getSelectionValue(option);
-    this.previewManager.requestPreview(selection);
+    const value = this.currentAdapter.getSelectionValue(option);
+    this.previewManager.requestPreview(value);
   }
 
-  private updateFileCount(): void {
-    if (this.fileCountElement) {
-      this.fileCountElement.textContent = `${this.filteredOptions.length} / ${this.allOptions.length}`;
+  private updateItemsCount(): void {
+    if (this.itemsCountElement) {
+      this.itemsCountElement.textContent = `${this.filteredOptions.length} / ${this.allOptions.length}`;
     }
   }
 }

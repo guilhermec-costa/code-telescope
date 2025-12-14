@@ -15,22 +15,20 @@ import { WebviewController } from "./webview.controller";
  */
 export class FuzzyPanelController {
   private readonly wvController: WebviewController;
-  private readonly adapterRegistry: FuzzyFinderAdapterRegistry;
   private static panelRevealPosition = vscode.ViewColumn.Active;
   private provider!: IFuzzyFinderProvider;
 
   public readonly wvPanel: vscode.WebviewPanel;
-  public static instance: FuzzyPanelController | undefined;
+  public static _instance: FuzzyPanelController | undefined;
 
   private constructor(_wvPanel: vscode.WebviewPanel) {
     console.log("[FuzzyPanel] Creating a new panel instance");
     this.wvPanel = _wvPanel;
     this.wvController = new WebviewController(this.wvPanel.webview);
-    this.adapterRegistry = new FuzzyFinderAdapterRegistry();
 
     _wvPanel.onDidDispose(() => {
       console.log("[FuzzyPanel] Panel disposed");
-      FuzzyPanelController.instance = undefined;
+      FuzzyPanelController._instance = undefined;
     });
   }
 
@@ -62,24 +60,26 @@ export class FuzzyPanelController {
    * @returns The active FuzzyPanelController instance.
    */
   public static createOrShow() {
-    if (FuzzyPanelController.instance) {
+    if (FuzzyPanelController._instance) {
       console.log("[FuzzyPanel] Reusing existing panel");
-      FuzzyPanelController.instance.wvPanel.reveal(this.panelRevealPosition, false);
-      return FuzzyPanelController.instance;
+      FuzzyPanelController._instance.wvPanel.reveal(this.panelRevealPosition, false);
+      return FuzzyPanelController._instance;
     }
 
     const panel = this.createPanel();
-    FuzzyPanelController.instance = new FuzzyPanelController(panel);
+    FuzzyPanelController._instance = new FuzzyPanelController(panel);
     VSCodeEventsManager.init();
-    FuzzyPanelController.instance.listenWebview();
-    return FuzzyPanelController.instance;
+    FuzzyPanelController._instance.listenWebview();
+    return FuzzyPanelController._instance;
   }
 
   public async startProvider(providerType: FuzzyProviderType) {
-    const provider = this.adapterRegistry.getAdapter(providerType);
+    const provider = FuzzyFinderAdapterRegistry.instance.getAdapter(providerType);
     if (!provider) return;
+    if (this.provider && this.provider.fuzzyAdapterType === providerType) return;
 
     this.setFuzzyProvider(provider);
+
     this.wvPanel.webview.html = await this.wvController.resolveWebviewHtml(this.provider.getHtmlLoadConfig());
     await this.emitResetWebviewEvent();
   }

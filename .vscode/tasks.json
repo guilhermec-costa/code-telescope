@@ -63,7 +63,11 @@
       "type": "shell",
       "command": "pnpm bundle:shiki",
       "isBackground": true,
-      "group": "build"
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+      }
     },
     {
       "label": "build all",

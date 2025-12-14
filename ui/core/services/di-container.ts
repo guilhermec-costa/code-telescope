@@ -1,24 +1,25 @@
 import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.registry";
+import { PreviewManager } from "../render/preview-manager";
+import { Virtualizer } from "../render/virtualizer";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
-import { PreviewManager } from "./preview-manager";
 
 export class DIContainer {
   previewManager!: PreviewManager;
   optionListManager!: OptionListManager;
   keyboardHandler!: KeyboardHandler;
+  virtualizer!: Virtualizer;
 
   async init() {
     try {
       console.log("[DIContainer] Initializing VSCodeApiService");
 
       console.log("[DIContainer] Initializing PreviewAdapterRegistry");
-      const previewAdapterRegistry = new PreviewRendererAdapterRegistry();
-      await previewAdapterRegistry.init();
+      await PreviewRendererAdapterRegistry.instance.init();
       console.log("[DIContainer] PreviewAdapterRegistry initialized");
 
       console.log("[DIContainer] Initializing PreviewManager");
-      this.previewManager = new PreviewManager(previewAdapterRegistry);
+      this.previewManager = new PreviewManager();
 
       console.log("[DIContainer] Initializing OptionListManager");
       this.optionListManager = new OptionListManager(this.previewManager);

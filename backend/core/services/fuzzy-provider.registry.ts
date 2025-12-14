@@ -4,11 +4,19 @@ import { IFuzzyFinderProvider } from "../finders/fuzzy-finder.provider";
 
 export class FuzzyFinderAdapterRegistry {
   private adapters = new Map<string, IFuzzyFinderProvider>();
+  private static _instance: FuzzyFinderAdapterRegistry | null = null;
 
-  constructor() {
+  private constructor() {
     for (const adapter of getRegisteredFuzzyFinderAdapters()) {
       this.register(adapter);
     }
+  }
+
+  static get instance() {
+    if (this._instance) return this._instance;
+
+    this._instance = new FuzzyFinderAdapterRegistry();
+    return this._instance;
   }
 
   register(adapter: IFuzzyFinderProvider) {

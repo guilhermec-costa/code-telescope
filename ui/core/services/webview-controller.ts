@@ -1,10 +1,10 @@
 import { OptionListMessage, ToWebviewKindMessage } from "@shared/extension-webview-protocol";
 import { debounce } from "../../utils/debounce";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
+import { PreviewManager } from "../render/preview-manager";
+import { ShikiManager } from "../render/shiki-manager";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
-import { PreviewManager } from "./preview-manager";
-import { ShikiManager } from "./shiki-manager";
 import { VSCodeApiService } from "./vscode-api-service";
 
 /**
@@ -94,7 +94,6 @@ export class WebviewController {
         console.log("[WebviewController] Processing previewUpdate message", msg.data);
         const { previewAdapterType, data } = msg;
         await this.previewManager.updatePreview(data, previewAdapterType);
-        this.optionListManager.scrollToSelected();
         break;
       }
     }

@@ -2,13 +2,23 @@ import type { HighlighterCore } from "shiki/core";
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
 import { getRegisteredPreviewRendererAdapters } from "../decorators/preview-renderer-adapter.decorator";
-import { ShikiManager } from "../services/shiki-manager";
+import { ShikiManager } from "../render/shiki-manager";
 
 export type SyntaxHighlighter = HighlighterCore | null;
 
 export class PreviewRendererAdapterRegistry {
   private adapters = new Map<string, IPreviewRendererAdapter>();
   private syntaxHighlighter: SyntaxHighlighter = null;
+  private static _instance: PreviewRendererAdapterRegistry | undefined;
+
+  private constructor() {}
+
+  static get instance() {
+    if (this._instance) return this._instance;
+
+    this._instance = new PreviewRendererAdapterRegistry();
+    return this._instance;
+  }
 
   async init() {
     console.log("[PreviewAdapterRegistry] Registering adapters...");

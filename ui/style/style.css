@@ -72,7 +72,11 @@ body {
   padding: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  flex-grow: 1; /* all the space available*/
+  flex-grow: 1;
+  position: relative;
+}
+
+#option-list.flexbox-render {
   display: flex;
   flex-direction: column-reverse;
 }
@@ -160,7 +164,7 @@ body {
   font-family: var(--font-family);
 }
 
-#file-count {
+#items-count {
   position: absolute;
   font-family: var(--font-family);
   right: 15px;
@@ -202,12 +206,12 @@ body {
 
 #preview pre,
 #preview code {
-    background-color: transparent;
-    font-family: var(--font-family), "Fira Code";
-    padding: 0; 
-    margin: 0;
+  background-color: transparent;
+  font-family: var(--font-family), "Fira Code";
+  padding: 0;
+  margin: 0;
 }
 #preview pre span {
-    background-color: transparent;
-    font-family: var(--font-family), "Fira Code";
+  background-color: transparent;
+  font-family: var(--font-family), "Fira Code";
 }

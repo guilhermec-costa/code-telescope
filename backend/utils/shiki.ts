@@ -4,6 +4,9 @@ export function getShikiTheme(vscodeTheme: string) {
   if (themeName.includes("dark+") || themeName.includes("dark plus")) {
     return "dark-plus";
   }
+  if (themeName.includes("gruvbox dark hard")) {
+    return "gruvbox-dark-hard";
+  }
   if (themeName.includes("light+") || themeName.includes("light plus")) {
     return "light-plus";
   }

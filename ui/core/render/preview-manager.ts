@@ -2,7 +2,7 @@ import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
 import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.registry";
-import { VSCodeApiService } from "./vscode-api-service";
+import { VSCodeApiService } from "../services/vscode-api-service";
 
 export class PreviewManager {
   private previewElement: HTMLElement;
@@ -15,7 +15,7 @@ export class PreviewManager {
     metadata: {},
   };
 
-  constructor(private readonly previewAdapterRegistry: PreviewRendererAdapterRegistry) {
+  constructor() {
     console.log("[PreviewManager] Initializing");
     this.previewElement = document.getElementById("preview")!;
   }
@@ -25,11 +25,11 @@ export class PreviewManager {
   }
 
   async updatePreview(data: PreviewData, finderType: PreviewRendererType): Promise<void> {
-    const adapter = this.previewAdapterRegistry.getAdapter(finderType);
+    const adapter = PreviewRendererAdapterRegistry.instance.getAdapter(finderType);
 
     if (!adapter) {
       console.error(`No adapter found for finder type: ${finderType}`);
-      console.log("Available adapters:", this.previewAdapterRegistry.getRegisteredTypes());
+      console.log("Available adapters:", PreviewRendererAdapterRegistry.instance.getRegisteredTypes());
       return;
     }
 
