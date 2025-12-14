@@ -4,7 +4,7 @@ import { getRegisteredFuzzyDataAdapters } from "../decorators/fuzzy-data-adapter
 
 export class FuzzyFinderDataAdapterRegistry {
   private adapters = new Map<string, IFuzzyFinderDataAdapter>();
-  private static _instance: FuzzyFinderDataAdapterRegistry | null = null;
+  private static _instance: FuzzyFinderDataAdapterRegistry | undefined;
 
   private constructor() {
     for (const adapter of getRegisteredFuzzyDataAdapters()) {

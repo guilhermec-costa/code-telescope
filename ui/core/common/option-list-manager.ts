@@ -90,7 +90,17 @@ export class OptionListManager {
     }
   }
 
-  public moveSelection(direction: number): void {
+  public moveSelectionUp() {
+    const renderMode = this.getRenderMode();
+    this.moveSelection(renderMode === "fullrender" ? 1 : -1);
+  }
+
+  public moveSelectionDown() {
+    const renderMode = this.getRenderMode();
+    this.moveSelection(renderMode === "fullrender" ? -1 : 1);
+  }
+
+  private moveSelection(direction: number): void {
     if (this.filteredOptions.length === 0) return;
 
     this.selectedIndex = (this.selectedIndex + direction + this.filteredOptions.length) % this.filteredOptions.length;
@@ -106,6 +116,10 @@ export class OptionListManager {
 
     const option = this.filteredOptions[this.selectedIndex];
     return this.currentAdapter.getSelectionValue(option);
+  }
+
+  public getRenderMode(): "virtualized" | "fullrender" {
+    return this.shouldUseVirtualization() ? "virtualized" : "fullrender";
   }
 
   private shouldUseVirtualization(): boolean {

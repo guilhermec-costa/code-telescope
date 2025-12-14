@@ -154,37 +154,14 @@ export class WebviewController {
    * Registers keyboard shortcuts for:
    */
   private setupKeyboardHandlers(): void {
-    this.keyboardHandler.setMoveUpHandler(() => {
-      this.optionListManager.moveSelection(1);
-    });
-
-    this.keyboardHandler.setMoveDownHandler(() => {
-      this.optionListManager.moveSelection(-1);
-    });
-
-    this.keyboardHandler.setScrollUpHandler(() => {
-      this.previewManager.scrollUp();
-    });
-
-    this.keyboardHandler.setScrollDownHandler(() => {
-      this.previewManager.scrollDown();
-    });
-
-    this.keyboardHandler.setScrollRight(() => {
-      this.previewManager.scrollRight();
-    });
-
-    this.keyboardHandler.setScrollLeft(() => {
-      this.previewManager.scrollLeft();
-    });
-
-    this.keyboardHandler.setConfirmHandler(() => {
-      this.confirmSelection();
-    });
-
-    this.keyboardHandler.setCloseHandler(() => {
-      VSCodeApiService.instance.requestClosePanel();
-    });
+    this.keyboardHandler.setMoveUpHandler(this.optionListManager.moveSelectionUp.bind(this.optionListManager));
+    this.keyboardHandler.setMoveDownHandler(this.optionListManager.moveSelectionDown.bind(this.optionListManager));
+    this.keyboardHandler.setScrollUpHandler(this.previewManager.scrollUp.bind(this.previewManager));
+    this.keyboardHandler.setScrollDownHandler(this.previewManager.scrollDown.bind(this.previewManager));
+    this.keyboardHandler.setScrollRight(this.previewManager.scrollRight.bind(this.previewManager));
+    this.keyboardHandler.setScrollLeft(this.previewManager.scrollLeft.bind(this.previewManager));
+    this.keyboardHandler.setConfirmHandler(this.confirmSelection.bind(this));
+    this.keyboardHandler.setCloseHandler(VSCodeApiService.instance.requestClosePanel.bind(VSCodeApiService.instance));
   }
 
   /**

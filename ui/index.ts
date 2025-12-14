@@ -1,5 +1,5 @@
-import { DIContainer } from "./core/services/di-container";
-import { WebviewController } from "./core/services/webview-controller";
+import { DIContainer } from "./core/common/di-container";
+import { WebviewController } from "./core/common/webview-controller";
 
 import "./core/adapters/data/loader";
 import "./core/adapters/preview-renderer/loader";

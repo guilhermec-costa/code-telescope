@@ -26,7 +26,6 @@ export class CommitDiffPreviewRendererAdapter implements IPreviewRendererAdapter
   async render(previewElement: HTMLElement, data: PreviewData, theme: string): Promise<void> {
     const { content, language = "diff" } = data;
 
-    // Se highlighter ainda não carregou, mostra texto puro estilizado
     if (!this.highlighter) {
       previewElement.innerHTML = this.renderPlainDiff(content);
       return;
