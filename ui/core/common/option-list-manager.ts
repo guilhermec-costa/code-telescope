@@ -7,16 +7,14 @@ export class OptionListManager {
   private allOptions: any[] = [];
   private filteredOptions: any[] = [];
   private selectedIndex: number = 0;
-  private currentAdapter: IFuzzyFinderDataAdapter<any, any> | null = null;
+  private dataAdapter: IFuzzyFinderDataAdapter | undefined;
+  private query: string = "";
 
   private listElement: HTMLUListElement;
   private itemsCountElement: HTMLElement | null;
 
-  private query: string = "";
-
   private readonly RENDER_THRESHOLD = 200;
-
-  private virtualizer: Virtualizer;
+  private readonly virtualizer: Virtualizer;
 
   public onSelectionConfirmed?: () => void;
 
@@ -32,22 +30,17 @@ export class OptionListManager {
     this.setupScrollListener();
   }
 
-  private setupScrollListener(): void {
-    this.listElement.addEventListener("scroll", () => {
-      if (this.shouldUseVirtualization()) {
-        this.virtualizer.renderVirtualized(this.filteredOptions, this.selectedIndex, this.query, (item, idx, q) =>
-          this.createListItem(item, idx, q),
-        );
-      }
-    });
+  public setAdapter(adapter: IFuzzyFinderDataAdapter<any, any>): void {
+    this.dataAdapter = adapter;
   }
 
-  public setAdapter(adapter: IFuzzyFinderDataAdapter<any, any>): void {
-    this.currentAdapter = adapter;
+  public getAdapterDebounceTime(): number {
+    if (this.dataAdapter.debounceSearchTime) return this.dataAdapter.debounceSearchTime;
+    return 50;
   }
 
   public setOptions(options: any[]): void {
-    if (!this.currentAdapter) {
+    if (!this.dataAdapter) {
       console.error("[OptionListManager] No adapter set");
       return;
     }
@@ -64,15 +57,15 @@ export class OptionListManager {
   }
 
   public filter(query: string): void {
-    if (!this.currentAdapter) return;
+    if (!this.dataAdapter) return;
 
     this.query = query.toLowerCase();
 
-    if (this.currentAdapter.filterOption) {
-      this.filteredOptions = this.allOptions.filter((opt) => this.currentAdapter!.filterOption!(opt, this.query));
+    if (this.dataAdapter.filterOption) {
+      this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter!.filterOption!(opt, this.query));
     } else {
       this.filteredOptions = this.allOptions.filter((opt) => {
-        const text = this.currentAdapter!.getDisplayText(opt);
+        const text = this.dataAdapter!.getDisplayText(opt);
         return text.toLowerCase().includes(this.query);
       });
     }
@@ -91,13 +84,32 @@ export class OptionListManager {
   }
 
   public moveSelectionUp() {
-    const renderMode = this.getRenderMode();
-    this.moveSelection(renderMode === "fullrender" ? 1 : -1);
+    this.moveSelection(this.renderMode === "fullrender" ? 1 : -1);
   }
 
   public moveSelectionDown() {
-    const renderMode = this.getRenderMode();
-    this.moveSelection(renderMode === "fullrender" ? -1 : 1);
+    this.moveSelection(this.renderMode === "fullrender" ? -1 : 1);
+  }
+
+  public getSelectedValue(): string | undefined {
+    if (!this.dataAdapter || this.filteredOptions.length === 0) return undefined;
+
+    const option = this.filteredOptions[this.selectedIndex];
+    return this.dataAdapter.getSelectionValue(option);
+  }
+
+  private get renderMode() {
+    return this.shouldUseVirtualization() ? "virtualized" : "fullrender";
+  }
+
+  private setupScrollListener(): void {
+    this.listElement.addEventListener("scroll", () => {
+      if (this.shouldUseVirtualization()) {
+        this.virtualizer.renderVirtualized(this.filteredOptions, this.selectedIndex, this.query, (item, idx, q) =>
+          this.createListItem(item, idx, q),
+        );
+      }
+    });
   }
 
   private moveSelection(direction: number): void {
@@ -111,23 +123,12 @@ export class OptionListManager {
     this.requestPreview(selectedOption);
   }
 
-  public getSelectedValue(): string | undefined {
-    if (!this.currentAdapter || this.filteredOptions.length === 0) return undefined;
-
-    const option = this.filteredOptions[this.selectedIndex];
-    return this.currentAdapter.getSelectionValue(option);
-  }
-
-  public getRenderMode(): "virtualized" | "fullrender" {
-    return this.shouldUseVirtualization() ? "virtualized" : "fullrender";
-  }
-
   private shouldUseVirtualization(): boolean {
     return this.filteredOptions.length > this.RENDER_THRESHOLD;
   }
 
   private render(): void {
-    if (!this.currentAdapter) return;
+    if (!this.dataAdapter) return;
 
     if (this.shouldUseVirtualization()) {
       this.listElement.classList.remove("flexbox-render");
@@ -168,7 +169,7 @@ export class OptionListManager {
       li.classList.add("selected");
     }
 
-    const displayText = this.currentAdapter!.getDisplayText(option);
+    const displayText = this.dataAdapter!.getDisplayText(option);
     li.innerHTML = this.highlightMatch(displayText, query);
 
     li.onclick = () => {
@@ -201,8 +202,8 @@ export class OptionListManager {
   }
 
   private requestPreview(option: any): void {
-    if (!this.currentAdapter) return;
-    const value = this.currentAdapter.getSelectionValue(option);
+    if (!this.dataAdapter) return;
+    const value = this.dataAdapter.getSelectionValue(option);
     this.previewManager.requestPreview(value);
   }
 

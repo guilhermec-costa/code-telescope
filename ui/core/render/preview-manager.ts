@@ -1,7 +1,7 @@
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
-import { VSCodeApiService } from "../common/vscode-api-service";
+import { WebviewToExtensionMessenger } from "../common/wv-to-extension-messenger";
 import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.registry";
 
 export class PreviewManager {
@@ -69,7 +69,7 @@ export class PreviewManager {
   }
 
   requestPreview(selection: string): void {
-    VSCodeApiService.instance.requestSelectionPreviewData(selection);
+    WebviewToExtensionMessenger.instance.requestSelectionPreviewData(selection);
   }
 
   scrollToTop() {

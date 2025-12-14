@@ -18,6 +18,8 @@ export class WorkspaceTextFinderDataAdapter implements IFuzzyFinderDataAdapter<T
   previewAdapterType: PreviewRendererType;
   fuzzyAdapterType: FuzzyProviderType;
 
+  debounceSearchTime = 100;
+
   parseOptions(data: TextSearchData): SearchOption[] {
     return data.results.map((match) => ({
       identifier: `${match.file}:${match.line}:${match.column}`,

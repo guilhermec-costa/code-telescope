@@ -5,7 +5,7 @@ import { PreviewManager } from "../render/preview-manager";
 import { ShikiManager } from "../render/shiki-manager";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
-import { VSCodeApiService } from "./vscode-api-service";
+import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
 
 /**
  * Controller responsible for orchestrating all webview-side logic.
@@ -29,7 +29,7 @@ export class WebviewController {
     const onDOMReady = () => {
       console.log("[WebviewController] DOM is ready!");
       this.focusSearchInput();
-      VSCodeApiService.instance.onDOMReady();
+      WebviewToExtensionMessenger.instance.onDOMReady();
       console.log("[WebviewController] Sent 'webviewDOMReady' message to extension");
     };
 
@@ -42,7 +42,7 @@ export class WebviewController {
     }
 
     window.addEventListener("message", async (event) => {
-      await this.handleMessage(event.data as ToWebviewKindMessage);
+      await this.handleMessage(event.data);
     });
 
     window.addEventListener("focus", () => {
@@ -57,7 +57,7 @@ export class WebviewController {
   }
 
   /**
-   * Handles a message received from the VS Code extension.
+   * Handles a message received from the extension.
    *
    * @param msg - The message payload sent from the extension.
    */
@@ -74,7 +74,7 @@ export class WebviewController {
         await ShikiManager.loadThemeFromBundle(msg.data.theme);
 
         this.previewManager.setUserTheme(msg.data.theme);
-        VSCodeApiService.instance.onShikiInit();
+        WebviewToExtensionMessenger.instance.onShikiInit();
         break;
       }
 
@@ -136,9 +136,9 @@ export class WebviewController {
    */
   private setupEventListeners(): void {
     const debouncedFilter = debounce((query: string) => {
-      VSCodeApiService.instance.requestDynamicSearch(query);
+      WebviewToExtensionMessenger.instance.requestDynamicSearch(query);
       this.optionListManager.filter(query);
-    }, 50);
+    }, this.optionListManager.getAdapterDebounceTime());
 
     this.searchElement.addEventListener("input", () => {
       const query = this.searchElement.value;
@@ -161,7 +161,9 @@ export class WebviewController {
     this.keyboardHandler.setScrollRight(this.previewManager.scrollRight.bind(this.previewManager));
     this.keyboardHandler.setScrollLeft(this.previewManager.scrollLeft.bind(this.previewManager));
     this.keyboardHandler.setConfirmHandler(this.confirmSelection.bind(this));
-    this.keyboardHandler.setCloseHandler(VSCodeApiService.instance.requestClosePanel.bind(VSCodeApiService.instance));
+    this.keyboardHandler.setCloseHandler(
+      WebviewToExtensionMessenger.instance.requestClosePanel.bind(WebviewToExtensionMessenger.instance),
+    );
   }
 
   /**
@@ -170,7 +172,7 @@ export class WebviewController {
   private confirmSelection(): void {
     const selectedValue = this.optionListManager.getSelectedValue();
     if (selectedValue) {
-      VSCodeApiService.instance.onOptionSelected(selectedValue);
+      WebviewToExtensionMessenger.instance.onOptionSelected(selectedValue);
     }
   }
 }
