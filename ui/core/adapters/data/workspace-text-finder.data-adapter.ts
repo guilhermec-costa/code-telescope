@@ -17,7 +17,6 @@ interface SearchOption {
 export class WorkspaceTextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearchData, SearchOption> {
   previewAdapterType: PreviewRendererType;
   fuzzyAdapterType: FuzzyProviderType;
-
   debounceSearchTime = 100;
 
   parseOptions(data: TextSearchData): SearchOption[] {

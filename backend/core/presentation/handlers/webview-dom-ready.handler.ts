@@ -1,6 +1,6 @@
 import { IWebviewMessageHandler } from "../../abstractions/webview-message-handler";
+import { VSCodeEventsManager } from "../../common/code-events-manager";
 import { WebviewMessageHandler } from "../../decorators/webview-message-handler.decorator";
-import { VSCodeEventsManager } from "../../services/code-events.service";
 
 @WebviewMessageHandler()
 export class WebviewDOMReadyHandler implements IWebviewMessageHandler<"webviewDOMReady"> {

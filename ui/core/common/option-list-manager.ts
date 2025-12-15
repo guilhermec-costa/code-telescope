@@ -30,7 +30,7 @@ export class OptionListManager {
     this.setupScrollListener();
   }
 
-  public setAdapter(adapter: IFuzzyFinderDataAdapter<any, any>): void {
+  public setAdapter(adapter: IFuzzyFinderDataAdapter): void {
     this.dataAdapter = adapter;
   }
 
@@ -62,10 +62,10 @@ export class OptionListManager {
     this.query = query.toLowerCase();
 
     if (this.dataAdapter.filterOption) {
-      this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter!.filterOption!(opt, this.query));
+      this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter.filterOption(opt, this.query));
     } else {
       this.filteredOptions = this.allOptions.filter((opt) => {
-        const text = this.dataAdapter!.getDisplayText(opt);
+        const text = this.dataAdapter.getDisplayText(opt);
         return text.toLowerCase().includes(this.query);
       });
     }

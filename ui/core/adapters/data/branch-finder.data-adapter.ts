@@ -10,6 +10,7 @@ import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.deco
 export class BranchFinderDataAdapter implements IFuzzyFinderDataAdapter<BranchInfo[], BranchInfo> {
   previewAdapterType: PreviewRendererType;
   fuzzyAdapterType: FuzzyProviderType;
+  debounceSearchTime = 30;
 
   parseOptions(data: BranchInfo[]) {
     return data;
@@ -30,5 +31,4 @@ export class BranchFinderDataAdapter implements IFuzzyFinderDataAdapter<BranchIn
     const displayText = this.getDisplayText(option).toLowerCase();
     return displayText.includes(lowerQuery);
   }
-  debounceSearchTime = 30;
 }

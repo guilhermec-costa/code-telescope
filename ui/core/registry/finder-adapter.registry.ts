@@ -19,7 +19,7 @@ export class FuzzyFinderDataAdapterRegistry {
     return this._instance;
   }
 
-  register(adapter: IFuzzyFinderDataAdapter<any, any>) {
+  register(adapter: IFuzzyFinderDataAdapter) {
     this.adapters.set(adapter.fuzzyAdapterType, adapter);
   }
 

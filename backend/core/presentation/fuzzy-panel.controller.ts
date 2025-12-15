@@ -5,9 +5,9 @@ import { Globals } from "../../globals";
 import { joinPath } from "../../utils/files";
 import { getShikiTheme } from "../../utils/shiki";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
+import { VSCodeEventsManager } from "../common/code-events-manager";
+import { FuzzyFinderAdapterRegistry } from "../registry/fuzzy-provider.registry";
 import { WebviewMessageHandlerRegistry } from "../registry/webview-handler.registry";
-import { VSCodeEventsManager } from "../services/code-events.service";
-import { FuzzyFinderAdapterRegistry } from "../services/fuzzy-provider.registry";
 import { WebviewController } from "./webview.controller";
 
 /**
