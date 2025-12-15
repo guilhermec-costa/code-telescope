@@ -2,6 +2,7 @@ import { escapeHtml } from "ui/utils/html";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
 import { PreviewManager } from "../render/preview-manager";
 import { Virtualizer } from "../render/virtualizer";
+import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
 
 export class OptionListManager {
   private allOptions: any[] = [];
@@ -15,8 +16,6 @@ export class OptionListManager {
 
   private readonly RENDER_THRESHOLD = 200;
   private readonly virtualizer: Virtualizer;
-
-  public onSelectionConfirmed?: () => void;
 
   constructor(private readonly previewManager: PreviewManager) {
     this.listElement = document.getElementById("option-list") as HTMLUListElement;
@@ -96,6 +95,21 @@ export class OptionListManager {
 
     const option = this.filteredOptions.at(this.selectedIndex);
     return this.dataAdapter.getSelectionValue(option);
+  }
+
+  public clearOptionsIfNeeded(): void {
+    if (this.dataAdapter.fuzzyAdapterType !== "workspace.text") return;
+
+    this.allOptions = [];
+    this.filteredOptions = [];
+    this.selectedIndex = 0;
+  }
+
+  public onSelectionConfirmed() {
+    const selectedValue = this.getSelectedValue();
+    if (selectedValue) {
+      WebviewToExtensionMessenger.instance.onOptionSelected(selectedValue);
+    }
   }
 
   private get renderMode() {
@@ -183,7 +197,7 @@ export class OptionListManager {
     li.onclick = () => {
       this.selectedIndex = idx;
       this.render();
-      this.onSelectionConfirmed?.();
+      this.onSelectionConfirmed();
     };
 
     return li;

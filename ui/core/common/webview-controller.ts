@@ -1,4 +1,5 @@
 import { OptionListMessage, ToWebviewKindMessage } from "@shared/extension-webview-protocol";
+import { PanelSetupConfig } from "../../../shared/exchange/extension-config";
 import { debounce } from "../../utils/debounce";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { PreviewManager } from "../render/preview-manager";
@@ -13,6 +14,7 @@ import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
 export class WebviewController {
   /** Search input HTML element used for filtering options. */
   private searchElement: HTMLInputElement;
+  private panelConfig: PanelSetupConfig;
 
   constructor(
     private readonly previewManager: PreviewManager,
@@ -78,6 +80,16 @@ export class WebviewController {
         break;
       }
 
+      case "panelConfig": {
+        this.panelConfig = msg.data;
+
+        const leftSide = document.getElementById("left-side");
+        const rightSide = document.getElementById("right-side");
+        leftSide.style.width = `${this.panelConfig.leftSideWidthPct}%`;
+        rightSide.style.width = `${this.panelConfig.rightSideWidthPct}%`;
+        break;
+      }
+
       case "themeUpdate": {
         console.log("Theme updated on webview");
         await ShikiManager.loadThemeFromBundle(msg.data.theme);
@@ -102,9 +114,10 @@ export class WebviewController {
   /**
    * Clears the search input and the preview section.
    */
-  private async handleResetWebview() {
-    this.searchElement.value = "";
+  private handleResetWebview() {
+    // this.optionListManager.clearOptionsIfNeeded();
     this.previewManager.clearPreview();
+    this.searchElement.value = "";
   }
 
   /**
@@ -140,14 +153,10 @@ export class WebviewController {
       this.optionListManager.filter(query);
     }, 300);
 
-    this.searchElement.addEventListener("input", () => {
+    this.searchElement.addEventListener("input", async () => {
       const query = this.searchElement.value;
       debouncedFilter(query);
     });
-
-    this.optionListManager.onSelectionConfirmed = () => {
-      this.confirmSelection();
-    };
   }
 
   /**

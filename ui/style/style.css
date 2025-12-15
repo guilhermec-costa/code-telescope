@@ -1,217 +1,225 @@
-body {
-  font-size: 14px;
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--vscode-editor-background);
-  color: var(--vscode-editor-foreground);
-  overflow: hidden;
-}
-
 :root {
-  --bg: var(--vscode-editor-background);
-  --fg: var(--vscode-editor-foreground);
-  --border-color: var(--vscode-editorWidget-border);
-  --font-family: var(--vscode-editor-font-family);
-  --status-bar-bg: var(--vscode-statusBar-background);
-  --status-bar-fg: var(--vscode-statusBar-foreground);
-  --input-bg: var(--vscode-input-background);
-  --input-fg: var(--vscode-input-foreground);
-  --focus-border: var(--vscode-focusBorder);
-  --list-hover: var(--vscode-list-hoverBackground);
-  --list-selected: var(--vscode-list-activeSelectionBackground);
-  --list-selected-fg: var(--vscode-list-activeSelectionForeground);
-  --highlight-bg: var(--vscode-editor-findMatchHighlightBackground);
-  --highlight-fg: var(--vscode-editor-foreground);
-  --muted-fg: var(--vscode-descriptionForeground);
-  --scrollbar-thumb: var(--vscode-scrollbarSlider-background);
-  --scrollbar-thumb-hover: var(--vscode-scrollbarSlider-hoverBackground);
+    --bg: var(--vscode-editor-background);
+    --fg: var(--vscode-editor-foreground);
+    --border-color: var(--vscode-editorWidget-border);
+    --font-family: var(--vscode-editor-font-family);
+    --status-bar-bg: var(--vscode-statusBar-background);
+    --status-bar-fg: var(--vscode-statusBar-foreground);
+    --input-bg: var(--vscode-input-background);
+    --input-fg: var(--vscode-input-foreground);
+    --focus-border: var(--vscode-focusBorder);
+    --list-hover: var(--vscode-list-hoverBackground);
+    --list-selected: var(--vscode-list-activeSelectionBackground);
+    --list-selected-fg: var(--vscode-list-activeSelectionForeground);
+    --highlight-bg: var(--vscode-editor-findMatchHighlightBackground);
+    --highlight-fg: var(--vscode-editor-foreground);
+    --muted-fg: var(--vscode-descriptionForeground);
+    --scrollbar-thumb: var(--vscode-scrollbarSlider-background);
+    --scrollbar-thumb-hover: var(--vscode-scrollbarSlider-hoverBackground);
+    --divider-color: var(--border-color);
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    overflow: hidden;
 }
 
 #container {
-  width: 90%;
-  max-width: 1300px;
-  height: 600px;
-  background: var(--bg);
-  border: 1px solid var(--border-color);
-  border-radius: 2px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+    width: 90%;
+    max-width: 1300px;
+    height: 600px;
+    background: var(--bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 #split {
-  display: flex;
-  flex-direction: row;
-  flex-grow: 1;
-  height: 100%;
-  min-width: 0;
-  min-height: 0;
-  gap: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
 }
 
 #left-side {
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-width: 250px;
-}
-
-#option-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  flex-grow: 1;
-  position: relative;
-}
-
-#option-list.flexbox-render {
-  display: flex;
-  flex-direction: column-reverse;
-}
-
-#option-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-#option-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-#option-list::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 4px;
-}
-
-#option-list::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover);
-}
-
-.option-item {
-  padding: 4px 10px;
-  cursor: pointer;
-  font-family: var(--font-family), "Fira Code", monospace;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--fg);
-  transition: background-color 0.1s ease;
-  display: flex;
-  align-items: center;
-  line-height: 22px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex-shrink: 0;
-}
-
-.option-item:hover {
-  background-color: var(--list-hover);
-}
-
-.option-item.selected {
-  background-color: var(--list-selected);
-  color: var(--list-selected-fg);
-}
-
-.highlight {
-  background-color: var(--highlight-bg);
-  color: var(--fg);
-  font-weight: 600;
-  padding: 0 1px;
-  border-radius: 1px;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 250px;
 }
 
 #status-bar {
-  width: 100%;
-  padding: 5px 15px;
-  font-size: 12px;
-  font-weight: 500;
-  font-family: var(--font-family);
-  color: var(--status-bar-fg);
-  background-color: var(--status-bar-bg);
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0; /* Não encolhe */
+    width: 100%;
+    padding: 5px 15px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: var(--font-family);
+    color: var(--status-bar-fg);
+    background-color: var(--status-bar-bg);
+    border-top: 1px solid var(--divider-color);
+    border-bottom: 1px solid var(--divider-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
 }
 
 #input-container {
-  position: relative;
-  width: 100%;
-  flex-shrink: 0; /* Não encolhe */
+    position: relative;
+    width: 100%;
+    flex-shrink: 0;
 }
 
 #search {
-  width: 100%;
-  padding: 12px 15px;
-  color: var(--input-fg);
-  background: var(--input-bg);
-  border: none;
-  outline: none;
-  font-family: var(--font-family);
+    width: 100%;
+    padding: 12px 15px;
+    color: var(--input-fg);
+    background: var(--input-bg);
+    border: none;
+    outline: none;
+    font-family: var(--font-family);
+    box-shadow: inset 0 -1px 0 var(--divider-color);
 }
-
-#items-count {
-  position: absolute;
-  font-family: var(--font-family);
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--muted-fg);
-  pointer-events: none;
+#search:focus {
+    box-shadow: inset 0 -1px 0 var(--focus-border);
 }
 
 #search::placeholder {
-  color: var(--muted-fg);
-  opacity: 0.8;
+    color: var(--muted-fg);
+    opacity: 0.8;
+}
+
+#items-count {
+    position: absolute;
+    font-family: var(--font-family);
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted-fg);
+    pointer-events: none;
+}
+
+#option-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-grow: 1;
+    position: relative;
+}
+
+#option-list.flexbox-render {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+#option-list::-webkit-scrollbar {
+    width: 8px;
+}
+#option-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+#option-list::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+}
+#option-list::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+.option-item {
+    padding: 4px 10px;
+    cursor: pointer;
+    font-family: var(--font-family), "Fira Code", monospace;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--fg);
+    transition: background-color 0.1s ease;
+    display: flex;
+    align-items: center;
+    line-height: 22px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+}
+
+.option-item:hover {
+    background-color: var(--list-hover);
+}
+
+.option-item.selected {
+    background-color: var(--list-selected);
+    color: var(--list-selected-fg);
+    border-left: 2px solid var(--focus-border);
+    padding-left: 8px;
+}
+.option-item:not(.selected) {
+    padding-left: 10px;
+}
+
+
+.highlight {
+    background-color: var(--highlight-bg);
+    color: var(--fg);
+    font-weight: 600;
+    padding: 0 1px;
+    border-radius: 1px;
 }
 
 #right-side {
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--bg);
-  overflow: hidden;
-  min-width: 0;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg);
+    overflow: hidden;
+    min-width: 0;
+    border-left: 1px solid var(--divider-color);
 }
 
 #preview {
-  width: 100%;
-  height: 100%;
-  background: var(--bg);
-  color: var(--fg);
-  padding: 10px 15px;
-  overflow: auto;
-  white-space: pre;
-  font-family: var(--font-family), "Fira Code", Consolas, monospace;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.3;
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    padding: 10px 15px;
+    overflow: auto;
+    white-space: pre;
+    font-family: var(--font-family), "Fira Code", Consolas, monospace;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.3;
 }
 
 #preview pre,
 #preview code {
-  background-color: transparent;
-  font-family: var(--font-family), "Fira Code";
-  padding: 0;
-  margin: 0;
+    background-color: transparent;
+    font-family: var(--font-family), "Fira Code";
+    padding: 0;
+    margin: 0;
 }
 #preview pre span {
-  background-color: transparent;
-  font-family: var(--font-family), "Fira Code";
+    background-color: transparent;
+    font-family: var(--font-family), "Fira Code";
 }

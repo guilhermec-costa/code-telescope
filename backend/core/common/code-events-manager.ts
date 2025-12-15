@@ -82,6 +82,7 @@ export class VSCodeEventsManager {
         languages: languagesToLoad.map((l) => getShikiLanguage(l)),
         theme: getShikiTheme(Globals.USER_THEME),
       });
+      await FuzzyFinderPanelController.instance.emitPanelConfigurationEvent();
     }
   }
 }

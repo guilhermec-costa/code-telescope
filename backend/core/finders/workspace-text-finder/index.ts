@@ -39,7 +39,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
     return { results: [], query: "", message: "Type to search..." };
   }
 
-  async searchOptions(query: string): Promise<any> {
+  async searchOnDynamicMode(query: string): Promise<any> {
     if (!query || query.trim().length < 2) {
       return { results: [], query };
     }

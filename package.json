@@ -43,29 +43,39 @@
     "configuration": {
       "title": "Code Telescope",
       "properties": {
-        "codeTelescope.finder.excludeHidden": {
+        "codeTelescope.wsFileFinder.excludeHidden": {
           "type": "boolean",
           "default": true,
           "description": "Exclude hidden files from results"
         },
-        "codeTelescope.finder.includePatterns": {
+        "codeTelescope.wsFileFinder.includePatterns": {
           "type": "array",
           "default": [
             "**/*"
           ],
           "description": "Glob patterns to include"
         },
-        "codeTelescope.finder.excludePatterns": {
+        "codeTelescope.wsFileFinder.excludePatterns": {
           "type": "array",
           "default": [
             "**/node_modules/**"
           ],
           "description": "Glob patterns to exclude"
         },
-        "codeTelescope.finder.maxResults": {
+        "codeTelescope.wsFileFinder.maxResults": {
           "type": "number",
           "default": 2000,
           "description": "Max number of results to list"
+        },
+        "codeTelescope.panelSetup.rightSideWidthPct": {
+          "type": "number",
+          "default": 50,
+          "description": "Width in percentage of the right side of the panel"
+        },
+        "codeTelescope.panelSetup.leftSideWidthPct": {
+          "type": "number",
+          "default": 50,
+          "description": "Width in percentage of the left side of the panel"
         }
       }
     }

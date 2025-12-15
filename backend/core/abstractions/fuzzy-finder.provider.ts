@@ -32,11 +32,12 @@ export interface IFuzzyFinderProvider {
   getPreviewData(identifier: string): Promise<PreviewData>;
 
   supportsDynamicSearch?: boolean;
+
   /**
    * Optional: dynamic search based on user's query
    * It's only called when supportsDynamicSearch is true.
    */
-  searchOptions?(query: string): Promise<any>;
+  searchOnDynamicMode?(query: string): Promise<any>;
 }
 
 export type HtmlLoadConfig = {

@@ -12,9 +12,9 @@ export class DynamicSearchHandler implements IWebviewMessageHandler<"dynamicSear
   async handle(msg: Extract<FromWebviewKindMessage, { type: "dynamicSearch" }>, wv: vscode.Webview) {
     const provider = FuzzyFinderPanelController.instance!.provider;
 
-    if (!provider.supportsDynamicSearch || !provider.searchOptions) return;
+    if (!provider.supportsDynamicSearch || !provider.searchOnDynamicMode) return;
 
-    const results = await provider.searchOptions(msg.query);
+    const results = await provider.searchOnDynamicMode(msg.query);
 
     await WebviewController.sendMessage(wv, {
       type: "optionList",
