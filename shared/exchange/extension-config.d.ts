@@ -9,4 +9,5 @@ export interface FinderConfig {
 export interface PanelSetupConfig {
   rightSideWidthPct: number;
   leftSideWidthPct: number;
+  panelContainerPct: number;
 }

@@ -1,5 +1,4 @@
 import { FuzzyProviderType, PreviewRendererType } from "./adapters-namespace";
-import { PanelSetupConfig } from "./exchange/extension-config";
 
 /**
  * Data that can be previewed by a {@link PreviewRendererType}.
@@ -42,11 +41,6 @@ export interface PreviewUpdateMessage {
 
 export interface ResetFuzzyPanel {
   type: "resetWebview";
-}
-
-export interface PanelConfigMessage {
-  type: "panelConfig";
-  data: PanelSetupConfig;
 }
 
 /**
@@ -112,7 +106,6 @@ export type ToWebviewKindMessage =
   | OptionListMessage
   | ThemeUpdateMessage
   | InitShiki
-  | PanelConfigMessage
   | ResetFuzzyPanel;
 
 /**

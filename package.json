@@ -1,122 +1,160 @@
 {
-  "name": "code-telescope",
-  "displayName": "code-telescope",
-  "description": "",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.106.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onLanguage:*",
-    "onStartupFinished"
-  ],
-  "main": "./backend/dist/extension.js",
-  "extensionDependencies": [
-    "vscode.git"
-  ],
-  "enabledApiProposals": [
-    "findTextInFiles",
-    "textSearchProvider"
-  ],
-  "contributes": {
-    "commands": [
-      {
-        "command": "code-telescope.fuzzy.file",
-        "title": "Code Telescope: File Fuzzy Finder"
-      },
-      {
-        "command": "code-telescope.fuzzy.branch",
-        "title": "Code Telescope: Branch Fuzzy Finder"
-      },
-      {
-        "command": "code-telescope.fuzzy.wsText",
-        "title": "Code Telescope: Workspace Text Finder"
-      },
-      {
-        "command": "code-telescope.fuzzy.commits",
-        "title": "Code Telescope: Commit Finder"
-      }
+    "name": "code-telescope",
+    "displayName": "code-telescope",
+    "description": "",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.106.0"
+    },
+    "categories": [
+        "Other"
     ],
-    "configuration": {
-      "title": "Code Telescope",
-      "properties": {
-        "codeTelescope.wsFileFinder.excludeHidden": {
-          "type": "boolean",
-          "default": true,
-          "description": "Exclude hidden files from results"
-        },
-        "codeTelescope.wsFileFinder.includePatterns": {
-          "type": "array",
-          "default": [
-            "**/*"
-          ],
-          "description": "Glob patterns to include"
-        },
-        "codeTelescope.wsFileFinder.excludePatterns": {
-          "type": "array",
-          "default": [
-            "**/node_modules/**"
-          ],
-          "description": "Glob patterns to exclude"
-        },
-        "codeTelescope.wsFileFinder.maxResults": {
-          "type": "number",
-          "default": 2000,
-          "description": "Max number of results to list"
-        },
-        "codeTelescope.panelSetup.rightSideWidthPct": {
-          "type": "number",
-          "default": 50,
-          "description": "Width in percentage of the right side of the panel"
-        },
-        "codeTelescope.panelSetup.leftSideWidthPct": {
-          "type": "number",
-          "default": 50,
-          "description": "Width in percentage of the left side of the panel"
+    "activationEvents": [
+        "onLanguage:*",
+        "onStartupFinished"
+    ],
+    "main": "./backend/dist/extension.js",
+    "extensionDependencies": [
+        "vscode.git"
+    ],
+    "enabledApiProposals": [
+        "findTextInFiles",
+        "textSearchProvider"
+    ],
+    "contributes": {
+        "commands": [
+            {
+                "command": "code-telescope.fuzzy.file",
+                "title": "Code Telescope: File Fuzzy Finder"
+            },
+            {
+                "command": "code-telescope.fuzzy.branch",
+                "title": "Code Telescope: Branch Fuzzy Finder"
+            },
+            {
+                "command": "code-telescope.fuzzy.wsText",
+                "title": "Code Telescope: Workspace Text Finder"
+            },
+            {
+                "command": "code-telescope.fuzzy.commits",
+                "title": "Code Telescope: Commit Finder"
+            }
+        ],
+        "configuration": {
+            "title": "Code Telescope",
+            "properties": {
+                "codeTelescope.wsFileFinder.excludeHidden": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Exclude hidden files from results"
+                },
+                "codeTelescope.wsFileFinder.includePatterns": {
+                    "type": "array",
+                    "default": [
+                        "**/*"
+                    ],
+                    "description": "Glob patterns to include"
+                },
+                "codeTelescope.wsFileFinder.excludePatterns": {
+                    "type": "array",
+                    "default": [
+                        "**/node_modules/**",
+                        "**/dist/**",
+                        "**/build/**",
+                        "**/out/**",
+                        "**/.git/**",
+                        "**/.svn/**",
+                        "**/.hg/**",
+                        "**/.next/**",
+                        "**/.turbo/**",
+                        "**/.cache/**",
+                        "**/.parcel-cache/**",
+                        "**/.vite/**",
+                        "**/.nuxt/**",
+                        "**/coverage/**"
+                    ],
+                    "description": "Glob patterns to exclude from file search"
+                },
+                "codeTelescope.wsFileFinder.maxResults": {
+                    "type": "number",
+                    "default": 2000,
+                    "description": "Max number of results to list"
+                },
+                "codeTelescope.wsTextFinder.excludePatterns": {
+                    "type": "array",
+                    "default": [
+                        "**/node_modules/**",
+                        "**/dist/**",
+                        "**/build/**",
+                        "**/out/**",
+                        "**/.git/**",
+                        "**/.svn/**",
+                        "**/.hg/**",
+                        "**/.next/**",
+                        "**/.turbo/**",
+                        "**/.cache/**",
+                        "**/.parcel-cache/**",
+                        "**/.vite/**",
+                        "**/.nuxt/**",
+                        "**/coverage/**"
+                    ],
+                    "description": "Glob patterns to exclude from file search"
+                },
+                "codeTelescope.panelSetup.rightSideWidthPct": {
+                    "type": "number",
+                    "default": 50,
+                    "description": "Width in percentage of the right side of the panel"
+                },
+                "codeTelescope.panelSetup.leftSideWidthPct": {
+                    "type": "number",
+                    "default": 50,
+                    "description": "Width in percentage of the left side of the panel"
+                },
+                "codeTelescope.panelSetup.panelContainerPct": {
+                    "type": "number",
+                    "default": 90,
+                    "description": "Width in percentage of the panel container"
+                }
+            }
         }
-      }
+    },
+    "scripts": {
+        "vscode:prepublish": "pnpm run compile",
+        "build": "tsc -b ./",
+        "watch": "tsc -b -w ./",
+        "compile": "tsc -b ./",
+        "pretest": "pnpm run compile && pnpm run lint",
+        "lint": "biome lint",
+        "check": "biome check",
+        "check:write": "biome check --write",
+        "format:write": "biome format --write",
+        "test": "vscode-test",
+        "prepare": "husky",
+        "webview:dev": "tsx scripts/bundle-webview.ts --env=dev",
+        "webview:dev:watch": "tsx scripts/bundle-webview.ts --env=dev --watch=true",
+        "webview:prod": "tsx scripts/bundle-webview.ts --env=prod",
+        "webview:prod:watch": "tsx scripts/bundle-webview.ts --env=prod --watch=true",
+        "bundle:shiki": "tsx scripts/bundle-shiki.ts"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.3.7",
+        "@types/mocha": "^10.0.10",
+        "@types/node": "22.x",
+        "@types/vscode": "^1.106.1",
+        "@vscode/test-cli": "^0.0.12",
+        "@vscode/test-electron": "^2.5.2",
+        "esbuild": "^0.27.0",
+        "eslint": "^9.39.1",
+        "husky": "^9.1.7",
+        "lint-staged": "^16.2.7",
+        "shiki": "^3.17.0",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.46.3"
+    },
+    "lint-staged": {
+        "*.{js,ts}": [
+            "pnpm check:write"
+        ]
     }
-  },
-  "scripts": {
-    "vscode:prepublish": "pnpm run compile",
-    "build": "tsc -b ./",
-    "watch": "tsc -b -w ./",
-    "compile": "tsc -b ./",
-    "pretest": "pnpm run compile && pnpm run lint",
-    "lint": "biome lint",
-    "check": "biome check",
-    "check:write": "biome check --write",
-    "format:write": "biome format --write",
-    "test": "vscode-test",
-    "prepare": "husky",
-    "webview:dev": "tsx scripts/bundle-webview.ts --env=dev",
-    "webview:dev:watch": "tsx scripts/bundle-webview.ts --env=dev --watch=true",
-    "webview:prod": "tsx scripts/bundle-webview.ts --env=prod",
-    "webview:prod:watch": "tsx scripts/bundle-webview.ts --env=prod --watch=true",
-    "bundle:shiki": "tsx scripts/bundle-shiki.ts"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "2.3.7",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
-    "@types/vscode": "^1.106.1",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2",
-    "esbuild": "^0.27.0",
-    "eslint": "^9.39.1",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.2.7",
-    "shiki": "^3.17.0",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.3"
-  },
-  "lint-staged": {
-    "*.{js,ts}": [
-      "pnpm check:write"
-    ]
-  }
 }

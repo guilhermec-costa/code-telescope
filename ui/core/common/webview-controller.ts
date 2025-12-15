@@ -80,16 +80,6 @@ export class WebviewController {
         break;
       }
 
-      case "panelConfig": {
-        this.panelConfig = msg.data;
-
-        const leftSide = document.getElementById("left-side");
-        const rightSide = document.getElementById("right-side");
-        leftSide.style.width = `${this.panelConfig.leftSideWidthPct}%`;
-        rightSide.style.width = `${this.panelConfig.rightSideWidthPct}%`;
-        break;
-      }
-
       case "themeUpdate": {
         console.log("Theme updated on webview");
         await ShikiManager.loadThemeFromBundle(msg.data.theme);

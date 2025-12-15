@@ -117,7 +117,7 @@ export class OptionListManager {
   }
 
   private getRelativeFirstIndex(): number {
-    return this.renderMode === "fullrender" ? 0 : -1;
+    return this.renderMode === "fullrender" ? 0 : this.filteredOptions.length - 1;
   }
 
   private getRelativeFirstItem() {

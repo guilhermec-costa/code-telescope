@@ -6,7 +6,6 @@ import { joinPath } from "../../utils/files";
 import { getShikiTheme } from "../../utils/shiki";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { VSCodeEventsManager } from "../common/code-events-manager";
-import { ExtensionConfigManager } from "../common/config-manager";
 import { FuzzyFinderAdapterRegistry } from "../registry/fuzzy-provider.registry";
 import { WebviewMessageHandlerRegistry } from "../registry/webview-handler.registry";
 import { WebviewController } from "./webview.controller";
@@ -91,6 +90,7 @@ export class FuzzyFinderPanelController {
       this.webview,
       this._provider.getHtmlLoadConfig(),
     );
+
     await this.emitResetWebviewEvent();
   }
 
@@ -132,13 +132,6 @@ export class FuzzyFinderPanelController {
     await WebviewController.sendMessage(this.webview, {
       type: "shikiInit",
       data,
-    });
-  }
-
-  public async emitPanelConfigurationEvent() {
-    await WebviewController.sendMessage(this.webview, {
-      type: "panelConfig",
-      data: ExtensionConfigManager.uiPanelCfg,
     });
   }
 
