@@ -5,8 +5,8 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters
 import { TextSearchMatch } from "../../../shared/exchange/workspace-text-search";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { findWorkspaceFiles } from "../../utils/files";
+import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
-import { IFuzzyFinderProvider } from "./fuzzy-finder.provider";
 
 function escapeRegExp(string: string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

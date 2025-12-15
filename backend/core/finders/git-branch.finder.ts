@@ -3,8 +3,8 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters
 import { BranchInfo, CommitInfo } from "../../../shared/exchange/branch-search";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { API, GitExtension, Ref } from "../../@types/git";
+import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
-import { IFuzzyFinderProvider } from "./fuzzy-finder.provider";
 
 @FuzzyFinderAdapter({
   fuzzy: "git.branches",
@@ -21,7 +21,7 @@ export class GitBranchFuzzyFinder implements IFuzzyFinderProvider {
     this.gitApi = this.getGitApi();
   }
 
-  onSelect?(item: string): void | Promise<void> {
+  onSelect(item: string): void | Promise<void> {
     throw new Error("Method not implemented.");
   }
 

@@ -35,7 +35,7 @@ export class OptionListManager {
   }
 
   public getAdapterDebounceTime(): number {
-    if (this.dataAdapter.debounceSearchTime) return this.dataAdapter.debounceSearchTime;
+    if (this.dataAdapter && this.dataAdapter.debounceSearchTime) return this.dataAdapter.debounceSearchTime;
     return 50;
   }
 

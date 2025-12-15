@@ -1,6 +1,6 @@
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
+import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { getRegisteredFuzzyFinderAdapters } from "../decorators/fuzzy-finder-provider.decorator";
-import { IFuzzyFinderProvider } from "../finders/fuzzy-finder.provider";
 
 export class FuzzyFinderAdapterRegistry {
   private adapters = new Map<string, IFuzzyFinderProvider>();

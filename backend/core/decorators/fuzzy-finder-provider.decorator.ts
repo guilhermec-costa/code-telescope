@@ -1,5 +1,5 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
-import { IFuzzyFinderProvider } from "../finders/fuzzy-finder.provider";
+import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 
 interface FuzzyFinderAdapterConfig {
   fuzzy: FuzzyProviderType;

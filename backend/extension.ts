@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
-import { loadFuzzyProviders } from "./core/finders/loader";
-import { FuzzyPanelController } from "./core/presentation/fuzzy-panel.controller";
+import { FuzzyFinderPanelController } from "./core/presentation/fuzzy-panel.controller";
 import { Globals } from "./globals";
 import { getCmdId, registerAndSubscribeCmd } from "./utils/commands";
 import { getConfigurationSection } from "./utils/configuration";
@@ -13,12 +12,10 @@ export async function activate(context: vscode.ExtensionContext) {
   Globals.EXTENSION_URI = context.extensionUri;
   Globals.USER_THEME = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
 
-  loadFuzzyProviders();
-
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "file"),
     async () => {
-      const instance = FuzzyPanelController.createOrShow();
+      const instance = FuzzyFinderPanelController.createOrShow();
       await instance.startProvider("workspace.files");
     },
     context,
@@ -26,7 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "branch"),
     async () => {
-      const instance = FuzzyPanelController.createOrShow();
+      const instance = FuzzyFinderPanelController.createOrShow();
       await instance.startProvider("git.branches");
     },
     context,
@@ -34,7 +31,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "wsText"),
     async () => {
-      const instance = FuzzyPanelController.createOrShow();
+      const instance = FuzzyFinderPanelController.createOrShow();
       await instance.startProvider("workspace.text");
     },
     context,
@@ -42,7 +39,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "commits"),
     async () => {
-      const instance = FuzzyPanelController.createOrShow();
+      const instance = FuzzyFinderPanelController.createOrShow();
       await instance.startProvider("git.commits");
     },
     context,

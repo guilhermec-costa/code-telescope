@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { Globals } from "../../globals";
 import { getConfigurationSection } from "../../utils/configuration";
 import { getShikiLanguage, getShikiTheme } from "../../utils/shiki";
-import { FuzzyPanelController } from "../presentation/fuzzy-panel.controller";
+import { FuzzyFinderPanelController } from "../presentation/fuzzy-panel.controller";
 
 export class VSCodeEventsManager {
   private static instance: VSCodeEventsManager;
@@ -27,8 +27,8 @@ export class VSCodeEventsManager {
       Globals.USER_THEME = newTheme;
 
       try {
-        if (FuzzyPanelController._instance) {
-          await FuzzyPanelController._instance.emitThemeUpdateEvent(newTheme);
+        if (FuzzyFinderPanelController.instance) {
+          await FuzzyFinderPanelController.instance.emitThemeUpdateEvent(newTheme);
         }
         console.log(`[Shiki] Loaded theme: ${newTheme}`);
       } catch (err) {
@@ -77,8 +77,8 @@ export class VSCodeEventsManager {
 
     console.log("[FuzzyPanel] Languages detected:", languagesToLoad);
 
-    if (FuzzyPanelController._instance) {
-      await FuzzyPanelController._instance.emitInitShikiEvent({
+    if (FuzzyFinderPanelController.instance) {
+      await FuzzyFinderPanelController.instance.emitInitShikiEvent({
         languages: languagesToLoad.map((l) => getShikiLanguage(l)),
         theme: getShikiTheme(Globals.USER_THEME),
       });

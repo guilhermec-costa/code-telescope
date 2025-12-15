@@ -2,8 +2,8 @@ import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { API, GitExtension, Repository } from "../../@types/git";
+import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
-import { IFuzzyFinderProvider } from "./fuzzy-finder.provider";
 
 @FuzzyFinderAdapter({
   fuzzy: "git.commits",

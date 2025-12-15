@@ -2,12 +2,7 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 
 /**
- * Represents a provider responsible for supplying data and behavior
- * to the fuzzy finder. Each provider describes:
- * - Which fuzzy search engine it uses
- * - Which preview adapter should render its preview
- * - How options are retrieved, filtered and selected
- * - How the Webview UI should be loaded
+ * Represents a provider responsible for supplying data and behavior to the fuzzy finder
  */
 export interface IFuzzyFinderProvider {
   /**
@@ -29,9 +24,8 @@ export interface IFuzzyFinderProvider {
 
   /**
    * Triggered when the user selects an item (Enter).
-   * Can open a file, switch branches, execute a command...
    */
-  onSelect?(item: string): void | Promise<void>;
+  onSelect(item: string): void | Promise<void>;
 
   getHtmlLoadConfig(): HtmlLoadConfig;
 

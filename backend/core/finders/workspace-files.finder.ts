@@ -5,8 +5,8 @@ import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { findWorkspaceFiles, getLanguageFromPath, relativizeFilePath } from "../../utils/files";
+import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
-import { IFuzzyFinderProvider } from "./fuzzy-finder.provider";
 
 /**
  * Fuzzy provider that retrieves files from the current workspace.
