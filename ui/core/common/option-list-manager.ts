@@ -47,12 +47,12 @@ export class OptionListManager {
 
     this.allOptions = options;
     this.filteredOptions = options;
-    this.selectedIndex = 0;
+    this.selectedIndex = this.getRelativeFirstIndex();
     this.query = "";
     this.updateItemsCount();
     this.render();
 
-    const first = this.filteredOptions[0];
+    const first = this.getRelativeFirstItem();
     if (first) this.requestPreview(first);
   }
 
@@ -70,11 +70,11 @@ export class OptionListManager {
       });
     }
 
-    this.selectedIndex = 0;
+    this.selectedIndex = this.getRelativeFirstIndex();
     this.updateItemsCount();
     this.render();
 
-    const first = this.filteredOptions[0];
+    const first = this.getRelativeFirstItem();
     if (first) {
       this.requestPreview(first);
     } else {
@@ -94,12 +94,20 @@ export class OptionListManager {
   public getSelectedValue(): string | undefined {
     if (!this.dataAdapter || this.filteredOptions.length === 0) return undefined;
 
-    const option = this.filteredOptions[this.selectedIndex];
+    const option = this.filteredOptions.at(this.selectedIndex);
     return this.dataAdapter.getSelectionValue(option);
   }
 
   private get renderMode() {
     return this.shouldUseVirtualization() ? "virtualized" : "fullrender";
+  }
+
+  private getRelativeFirstIndex(): number {
+    return this.renderMode === "fullrender" ? 0 : -1;
+  }
+
+  private getRelativeFirstItem() {
+    return this.filteredOptions.at(this.getRelativeFirstIndex());
   }
 
   private setupScrollListener(): void {
@@ -119,7 +127,7 @@ export class OptionListManager {
 
     this.render();
 
-    const selectedOption = this.filteredOptions[this.selectedIndex];
+    const selectedOption = this.filteredOptions.at(this.selectedIndex);
     this.requestPreview(selectedOption);
   }
 

@@ -30,4 +30,5 @@ export class BranchFinderDataAdapter implements IFuzzyFinderDataAdapter<BranchIn
     const displayText = this.getDisplayText(option).toLowerCase();
     return displayText.includes(lowerQuery);
   }
+  debounceSearchTime = 30;
 }

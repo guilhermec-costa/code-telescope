@@ -5,17 +5,24 @@
     "moduleResolution": "node16",
     "target": "ES2022",
     "outDir": "./dist",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "sourceMap": true,
     "rootDir": "./",
     "baseUrl": "../",
     "paths": {
-      "@shared/*": ["shared/*"]
+      "@shared/*": [
+        "shared/*"
+      ]
     },
-    "strict": true
+    "strict": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
   },
   "include": [
     "./**/*",
+    "./**/*.json",
     "../shared/**/*"
   ]
 }

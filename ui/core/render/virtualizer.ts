@@ -49,7 +49,7 @@ export class Virtualizer {
 
     const fragment = document.createDocumentFragment();
     for (let i = startIndex; i < endIndex; i++) {
-      const item = items[i];
+      const item = items.at(i);
       const li = createItem(item, i, query);
 
       li.style.position = "absolute";
