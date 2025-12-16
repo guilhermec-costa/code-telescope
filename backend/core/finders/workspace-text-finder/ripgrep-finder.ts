@@ -3,7 +3,8 @@ import * as fs from "fs/promises";
 import path from "path";
 import * as vscode from "vscode";
 import { TextSearchMatch } from "../../../../shared/exchange/workspace-text-search";
-import ripgrepArgs from "../../../config/ripgrep-args.json";
+import { ExtensionConfigManager } from "../../common/config-manager";
+import { RipgrepArgsBuilder } from "./ripgrep-args.builder";
 
 export class RipgrepFinder {
   private _rgAvailable = false;
@@ -63,11 +64,16 @@ export class RipgrepFinder {
     }
 
     const matches: TextSearchMatch[] = [];
-    const MAX_RESULTS = 1200;
     const cwd = workspaceFolders[0].uri.fsPath;
 
     console.log("Starting ripgrep search:", { query, cwd, rgPath: this._rgPath });
-    const args = [query, ...ripgrepArgs];
+    const searchCfg = ExtensionConfigManager.wsTextFinderCfg;
+    const args = new RipgrepArgsBuilder()
+      .query(query)
+      .maxColumns(searchCfg.maxColumns)
+      .maxFileSize(searchCfg.maxFileSize)
+      .exclude(searchCfg.excludePatterns)
+      .build();
 
     await new Promise<void>((resolve, reject) => {
       console.log("Spawning ripgrep with args:", args);
@@ -77,7 +83,7 @@ export class RipgrepFinder {
         rg = spawn(this._rgPath, args, {
           cwd,
           shell: false,
-          stdio: ["ignore", "pipe", "pipe"], // ignore stdin, pipe stdout/stderr
+          stdio: ["ignore", "pipe", "pipe"], // ignore stdin, pipe stdout and stderr
         });
         console.log("ripgrep spawned, PID:", rg.pid);
       } catch (err) {
@@ -117,7 +123,7 @@ export class RipgrepFinder {
           console.log("Processing", lines.length, "lines");
 
           for (const line of lines) {
-            if (matches.length >= MAX_RESULTS) break;
+            if (matches.length >= searchCfg.maxResults) break;
             if (!line.trim()) continue;
 
             try {

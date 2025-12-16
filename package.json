@@ -100,6 +100,35 @@
                     ],
                     "description": "Glob patterns to exclude from file search"
                 },
+                "codeTelescope.wsTextFinder.maxColumns": {
+                    "type": "number",
+                    "default": 500,
+                    "description": "Maximum number of columns per line before ripgrep stops reading the line"
+                },
+
+                "codeTelescope.wsTextFinder.maxFileSize": {
+                    "type": "string",
+                    "default": "300k",
+                    "description": "Maximum file size ripgrep will search (e.g. 200k, 1M)"
+                },
+
+                "codeTelescope.wsTextFinder.ignoreCase": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Perform case-insensitive search"
+                },
+
+                "codeTelescope.wsTextFinder.fixedString": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Treat the search query as a literal string instead of a regular expression"
+                },
+
+                "codeTelescope.wsTextFinder.maxResults": {
+                    "type": "number",
+                    "default": 2000,
+                    "description": "Maximum number of search results to return"
+                },
                 "codeTelescope.panelSetup.rightSideWidthPct": {
                     "type": "number",
                     "default": 50,

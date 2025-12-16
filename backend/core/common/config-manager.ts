@@ -1,5 +1,9 @@
 import * as vscode from "vscode";
-import type { FinderConfig, PanelSetupConfig } from "../../../shared/exchange/extension-config";
+import type {
+  PanelSetupConfig,
+  WsFileFinderConfig,
+  WsTextFinderConfig,
+} from "../../../shared/exchange/extension-config";
 import { Globals } from "../../globals";
 
 export class ExtensionConfigManager {
@@ -7,10 +11,9 @@ export class ExtensionConfigManager {
     return vscode.workspace.getConfiguration(Globals.EXTENSION_CONFIGURATION_PREFIX);
   }
 
-  static get wsFileFinderCfg(): FinderConfig {
-    const { asRelativePath, excludeHidden, excludePatterns, includePatterns, maxResults } = this.root.get(
-      "wsFileFinder",
-    ) as FinderConfig;
+  static get wsFileFinderCfg(): WsFileFinderConfig {
+    const { asRelativePath, excludeHidden, excludePatterns, includePatterns, maxResults } =
+      this.root.get<WsFileFinderConfig>("wsFileFinder")!;
 
     return {
       excludeHidden,
@@ -18,6 +21,19 @@ export class ExtensionConfigManager {
       excludePatterns,
       maxResults,
       asRelativePath,
+    };
+  }
+
+  static get wsTextFinderCfg(): WsTextFinderConfig {
+    const { excludeHidden, excludePatterns, includePatterns, maxResults, maxColumns, maxFileSize } =
+      this.root.get<WsTextFinderConfig>("wsTextFinder")!;
+    return {
+      excludeHidden,
+      includePatterns,
+      excludePatterns,
+      maxResults,
+      maxColumns,
+      maxFileSize,
     };
   }
 
