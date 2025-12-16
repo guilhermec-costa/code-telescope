@@ -15,6 +15,7 @@ export class OptionListManager {
   private itemsCountElement: HTMLElement | null;
 
   private readonly RENDER_THRESHOLD = 200;
+  private readonly RENDER_MODE_CLASSNAME = "flexbox-render";
   private readonly virtualizer: Virtualizer;
 
   constructor(private readonly previewManager: PreviewManager) {
@@ -78,7 +79,6 @@ export class OptionListManager {
       this.requestPreview(first);
     } else {
       this.previewManager.clearPreview();
-      this.previewManager.renderNoPreviewData();
     }
   }
 
@@ -97,9 +97,7 @@ export class OptionListManager {
     return this.dataAdapter.getSelectionValue(option);
   }
 
-  public clearOptionsIfNeeded(): void {
-    if (this.dataAdapter.fuzzyAdapterType !== "workspace.text") return;
-
+  public clearOptions(): void {
     this.allOptions = [];
     this.filteredOptions = [];
     this.selectedIndex = 0;
@@ -109,6 +107,13 @@ export class OptionListManager {
     const selectedValue = this.getSelectedValue();
     if (selectedValue) {
       WebviewToExtensionMessenger.instance.onOptionSelected(selectedValue);
+    }
+  }
+
+  public resetIfNeeded() {
+    if (this.query === "" && this.dataAdapter.fuzzyAdapterType === "workspace.text") {
+      this.clearOptions();
+      this.previewManager.clearPreview();
     }
   }
 
@@ -152,8 +157,17 @@ export class OptionListManager {
   private render(): void {
     if (!this.dataAdapter) return;
 
+    this.filteredOptions.sort((opt1, opt2) => {
+      const a = this.dataAdapter.getDisplayText(opt1).toLowerCase();
+      const b = this.dataAdapter.getDisplayText(opt2).toLowerCase();
+
+      const result = a.localeCompare(b);
+
+      return this.renderMode === "fullrender" ? result : -result;
+    });
+
     if (this.shouldUseVirtualization()) {
-      this.listElement.classList.remove("flexbox-render");
+      this.listElement.classList.remove(this.RENDER_MODE_CLASSNAME);
 
       this.virtualizer.renderVirtualized(this.filteredOptions, this.selectedIndex, this.query, (item, idx, q) =>
         this.createListItem(item, idx, q),
@@ -164,7 +178,7 @@ export class OptionListManager {
       });
     } else {
       this.virtualizer.clear();
-      this.listElement.classList.add("flexbox-render");
+      this.listElement.classList.add(this.RENDER_MODE_CLASSNAME);
 
       this.renderAll();
       this.scrollToSelectedNormal();

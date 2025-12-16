@@ -47,16 +47,6 @@ export class PreviewManager {
     this.previewElement.innerHTML = "";
   }
 
-  async renderNoPreviewData() {
-    if (!this.adapter) return;
-
-    if (this.adapter.renderNoPreviewData) {
-      await this.adapter.renderNoPreviewData(this.previewElement);
-      return;
-    }
-    this.previewElement.innerHTML = "No data to preview";
-  }
-
   async setUserTheme(theme: string) {
     this.userTheme = theme;
   }

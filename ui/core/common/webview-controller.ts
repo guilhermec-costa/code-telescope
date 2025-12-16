@@ -1,5 +1,4 @@
 import { OptionListMessage, ToWebviewKindMessage } from "@shared/extension-webview-protocol";
-import { PanelSetupConfig } from "../../../shared/exchange/extension-config";
 import { debounce } from "../../utils/debounce";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { PreviewManager } from "../render/preview-manager";
@@ -14,7 +13,6 @@ import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
 export class WebviewController {
   /** Search input HTML element used for filtering options. */
   private searchElement: HTMLInputElement;
-  private panelConfig: PanelSetupConfig;
 
   constructor(
     private readonly previewManager: PreviewManager,
@@ -67,13 +65,13 @@ export class WebviewController {
     console.log(`[WebviewController] Handling message: ${msg}`);
     switch (msg.type) {
       case "resetWebview": {
-        await this.handleResetWebview();
+        this.handleResetWebview();
         break;
       }
 
       case "shikiInit": {
-        await Promise.all(msg.data.languages.map((language) => ShikiManager.loadLanguageFromBundle(language)));
-        await ShikiManager.loadThemeFromBundle(msg.data.theme);
+        const langsPromises = msg.data.languages.map((language) => ShikiManager.loadLanguageFromBundle(language));
+        await Promise.all([...langsPromises, ShikiManager.loadThemeFromBundle(msg.data.theme)]);
 
         this.previewManager.setUserTheme(msg.data.theme);
         WebviewToExtensionMessenger.instance.onShikiInit();
@@ -105,8 +103,8 @@ export class WebviewController {
    * Clears the search input and the preview section.
    */
   private handleResetWebview() {
-    // this.optionListManager.clearOptionsIfNeeded();
     this.previewManager.clearPreview();
+    this.optionListManager.clearOptions();
     this.searchElement.value = "";
   }
 
@@ -146,6 +144,7 @@ export class WebviewController {
     this.searchElement.addEventListener("input", async () => {
       const query = this.searchElement.value;
       debouncedFilter(query);
+      this.optionListManager.resetIfNeeded();
     });
   }
 

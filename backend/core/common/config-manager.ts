@@ -22,11 +22,12 @@ export class ExtensionConfigManager {
   }
 
   static get uiPanelCfg(): PanelSetupConfig {
-    const cfg = this.root.get("panelSetup") as PanelSetupConfig;
+    const { leftSideWidthPct, rightSideWidthPct, panelContainerPct } = this.root.get("panelSetup") as PanelSetupConfig;
+
     return {
-      leftSideWidthPct: cfg.leftSideWidthPct,
-      rightSideWidthPct: cfg.rightSideWidthPct,
-      panelContainerPct: cfg.panelContainerPct,
+      leftSideWidthPct,
+      rightSideWidthPct,
+      panelContainerPct,
     };
   }
 }
