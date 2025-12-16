@@ -41,12 +41,12 @@
             }
         ],
         "configuration": {
-            "title": "Code Telescope",
+            "title": "Code Telescope – Search & Panel Settings",
             "properties": {
                 "codeTelescope.wsFileFinder.excludeHidden": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Exclude hidden files from results"
+                    "description": "Exclude hidden files and folders (dotfiles) from file search results."
                 },
                 "codeTelescope.wsFileFinder.includePatterns": {
                     "type": "array",
@@ -128,6 +128,15 @@
                     "type": "number",
                     "default": 2000,
                     "description": "Maximum number of search results to return"
+                },
+                "codeTelescope.preview.previewScrollBehavior": {
+                    "type": "string",
+                    "enum": [
+                        "auto",
+                        "instant",
+                        "smooth"
+                    ],
+                    "default": "instant"
                 },
                 "codeTelescope.panelSetup.rightSideWidthPct": {
                     "type": "number",

@@ -22,7 +22,8 @@
   "include": [
     "./**/*.ts",
     "../shared/**/*.ts",
-    "../shared/**/*.d.ts"
+    "../shared/**/*.d.ts",
+    "../shared/types/*.d.ts"
   ],
   "exclude": []
 }

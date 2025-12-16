@@ -1,7 +1,5 @@
 import type { HighlighterCore } from "shiki/core";
 
-declare const __SHIKI_EXTENSION_URI__: string;
-
 export class ShikiManager {
   private static highlighter: HighlighterCore | null = null;
   private static loadedThemes = new Set<string>();

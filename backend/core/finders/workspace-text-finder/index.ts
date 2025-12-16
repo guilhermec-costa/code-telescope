@@ -1,9 +1,9 @@
-import * as fs from "fs/promises";
 import * as path from "path";
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { PreviewData } from "../../../../shared/extension-webview-protocol";
 import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
+import { FileContentCache } from "../../common/file-content-cache";
 import { FuzzyFinderAdapter } from "../../decorators/fuzzy-finder-provider.decorator";
 import { RegexFinder } from "./regex-finder";
 import { RipgrepFinder } from "./ripgrep-finder";
@@ -19,10 +19,12 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
   public readonly supportsDynamicSearch = true;
   private readonly regexFinder: RegexFinder;
   private readonly ripgrepFinder: RipgrepFinder;
+  private readonly cache: FileContentCache;
 
   constructor() {
     this.regexFinder = new RegexFinder();
     this.ripgrepFinder = new RipgrepFinder();
+    this.cache = new FileContentCache();
   }
 
   getHtmlLoadConfig() {
@@ -62,7 +64,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
     const line = parts[1];
 
     try {
-      const content = await fs.readFile(filePath, "utf-8");
+      const content = await this.cache.get(filePath);
       const lines = content.split("\n");
 
       return {

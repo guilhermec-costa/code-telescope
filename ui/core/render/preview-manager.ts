@@ -6,8 +6,9 @@ import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.regi
 
 export class PreviewManager {
   private previewElement: HTMLElement;
-  private userTheme: string = "dark-plus";
+  private userTheme: string;
   private adapter: IPreviewRendererAdapter | null = null;
+  private cfg = __PREVIEW_MANAGER_CFG__;
 
   private lastPreviewedData: PreviewData = {
     content: "",
@@ -72,8 +73,7 @@ export class PreviewManager {
       this.scrollToTop();
       return;
     }
-    highlightedLine.scrollIntoView();
-    this.previewElement.scrollTop -= this.getPreviewHeight() / 2;
+    highlightedLine.scrollIntoView({ behavior: this.cfg.previewScrollBehavior, block: "center" });
   }
 
   private getPreviewHeight() {

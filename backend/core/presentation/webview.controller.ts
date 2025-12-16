@@ -38,6 +38,9 @@ export class WebviewController {
 
     html = html.replace("{{__SHIKI_EXTENSION_URI__}}", shikiBasePath.toString());
 
+    const previewManagerCfg = ExtensionConfigManager.previewManagerCfg;
+    html = html.replace("__PREVIEW_MANAGER_CFG_JSON__", JSON.stringify(previewManagerCfg));
+
     const panelCfg = ExtensionConfigManager.uiPanelCfg;
     html = html.replace(
       "<cssvariables></cssvariables>",

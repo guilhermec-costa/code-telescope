@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
-import type {
-  PanelSetupConfig,
-  WsFileFinderConfig,
-  WsTextFinderConfig,
+import {
+  type PanelSetupConfig,
+  type PreviewManagerConfig,
+  type WsFileFinderConfig,
+  type WsTextFinderConfig,
 } from "../../../shared/exchange/extension-config";
 import { Globals } from "../../globals";
 
@@ -37,8 +38,15 @@ export class ExtensionConfigManager {
     };
   }
 
+  static get previewManagerCfg(): PreviewManagerConfig {
+    const { previewScrollBehavior } = this.root.get<PreviewManagerConfig>("preview")!;
+    return {
+      previewScrollBehavior,
+    };
+  }
+
   static get uiPanelCfg(): PanelSetupConfig {
-    const { leftSideWidthPct, rightSideWidthPct, panelContainerPct } = this.root.get("panelSetup") as PanelSetupConfig;
+    const { leftSideWidthPct, rightSideWidthPct, panelContainerPct } = this.root.get<PanelSetupConfig>("panelSetup")!;
 
     return {
       leftSideWidthPct,

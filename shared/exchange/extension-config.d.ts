@@ -20,3 +20,7 @@ export interface PanelSetupConfig {
   leftSideWidthPct: number;
   panelContainerPct: number;
 }
+
+export interface PreviewManagerConfig {
+  previewScrollBehavior: "auto" | "instant" | "smooth";
+}

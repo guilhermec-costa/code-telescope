@@ -7,6 +7,7 @@ import { execCmd } from "../../utils/commands";
 import { findWorkspaceFiles, getLanguageFromPath, relativizeFilePath } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { ExtensionConfigManager } from "../common/config-manager";
+import { FileContentCache } from "../common/file-content-cache";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**
@@ -23,7 +24,11 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
 
-  constructor() {}
+  private readonly cache: FileContentCache;
+
+  constructor() {
+    this.cache = new FileContentCache();
+  }
 
   getHtmlLoadConfig() {
     return {
@@ -84,8 +89,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   }
 
   async getPreviewData(identifier: string): Promise<PreviewData> {
-    const contentBytes = await vscode.workspace.fs.readFile(vscode.Uri.file(identifier));
-    const content = new TextDecoder("utf8").decode(contentBytes);
+    const content = await this.cache.get(identifier);
     const language = getLanguageFromPath(identifier);
     return {
       content,
