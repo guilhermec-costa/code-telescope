@@ -3,8 +3,8 @@
   "tasks": [
     {
       "label": "webview build dev",
-      "type": "shell",
-      "command": "pnpm webview:dev",
+      "type": "npm",
+      "script": "webview:dev",
       "presentation": {
         "reveal": "always",
         "panel": "new"
@@ -14,8 +14,8 @@
     },
     {
       "label": "webview build prod",
-      "type": "shell",
-      "command": "pnpm webview:prod",
+      "type": "npm",
+      "script": "webview:prod",
       "presentation": {
         "reveal": "always",
         "panel": "new"
@@ -25,8 +25,8 @@
     },
     {
       "label": "webview build dev watch",
-      "type": "shell",
-      "command": "pnpm webview:dev:watch",
+      "type": "npm",
+      "script": "webview:dev:watch",
       "presentation": {
         "reveal": "always",
         "panel": "new"
@@ -36,8 +36,8 @@
     },
     {
       "label": "webview build prod watch",
-      "type": "shell",
-      "command": "pnpm webview:prod:watch",
+      "type": "npm",
+      "script": "webview:prod:watch",
       "presentation": {
         "reveal": "always",
         "panel": "new"
@@ -48,20 +48,20 @@
     {
       "label": "tsc build",
       "type": "npm",
-      "script": "compile",
+      "script": "backend:compile",
       "group": "build"
     },
     {
       "label": "tsc watch",
       "type": "npm",
-      "script": "watch",
+      "script": "backend:watch",
       "isBackground": true,
       "problemMatcher": "$tsc-watch"
     },
      {
       "label": "bundle shiki",
-      "type": "shell",
-      "command": "pnpm bundle:shiki",
+      "type": "npm",
+      "script": "bundle:shiki",
       "isBackground": true,
       "group": "build",
       "presentation": {

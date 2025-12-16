@@ -120,9 +120,9 @@
     },
     "scripts": {
         "vscode:prepublish": "pnpm run compile",
-        "build": "tsc -b ./",
-        "watch": "tsc -b -w ./",
-        "compile": "tsc -b ./",
+        "backend:build": "tsc -b ./backend",
+        "backend:watch": "tsc -b -w ./backend",
+        "backend:compile": "tsc -b ./backend",
         "pretest": "pnpm run compile && pnpm run lint",
         "lint": "biome lint",
         "check": "biome check",
