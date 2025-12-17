@@ -1,7 +1,8 @@
 import { PreviewRendererType } from "../../../../shared/adapters-namespace";
-import { PreviewData } from "../../../../shared/extension-webview-protocol";
+import { HighlightedCodePreviewData } from "../../../../shared/extension-webview-protocol";
 import { toInnerHTML } from "../../../utils/html";
 import { IPreviewRendererAdapter } from "../../abstractions/preview-renderer-adapter";
+import { WebviewToExtensionMessenger } from "../../common/wv-to-extension-messenger";
 import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapter.decorator";
 import { SyntaxHighlighter } from "../../registry/preview-adapter.registry";
 
@@ -13,28 +14,37 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
 
   constructor(private highlighter: SyntaxHighlighter) {}
 
-  async render(previewElement: HTMLElement, data: PreviewData<string>, theme: string): Promise<void> {
-    const { content, language = "text", metadata } = data;
+  async render(previewElement: HTMLElement, data: HighlightedCodePreviewData, theme: string): Promise<void> {
+    const {
+      content: { text, path: _path, isCached },
+      language = "text",
+      metadata,
+    } = data;
 
     if (!this.highlighter) {
-      previewElement.innerHTML = `<pre style="padding: 1rem; overflow: auto;">${toInnerHTML(content)}</pre>`;
+      previewElement.innerHTML = `<pre style="padding: 1rem; overflow: auto;">${toInnerHTML(text)}</pre>`;
       return;
     }
 
     try {
-      let html = this.highlighter.codeToHtml(content, {
-        lang: language,
-        theme,
-      });
+      let html = text;
 
-      if (metadata?.highlightLine !== undefined) {
-        html = this.addLineHighlight(html, metadata.highlightLine);
+      if (!isCached) {
+        html = this.highlighter.codeToHtml(text, {
+          lang: language,
+          theme,
+        });
+
+        if (metadata?.highlightLine !== undefined) {
+          html = this.addLineHighlight(html, metadata.highlightLine);
+        }
+        WebviewToExtensionMessenger.instance.requestHighlightCache(html, _path, metadata?.highlightLine);
       }
 
       previewElement.innerHTML = html;
     } catch (error) {
       console.error("Failed to render code preview:", error);
-      previewElement.innerHTML = `<pre>${toInnerHTML(content)}</pre>`;
+      previewElement.innerHTML = `<pre>${toInnerHTML(text)}</pre>`;
     }
   }
 

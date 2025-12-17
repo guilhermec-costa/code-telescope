@@ -1,8 +1,23 @@
 import * as fs from "fs/promises";
 
 export class FileContentCache {
+  private static _instance: FileContentCache | undefined;
+
   private cache = new Map<string, string>();
   private maxEntries = 50;
+
+  private constructor() {}
+
+  static get instance() {
+    if (!this._instance) {
+      this._instance = new FileContentCache();
+    }
+    return this._instance;
+  }
+
+  invalidate(absPath: string): void {
+    this.cache.delete(absPath);
+  }
 
   async get(absPath: string): Promise<string> {
     if (this.cache.has(absPath)) {

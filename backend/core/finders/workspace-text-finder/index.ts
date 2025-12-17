@@ -1,9 +1,10 @@
 import * as path from "path";
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
-import { PreviewData } from "../../../../shared/extension-webview-protocol";
+import { HighlightedCodePreviewData } from "../../../../shared/extension-webview-protocol";
 import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
-import { FileContentCache } from "../../common/file-content-cache";
+import { FileContentCache } from "../../common/cache/file-content.cache";
+import { HighlightContentCache } from "../../common/cache/highlight-content.cache";
 import { FuzzyFinderAdapter } from "../../decorators/fuzzy-finder-provider.decorator";
 import { RegexFinder } from "./regex-finder";
 import { RipgrepFinder } from "./ripgrep-finder";
@@ -19,12 +20,10 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
   public readonly supportsDynamicSearch = true;
   private readonly regexFinder: RegexFinder;
   private readonly ripgrepFinder: RipgrepFinder;
-  private readonly cache: FileContentCache;
 
   constructor() {
     this.regexFinder = new RegexFinder();
     this.ripgrepFinder = new RipgrepFinder();
-    this.cache = new FileContentCache();
   }
 
   getHtmlLoadConfig() {
@@ -58,26 +57,54 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
     }
   }
 
-  async getPreviewData(identifier: string): Promise<PreviewData> {
-    const parts = identifier.split(":");
-    const filePath = parts[0];
-    const line = parts[1];
+  async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
+    const [filePath, line] = identifier.split(":");
+    const language = path.extname(filePath).slice(1) || "text";
+
+    const highlightLine = line ? parseInt(line, 10) - 1 : undefined;
+
+    const cachedHighlightedContent = HighlightContentCache.instance.get(`${filePath}:${highlightLine}`);
+    if (cachedHighlightedContent) {
+      return {
+        content: {
+          path: filePath,
+          text: cachedHighlightedContent,
+          isCached: true,
+        },
+        language,
+        metadata: {
+          filePath,
+          highlightLine,
+        },
+      };
+    }
 
     try {
-      const content = await this.cache.get(filePath);
+      const content = await FileContentCache.instance.get(filePath);
       const lines = content.split("\n");
 
       return {
-        content,
-        language: path.extname(filePath).slice(1) || "text",
+        content: {
+          path: filePath,
+          text: content,
+          isCached: false,
+        },
+        language,
         metadata: {
           filePath,
-          highlightLine: parseInt(line) - 1,
+          highlightLine: line ? parseInt(line, 10) - 1 : undefined,
           totalLines: lines.length,
         },
       };
-    } catch (_e) {
-      return { content: "Error loading file", language: "text" };
+    } catch {
+      return {
+        content: {
+          path: filePath,
+          text: "Error loading file",
+          isCached: false,
+        },
+        language: "text",
+      };
     }
   }
 

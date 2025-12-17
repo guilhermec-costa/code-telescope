@@ -1,13 +1,14 @@
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { FileFinderData } from "../../../shared/exchange/file-search";
-import { PreviewData } from "../../../shared/extension-webview-protocol";
+import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { findWorkspaceFiles, getLanguageFromPath, relativizeFilePath } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
+import { FileContentCache } from "../common/cache/file-content.cache";
+import { HighlightContentCache } from "../common/cache/highlight-content.cache";
 import { ExtensionConfigManager } from "../common/config-manager";
-import { FileContentCache } from "../common/file-content-cache";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**
@@ -23,12 +24,6 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
 export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
-
-  private readonly cache: FileContentCache;
-
-  constructor() {
-    this.cache = new FileContentCache();
-  }
 
   getHtmlLoadConfig() {
     return {
@@ -88,11 +83,24 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
     return results;
   }
 
-  async getPreviewData(identifier: string): Promise<PreviewData> {
-    const content = await this.cache.get(identifier);
+  async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
     const language = getLanguageFromPath(identifier);
+
+    const cachedHighlightedContent = HighlightContentCache.instance.get(identifier);
+    if (cachedHighlightedContent) {
+      return {
+        content: { path: identifier, text: cachedHighlightedContent, isCached: true },
+        language,
+      };
+    }
+
+    const content = await FileContentCache.instance.get(identifier);
     return {
-      content,
+      content: {
+        path: identifier,
+        text: content,
+        isCached: false,
+      },
       language,
     };
   }

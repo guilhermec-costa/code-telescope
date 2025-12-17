@@ -77,6 +77,17 @@ export class WebviewToExtensionMessenger {
     });
   }
 
+  requestHighlightCache(content: string, path: string, highlightedLine?: number) {
+    this.postMessage({
+      type: "highlightCache",
+      data: {
+        content,
+        path,
+        highlightedLine,
+      },
+    });
+  }
+
   onShikiInit() {
     this.postMessage({
       type: "shikInitDone",

@@ -10,6 +10,13 @@ export interface PreviewData<C = any> {
   metadata?: Record<string, any>;
 }
 
+export interface HighlightedCodePreviewData
+  extends PreviewData<{
+    text: string;
+    path: string;
+    isCached: boolean;
+  }> {}
+
 /**
  * Message sent from the backend to update the theme applied in the webview.
  */
@@ -61,6 +68,15 @@ export interface WebviewReadyMessage {
 
 export interface ShikiInitDone {
   type: "shikInitDone";
+}
+
+export interface HighlightCache {
+  type: "highlightCache";
+  data: {
+    content: string;
+    path: string;
+    highlightedLine?: number;
+  };
 }
 
 /**
@@ -120,4 +136,5 @@ export type FromWebviewKindMessage =
   | PreviewRequestMessage
   | DynamicSearchMessage
   | OptionSelectedMessage
+  | HighlightCache
   | ShikiInitDone;

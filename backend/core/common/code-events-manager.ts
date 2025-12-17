@@ -4,12 +4,15 @@ import { Globals } from "../../globals";
 import { getConfigurationSection } from "../../utils/configuration";
 import { getShikiLanguage, getShikiTheme } from "../../utils/shiki";
 import { FuzzyFinderPanelController } from "../presentation/fuzzy-panel.controller";
+import { FileContentCache } from "./cache/file-content.cache";
+import { HighlightContentCache } from "./cache/highlight-content.cache";
 
 export class VSCodeEventsManager {
   private static instance: VSCodeEventsManager;
 
   private constructor() {
     this.handleThemeChanges();
+    this.handleFileChanges();
   }
 
   static init() {
@@ -25,6 +28,7 @@ export class VSCodeEventsManager {
 
       const newTheme = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
       Globals.USER_THEME = newTheme;
+      HighlightContentCache.instance.clear();
 
       try {
         if (FuzzyFinderPanelController.instance) {
@@ -34,6 +38,13 @@ export class VSCodeEventsManager {
       } catch (err) {
         console.error(`Failed to load theme ${newTheme}`, err);
       }
+    });
+  }
+
+  private handleFileChanges() {
+    vscode.workspace.onDidSaveTextDocument((e) => {
+      HighlightContentCache.instance.invalidateByFilePrefix(e.fileName);
+      FileContentCache.instance.invalidate(e.fileName);
     });
   }
 
