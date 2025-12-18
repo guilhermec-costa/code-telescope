@@ -129,7 +129,7 @@
                     "default": 2000,
                     "description": "Maximum number of search results to return"
                 },
-                "codeTelescope.preview.previewScrollBehavior": {
+                "codeTelescope.preview.scrollBehavior": {
                     "type": "string",
                     "enum": [
                         "auto",
@@ -137,6 +137,26 @@
                         "smooth"
                     ],
                     "default": "instant"
+                },
+                "codeTelescope.preview.verticalScrollFraction": {
+                    "type": "string",
+                    "enum": [
+                        "1/2",
+                        "1/3",
+                        "1/4"
+                    ],
+                    "default": "1/2",
+                    "description": "Controls how the preview scrolls vertically to reveal the target line"
+                },
+                "codeTelescope.preview.horizontalScrollFraction": {
+                    "type": "string",
+                    "enum": [
+                        "1/2",
+                        "1/3",
+                        "1/4"
+                    ],
+                    "default": "1/2",
+                    "description": "Controls how the preview scrolls horizontally to reveal the target column"
                 },
                 "codeTelescope.panelSetup.rightSideWidthPct": {
                     "type": "number",

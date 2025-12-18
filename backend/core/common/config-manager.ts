@@ -39,9 +39,12 @@ export class ExtensionConfigManager {
   }
 
   static get previewManagerCfg(): PreviewManagerConfig {
-    const { previewScrollBehavior } = this.root.get<PreviewManagerConfig>("preview")!;
+    const { scrollBehavior, horizontalScrollFraction, verticalScrollFraction } =
+      this.root.get<PreviewManagerConfig>("preview")!;
     return {
-      previewScrollBehavior,
+      scrollBehavior,
+      horizontalScrollFraction,
+      verticalScrollFraction,
     };
   }
 

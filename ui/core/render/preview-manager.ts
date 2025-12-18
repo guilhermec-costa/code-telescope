@@ -1,4 +1,5 @@
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
+import { PreviewManagerConfig } from "../../../shared/exchange/extension-config";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
 import { WebviewToExtensionMessenger } from "../common/wv-to-extension-messenger";
@@ -8,7 +9,7 @@ export class PreviewManager {
   private previewElement: HTMLElement;
   private userTheme: string;
   private adapter: IPreviewRendererAdapter | null = null;
-  private cfg = __PREVIEW_MANAGER_CFG__;
+  private cfg: PreviewManagerConfig = __PREVIEW_MANAGER_CFG__;
 
   private lastPreviewedData: PreviewData = {
     content: "",
@@ -19,6 +20,14 @@ export class PreviewManager {
   constructor() {
     console.log("[PreviewManager] Initializing");
     this.previewElement = document.getElementById("preview")!;
+  }
+
+  private get horizontalScrollFraction() {
+    return +this.cfg.horizontalScrollFraction.split("/")[1];
+  }
+
+  private get verticalScrollFraction() {
+    return +this.cfg.verticalScrollFraction.split("/")[1];
   }
 
   setAdapter(adapter: IPreviewRendererAdapter) {
@@ -73,7 +82,7 @@ export class PreviewManager {
       this.scrollToTop();
       return;
     }
-    highlightedLine.scrollIntoView({ behavior: this.cfg.previewScrollBehavior, block: "center" });
+    highlightedLine.scrollIntoView({ behavior: this.cfg.scrollBehavior, block: "center" });
   }
 
   private getPreviewHeight() {
@@ -85,18 +94,18 @@ export class PreviewManager {
   }
 
   scrollUp(): void {
-    this.previewElement.scrollTop -= this.getPreviewHeight() / 2;
+    this.previewElement.scrollTop -= this.getPreviewHeight() / this.verticalScrollFraction;
   }
 
   scrollDown(): void {
-    this.previewElement.scrollTop += this.getPreviewHeight() / 2;
+    this.previewElement.scrollTop += this.getPreviewHeight() / this.verticalScrollFraction;
   }
 
   scrollLeft(): void {
-    this.previewElement.scrollLeft -= this.getPreviewWidth() / 2;
+    this.previewElement.scrollLeft -= this.getPreviewWidth() / this.horizontalScrollFraction;
   }
 
   scrollRight(): void {
-    this.previewElement.scrollLeft += this.getPreviewWidth() / 2;
+    this.previewElement.scrollLeft += this.getPreviewWidth() / this.horizontalScrollFraction;
   }
 }

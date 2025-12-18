@@ -22,5 +22,7 @@ export interface PanelSetupConfig {
 }
 
 export interface PreviewManagerConfig {
-  previewScrollBehavior: "auto" | "instant" | "smooth";
+  scrollBehavior: "auto" | "instant" | "smooth";
+  verticalScrollFraction: "1/2" | "1/3" | "1/4";
+  horizontalScrollFraction: "1/2" | "1/3" | "1/4";
 }
