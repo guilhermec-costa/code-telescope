@@ -105,25 +105,21 @@
                     "default": 500,
                     "description": "Maximum number of columns per line before ripgrep stops reading the line"
                 },
-
                 "codeTelescope.wsTextFinder.maxFileSize": {
                     "type": "string",
                     "default": "300K",
                     "description": "Maximum file size ripgrep will search (e.g. 200k, 1M)"
                 },
-
                 "codeTelescope.wsTextFinder.ignoreCase": {
                     "type": "boolean",
                     "default": true,
                     "description": "Perform case-insensitive search"
                 },
-
                 "codeTelescope.wsTextFinder.fixedString": {
                     "type": "boolean",
                     "default": false,
                     "description": "Treat the search query as a literal string instead of a regular expression"
                 },
-
                 "codeTelescope.wsTextFinder.maxResults": {
                     "type": "number",
                     "default": 2000,
@@ -186,7 +182,9 @@
         "check": "biome check",
         "check:write": "biome check --write",
         "format:write": "biome format --write",
-        "test": "vscode-test",
+        "test:integration": "vscode-test",
+        "test:unit": "vitest",
+        "test:unit:watch": "vitest --watch",
         "prepare": "husky",
         "webview:dev": "tsx scripts/bundle-webview.ts --env=dev",
         "webview:dev:watch": "tsx scripts/bundle-webview.ts --env=dev --watch=true",
@@ -208,7 +206,8 @@
         "shiki": "^3.17.0",
         "tsx": "^4.21.0",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.46.3"
+        "typescript-eslint": "^8.46.3",
+        "vitest": "^4.0.16"
     },
     "lint-staged": {
         "*.{js,ts}": [
