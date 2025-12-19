@@ -1,9 +1,11 @@
 import * as vscode from "vscode";
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
-import { PreviewData } from "../../../shared/extension-webview-protocol";
-import { API, Change, GitExtension, Repository, Status } from "../../@types/git";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { PreviewData } from "../../../../shared/extension-webview-protocol";
+import { API, Change, Repository, Status } from "../../../@types/git";
+import { execCmd } from "../../../utils/commands";
+import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
+import { FuzzyFinderAdapter } from "../../decorators/fuzzy-finder-provider.decorator";
+import { getGitApi } from "./api-utils";
 
 @FuzzyFinderAdapter({
   fuzzy: "git.commits",
@@ -17,7 +19,7 @@ export class GitCommitFuzzyFinderProvider implements IFuzzyFinderProvider {
   private repository: Repository | null = null;
 
   constructor(private readonly maxCommits: number = 100) {
-    this.gitApi = this.getGitApi();
+    this.gitApi = getGitApi();
     this.repository = this.gitApi?.repositories[0] || null;
   }
 
@@ -265,7 +267,7 @@ export class GitCommitFuzzyFinderProvider implements IFuzzyFinderProvider {
     if (!this.repository) return;
 
     try {
-      await vscode.commands.executeCommand("git-graph.view", {
+      await execCmd("git-graph.view", {
         repo: this.repository.rootUri.fsPath,
         commitHash: commitHash,
       });
@@ -277,13 +279,5 @@ export class GitCommitFuzzyFinderProvider implements IFuzzyFinderProvider {
 
   private getFirstLine(message: string): string {
     return message.split("\n")[0].trim();
-  }
-
-  private getGitApi(): API | null {
-    const gitExtension = vscode.extensions.getExtension<GitExtension>("vscode.git");
-    if (!gitExtension) return null;
-
-    const git = gitExtension.exports;
-    return git.getAPI(1);
   }
 }

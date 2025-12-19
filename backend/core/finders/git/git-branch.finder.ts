@@ -1,10 +1,10 @@
-import * as vscode from "vscode";
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
-import { BranchInfo, CommitInfo } from "../../../shared/exchange/branch-search";
-import { PreviewData } from "../../../shared/extension-webview-protocol";
-import { API, GitExtension, Ref } from "../../@types/git";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { BranchInfo, CommitInfo } from "../../../../shared/exchange/branch-search";
+import { PreviewData } from "../../../../shared/extension-webview-protocol";
+import { API, Ref } from "../../../@types/git";
+import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
+import { FuzzyFinderAdapter } from "../../decorators/fuzzy-finder-provider.decorator";
+import { getGitApi } from "./api-utils";
 
 @FuzzyFinderAdapter({
   fuzzy: "git.branches",
@@ -18,7 +18,7 @@ export class GitBranchFuzzyFinder implements IFuzzyFinderProvider {
   private readonly gitApi: API | null;
 
   constructor(private options: GitBranchFinderOptions = {}) {
-    this.gitApi = this.getGitApi();
+    this.gitApi = getGitApi();
   }
 
   onSelect(item: string): void | Promise<void> {
@@ -80,17 +80,6 @@ export class GitBranchFuzzyFinder implements IFuzzyFinderProvider {
       author: commit.authorName || "",
       date: commit.authorDate?.toISOString() || "",
     }));
-  }
-  /**
-   * Loads the Git extension and returns its exposed API instance.
-   * If the extension is unavailable, `null` is returned.
-   */
-  private getGitApi() {
-    const gitExtension = vscode.extensions.getExtension<GitExtension>("vscode.git");
-    if (!gitExtension) return null;
-
-    const git = gitExtension.exports;
-    return git.getAPI(1);
   }
 
   async getPreviewData(branchName: string): Promise<PreviewData<CommitInfo[]>> {
