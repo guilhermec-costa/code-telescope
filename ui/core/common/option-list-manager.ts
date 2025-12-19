@@ -1,4 +1,4 @@
-import { escapeHtml } from "ui/utils/html";
+import { escapeHtml } from "../../utils/html";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
 import { PreviewManager } from "../render/preview-manager";
 import { Virtualizer } from "../render/virtualizer";

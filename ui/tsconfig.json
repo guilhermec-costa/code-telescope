@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": "..",
+    "rootDir": ".",
     "outDir": "./dist",
     "noEmit": false,
     "moduleResolution": "Bundler",
@@ -10,7 +10,7 @@
       "DOM",
       "ES2020"
     ],
-    "baseUrl": "..",
+    "baseUrl": ".",
     "paths": {
       "@shared/*": [
         "shared/*"

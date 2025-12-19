@@ -1,6 +1,6 @@
+import { FileFinderData } from "@shared/exchange/file-search";
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
-import { FileFinderData } from "../../../shared/exchange/file-search";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";

@@ -9,8 +9,8 @@
       "ES2022"
     ],
     "sourceMap": true,
-    "rootDir": "./",
-    "baseUrl": "../",
+    "rootDir": ".",
+    "baseUrl": "..",
     "paths": {
       "@shared/*": [
         "shared/*"
@@ -26,6 +26,7 @@
     "../shared/**/*"
   ],
   "exclude": [
+    "./dist",
     "./tests/*"
   ]
 }
