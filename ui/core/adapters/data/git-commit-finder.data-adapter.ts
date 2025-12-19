@@ -47,10 +47,6 @@ export class GitCommitFinderDataAdapter implements IFuzzyFinderDataAdapter<Commi
     );
   }
 
-  getPreviewData(option: CommitInfo): string {
-    return option.hash;
-  }
-
   private getRelativeDate(dateString: string): string {
     try {
       const date = new Date(dateString);
