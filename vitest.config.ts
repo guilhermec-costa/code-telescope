@@ -3,14 +3,30 @@ export default (async function () {
 
   return defineConfig({
     test: {
-      environment: "node",
       globals: true,
-      include: ["./backend/**/*.test.ts", "./ui/**/*.test.ts"],
       coverage: {
         provider: "v8",
         reporter: ["text", "html"],
+        reportsDirectory: "./coverage",
       },
-      setupFiles: ["backend/tests/setup/vitest.setup.ts"],
+
+      projects: [
+        {
+          test: {
+            name: "backend",
+            environment: "node",
+            include: ["backend/**/*.test.ts"],
+            setupFiles: ["backend/tests/setup/vitest.setup.ts"],
+          },
+        },
+        {
+          test: {
+            name: "ui",
+            environment: "jsdom",
+            include: ["ui/**/*.test.ts"],
+          },
+        },
+      ],
     },
   });
 })();
