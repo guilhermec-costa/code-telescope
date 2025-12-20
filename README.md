@@ -15,57 +15,57 @@ The architecture is built on three core principles:
 3. **Type-safe communication** through shared interfaces
 
 ```
-┌───────────────────────────────────────────────────────────────────┐
-│                        Extension Host (Backend)                   │
-│                                                                   │
-│  ┌────────────────────┐          ┌─────────────────────┐          │
-│  │  Finder Providers  │          │  Preview Renderers  │          │
-│  │  @FuzzyFinder()    │          │  @PreviewRenderer() │          │
-│  └─────────┬──────────┘          └──────────┬──────────┘          │
-│            │                                │                     │
-│            └─────────────┬──────────────────┘                     │
-│                          │                                        │
-│                  ┌───────▼───────┐                               │
-│                  │   Presentation │                               │
-│                  │     Layer      │                               │
-│                  │ ┌────────────┐ │                               │
-│                  │ │  Message   │ │  - WebviewController          │
-│                  │ │  Handlers  │ │  - Registry dispatching       │
-│                  │ │  Registry  │ │  - HTML resolution            │
-│                  │ └────────────┘ │                               │
-│                  └───────┬────────┘                               │
-│                          │                                        │
-└──────────────────────────┼────────────────────────────────────────┘
-                           │
++-------------------------------------------------------------------+
+|                    Extension Host (Backend)                       |
+|                                                                   |
+|  +--------------------+          +---------------------+          |
+|  |  Finder Providers  |          |  Preview Renderers  |          |
+|  |  @FuzzyFinder()    |          |  @PreviewRenderer() |          |
+|  +---------+----------+          +----------+----------+          |
+|            |                                |                     |
+|            +-------------+------------------+                     |
+|                          |                                        |
+|                  +-------v-------+                                |
+|                  | Presentation  |                                |
+|                  |     Layer     |                                |
+|                  | +------------+|                                |
+|                  | |  Message   ||  - WebviewController           |
+|                  | |  Handlers  ||  - Registry dispatching        |
+|                  | |  Registry  ||  - HTML resolution             |
+|                  | +------------+|                                |
+|                  +-------+-------+                                |
+|                          |                                        |
++--------------------------+----------------------------------------+
+                           |
                     Message Protocol
                   (Type-safe interface)
-                           │
-┌──────────────────────────┼────────────────────────────────────────┐
-│                          │                                        │
-│                  ┌───────▼───────┐           Webview (UI)         │
-│                  │   Presentation │                               │
-│                  │     Layer      │                               │
-│                  │ ┌────────────┐ │                               │
-│                  │ │  Webview   │ │  - WebviewController          │
-│                  │ │ Controller │ │  - Message routing            │
-│                  │ │  Keyboard  │ │  - Event handling             │
-│                  │ │  Handlers  │ │  - State management           │
-│                  │ └────────────┘ │                               │
-│                  └───────┬────────┘                               │
-│                          │                                        │
-│                    ┌─────▼────┐                                  │
-│                    │  Shared   │                                  │
-│                    │   Types   │                                  │
-│                    └─────┬─────┘                                  │
-│                          │                                        │
-│       ┌──────────────────┴───────────────────┐                    │
-│       │                                      │                    │
-│  ┌────▼─────────────┐          ┌───────────▼──────────┐         │
-│  │  Data Adapters    │          │  Renderer Adapters    │         │
-│  │  (parse & filter) │          │  (display previews)   │         │
-│  └───────────────────┘          └───────────────────────┘         │
-│                                                                   │
-└───────────────────────────────────────────────────────────────────┘
+                           |
++--------------------------+----------------------------------------+
+|                          |                                        |
+|                  +-------v-------+           Webview (UI)         |
+|                  | Presentation  |                                |
+|                  |     Layer     |                                |
+|                  | +------------+|                                |
+|                  | |  Webview   ||  - WebviewController           |
+|                  | | Controller ||  - Message routing             |
+|                  | |  Keyboard  ||  - Event handling              |
+|                  | |  Handlers  ||  - State management            |
+|                  | +------------+|                                |
+|                  +-------+-------+                                |
+|                          |                                        |
+|                    +-----v----+                                   |
+|                    |  Shared  |                                   |
+|                    |   Types  |                                   |
+|                    +-----+----+                                   |
+|                          |                                        |
+|       +------------------+-----------------+                      |
+|       |                                    |                      |
+|  +----v-------------+          +-----------v----------+           |
+|  |  Data Adapters    |          |  Renderer Adapters    |         |
+|  |  (parse & filter) |          |  (display previews)   |         |
+|  +-------------------+          +-----------------------+         |
+|                                                                   |
++-------------------------------------------------------------------+
 
 ```
 
