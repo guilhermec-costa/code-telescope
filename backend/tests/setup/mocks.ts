@@ -26,4 +26,12 @@ vi.mock("vscode", () => ({
       revealRange: vi.fn(),
     }),
   },
+  env: {
+    appRoot: "/app",
+  },
+  workspace: {
+    get workspaceFolders() {
+      return [{ uri: { fsPath: "/workspace" } }];
+    },
+  },
 }));
