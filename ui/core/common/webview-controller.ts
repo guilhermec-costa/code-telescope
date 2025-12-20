@@ -1,4 +1,4 @@
-import { OptionListMessage, ToWebviewKindMessage } from "@shared/extension-webview-protocol";
+import { OptionListMessage, ToWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { debounce } from "../../utils/debounce";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { PreviewManager } from "../render/preview-manager";
