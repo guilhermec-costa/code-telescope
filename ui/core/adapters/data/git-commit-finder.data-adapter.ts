@@ -2,11 +2,11 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapt
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
 
-interface CommitData {
+export interface CommitData {
   commits: CommitInfo[];
 }
 
-interface CommitInfo {
+export interface CommitInfo {
   hash: string;
   message: string;
   fullMessage: string;
