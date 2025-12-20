@@ -43,15 +43,15 @@ vi.mock("../../core/common/config-manager", () => ({
 }));
 
 describe("WorkspaceFileFinder", () => {
-  let finder: WorkspaceFileFinder;
+  let provider: WorkspaceFileFinder;
 
   beforeEach(() => {
-    finder = new WorkspaceFileFinder();
+    provider = new WorkspaceFileFinder();
     vi.clearAllMocks();
   });
 
   it("returns html load config", () => {
-    const cfg = finder.getHtmlLoadConfig();
+    const cfg = provider.getHtmlLoadConfig();
 
     expect(cfg.fileName).toBe("file-fuzzy.view.html");
     expect(cfg.placeholders["{{style}}"]).toBe("ui/style/style.css");
@@ -60,14 +60,14 @@ describe("WorkspaceFileFinder", () => {
   it("returns absolute and relative file paths", async () => {
     vi.mocked(findWorkspaceFiles).mockResolvedValueOnce([{ path: "/abs/a.ts" }, { path: "/abs/b.ts" }] as any);
 
-    const result = await finder.querySelectableOptions();
+    const result = await provider.querySelectableOptions();
 
     expect(result.abs).toEqual(["/abs/a.ts", "/abs/b.ts"]);
     expect(result.relative).toEqual(["rel//abs/a.ts", "rel//abs/b.ts"]);
   });
 
   it("opens selected file", async () => {
-    await finder.onSelect("/abs/file.ts");
+    await provider.onSelect("/abs/file.ts");
 
     expect(execCmd).toHaveBeenCalled();
   });
@@ -75,7 +75,7 @@ describe("WorkspaceFileFinder", () => {
   it("returns cached highlighted content when available", async () => {
     vi.mocked(HighlightContentCache.instance.get).mockReturnValueOnce("cached code");
 
-    const result = await finder.getPreviewData("/abs/file.ts");
+    const result = await provider.getPreviewData("/abs/file.ts");
 
     expect(result.content.isCached).toBe(true);
     expect(result.content.text).toBe("cached code");
@@ -86,7 +86,7 @@ describe("WorkspaceFileFinder", () => {
 
     vi.mocked(FileContentCache.instance.get).mockResolvedValueOnce("file content");
 
-    const result = await finder.getPreviewData("/abs/file.ts");
+    const result = await provider.getPreviewData("/abs/file.ts");
 
     expect(result.content.isCached).toBe(false);
     expect(result.content.text).toBe("file content");

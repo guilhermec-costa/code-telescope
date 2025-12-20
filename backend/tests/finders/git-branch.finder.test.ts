@@ -6,7 +6,7 @@ import { GitBranchFuzzyFinder } from "../../core/finders/git/git-branch.finder";
 vi.mock("../../core/finders/git/api-utils.ts");
 
 describe("GitBranchFuzzyFinder", () => {
-  let finder: GitBranchFuzzyFinder;
+  let provider: GitBranchFuzzyFinder;
 
   let gitApiMock = {
     repositories: [
@@ -20,7 +20,7 @@ describe("GitBranchFuzzyFinder", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getGitApi).mockReturnValue(gitApiMock as unknown as API);
-    finder = new GitBranchFuzzyFinder();
+    provider = new GitBranchFuzzyFinder();
   });
 
   it("should instantiate git api", () => {
@@ -32,7 +32,7 @@ describe("GitBranchFuzzyFinder", () => {
   });
 
   it("returns html load config", () => {
-    const cfg = finder.getHtmlLoadConfig();
+    const cfg = provider.getHtmlLoadConfig();
 
     expect(cfg.fileName).toBe("branch-fuzzy.view.html");
     expect(cfg.placeholders["{{style}}"]).toBe("ui/style/style.css");
@@ -55,7 +55,7 @@ describe("GitBranchFuzzyFinder", () => {
 
     gitApiMock.repositories[0].getRefs.mockResolvedValueOnce(refs);
 
-    const branches = await finder.querySelectableOptions();
+    const branches = await provider.querySelectableOptions();
 
     expect(branches).toHaveLength(1);
     expect(branches[0].name).toBe("main");
@@ -87,7 +87,7 @@ describe("GitBranchFuzzyFinder", () => {
 
     gitApiMock.repositories[0].log.mockResolvedValue(commits);
 
-    const preview = await finder.getPreviewData("main");
+    const preview = await provider.getPreviewData("main");
 
     expect(preview.content).toHaveLength(1);
     expect(preview.content[0].hash).toBe("abc123");
