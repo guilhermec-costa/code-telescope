@@ -3,4 +3,5 @@ dist
 ui-dist
 node_modules
 .vscode-test/
+coverage
 *.vsix

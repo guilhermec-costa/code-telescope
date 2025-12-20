@@ -7,6 +7,7 @@ export default (async function () {
       globals: true,
       include: ["./backend/**/*.test.ts"],
       coverage: {
+        provider: "v8",
         reporter: ["text", "html"],
       },
       setupFiles: ["backend/tests/setup/vitest.setup.ts"],
