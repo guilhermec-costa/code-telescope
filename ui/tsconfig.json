@@ -25,5 +25,8 @@
     "../shared/**/*.d.ts",
     "../shared/types/*.d.ts"
   ],
-  "exclude": []
+  "exclude": [
+    "./dist",
+    "./tests/*"
+  ]
 }
