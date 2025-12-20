@@ -5,7 +5,7 @@ export default (async function () {
     test: {
       environment: "node",
       globals: true,
-      include: ["./backend/**/*.test.ts"],
+      include: ["./backend/**/*.test.ts", "./ui/**/*.test.ts"],
       coverage: {
         provider: "v8",
         reporter: ["text", "html"],
