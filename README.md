@@ -1,4 +1,4 @@
-# VS Code Telescope
+# Code Telescope
 
 A Telescope-inspired fuzzy finder for VS Code, bringing the power and flexibility of Neovim's Telescope to Visual Studio Code.
 
@@ -42,7 +42,7 @@ The architecture is built on three core principles:
                            │
 ┌──────────────────────────┼────────────────────────────────────────┐
 │                          │                                        │
-│                  ┌───────▼───────┐           Webview (UI)        │
+│                  ┌───────▼───────┐           Webview (UI)         │
 │                  │   Presentation │                               │
 │                  │     Layer      │                               │
 │                  │ ┌────────────┐ │                               │
@@ -66,6 +66,7 @@ The architecture is built on three core principles:
 │  └───────────────────┘          └───────────────────────┘         │
 │                                                                   │
 └───────────────────────────────────────────────────────────────────┘
+
 ```
 
 ## Core Concepts
