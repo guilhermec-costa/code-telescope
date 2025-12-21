@@ -11,6 +11,7 @@ vi.mock("vscode", () => ({
       }
     },
   ),
+  ViewColumn: {},
   Range: vi.fn(
     class {
       constructor(start: any, end: any) {

@@ -5,17 +5,17 @@ import { WorkspaceFileFinder } from "../../core/finders/ws-files.finder";
 import { execCmd } from "../../utils/commands";
 import { findWorkspaceFiles } from "../../utils/files";
 
-vi.mock("../../utils/commands", () => ({
+vi.mock("@backend/utils/commands", () => ({
   execCmd: vi.fn(),
 }));
 
-vi.mock("../../utils/files", () => ({
+vi.mock("@backend/utils/files", () => ({
   findWorkspaceFiles: vi.fn(),
   relativizeFilePath: vi.fn((p: string) => `rel/${p}`),
   getLanguageFromPath: vi.fn(() => "ts"),
 }));
 
-vi.mock("../../core/common/cache/file-content.cache", () => ({
+vi.mock("@backend/core/common/cache/file-content.cache", () => ({
   FileContentCache: {
     instance: {
       get: vi.fn(),
@@ -23,7 +23,7 @@ vi.mock("../../core/common/cache/file-content.cache", () => ({
   },
 }));
 
-vi.mock("../../core/common/cache/highlight-content.cache", () => ({
+vi.mock("@backend/core/common/cache/highlight-content.cache", () => ({
   HighlightContentCache: {
     instance: {
       get: vi.fn(),
@@ -31,7 +31,7 @@ vi.mock("../../core/common/cache/highlight-content.cache", () => ({
   },
 }));
 
-vi.mock("../../core/common/config-manager", () => ({
+vi.mock("@backend/core/common/config-manager", () => ({
   ExtensionConfigManager: {
     wsFileFinderCfg: {
       excludePatterns: ["node_modules"],

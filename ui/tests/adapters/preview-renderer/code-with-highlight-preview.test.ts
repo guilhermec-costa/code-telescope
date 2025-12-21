@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CodeWithHighlightPreviewRendererAdapter } from "../../../core/adapters/preview-renderer/code-with-highlight-preview.renderer-adapter";
 import { WebviewToExtensionMessenger } from "../../../core/common/wv-to-extension-messenger";
 
-vi.mock("../../../utils/html", () => ({
+vi.mock("@ui/utils/html", () => ({
   toInnerHTML: vi.fn((text: string) => `escaped:${text}`),
 }));
 
-vi.mock("../../../core/common/wv-to-extension-messenger", () => ({
+vi.mock("@ui/core/common/wv-to-extension-messenger", () => ({
   WebviewToExtensionMessenger: {
     instance: {
       requestHighlightCache: vi.fn(),

@@ -18,12 +18,24 @@ export default (async function () {
             include: ["backend/**/*.test.ts"],
             setupFiles: ["backend/tests/setup/vitest.setup.ts"],
           },
+          resolve: {
+            alias: {
+              "@backend": "/backend",
+              "@shared": "/shared",
+            },
+          },
         },
         {
           test: {
             name: "ui",
             environment: "jsdom",
             include: ["ui/**/*.test.ts"],
+          },
+          resolve: {
+            alias: {
+              "@ui": "/ui",
+              "@shared": "/shared",
+            },
           },
         },
       ],
