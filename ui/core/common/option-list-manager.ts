@@ -240,7 +240,23 @@ export class OptionListManager {
   private requestPreview(option: any): void {
     if (!this.dataAdapter) return;
     const value = this.dataAdapter.getSelectionValue(option);
-    this.previewManager.requestPreview(value);
+    const total = this.filteredOptions.length;
+
+    if (total <= 1) {
+      this.previewManager.requestPreview(value, []);
+      return;
+    }
+
+    const prefetchIndexes = new Set<number>();
+    for (let i = 1; i <= 3; i++) {
+      prefetchIndexes.add((this.selectedIndex + i + total) % total);
+      prefetchIndexes.add((this.selectedIndex - i + total) % total);
+    }
+
+    const prefetchOpts = Array.from(prefetchIndexes).map((idx) =>
+      this.dataAdapter.getSelectionValue(this.filteredOptions[idx]),
+    );
+    this.previewManager.requestPreview(value, prefetchOpts);
   }
 
   private updateItemsCount(): void {

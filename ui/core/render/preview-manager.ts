@@ -68,8 +68,8 @@ export class PreviewManager {
     await this.adapter.render(this.previewElement, this.lastPreviewedData, this.userTheme);
   }
 
-  requestPreview(selection: string): void {
-    WebviewToExtensionMessenger.instance.requestSelectionPreviewData(selection);
+  requestPreview(selection: string, additionalIds?: string[]): void {
+    WebviewToExtensionMessenger.instance.requestSelectionPreviewData(selection, additionalIds);
   }
 
   scrollToTop() {

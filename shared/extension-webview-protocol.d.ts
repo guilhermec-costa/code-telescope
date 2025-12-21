@@ -91,7 +91,10 @@ export interface ClosePanelMessage {
  */
 export interface PreviewRequestMessage {
   type: "previewRequest";
-  data: any;
+  data: {
+    selectedId: string;
+    prefetchIds?: string[];
+  };
 }
 
 /**

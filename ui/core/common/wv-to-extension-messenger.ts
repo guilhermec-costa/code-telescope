@@ -57,10 +57,13 @@ export class WebviewToExtensionMessenger {
    *
    * @param selection - The identifier of the item the user highlighted.
    */
-  requestSelectionPreviewData(selection: string): void {
+  requestSelectionPreviewData(selectedId: string, additionalIds: string[] = []): void {
     this.postMessage({
       type: "previewRequest",
-      data: selection,
+      data: {
+        selectedId,
+        prefetchIds: additionalIds,
+      },
     });
   }
 

@@ -71,11 +71,9 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
 
     const results: vscode.Uri[] = [];
 
-    const finalExcludeGlob = `{${excludes.join(",")}}`;
-
     await Promise.all(
       includePatterns.map(async (pattern) => {
-        const found = await findWorkspaceFiles(pattern, finalExcludeGlob, maxResults);
+        const found = await findWorkspaceFiles(pattern, `{${excludes.join(",")}}`, maxResults);
         results.push(...found);
       }),
     );
