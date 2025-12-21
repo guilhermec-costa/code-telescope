@@ -2,7 +2,7 @@ import type { HighlighterCore } from "shiki/core";
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
 import { getRegisteredPreviewRendererAdapters } from "../decorators/preview-renderer-adapter.decorator";
-import { ShikiManager } from "../render/shiki-manager";
+import { ShikiManager } from "../render/highlighter-manager";
 
 export type SyntaxHighlighter = HighlighterCore | null;
 

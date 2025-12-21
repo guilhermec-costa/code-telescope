@@ -1,11 +1,13 @@
 import path from "path";
 import * as vscode from "vscode";
+import availableLangs from "../../config/highlight-langs.json";
 import { Globals } from "../../globals";
 import { getConfigurationSection } from "../../utils/configuration";
-import { getShikiLanguage, getShikiTheme } from "../../utils/shiki";
+import { getShikiTheme } from "../../utils/shiki.js";
 import { FuzzyFinderPanelController } from "../presentation/fuzzy-panel.controller";
 import { FileContentCache } from "./cache/file-content.cache";
 import { HighlightContentCache } from "./cache/highlight-content.cache";
+import { ExtensionConfigManager } from "./config-manager";
 
 export class VSCodeEventsManager {
   private static instance: VSCodeEventsManager;
@@ -49,48 +51,24 @@ export class VSCodeEventsManager {
   }
 
   static async emitInitialEvents() {
-    const extToLanguage: Record<string, string> = {
-      ts: "typescript",
-      tsx: "tsx",
-      js: "javascript",
-      jsx: "jsx",
-      json: "json",
-      html: "html",
-      css: "css",
-      scss: "scss",
-      md: "markdown",
-      py: "python",
-      java: "java",
-      go: "go",
-      rs: "rust",
-      c: "c",
-      h: "c",
-      cpp: "cpp",
-      hpp: "cpp",
-      cs: "csharp",
-      yml: "yaml",
-      yaml: "yaml",
-      sql: "sql",
-      xml: "xml",
-    };
+    const { excludePatterns, includePatterns } = ExtensionConfigManager.wsFileFinderCfg;
+    const files = await vscode.workspace.findFiles(`{${includePatterns.join(",")}}`, `{${excludePatterns.join(",")}}`);
 
-    const files = await vscode.workspace.findFiles("**/*.*", "**/node_modules/**");
-    const extensions = new Set<string>();
+    const langsToLoad = files.reduce<Set<string>>((langs, f) => {
+      const ext = path.extname(f.fsPath).slice(1).toLowerCase();
+      const shikiLang = ext && (availableLangs as any)[ext];
 
-    for (const f of files) {
-      const ext = path.extname(f.fsPath).slice(1);
-      if (ext) extensions.add(ext.toLowerCase());
-    }
+      if (shikiLang) {
+        langs.add(shikiLang);
+      }
+      return langs;
+    }, new Set<string>());
 
-    const languagesToLoad = Array.from(extensions)
-      .map((ext) => extToLanguage[ext])
-      .filter(Boolean);
-
-    console.log("[FuzzyPanel] Languages detected:", languagesToLoad);
+    console.log("[FuzzyPanel] Languages detected:", langsToLoad);
 
     if (FuzzyFinderPanelController.instance) {
       await FuzzyFinderPanelController.instance.emitInitShikiEvent({
-        languages: [...languagesToLoad.map((l) => getShikiLanguage(l)), "diff"],
+        languages: [...langsToLoad, "diff"],
         theme: getShikiTheme(Globals.USER_THEME),
       });
     }

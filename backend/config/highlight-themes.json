@@ -1,0 +1,68 @@
+{
+  "rules": [
+    {
+      "match": ["dark+", "dark plus"],
+      "theme": "dark-plus"
+    },
+    {
+      "match": ["light+", "light plus"],
+      "theme": "light-plus"
+    },
+    {
+      "match": ["gruvbox dark hard"],
+      "theme": "gruvbox-dark-hard"
+    },
+    {
+      "match": ["monokai"],
+      "theme": "monokai"
+    },
+    {
+      "match": ["solarized", "dark"],
+      "theme": "solarized-dark"
+    },
+    {
+      "match": ["solarized", "light"],
+      "theme": "solarized-light"
+    },
+    {
+      "match": ["dracula"],
+      "theme": "dracula"
+    },
+    {
+      "match": ["github", "dark"],
+      "theme": "github-dark"
+    },
+    {
+      "match": ["github", "light"],
+      "theme": "github-light"
+    },
+    {
+      "match": ["nord"],
+      "theme": "nord"
+    },
+    {
+      "match": ["one dark"],
+      "theme": "one-dark-pro"
+    },
+    {
+      "match": ["night owl"],
+      "theme": "night-owl"
+    },
+    {
+      "match": ["tokyo night"],
+      "theme": "tokyo-night"
+    },
+    {
+      "match": ["kanagawa dragon"],
+      "theme": "kanagawa-dragon"
+    },
+    {
+      "match": ["kanagawa wave"],
+      "theme": "kanagawa-wave"
+    }
+  ],
+  "fallback": {
+    "dark": "dark-plus",
+    "light": "light-plus"
+  }
+}

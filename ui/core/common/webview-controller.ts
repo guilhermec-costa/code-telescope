@@ -1,8 +1,8 @@
 import { OptionListMessage, ToWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { debounce } from "../../utils/debounce";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
+import { ShikiManager } from "../render/highlighter-manager";
 import { PreviewManager } from "../render/preview-manager";
-import { ShikiManager } from "../render/shiki-manager";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
