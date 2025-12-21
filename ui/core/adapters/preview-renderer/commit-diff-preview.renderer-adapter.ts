@@ -37,10 +37,4 @@ export class CommitDiffPreviewRendererAdapter implements IPreviewRendererAdapter
   clear(previewElement: HTMLElement): void {
     previewElement.innerHTML = "";
   }
-
-  private escapeHtml(text: string): string {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
-  }
 }

@@ -60,7 +60,7 @@ export class BranchPreviewRendererAdapter implements IPreviewRendererAdapter {
 
       if (commitsToRender.length === 0) {
         listContainer.innerHTML =
-          '<div style="padding: 2rem; opacity: 0.7; text-align: center;">Nenhum commit encontrado.</div>';
+          '<div style="padding: 2rem; opacity: 0.7; text-align: center;">No commits found.</div>';
         return;
       }
 

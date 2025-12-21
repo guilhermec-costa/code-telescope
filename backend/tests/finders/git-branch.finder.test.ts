@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { API, Ref } from "../../@types/git";
 import { getGitApi } from "../../core/finders/git/api-utils";
 import { GitBranchFuzzyFinder } from "../../core/finders/git/git-branch.finder";

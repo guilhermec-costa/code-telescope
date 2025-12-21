@@ -1,4 +1,4 @@
-import { expect, type Mocked, vi } from "vitest";
+import { beforeEach, describe, expect, it, type Mocked, vi } from "vitest";
 import * as vscode from "vscode";
 import { FileContentCache } from "../../../core/common/cache/file-content.cache";
 import { HighlightContentCache } from "../../../core/common/cache/highlight-content.cache";
