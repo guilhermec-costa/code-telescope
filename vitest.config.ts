@@ -17,6 +17,7 @@ export default (async function () {
             name: "backend",
             environment: "node",
             include: ["backend/**/*.test.ts"],
+            exclude: ["backend/integration/**"],
             setupFiles: ["backend/tests/setup/vitest.setup.ts"],
           },
           resolve: {
