@@ -202,14 +202,12 @@
         "@vscode/test-cli": "^0.0.12",
         "@vscode/test-electron": "^2.5.2",
         "esbuild": "^0.27.0",
-        "eslint": "^9.39.1",
         "husky": "^9.1.7",
         "jsdom": "^27.3.0",
         "lint-staged": "^16.2.7",
         "shiki": "^3.17.0",
         "tsx": "^4.21.0",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.46.3",
         "vitest": "^4.0.16"
     },
     "lint-staged": {
@@ -218,8 +216,8 @@
         ]
     },
     "pnpm": {
-      "overrides": {
-        "jsdom": "22.1.0"
-      }
+        "overrides": {
+            "jsdom": "22.1.0"
+        }
     }
 }
