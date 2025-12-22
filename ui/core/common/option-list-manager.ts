@@ -1,3 +1,4 @@
+import { debounce } from "../../utils/debounce";
 import { escapeHtml } from "../../utils/html";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
 import { PreviewManager } from "../render/preview-manager";
@@ -17,6 +18,7 @@ export class OptionListManager {
   private readonly RENDER_THRESHOLD = 200;
   private readonly RENDER_MODE_CLASSNAME = "flexbox-render";
   private readonly virtualizer: Virtualizer;
+  private debouncedRequestPreview: (value: string, prefetch: string[]) => void;
 
   constructor(private readonly previewManager: PreviewManager) {
     this.listElement = document.getElementById("option-list") as HTMLUListElement;
@@ -26,6 +28,10 @@ export class OptionListManager {
       itemHeight: 22,
       bufferSize: 10,
     });
+
+    this.debouncedRequestPreview = debounce((value: string, prefetch: string[]) => {
+      this.previewManager.requestPreview(value, prefetch);
+    }, 50);
 
     this.setupScrollListener();
   }
@@ -256,7 +262,7 @@ export class OptionListManager {
     const prefetchOpts = Array.from(prefetchIndexes).map((idx) =>
       this.dataAdapter.getSelectionValue(this.filteredOptions[idx]),
     );
-    this.previewManager.requestPreview(value, prefetchOpts);
+    this.debouncedRequestPreview(value, prefetchOpts);
   }
 
   private updateItemsCount(): void {

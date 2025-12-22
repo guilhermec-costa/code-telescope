@@ -44,6 +44,7 @@ describe("WorkspaceFileFinder", () => {
   let provider: WorkspaceFileFinder;
 
   beforeEach(() => {
+    vi.mocked(vscode.workspace.asRelativePath).mockImplementation((p: any) => `rel/${p}`);
     provider = new WorkspaceFileFinder();
     vi.clearAllMocks();
   });
@@ -62,12 +63,40 @@ describe("WorkspaceFileFinder", () => {
       .mockResolvedValueOnce({ size: 1 } as any)
       .mockResolvedValueOnce({ size: 1 } as any);
 
-    vi.mocked(vscode.workspace.asRelativePath).mockImplementation((p: any) => `rel/${p}`);
-
     const result = await provider.querySelectableOptions();
 
     expect(result.abs).toEqual(["/abs/a.ts", "/abs/b.ts"]);
     expect(result.relative).toEqual(["rel//abs/a.ts", "rel//abs/b.ts"]);
+  });
+
+  it("returns empty array when all files exceed size limit", async () => {
+    vi.mocked(vscode.workspace.findFiles).mockResolvedValueOnce([{ path: "/abs/a.ts" }, { path: "/abs/b.ts" }] as any);
+
+    const maxSize = 250 * 1024 + 1;
+    vi.mocked(vscode.workspace.fs.stat)
+      .mockResolvedValueOnce({ size: maxSize } as any)
+      .mockResolvedValueOnce({ size: maxSize } as any);
+
+    const result = await provider.querySelectableOptions();
+
+    expect(result.abs.length).toBe(0);
+    expect(result.relative.length).toBe(0);
+  });
+
+  it("returns only files within the max file size", async () => {
+    vi.mocked(vscode.workspace.findFiles).mockResolvedValueOnce([{ path: "/abs/a.ts" }, { path: "/abs/b.ts" }] as any);
+
+    const maxSize = 250 * 1024 + 1;
+    vi.mocked(vscode.workspace.fs.stat)
+      .mockResolvedValueOnce({ size: 1 } as any)
+      .mockResolvedValueOnce({ size: maxSize } as any);
+
+    const result = await provider.querySelectableOptions();
+
+    expect(result.abs.length).toBe(1);
+    expect(result.relative.length).toBe(1);
+    expect(result.abs[0]).toBe("/abs/a.ts");
+    expect(result.relative[0]).toBe("rel//abs/a.ts");
   });
 
   it("opens selected file", async () => {
