@@ -1,6 +1,7 @@
 {
     "name": "code-telescope",
     "displayName": "code-telescope",
+    "publisher": "guichina",
     "description": "",
     "version": "0.0.1",
     "engines": {
@@ -16,10 +17,6 @@
     "main": "./backend/dist/extension.js",
     "extensionDependencies": [
         "vscode.git"
-    ],
-    "enabledApiProposals": [
-        "findTextInFiles",
-        "textSearchProvider"
     ],
     "contributes": {
         "commands": [
@@ -206,6 +203,7 @@
         "jsdom": "^27.3.0",
         "lint-staged": "^16.2.7",
         "shiki": "^3.17.0",
+        "ts-node": "^10.9.2",
         "tsx": "^4.21.0",
         "typescript": "^5.9.3",
         "vitest": "^4.0.16"

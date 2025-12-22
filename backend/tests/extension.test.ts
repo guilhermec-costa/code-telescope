@@ -6,10 +6,6 @@ import { activate, deactivate } from "../extension";
 import { Globals } from "../globals";
 import { registerAndSubscribeCmd } from "../utils/commands";
 
-// mocks dos módulos externos
-vi.mock("vscode", () => ({
-  ExtensionContext: class {},
-}));
 vi.mock("@backend/core/finders/loader", () => ({
   loadFuzzyProviders: vi.fn(),
 }));

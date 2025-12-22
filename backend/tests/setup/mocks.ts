@@ -40,4 +40,5 @@ vi.mock("vscode", () => ({
       stat: vi.fn(),
     },
   },
+  ExtensionContext: class {},
 }));
