@@ -13,12 +13,11 @@ export class BranchPreviewRendererAdapter implements IPreviewRendererAdapter {
 
   async render(previewElement: HTMLElement, data: PreviewData<CommitInfo[]>, theme: string): Promise<void> {
     const allCommits = data.content;
-    console.log(allCommits);
 
     const searchContainer = document.createElement("div");
     searchContainer.style.padding = "10px 10px";
     searchContainer.style.position = "sticky";
-    searchContainer.style.top = "-5px";
+    searchContainer.style.top = "-10px";
     searchContainer.style.backgroundColor = "var(--vscode-editor-background)";
     searchContainer.style.zIndex = "10";
     searchContainer.style.borderBottom = "1px solid var(--vscode-panel-border)";

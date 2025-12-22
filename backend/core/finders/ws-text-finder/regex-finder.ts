@@ -1,6 +1,6 @@
 import * as fs from "fs/promises";
+import * as vscode from "vscode";
 import { TextSearchMatch } from "../../../../shared/exchange/workspace-text-search";
-import { findWorkspaceFiles } from "../../../utils/files";
 
 function escapeRegExp(string: string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -15,7 +15,7 @@ export class RegexFinder {
     const queryRegex = new RegExp(escapeRegExp(query), "gi");
 
     try {
-      const uris = await findWorkspaceFiles(
+      const uris = await vscode.workspace.findFiles(
         "**/*",
         "**/{node_modules,.git,dist,out,build,coverage,*.min.js,*.map}/**",
         3000,

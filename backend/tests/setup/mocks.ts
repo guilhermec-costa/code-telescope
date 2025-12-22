@@ -34,5 +34,10 @@ vi.mock("vscode", () => ({
     get workspaceFolders() {
       return [{ uri: { fsPath: "/workspace" } }];
     },
+    asRelativePath: vi.fn(),
+    findFiles: vi.fn(),
+    fs: {
+      stat: vi.fn(),
+    },
   },
 }));

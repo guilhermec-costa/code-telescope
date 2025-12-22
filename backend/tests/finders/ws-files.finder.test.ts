@@ -1,17 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import * as vscode from "vscode";
 import { FileContentCache } from "../../core/common/cache/file-content.cache";
 import { HighlightContentCache } from "../../core/common/cache/highlight-content.cache";
 import { WorkspaceFileFinder } from "../../core/finders/ws-files.finder";
 import { execCmd } from "../../utils/commands";
-import { findWorkspaceFiles } from "../../utils/files";
 
 vi.mock("@backend/utils/commands", () => ({
   execCmd: vi.fn(),
 }));
 
 vi.mock("@backend/utils/files", () => ({
-  findWorkspaceFiles: vi.fn(),
-  relativizeFilePath: vi.fn((p: string) => `rel/${p}`),
   getLanguageFromPath: vi.fn(() => "ts"),
 }));
 
@@ -58,7 +56,13 @@ describe("WorkspaceFileFinder", () => {
   });
 
   it("returns absolute and relative file paths", async () => {
-    vi.mocked(findWorkspaceFiles).mockResolvedValueOnce([{ path: "/abs/a.ts" }, { path: "/abs/b.ts" }] as any);
+    vi.mocked(vscode.workspace.findFiles).mockResolvedValueOnce([{ path: "/abs/a.ts" }, { path: "/abs/b.ts" }] as any);
+
+    vi.mocked(vscode.workspace.fs.stat)
+      .mockResolvedValueOnce({ size: 1 } as any)
+      .mockResolvedValueOnce({ size: 1 } as any);
+
+    vi.mocked(vscode.workspace.asRelativePath).mockImplementation((p: any) => `rel/${p}`);
 
     const result = await provider.querySelectableOptions();
 

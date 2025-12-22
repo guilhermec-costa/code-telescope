@@ -4,7 +4,7 @@ import { FileFinderData } from "../../../shared/exchange/file-search";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
-import { findWorkspaceFiles, getLanguageFromPath, relativizeFilePath } from "../../utils/files";
+import { getLanguageFromPath } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileContentCache } from "../common/cache/file-content.cache";
 import { HighlightContentCache } from "../common/cache/highlight-content.cache";
@@ -44,7 +44,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
     return files.reduce<FileFinderData>(
       (result, file) => {
         result.abs.push(file.path);
-        result.relative.push(relativizeFilePath(file.path));
+        result.relative.push(vscode.workspace.asRelativePath(file.path));
         return result;
       },
       { abs: [], relative: [] },
@@ -73,8 +73,18 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
 
     await Promise.all(
       includePatterns.map(async (pattern) => {
-        const found = await findWorkspaceFiles(pattern, `{${excludes.join(",")}}`, maxResults);
-        results.push(...found);
+        const files = await vscode.workspace.findFiles(pattern, `{${excludes.join(",")}}`, maxResults);
+        const filtered = await Promise.all(
+          files.map(async (uri) => {
+            try {
+              const stat = await vscode.workspace.fs.stat(uri);
+              return stat.size <= 200 * 1024 ? uri : null;
+            } catch {
+              return null;
+            }
+          }),
+        );
+        results.push(...(filtered.filter(Boolean) as vscode.Uri[]));
       }),
     );
 
