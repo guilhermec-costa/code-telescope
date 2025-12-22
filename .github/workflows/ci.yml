@@ -28,3 +28,6 @@ jobs:
 
       - name: Run Unit Tests
         run: pnpm test:unit
+
+      - name: Run Integration Tests
+        run: xvfb-run -a pnpm test:integration
