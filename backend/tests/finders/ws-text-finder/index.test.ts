@@ -6,7 +6,7 @@ import { WorkspaceTextSearchProvider } from "../../../core/finders/ws-text-finde
 import { RegexFinder } from "../../../core/finders/ws-text-finder/regex-finder";
 import { RipgrepFinder } from "../../../core/finders/ws-text-finder/ripgrep-finder";
 
-vi.mock("../../../core/common/cache/file-content.cache", () => ({
+vi.mock("@backend/core/common/cache/file-content.cache", () => ({
   FileContentCache: {
     instance: {
       get: vi.fn(),
@@ -14,7 +14,7 @@ vi.mock("../../../core/common/cache/file-content.cache", () => ({
   },
 }));
 
-vi.mock("../../../core/common/cache/highlight-content.cache", () => ({
+vi.mock("@backend/core/common/cache/highlight-content.cache", () => ({
   HighlightContentCache: {
     instance: {
       get: vi.fn(),
@@ -22,7 +22,7 @@ vi.mock("../../../core/common/cache/highlight-content.cache", () => ({
   },
 }));
 
-vi.mock("../../../core/finders/ws-text-finder/regex-finder", () => {
+vi.mock("@backend/core/finders/ws-text-finder/regex-finder", () => {
   const RegexFinder = vi.fn(
     class MockClass {
       search = vi.fn();
@@ -31,7 +31,7 @@ vi.mock("../../../core/finders/ws-text-finder/regex-finder", () => {
   return { RegexFinder };
 });
 
-vi.mock("../../../core/finders/ws-text-finder/ripgrep-finder", () => {
+vi.mock("@backend/core/finders/ws-text-finder/ripgrep-finder", () => {
   const RipgrepFinder = vi.fn(
     class MockClass {
       ripgrepAvailable = true;

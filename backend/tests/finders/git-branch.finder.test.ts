@@ -3,7 +3,7 @@ import { API, Ref } from "../../@types/git";
 import { getGitApi } from "../../core/finders/git/api-utils";
 import { GitBranchFuzzyFinder } from "../../core/finders/git/git-branch.finder";
 
-vi.mock("../../core/finders/git/api-utils.ts");
+vi.mock("@backend/core/finders/git/api-utils.ts");
 
 describe("GitBranchFuzzyFinder", () => {
   let provider: GitBranchFuzzyFinder;

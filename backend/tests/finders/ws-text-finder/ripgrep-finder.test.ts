@@ -8,7 +8,7 @@ import { RipgrepFinder } from "../../../core/finders/ws-text-finder/ripgrep-find
 vi.mock("child_process");
 vi.mock("fs/promises");
 
-vi.mock("../../../core/common/config-manager", () => ({
+vi.mock("@backend/core/common/config-manager", () => ({
   ExtensionConfigManager: {
     wsTextFinderCfg: {
       maxColumns: 200,
@@ -19,7 +19,7 @@ vi.mock("../../../core/common/config-manager", () => ({
   },
 }));
 
-vi.mock("../../../core/finders/ws-text-finder/ripgrep-args.builder", () => ({
+vi.mock("@backend/core/finders/ws-text-finder/ripgrep-args.builder", () => ({
   RipgrepArgsBuilder: vi.fn(
     class {
       query = vi.fn().mockReturnThis();
