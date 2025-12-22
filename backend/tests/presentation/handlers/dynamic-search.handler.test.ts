@@ -34,28 +34,27 @@ describe("DynamicSearchHandler", () => {
 
   it("should call dynamic search and send option list", async () => {
     const providerMock = FuzzyFinderPanelController.instance!.provider;
-
-    vi.mocked(providerMock.searchOnDynamicMode!).mockResolvedValue({
+    const dynSearchResult = {
       results: ["a", "b"],
       query: "te",
-    });
+    };
+    const query = "te";
+
+    vi.mocked(providerMock.searchOnDynamicMode!).mockResolvedValue(dynSearchResult);
 
     await handler.handle(
       {
         type: "dynamicSearch",
-        query: "te",
+        query,
       } as any,
       webview,
     );
 
-    expect(providerMock.searchOnDynamicMode).toHaveBeenCalledWith("te");
+    expect(providerMock.searchOnDynamicMode).toHaveBeenCalledWith(query);
 
     expect(WebviewController.sendMessage).toHaveBeenCalledWith(webview, {
       type: "optionList",
-      data: {
-        results: ["a", "b"],
-        query: "te",
-      },
+      data: dynSearchResult,
       fuzzyProviderType: providerMock.fuzzyAdapterType,
     });
   });

@@ -9,7 +9,7 @@ export default (async function () {
         reporter: ["text", "html"],
         reportsDirectory: "./coverage",
       },
-      silent: true,
+      silent: "passed-only",
 
       projects: [
         {
