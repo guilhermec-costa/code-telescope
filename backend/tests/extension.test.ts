@@ -9,16 +9,20 @@ import { registerAndSubscribeCmd } from "../utils/commands";
 vi.mock("@backend/core/finders/loader", () => ({
   loadFuzzyProviders: vi.fn(),
 }));
+
 vi.mock("@backend/core/presentation/handlers/loader", () => ({
   loadWebviewHandlers: vi.fn(),
 }));
+
 vi.mock("@backend/utils/commands", () => ({
   getCmdId: vi.fn((...args: string[]) => args.join(".")),
   registerAndSubscribeCmd: vi.fn(),
 }));
+
 vi.mock("@backend/utils/configuration", () => ({
   getConfigurationSection: vi.fn(() => "Dark+"),
 }));
+
 vi.mock("@backend/core/presentation/fuzzy-panel.controller", () => ({
   FuzzyFinderPanelController: {
     createOrShow: vi.fn(() => ({

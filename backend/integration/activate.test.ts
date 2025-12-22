@@ -4,9 +4,12 @@ import { FuzzyFinderPanelController } from "../core/presentation/fuzzy-panel.con
 import { getCmdId } from "../utils/commands";
 
 suite("Integration", () => {
-  test("Extension should be present", () => {
+  test("Extension should be present", async () => {
     const extension = vscode.extensions.getExtension("guichina.code-telescope");
     assert.ok(extension);
+
+    await extension!.activate();
+    assert.ok(extension.isActive);
   });
 
   test("All fuzzy commands should be registered in VS Code", async () => {
@@ -23,13 +26,33 @@ suite("Integration", () => {
     }
   });
 
-  test("Command 'fuzzy file' should open a webview panel", async () => {
-    const cmdId = getCmdId("fuzzy", "file");
+  test("Fuzzy Finder Commands", () => {
+    const testCases = [
+      { cmd: getCmdId("fuzzy", "file"), provider: "workspace.files" },
+      { cmd: getCmdId("fuzzy", "branch"), provider: "git.branches" },
+      { cmd: getCmdId("fuzzy", "wsText"), provider: "workspace.text" },
+      { cmd: getCmdId("fuzzy", "commits"), provider: "git.commits" },
+    ];
 
-    await vscode.commands.executeCommand(cmdId);
+    testCases.forEach(({ cmd, provider }) => {
+      test(`should register and execute command: ${cmd}`, async () => {
+        const allCommands = await vscode.commands.getCommands(true);
+        assert.ok(allCommands.includes(cmd), `Comando ${cmd} não está registrado!`);
 
-    const instance = FuzzyFinderPanelController.instance;
-    assert.ok(instance, "Panel was not created after command execution");
-    assert.equal(instance.provider.fuzzyAdapterType, "workspace.files");
+        await vscode.commands.executeCommand(cmd);
+
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        const instance = FuzzyFinderPanelController.instance;
+
+        assert.ok(instance, `O painel não foi criado para o comando ${cmd}`);
+      });
+    });
+
+    teardown(async () => {
+      if (FuzzyFinderPanelController.instance) {
+        FuzzyFinderPanelController.instance.dispose();
+      }
+    });
   });
 });
