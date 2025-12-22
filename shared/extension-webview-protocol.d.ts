@@ -70,7 +70,7 @@ export interface ShikiInitDone {
   type: "shikInitDone";
 }
 
-export interface HighlightCache {
+export interface HighlightCacheMessage {
   type: "highlightCache";
   data: {
     content: string;
@@ -139,5 +139,5 @@ export type FromWebviewKindMessage =
   | PreviewRequestMessage
   | DynamicSearchMessage
   | OptionSelectedMessage
-  | HighlightCache
+  | HighlightCacheMessage
   | ShikiInitDone;
