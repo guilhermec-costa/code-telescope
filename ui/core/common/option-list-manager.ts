@@ -31,7 +31,7 @@ export class OptionListManager {
 
     this.debouncedRequestPreview = debounce((value: string) => {
       this.previewManager.requestPreview(value);
-    }, 50);
+    }, 20);
 
     this.setupScrollListener();
   }

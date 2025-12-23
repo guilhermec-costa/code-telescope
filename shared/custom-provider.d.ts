@@ -9,10 +9,6 @@ export interface CustomFinderDefinition {
       action: string;
     }>;
     getPreviewData: (identifier: any) => Promise<Record<string, any>>;
-    getHtmlLoadConfig: () => {
-      fileName: string;
-      placeholders: Record<string, string>;
-    };
   };
 
   ui: {

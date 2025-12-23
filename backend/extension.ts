@@ -88,9 +88,14 @@ async function setupCustomProviders(context: vscode.ExtensionContext) {
       CustomProviderManager.instance.registerConfig(userConfig);
 
       const dynamicProvider = CustomProviderManager.instance.getBackendProxyDefinition(userConfig.fuzzyAdapterType);
-      if (!dynamicProvider) continue;
+      if (!dynamicProvider.ok) {
+        vscode.window.showErrorMessage(
+          `Failed to load custom finder "${userConfig.fuzzyAdapterType}": ${dynamicProvider.error}`,
+        );
+        continue;
+      }
 
-      FuzzyFinderAdapterRegistry.instance.register(dynamicProvider);
+      FuzzyFinderAdapterRegistry.instance.register(dynamicProvider.value);
 
       registerAndSubscribeCmd(
         getCmdId("fuzzy", userConfig.fuzzyAdapterType),

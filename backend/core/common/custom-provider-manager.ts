@@ -51,9 +51,12 @@ export class CustomProviderManager {
     };
   }
 
-  getBackendProxyDefinition(fuzzyType: string): CustomFinderProxy | null {
+  getBackendProxyDefinition(fuzzyType: string): { ok: true; value: CustomFinderProxy } | { ok: false; error: string } {
     const userConfig = this.getConfig(fuzzyType);
-    if (!userConfig) return null;
-    return new CustomFinderProxy(userConfig);
+    if (!userConfig) {
+      return { ok: false, error: "Custom finder configuration not found" };
+    }
+
+    return CustomFinderProxy.create(userConfig);
   }
 }
