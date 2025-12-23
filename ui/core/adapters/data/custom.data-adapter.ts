@@ -2,7 +2,7 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapt
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 
-export interface SerializedConfig {
+export interface SerializedUiConfig {
   fuzzyAdapterType: CustomFinderDefinition["fuzzyAdapterType"];
   previewAdapterType: CustomFinderDefinition["previewAdapterType"];
   dataAdapter: CustomFinderDefinition["ui"]["dataAdapter"];
@@ -12,21 +12,28 @@ export class CustomDataAdapterProxy implements IFuzzyFinderDataAdapter {
   previewAdapterType: PreviewRendererType;
   fuzzyAdapterType: FuzzyProviderType;
 
-  constructor(serializedConfig: SerializedConfig) {
+  constructor(serializedConfig: SerializedUiConfig) {
     const adapter = serializedConfig.dataAdapter;
-    this.parseOptions = eval(`(${adapter.parseOptions})`);
-    this.getDisplayText = eval(`(${adapter.getDisplayText})`);
-    this.getSelectionValue = eval(`(${adapter.getSelectionValue})`);
+
+    this.parseOptions = indirectEval(`(${adapter.parseOptions})`);
+    this.getDisplayText = indirectEval(`(${adapter.getDisplayText})`);
+    this.getSelectionValue = indirectEval(`(${adapter.getSelectionValue})`);
+
     if (adapter.filterOption) {
-      this.filterOption = eval(`(${adapter.filterOption})`);
+      this.filterOption = indirectEval(`(${adapter.filterOption})`);
     }
+
     this.fuzzyAdapterType = serializedConfig.fuzzyAdapterType as any;
     this.previewAdapterType = serializedConfig.previewAdapterType as any;
   }
 
-  parseOptions!: (data: any) => string[];
+  parseOptions!: (options: any) => string[];
   getDisplayText!: (option: string) => string;
   getSelectionValue!: (option: string) => string;
   filterOption?: (option: string, query: string) => boolean;
   debounceSearchTime?: number;
+}
+
+function indirectEval<T = unknown>(code: string): T {
+  return (0, eval)(code);
 }

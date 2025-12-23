@@ -4,7 +4,7 @@ import { Globals } from "../../globals";
 import { joinPath } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { ExtensionConfigManager } from "../common/config-manager";
-import { CustomProviderManager } from "../common/custom-provider-manager";
+import { CustomProviderManager, SerializedUiConfig } from "../common/custom-provider-manager";
 
 export class WebviewController {
   static async sendMessage(wv: vscode.Webview, msg: ToWebviewKindMessage) {
@@ -43,16 +43,16 @@ export class WebviewController {
     const previewManagerCfg = ExtensionConfigManager.previewManagerCfg;
     html = html.replace("__PREVIEW_MANAGER_CFG_JSON__", JSON.stringify(previewManagerCfg));
 
-    let customDataAdaptersJson = "[]";
-    let customRenderAdaptersJson = "[]";
+    let customDataAdapterUiDef: SerializedUiConfig | null = null;
+
     if (provider.fuzzyAdapterType.startsWith(Globals.CUSTOM_PROVIDER_PREFIX)) {
-      const customDef = CustomProviderManager.instance.getUiSerializedConfig(provider.fuzzyAdapterType);
-      if (customDef) {
-        customDataAdaptersJson = JSON.stringify([customDef]);
-      }
+      customDataAdapterUiDef = CustomProviderManager.instance.getUiSerializedConfig(provider.fuzzyAdapterType);
     }
-    html = html.replace("__CUSTOM_DATA_ADAPTERS__", customDataAdaptersJson);
-    html = html.replace("__CUSTOM_RENDER_ADAPTERS__", customRenderAdaptersJson);
+    html = html.replace(
+      "__CUSTOM_DATA_ADAPTER__",
+      customDataAdapterUiDef ? JSON.stringify(customDataAdapterUiDef) : "undefined",
+    );
+    html = html.replace("__CUSTOM_RENDER_ADAPTERS__", "undefined");
 
     const panelCfg = ExtensionConfigManager.uiPanelCfg;
     html = html.replace(

@@ -4,7 +4,10 @@ export interface CustomFinderDefinition {
 
   backend: {
     querySelectableOptions: () => Promise<any>;
-    onSelect: (item: any) => Promise<void>;
+    onSelect: (item: any) => Promise<{
+      data: any;
+      action: string;
+    }>;
     getPreviewData: (identifier: any) => Promise<Record<string, any>>;
     getHtmlLoadConfig: () => {
       fileName: string;

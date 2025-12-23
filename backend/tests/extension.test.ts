@@ -63,6 +63,7 @@ describe("Extension entrypoint", () => {
       ["fuzzy.branch", expect.any(Function), context],
       ["fuzzy.wsText", expect.any(Function), context],
       ["fuzzy.commits", expect.any(Function), context],
+      ["fuzzy.custom", expect.any(Function), context],
     ];
 
     expectedCommands.forEach(([cmdId, callback, ctx], index) => {

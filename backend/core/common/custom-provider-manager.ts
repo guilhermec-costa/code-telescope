@@ -1,5 +1,16 @@
 import { CustomFinderDefinition } from "../../../shared/custom-provider";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
+import { CustomFinderProxy } from "../finders/custom-proxy.finder";
+
+export interface SerializedUiConfig {
+  fuzzyAdapterType: CustomFinderDefinition["fuzzyAdapterType"];
+  previewAdapterType: CustomFinderDefinition["previewAdapterType"];
+  dataAdapter: {
+    parseOptions: string;
+    getDisplayText: string;
+    getSelectionValue: string;
+    filterOption?: string;
+  };
+}
 
 export class CustomProviderManager {
   private static _instance: CustomProviderManager;
@@ -24,7 +35,7 @@ export class CustomProviderManager {
     return Array.from(this.providers.keys());
   }
 
-  getUiSerializedConfig(fuzzyType: string) {
+  getUiSerializedConfig(fuzzyType: string): SerializedUiConfig | null {
     const config = this.getConfig(fuzzyType);
     if (!config) return null;
 
@@ -40,20 +51,9 @@ export class CustomProviderManager {
     };
   }
 
-  getBackendSerializedConfig(fuzzyType: string): IFuzzyFinderProvider | null {
+  getBackendProxyDefinition(fuzzyType: string): CustomFinderProxy | null {
     const userConfig = this.getConfig(fuzzyType);
     if (!userConfig) return null;
-
-    return {
-      fuzzyAdapterType: userConfig.fuzzyAdapterType as any,
-      previewAdapterType: userConfig.previewAdapterType as any,
-      querySelectableOptions: () => userConfig.backend.querySelectableOptions(),
-      onSelect: (item) => userConfig.backend.onSelect(item),
-      getHtmlLoadConfig: () => userConfig.backend.getHtmlLoadConfig(),
-      getPreviewData: async (id) => {
-        const data = await userConfig.backend.getPreviewData(id);
-        return { content: data };
-      },
-    };
+    return new CustomFinderProxy(userConfig);
   }
 }

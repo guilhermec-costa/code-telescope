@@ -18,7 +18,7 @@ export class OptionListManager {
   private readonly RENDER_THRESHOLD = 200;
   private readonly RENDER_MODE_CLASSNAME = "flexbox-render";
   private readonly virtualizer: Virtualizer;
-  private debouncedRequestPreview: (value: string, prefetch: string[]) => void;
+  private debouncedRequestPreview: (value: string) => void;
 
   constructor(private readonly previewManager: PreviewManager) {
     this.listElement = document.getElementById("option-list") as HTMLUListElement;
@@ -29,8 +29,8 @@ export class OptionListManager {
       bufferSize: 10,
     });
 
-    this.debouncedRequestPreview = debounce((value: string, prefetch: string[]) => {
-      this.previewManager.requestPreview(value, prefetch);
+    this.debouncedRequestPreview = debounce((value: string) => {
+      this.previewManager.requestPreview(value);
     }, 50);
 
     this.setupScrollListener();
@@ -246,23 +246,7 @@ export class OptionListManager {
   private requestPreview(option: any): void {
     if (!this.dataAdapter) return;
     const value = this.dataAdapter.getSelectionValue(option);
-    const total = this.filteredOptions.length;
-
-    if (total <= 1) {
-      this.previewManager.requestPreview(value, []);
-      return;
-    }
-
-    const prefetchIndexes = new Set<number>();
-    for (let i = 1; i <= 3; i++) {
-      prefetchIndexes.add((this.selectedIndex + i + total) % total);
-      prefetchIndexes.add((this.selectedIndex - i + total) % total);
-    }
-
-    const prefetchOpts = Array.from(prefetchIndexes).map((idx) =>
-      this.dataAdapter.getSelectionValue(this.filteredOptions[idx]),
-    );
-    this.debouncedRequestPreview(value, prefetchOpts);
+    this.debouncedRequestPreview(value);
   }
 
   private updateItemsCount(): void {

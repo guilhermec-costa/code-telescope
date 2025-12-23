@@ -1,4 +1,4 @@
-import { CustomDataAdapterProxy, SerializedConfig } from "../adapters/data/custom.data-adapter";
+import { CustomDataAdapterProxy, SerializedUiConfig } from "../adapters/data/custom.data-adapter";
 import { registerFuzzyDataAdapter } from "../decorators/fuzzy-data-adapter.decorator";
 import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.registry";
 import { PreviewManager } from "../render/preview-manager";
@@ -6,7 +6,7 @@ import { Virtualizer } from "../render/virtualizer";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 
-declare const __USER_CUSTOM_DATA_ADAPTERS__: SerializedConfig[];
+declare const __USER_CUSTOM_DATA_ADAPTER__: SerializedUiConfig | undefined;
 
 export class DIContainer {
   previewManager!: PreviewManager;
@@ -31,9 +31,9 @@ export class DIContainer {
       console.log("[DIContainer] Initializing KeyboardHandler");
       this.keyboardHandler = new KeyboardHandler();
 
-      const customAdapters = __USER_CUSTOM_DATA_ADAPTERS__.map((adapterCfg) => new CustomDataAdapterProxy(adapterCfg));
-      for (const adapter of customAdapters) {
-        registerFuzzyDataAdapter(adapter);
+      if (__USER_CUSTOM_DATA_ADAPTER__) {
+        const customAdapter = new CustomDataAdapterProxy(__USER_CUSTOM_DATA_ADAPTER__);
+        registerFuzzyDataAdapter(customAdapter);
       }
 
       console.log("[DIContainer] All services initialized successfully!");

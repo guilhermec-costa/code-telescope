@@ -93,7 +93,6 @@ export interface PreviewRequestMessage {
   type: "previewRequest";
   data: {
     selectedId: string;
-    prefetchIds?: string[];
   };
 }
 

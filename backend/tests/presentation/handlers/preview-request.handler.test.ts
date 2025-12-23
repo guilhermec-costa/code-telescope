@@ -37,12 +37,11 @@ describe("PreviewRequestHandler", () => {
   it("request selected option data", async () => {
     const data: PreviewRequestMessage["data"] = {
       selectedId: "1",
-      prefetchIds: ["2", "3", "4"],
     };
 
     const providerMock = FuzzyFinderPanelController.instance!.provider;
     await handler.handle({ type: "previewRequest", data }, webview);
-    expect(providerMock.getPreviewData).toHaveBeenCalledTimes(1 + data.prefetchIds!.length);
+    expect(providerMock.getPreviewData).toHaveBeenCalledTimes(1);
 
     expect(WebviewController.sendMessage).toHaveBeenCalledWith(
       webview,

@@ -87,7 +87,7 @@ async function setupCustomProviders(context: vscode.ExtensionContext) {
 
       CustomProviderManager.instance.registerConfig(userConfig);
 
-      const dynamicProvider = CustomProviderManager.instance.getBackendSerializedConfig(userConfig.fuzzyAdapterType);
+      const dynamicProvider = CustomProviderManager.instance.getBackendProxyDefinition(userConfig.fuzzyAdapterType);
       if (!dynamicProvider) continue;
 
       FuzzyFinderAdapterRegistry.instance.register(dynamicProvider);

@@ -11,11 +11,7 @@ export class PreviewRequestHandler implements IWebviewMessageHandler<"previewReq
 
   async handle(msg: Extract<FromWebviewKindMessage, { type: "previewRequest" }>, wv: vscode.Webview) {
     const provider = FuzzyFinderPanelController.instance!.provider;
-    const { selectedId, prefetchIds } = msg.data;
-
-    for (const id of prefetchIds ?? []) {
-      provider.getPreviewData(id).catch(() => {});
-    }
+    const { selectedId } = msg.data;
 
     const previewData = await provider.getPreviewData(selectedId);
 
