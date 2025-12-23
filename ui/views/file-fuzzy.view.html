@@ -1,33 +1,38 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Telescope - Fuzzy Finder</title>
-    <cssvariables></cssvariables>
-    <link rel="stylesheet" href="{{style}}">
-    <script>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Telescope - Fuzzy Finder</title>
+  <cssvariables></cssvariables>
+  <link rel="stylesheet" href="{{style}}">
+  <script>
     const __SHIKI_EXTENSION_URI__ = "{{__SHIKI_EXTENSION_URI__}}";
     const __PREVIEW_MANAGER_CFG__ = __PREVIEW_MANAGER_CFG_JSON__;
-    </script>
-    <script defer src="{{script}}"></script>
-  </head>
-  <body>
-    <div id="container">
-      <div id="split">
-        <div id="left-side">
-          <div id="status-bar">Find Files</div>
-          <ul id="option-list"></ul>
-          <div id="input-container">
-            <input id="search" type="text" placeholder="Search files…" autofocus>
-            <span id="items-count">0 / 0</span>
-          </div>
-        </div>
+    const __USER_CUSTOM_DATA_ADAPTERS__ = __CUSTOM_DATA_ADAPTERS__
+    const __USER_CUSTOM_RENDER_ADAPTERS__ = __CUSTOM_RENDER_ADAPTERS__
+  </script>
+  <script defer src="{{script}}"></script>
+</head>
 
-        <div id="right-side">
-          <div id="preview"></div>
+<body>
+  <div id="container">
+    <div id="split">
+      <div id="left-side">
+        <div id="status-bar">Find Files</div>
+        <ul id="option-list"></ul>
+        <div id="input-container">
+          <input id="search" type="text" placeholder="Search files…" autofocus>
+          <span id="items-count">0 / 0</span>
         </div>
       </div>
+
+      <div id="right-side">
+        <div id="preview"></div>
+      </div>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

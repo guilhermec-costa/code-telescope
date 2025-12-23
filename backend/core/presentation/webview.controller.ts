@@ -2,8 +2,9 @@ import * as vscode from "vscode";
 import { FromWebviewKindMessage, ToWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { joinPath } from "../../utils/files";
-import { HtmlLoadConfig } from "../abstractions/fuzzy-finder.provider";
+import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { ExtensionConfigManager } from "../common/config-manager";
+import { CustomProviderManager } from "../common/custom-provider-manager";
 
 export class WebviewController {
   static async sendMessage(wv: vscode.Webview, msg: ToWebviewKindMessage) {
@@ -24,7 +25,8 @@ export class WebviewController {
     return `<style>:root { ${body} }</style>`;
   }
 
-  static async resolveWebviewHtml(wv: vscode.Webview, cfg: HtmlLoadConfig): Promise<string> {
+  static async resolveProviderWebviewHtml(wv: vscode.Webview, provider: IFuzzyFinderProvider): Promise<string> {
+    const cfg = provider.getHtmlLoadConfig();
     const diskPath = joinPath(Globals.EXTENSION_URI, "ui", "views", cfg.fileName);
     let fileContent = await vscode.workspace.fs.readFile(diskPath);
     let html = fileContent.toString();
@@ -40,6 +42,16 @@ export class WebviewController {
 
     const previewManagerCfg = ExtensionConfigManager.previewManagerCfg;
     html = html.replace("__PREVIEW_MANAGER_CFG_JSON__", JSON.stringify(previewManagerCfg));
+
+    let customDataAdaptersJson = "[]";
+    if (provider.fuzzyAdapterType.startsWith("custom.")) {
+      const customDef = CustomProviderManager.instance.getUiSerializedConfig(provider.fuzzyAdapterType);
+      if (customDef) {
+        customDataAdaptersJson = JSON.stringify([customDef.dataAdapter]);
+      }
+
+      html = html.replace("__CUSTOM_DATA_ADAPTERS__", customDataAdaptersJson);
+    }
 
     const panelCfg = ExtensionConfigManager.uiPanelCfg;
     html = html.replace(

@@ -85,11 +85,7 @@ export class FuzzyFinderPanelController {
     if (this._provider && this._provider.fuzzyAdapterType === providerType) return;
 
     this.setFuzzyProvider(provider);
-
-    this.wvPanel.webview.html = await WebviewController.resolveWebviewHtml(
-      this.webview,
-      this._provider.getHtmlLoadConfig(),
-    );
+    this.wvPanel.webview.html = await WebviewController.resolveProviderWebviewHtml(this.webview, this._provider);
 
     await this.emitResetWebviewEvent();
   }

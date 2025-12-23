@@ -30,4 +30,8 @@ export class FuzzyFinderAdapterRegistry {
   getRegisteredTypes(): string[] {
     return Array.from(this.adapters.keys());
   }
+
+  getCustomTypes(): string[] {
+    return this.getRegisteredTypes().filter((type) => type.startsWith("custom."));
+  }
 }

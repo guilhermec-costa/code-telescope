@@ -1,7 +1,11 @@
 import * as vscode from "vscode";
+import { CustomFinderDefinition } from "../shared/custom-provider";
+import { IFuzzyFinderProvider } from "./core/abstractions/fuzzy-finder.provider";
+import { CustomProviderManager } from "./core/common/custom-provider-manager";
 import { loadFuzzyProviders } from "./core/finders/loader";
 import { FuzzyFinderPanelController } from "./core/presentation/fuzzy-panel.controller";
 import { loadWebviewHandlers } from "./core/presentation/handlers/loader";
+import { FuzzyFinderAdapterRegistry } from "./core/registry/fuzzy-provider.registry";
 import { Globals } from "./globals";
 import { getCmdId, registerAndSubscribeCmd } from "./utils/commands";
 import { getConfigurationSection } from "./utils/configuration";
@@ -9,13 +13,14 @@ import { getConfigurationSection } from "./utils/configuration";
 /**
  * code-telescope activation entrypoint
  */
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(ctx: vscode.ExtensionContext) {
   console.log(`${Globals.EXTENSION_NAME} activated!`);
-  Globals.EXTENSION_URI = context.extensionUri;
+  Globals.EXTENSION_URI = ctx.extensionUri;
   Globals.USER_THEME = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
 
   loadFuzzyProviders();
   loadWebviewHandlers();
+  setupCustomProviders(ctx);
 
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "file"),
@@ -23,7 +28,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const instance = FuzzyFinderPanelController.createOrShow();
       await instance.startProvider("workspace.files");
     },
-    context,
+    ctx,
   );
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "branch"),
@@ -31,7 +36,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const instance = FuzzyFinderPanelController.createOrShow();
       await instance.startProvider("git.branches");
     },
-    context,
+    ctx,
   );
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "wsText"),
@@ -39,7 +44,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const instance = FuzzyFinderPanelController.createOrShow();
       await instance.startProvider("workspace.text");
     },
-    context,
+    ctx,
   );
   registerAndSubscribeCmd(
     getCmdId("fuzzy", "commits"),
@@ -47,10 +52,69 @@ export async function activate(context: vscode.ExtensionContext) {
       const instance = FuzzyFinderPanelController.createOrShow();
       await instance.startProvider("git.commits");
     },
-    context,
+    ctx,
+  );
+  registerAndSubscribeCmd(
+    getCmdId("fuzzy", "custom"),
+    async () => {
+      const customTypes = CustomProviderManager.instance.getAllTypes();
+      if (customTypes.length === 0) {
+        vscode.window.showInformationMessage("No custom finders found in .vscode/code-telescope/");
+        return;
+      }
+      const selected = await vscode.window.showQuickPick(customTypes, { placeHolder: "Select a custom provider" });
+      if (selected) {
+        const instance = FuzzyFinderPanelController.createOrShow();
+        await instance.startProvider(selected as any);
+      }
+    },
+    ctx,
   );
 }
 
 export function deactivate() {
   console.log("code-telescope deactivated");
+}
+
+async function setupCustomProviders(context: vscode.ExtensionContext) {
+  const customProviderFiles = await vscode.workspace.findFiles(".vscode/code-telescope/*.finder.cjs");
+
+  for (const fileUri of customProviderFiles) {
+    try {
+      const filePath = fileUri.fsPath;
+      delete require.cache[require.resolve(filePath)];
+      const module = await import(filePath);
+      const userConfig: CustomFinderDefinition = module.default || module;
+
+      CustomProviderManager.instance.registerDefinition(userConfig);
+
+      const dynamicProvider = createBackendProxy(userConfig);
+      FuzzyFinderAdapterRegistry.instance.register(dynamicProvider);
+
+      registerAndSubscribeCmd(
+        getCmdId("fuzzy", userConfig.fuzzy),
+        async () => {
+          const instance = FuzzyFinderPanelController.createOrShow();
+          await instance.startProvider(userConfig.fuzzy as any);
+        },
+        context,
+      );
+    } catch (err) {
+      console.error(`Failed to load custom finder: ${fileUri.fsPath}`, err);
+    }
+  }
+}
+
+function createBackendProxy(userConfig: CustomFinderDefinition): IFuzzyFinderProvider {
+  return {
+    fuzzyAdapterType: userConfig.fuzzy as any,
+    previewAdapterType: userConfig.previewRenderer as any,
+    querySelectableOptions: () => userConfig.backend.querySelectableOptions(),
+    onSelect: (item) => userConfig.backend.onSelect(item),
+    getHtmlLoadConfig: () => userConfig.backend.getHtmlLoadConfig(),
+    getPreviewData: async (id) => {
+      const data = await userConfig.backend.getPreviewData(id);
+      return { content: data };
+    },
+  };
 }

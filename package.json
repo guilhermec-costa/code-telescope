@@ -35,6 +35,10 @@
             {
                 "command": "code-telescope.fuzzy.commits",
                 "title": "Code Telescope: Commit Finder"
+            },
+            {
+                "command": "code-telescope.fuzzy.custom",
+                "title": "Code Telescope: Pick Custom Finder"
             }
         ],
         "configuration": {
