@@ -1,6 +1,6 @@
 export interface CustomFinderDefinition {
-  fuzzy: string;
-  previewRenderer: string;
+  fuzzyAdapterType: string;
+  previewAdapterType: string;
 
   backend: {
     querySelectableOptions: () => Promise<any>;

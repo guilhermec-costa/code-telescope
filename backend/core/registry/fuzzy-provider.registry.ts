@@ -1,4 +1,5 @@
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
+import { Globals } from "../../globals";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { getRegisteredFuzzyFinderAdapters } from "../decorators/fuzzy-finder-provider.decorator";
 
@@ -32,6 +33,6 @@ export class FuzzyFinderAdapterRegistry {
   }
 
   getCustomTypes(): string[] {
-    return this.getRegisteredTypes().filter((type) => type.startsWith("custom."));
+    return this.getRegisteredTypes().filter((type) => type.startsWith(Globals.CUSTOM_PROVIDER_PREFIX));
   }
 }

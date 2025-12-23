@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 export namespace Globals {
   export const EXTENSION_NAME = "code-telescope";
   export const EXTENSION_CONFIGURATION_PREFIX = "codeTelescope";
+  export const CUSTOM_PROVIDER_PREFIX = "custom.";
   export let EXTENSION_URI: vscode.Uri;
 
   /** Current user theme */

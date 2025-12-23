@@ -8,7 +8,7 @@
     "module": "ESNext",
     "lib": [
       "DOM",
-      "ES2020"
+      "ES2022"
     ],
     "baseUrl": ".",
     "paths": {

@@ -44,14 +44,15 @@ export class WebviewController {
     html = html.replace("__PREVIEW_MANAGER_CFG_JSON__", JSON.stringify(previewManagerCfg));
 
     let customDataAdaptersJson = "[]";
-    if (provider.fuzzyAdapterType.startsWith("custom.")) {
+    let customRenderAdaptersJson = "[]";
+    if (provider.fuzzyAdapterType.startsWith(Globals.CUSTOM_PROVIDER_PREFIX)) {
       const customDef = CustomProviderManager.instance.getUiSerializedConfig(provider.fuzzyAdapterType);
       if (customDef) {
-        customDataAdaptersJson = JSON.stringify([customDef.dataAdapter]);
+        customDataAdaptersJson = JSON.stringify([customDef]);
       }
-
-      html = html.replace("__CUSTOM_DATA_ADAPTERS__", customDataAdaptersJson);
     }
+    html = html.replace("__CUSTOM_DATA_ADAPTERS__", customDataAdaptersJson);
+    html = html.replace("__CUSTOM_RENDER_ADAPTERS__", customRenderAdaptersJson);
 
     const panelCfg = ExtensionConfigManager.uiPanelCfg;
     html = html.replace(

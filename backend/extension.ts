@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { CustomFinderDefinition } from "../shared/custom-provider";
-import { IFuzzyFinderProvider } from "./core/abstractions/fuzzy-finder.provider";
 import { CustomProviderManager } from "./core/common/custom-provider-manager";
 import { loadFuzzyProviders } from "./core/finders/loader";
 import { FuzzyFinderPanelController } from "./core/presentation/fuzzy-panel.controller";
@@ -86,16 +85,18 @@ async function setupCustomProviders(context: vscode.ExtensionContext) {
       const module = await import(filePath);
       const userConfig: CustomFinderDefinition = module.default || module;
 
-      CustomProviderManager.instance.registerDefinition(userConfig);
+      CustomProviderManager.instance.registerConfig(userConfig);
 
-      const dynamicProvider = createBackendProxy(userConfig);
+      const dynamicProvider = CustomProviderManager.instance.getBackendSerializedConfig(userConfig.fuzzyAdapterType);
+      if (!dynamicProvider) continue;
+
       FuzzyFinderAdapterRegistry.instance.register(dynamicProvider);
 
       registerAndSubscribeCmd(
-        getCmdId("fuzzy", userConfig.fuzzy),
+        getCmdId("fuzzy", userConfig.fuzzyAdapterType),
         async () => {
           const instance = FuzzyFinderPanelController.createOrShow();
-          await instance.startProvider(userConfig.fuzzy as any);
+          await instance.startProvider(userConfig.fuzzyAdapterType as any);
         },
         context,
       );
@@ -103,18 +104,4 @@ async function setupCustomProviders(context: vscode.ExtensionContext) {
       console.error(`Failed to load custom finder: ${fileUri.fsPath}`, err);
     }
   }
-}
-
-function createBackendProxy(userConfig: CustomFinderDefinition): IFuzzyFinderProvider {
-  return {
-    fuzzyAdapterType: userConfig.fuzzy as any,
-    previewAdapterType: userConfig.previewRenderer as any,
-    querySelectableOptions: () => userConfig.backend.querySelectableOptions(),
-    onSelect: (item) => userConfig.backend.onSelect(item),
-    getHtmlLoadConfig: () => userConfig.backend.getHtmlLoadConfig(),
-    getPreviewData: async (id) => {
-      const data = await userConfig.backend.getPreviewData(id);
-      return { content: data };
-    },
-  };
 }

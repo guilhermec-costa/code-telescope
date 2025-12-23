@@ -13,11 +13,14 @@ export function FuzzyFinderDataAdapter(config: FuzzyDataAdapterConfig) {
     const castedPrototype = constructor.prototype as IFuzzyFinderDataAdapter;
     castedPrototype.fuzzyAdapterType = config.fuzzy;
     castedPrototype.previewAdapterType = config.preview;
-
-    GlobalFuzzyDataAdapterRegistry.push(new constructor());
+    registerFuzzyDataAdapter(new constructor());
   };
 }
 
 export function getRegisteredFuzzyDataAdapters() {
   return GlobalFuzzyDataAdapterRegistry;
+}
+
+export function registerFuzzyDataAdapter(adapter: IFuzzyFinderDataAdapter) {
+  GlobalFuzzyDataAdapterRegistry.push(adapter);
 }
