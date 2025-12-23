@@ -1,5 +1,5 @@
 import { CustomFinderDefinition } from "../../../shared/custom-provider";
-import { CustomFinderProxy } from "../finders/custom-proxy.finder";
+import { CustomFinderBackendProxy } from "../finders/custom-proxy.finder";
 
 export interface SerializedUiConfig {
   fuzzyAdapterType: CustomFinderDefinition["fuzzyAdapterType"];
@@ -51,12 +51,14 @@ export class CustomProviderManager {
     };
   }
 
-  getBackendProxyDefinition(fuzzyType: string): { ok: true; value: CustomFinderProxy } | { ok: false; error: string } {
+  getBackendProxyDefinition(
+    fuzzyType: string,
+  ): { ok: true; value: CustomFinderBackendProxy } | { ok: false; error: string } {
     const userConfig = this.getConfig(fuzzyType);
     if (!userConfig) {
       return { ok: false, error: "Custom finder configuration not found" };
     }
 
-    return CustomFinderProxy.create(userConfig);
+    return CustomFinderBackendProxy.create(userConfig);
   }
 }

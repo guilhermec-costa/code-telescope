@@ -3,7 +3,7 @@ import { CustomFinderDefinition } from "../../../shared/custom-provider";
 import { PreviewData } from "../../../shared/extension-webview-protocol";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 
-export class CustomFinderProxy implements IFuzzyFinderProvider {
+export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
 
@@ -26,7 +26,9 @@ export class CustomFinderProxy implements IFuzzyFinderProvider {
     };
   }
 
-  static create(def: CustomFinderDefinition): { ok: true; value: CustomFinderProxy } | { ok: false; error: string } {
+  static create(
+    def: CustomFinderDefinition,
+  ): { ok: true; value: CustomFinderBackendProxy } | { ok: false; error: string } {
     if (!def || typeof def !== "object") {
       return { ok: false, error: "Invalid custom finder definition" };
     }
@@ -54,7 +56,7 @@ export class CustomFinderProxy implements IFuzzyFinderProvider {
     }
 
     try {
-      return { ok: true, value: new CustomFinderProxy(def) };
+      return { ok: true, value: new CustomFinderBackendProxy(def) };
     } catch (err) {
       return { ok: false, error: "Failed to initialize custom finder proxy" };
     }
