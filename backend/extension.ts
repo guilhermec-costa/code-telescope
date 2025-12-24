@@ -75,13 +75,12 @@ export function deactivate() {
   console.log("code-telescope deactivated");
 }
 
-async function setupCustomProviders(context: vscode.ExtensionContext) {
+export async function setupCustomProviders(context: vscode.ExtensionContext) {
   const customProviderFiles = await vscode.workspace.findFiles(".vscode/code-telescope/*.finder.cjs");
 
   for (const fileUri of customProviderFiles) {
     try {
       const filePath = fileUri.fsPath;
-      delete require.cache[require.resolve(filePath)];
       const module = await import(filePath);
       const userConfig: CustomFinderDefinition = module.default || module;
 

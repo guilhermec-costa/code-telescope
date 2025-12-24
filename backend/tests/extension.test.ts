@@ -1,10 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import * as vscode from "vscode";
+import { CustomProviderManager } from "../core/common/custom-provider-manager";
 import { loadFuzzyProviders } from "../core/finders/loader";
 import { FuzzyFinderPanelController } from "../core/presentation/fuzzy-panel.controller";
 import { loadWebviewHandlers } from "../core/presentation/handlers/loader";
-import { activate, deactivate } from "../extension";
+import { FuzzyFinderAdapterRegistry } from "../core/registry/fuzzy-provider.registry";
+import { activate, deactivate, setupCustomProviders } from "../extension";
 import { Globals } from "../globals";
-import { registerAndSubscribeCmd } from "../utils/commands";
+import { getCmdId, registerAndSubscribeCmd } from "../utils/commands";
 
 vi.mock("@backend/core/finders/loader", () => ({
   loadFuzzyProviders: vi.fn(),
@@ -31,6 +34,15 @@ vi.mock("@backend/core/presentation/fuzzy-panel.controller", () => ({
   },
 }));
 
+vi.mock("@backend/core/common/custom-provider-manager", () => ({
+  CustomProviderManager: {
+    instance: {
+      getBackendProxyDefinition: vi.fn(),
+      registerConfig: vi.fn(),
+    },
+  },
+}));
+
 vi.mock("@backend/globals", () => ({
   Globals: {
     EXTENSION_NAME: "CodeTelescope",
@@ -40,12 +52,38 @@ vi.mock("@backend/globals", () => ({
   },
 }));
 
+export function mockCustomProvider(path: string, def: any) {
+  vi.doMock(path, () => def);
+}
+
 describe("Extension entrypoint", () => {
+  const customModules = [
+    {
+      fsPath: "/fake/providers/git-branch.js",
+      module: {
+        default: {
+          fuzzyAdapterType: "git.branch",
+          backend: { querySelectableOptions: vi.fn() },
+        },
+      },
+    },
+    {
+      fsPath: "/fake/providers/ws-text.js",
+      module: {
+        default: {
+          fuzzyAdapterType: "ws.text",
+          backend: { querySelectableOptions: vi.fn() },
+        },
+      },
+    },
+  ];
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("should activate the extension correctly", async () => {
+    vi.mocked(vscode.workspace.findFiles).mockResolvedValueOnce([]);
     const context = { extensionUri: "uri" } as any;
 
     await activate(context);
@@ -73,6 +111,43 @@ describe("Extension entrypoint", () => {
 
     const providerInstance = FuzzyFinderPanelController.createOrShow();
     expect(providerInstance.startProvider).not.toHaveBeenCalled();
+  });
+
+  it("should load and register custom providers", async () => {
+    const mockedContext = { extensionUri: "uri" } as any;
+    vi.mocked(vscode.workspace.findFiles).mockResolvedValue([
+      { fsPath: customModules[0].fsPath } as any,
+      { fsPath: customModules[1].fsPath } as any,
+    ]);
+
+    vi.doMock("/fake/providers/git-branch.js", () => customModules[0].module);
+    vi.doMock("/fake/providers/ws-text.js", () => customModules[1].module);
+
+    const proxy2 = { fn: () => {} } as any;
+    vi.mocked(CustomProviderManager.instance.getBackendProxyDefinition)
+      .mockReturnValueOnce({ ok: false, error: "failed to create provider" })
+      .mockReturnValueOnce({ ok: true, value: proxy2 });
+
+    const adapterRegistrySpy = vi.spyOn(FuzzyFinderAdapterRegistry.instance, "register");
+
+    await setupCustomProviders(mockedContext);
+
+    const manager = CustomProviderManager.instance;
+
+    expect(manager.registerConfig).toHaveBeenCalledWith(customModules[0].module.default);
+    expect(manager.registerConfig).toHaveBeenCalledWith(customModules[1].module.default);
+    expect(manager.getBackendProxyDefinition).toHaveBeenCalledWith(customModules[0].module.default.fuzzyAdapterType);
+    expect(manager.getBackendProxyDefinition).toHaveBeenCalledWith(customModules[1].module.default.fuzzyAdapterType);
+    expect(registerAndSubscribeCmd).toHaveBeenNthCalledWith(
+      1,
+      getCmdId("fuzzy", customModules[1].module.default.fuzzyAdapterType),
+      expect.any(Function),
+      mockedContext,
+    );
+
+    expect(adapterRegistrySpy).toHaveBeenCalledTimes(1);
+    expect(FuzzyFinderAdapterRegistry.instance.register).toHaveBeenCalledWith(proxy2);
+    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(expect.stringContaining("failed to create provider"));
   });
 
   it("should log deactivate message", () => {

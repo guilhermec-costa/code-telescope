@@ -26,6 +26,7 @@ vi.mock("vscode", () => ({
     showTextDocument: vi.fn().mockResolvedValue({
       revealRange: vi.fn(),
     }),
+    showErrorMessage: vi.fn(),
   },
   env: {
     appRoot: "/app",
