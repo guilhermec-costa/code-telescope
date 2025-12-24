@@ -26,3 +26,14 @@ export interface PreviewManagerConfig {
   verticalScrollFraction: "1/2" | "1/3" | "1/4";
   horizontalScrollFraction: "1/2" | "1/3" | "1/4";
 }
+
+export interface KeybindingConfig {
+  moveDown: string;
+  moveUp: string;
+  confirm: string;
+  close: string;
+  scrollUp: string;
+  scrollDown: string;
+  scrollLeft: string;
+  scrollRight: string;
+}

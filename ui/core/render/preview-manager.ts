@@ -9,7 +9,7 @@ export class PreviewManager {
   private previewElement: HTMLElement;
   private userTheme: string;
   private adapter: IPreviewRendererAdapter | null = null;
-  private cfg: PreviewManagerConfig = __PREVIEW_MANAGER_CFG__;
+  private cfg: PreviewManagerConfig = __PREVIEW_CFG__;
 
   private lastPreviewedData: PreviewData = {
     content: "",

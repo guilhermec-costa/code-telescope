@@ -6,7 +6,7 @@ import { Virtualizer } from "../render/virtualizer";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 
-declare const __USER_CUSTOM_DATA_ADAPTER__: SerializedUiConfig | undefined;
+declare const __CUSTOM_DATA_ADAPTER__: SerializedUiConfig | undefined;
 
 export class DIContainer {
   previewManager!: PreviewManager;
@@ -31,8 +31,8 @@ export class DIContainer {
       console.log("[DIContainer] Initializing KeyboardHandler");
       this.keyboardHandler = new KeyboardHandler();
 
-      if (__USER_CUSTOM_DATA_ADAPTER__) {
-        const customAdapter = new CustomDataAdapterProxy(__USER_CUSTOM_DATA_ADAPTER__);
+      if (__CUSTOM_DATA_ADAPTER__) {
+        const customAdapter = new CustomDataAdapterProxy(__CUSTOM_DATA_ADAPTER__);
         registerFuzzyDataAdapter(customAdapter);
       }
 

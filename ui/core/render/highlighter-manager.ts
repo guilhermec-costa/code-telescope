@@ -10,7 +10,7 @@ export class ShikiManager {
 
     console.log("[ShikiManager] Initializing Shiki...");
 
-    const shikiBundle = await import(`${__SHIKI_EXTENSION_URI__}/shiki-bundle.js`);
+    const shikiBundle = await import(`${__SHIKI_URI__}/shiki-bundle.js`);
 
     const { createHighlighterCore, createOnigurumaEngine, wasm } = shikiBundle;
 
@@ -26,7 +26,7 @@ export class ShikiManager {
   static async loadThemeFromBundle(theme: string) {
     if (this.loadedThemes.has(theme)) return;
 
-    const { themes } = await import(`${__SHIKI_EXTENSION_URI__}/shiki-bundle.js`);
+    const { themes } = await import(`${__SHIKI_URI__}/shiki-bundle.js`);
     const bundledTheme = themes?.bundledThemes?.[theme];
     if (!bundledTheme) throw new Error(`[ShikiManager] Theme not found: ${theme}`);
 
@@ -38,7 +38,7 @@ export class ShikiManager {
   static async loadLanguageFromBundle(lang: string) {
     if (this.loadedLanguages.has(lang)) return;
 
-    const { langs } = await import(`${__SHIKI_EXTENSION_URI__}/shiki-bundle.js`);
+    const { langs } = await import(`${__SHIKI_URI__}/shiki-bundle.js`);
     const bundledLang = langs?.bundledLanguages?.[lang];
     if (!lang) throw new Error(`[ShikiManager] Language not found: ${lang}`);
 

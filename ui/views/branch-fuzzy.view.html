@@ -1,34 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Telescope - Branch fuzzy</title>
-    <cssvariables></cssvariables>
-    <link rel="stylesheet" href="{{style}}">
-    <script>
-    const __SHIKI_EXTENSION_URI__ = "{{__SHIKI_EXTENSION_URI__}}";
-    const __PREVIEW_MANAGER_CFG__ = __PREVIEW_MANAGER_CFG_JSON__; 
-    </script>
-    <script defer src="{{script}}"></script>
-  </head>
 
-  <body>
-    <div id="container">
-      <div id="split">
-        <div id="left-side">
-          <div id="status-bar">Find Branches</div>
-          <ul id="option-list"></ul>
-          <div id="input-container">
-            <input id="search" type="text" placeholder="Search branches…" autofocus>
-            <span id="items-count">0 / 0</span>
-          </div>
-        </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Telescope - Branch fuzzy</title>
+  <cssvariables></cssvariables>
+  <link rel="stylesheet" href="{{style}}">
+  <script>
+    const __SHIKI_URI__ = "{{__SHIKI_URI__}}";
+    const __PREVIEW_CFG__ = JSON.parse('{{__PREVIEW_CFG__}}');
+    const __KEYBINDINGS_CFG__ = JSON.parse('{{__KEYBINDINGS_CFG__}}');
+    const __CUSTOM_DATA_ADAPTER__ = JSON.parse('{{__CUSTOM_DATA_ADAPTER__}}');
+    const __CUSTOM_RENDER_ADAPTERS__ = JSON.parse('{{__CUSTOM_RENDER_ADAPTERS__}}');
+  </script>
+  <script defer src="{{script}}"></script>
+</head>
 
-        <div id="right-side">
-          <div id="preview"></div>
+<body>
+  <div id="container">
+    <div id="split">
+      <div id="left-side">
+        <div id="status-bar">Find Branches</div>
+        <ul id="option-list"></ul>
+        <div id="input-container">
+          <input id="search" type="text" placeholder="Search branches…" autofocus>
+          <span id="items-count">0 / 0</span>
         </div>
       </div>
+
+      <div id="right-side">
+        <div id="preview"></div>
+      </div>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>

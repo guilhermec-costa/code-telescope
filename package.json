@@ -169,6 +169,46 @@
                     "type": "number",
                     "default": 90,
                     "description": "Width in percentage of the panel container"
+                },
+                "codeTelescope.keybindings": {
+                    "type": "object",
+                    "description": "Custom keybindings for the Telescope panel",
+                    "default": {
+                        "moveDown": "ctrl+j",
+                        "moveUp": "ctrl+k",
+                        "confirm": "enter",
+                        "close": "escape",
+                        "scrollUp": "ctrl+u",
+                        "scrollDown": "ctrl+d",
+                        "scrollLeft": "ctrl+h",
+                        "scrollRight": "ctrl+l"
+                    },
+                    "properties": {
+                        "moveDown": {
+                            "type": "string"
+                        },
+                        "moveUp": {
+                            "type": "string"
+                        },
+                        "confirm": {
+                            "type": "string"
+                        },
+                        "close": {
+                            "type": "string"
+                        },
+                        "scrollUp": {
+                            "type": "string"
+                        },
+                        "scrollDown": {
+                            "type": "string"
+                        },
+                        "scrollLeft": {
+                            "type": "string"
+                        },
+                        "scrollRight": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         }
