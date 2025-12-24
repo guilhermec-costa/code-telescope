@@ -191,6 +191,7 @@ body {
   background-color: var(--list-selected);
   color: var(--list-selected-fg);
   border-left: 2px solid var(--focus-border);
+  border-radius: 3px;
   padding-left: 8px;
 }
 
