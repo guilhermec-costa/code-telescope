@@ -39,14 +39,13 @@ body {
 #container {
   width: var(--panel-container-width);
   max-width: 1300px;
-  height: 600px;
-  background: var(--bg);
-  border: 1px solid var(--border-color);
+  height: 90%;
+  background: transparent;
+  border: none;
   border-radius: 4px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  box-shadow: none;
 }
 
 #split {
@@ -56,14 +55,21 @@ body {
   height: 100%;
   min-width: 0;
   min-height: 0;
+  gap: 15px;
 }
 
 #left-side {
+  background: var(--bg);
   width: var(--left-pane-width);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   min-width: 250px;
+  padding: 8px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  position: relative;
+  height: 93%
 }
 
 #status-bar {
@@ -83,20 +89,27 @@ body {
 }
 
 #input-container {
-  position: relative;
-  width: 100%;
+  position: absolute;
+  top: 102%;
+  width: calc(100% - 7.5px);
   flex-shrink: 0;
+  background: var(--input-bg);
+  border-top: 1px solid var(--divider-color);
+  border-radius: 5px;
 }
 
 #search {
   width: 100%;
-  padding: 12px 15px;
+  padding: 10px 56px 10px 10px;
+  background: transparent;
   color: var(--input-fg);
-  background: var(--input-bg);
   border: none;
   outline: none;
   font-family: var(--font-family);
-  box-shadow: inset 0 -1px 0 var(--divider-color);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+  box-shadow: none;
 }
 
 #search:focus {
@@ -105,7 +118,7 @@ body {
 
 #search::placeholder {
   color: var(--muted-fg);
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 #items-count {
@@ -153,7 +166,7 @@ body {
 }
 
 .option-item {
-  padding: 4px 10px;
+  padding: 2px 12px;
   cursor: pointer;
   font-family: var(--font-family), "Fira Code", monospace;
   font-size: 15px;
@@ -167,6 +180,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   flex-shrink: 0;
+  border-left: 3px solid transparent;
 }
 
 .option-item:hover {
@@ -184,6 +198,12 @@ body {
   padding-left: 10px;
 }
 
+.option-item.selected::before {
+  content: "❯";
+  margin-right: 8px;
+  color: var(--highlight-bg);
+}
+
 .highlight {
   background-color: var(--highlight-bg);
   color: var(--fg);
@@ -193,18 +213,45 @@ body {
 }
 
 #right-side {
+  background: var(--bg);
   width: var(--right-pane-width);
   display: flex;
   flex-direction: column;
   background-color: var(--bg);
-  overflow: hidden;
+  overflow: visible;
   min-width: 0;
+  border: 1px solid var(--border-color);
   border-left: 1px solid var(--divider-color);
+  border-radius: 5px;
+  position: relative;
+  height: 100%;
+}
+
+#preview-label,
+#results-label {
+  position: absolute;
+  font-family: var(--font-family), "Fira Code", Consolas, monospace;
+  top: -12px;
+  left: 50%;
+  width: 14%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  background: var(--bg);
+  text-align: center;
+  letter-spacing: 0.5px;
+  color: var(--fg);
+  font-size: 15px;
+  font-weight: 400;
+  border-radius: 4px 4px 0 0;
+  user-select: none;
+  pointer-events: none;
+  z-index: 20;
 }
 
 #preview {
   width: 100%;
   height: 100%;
+  margin-top: 8px;
   background: var(--bg);
   color: var(--fg);
   padding: 10px 15px;
