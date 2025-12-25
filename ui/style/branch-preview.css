@@ -1,25 +1,89 @@
-.branch-preview-search {
+#preview-search_container {
+  position: sticky;
+  top: -10px;
+  background-color: var(--vscode-editor-background);
+  z-index: 10;
+  border: 1px solid var(--border-color);
   padding: 4px;
 }
 
-.branch-preview-search::before {
+#preview-search_container::before {
   content: "❯ ";
   position: absolute;
   font-size: 12px;
   opacity: 0.6;
   pointer-events: none;
+  margin-top: 3px;
 }
 
-.branch-preview-search input {
+
+#preview-search_container input {
   border: none;
   outline: none;
   font-family: var(--font-family);
   font-size: 13px;
   font-weight: 400;
   letter-spacing: 0;
-}
-.branch-preview-search input::placeholder {
-  color: var(--muted-fg);
+  width: 100%;
+  font-family: var(--vscode-editor-font-family);
+  box-sizing: border-box;
+  background: transparent;
   padding-left: 15px;
+  color: var(--fg);
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+#preview-search_container input::placeholder {
+  color: var(--muted-fg);
+  padding-left: 7px;
+  opacity: 0.5;
+}
+
+#preview-list_container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.commit-item {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 10px;
+  gap: 2px;
+  border-bottom: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2));
+}
+
+.commit-item:last-child {
+  border-bottom: none;
+}
+
+.commit-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.commit-hash {
+  font-family: var(--vscode-editor-font-family), 'SF Mono', Monaco, monospace;
+  color: var(--vscode-descriptionForeground);
+  font-size: 11px;
+  min-width: fit-content;
+}
+
+.commit-message {
+  font-size: 13px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.commit-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
   opacity: 0.5;
 }

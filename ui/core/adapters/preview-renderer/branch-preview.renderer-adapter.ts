@@ -15,35 +15,18 @@ export class BranchPreviewRendererAdapter implements IPreviewRendererAdapter {
     const allCommits = data.content;
 
     const searchContainer = document.createElement("div");
-    searchContainer.style.position = "sticky";
-    searchContainer.style.top = "-10px";
-    searchContainer.style.backgroundColor = "var(--vscode-editor-background)";
-    searchContainer.style.zIndex = "10";
-    searchContainer.style.border = "1px solid var(--border-color)";
-    searchContainer.classList.add("branch-preview-search");
+    searchContainer.id = "preview-search_container";
 
     const searchInput = document.createElement("input");
     searchInput.type = "text";
     searchInput.placeholder = "hash/message";
-    searchInput.style.width = "100%";
-    searchInput.style.fontFamily = "var(--vscode-editor-font-family)";
-    searchInput.style.padding = "6px 8px";
-    searchInput.style.boxSizing = "border-box";
-    searchInput.style.background = "transparent";
-    searchInput.style.boxShadow = "inset 0 -1px 0 var(--vscode-panel-border)";
-    searchInput.style.padding = "4px 0";
-    searchInput.style.fontSize = "12px";
-    searchInput.style.opacity = "0.9";
+    searchInput.id = "preview-branch_input";
 
     searchContainer.appendChild(searchInput);
     previewElement.appendChild(searchContainer);
 
     const listContainer = document.createElement("div");
-    listContainer.style.display = "flex";
-    listContainer.style.flexDirection = "column";
-    listContainer.style.gap = "0px";
-    listContainer.style.overflowY = "auto";
-    listContainer.style.flex = "1";
+    listContainer.id = "preview-list_container";
 
     previewElement.appendChild(listContainer);
 
@@ -58,44 +41,25 @@ export class BranchPreviewRendererAdapter implements IPreviewRendererAdapter {
 
       commitsToRender.forEach((commit, index) => {
         const item = document.createElement("div");
-
-        const isLast = index === commitsToRender.length - 1;
-        item.style.borderBottom = isLast ? "none" : "1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2))";
-        item.style.display = "flex";
-        item.style.flexDirection = "column";
-        item.style.padding = "6px 10px";
-        item.style.gap = "2px";
+        item.className = "commit-item";
 
         const headerRow = document.createElement("div");
-        headerRow.style.display = "flex";
-        headerRow.style.alignItems = "baseline";
-        headerRow.style.gap = "8px";
+        headerRow.className = "commit-header";
 
         const hashSpan = document.createElement("span");
         hashSpan.textContent = commit.hash.substring(0, 7);
-        hashSpan.style.fontFamily = "var(--vscode-editor-font-family), 'SF Mono', Monaco, monospace";
-        hashSpan.style.color = "var(--vscode-descriptionForeground)";
-        hashSpan.style.fontSize = "11px";
-        hashSpan.style.minWidth = "fit-content";
+        hashSpan.className = "commit-hash";
 
         const msgSpan = document.createElement("span");
         msgSpan.textContent = commit.message;
-        msgSpan.style.whiteSpace = "nowrap";
-        msgSpan.style.overflow = "hidden";
-        msgSpan.style.textOverflow = "ellipsis";
         msgSpan.title = commit.message;
-        msgSpan.style.fontWeight = "400";
-        msgSpan.style.fontSize = "13px";
+        msgSpan.className = "commit-message";
 
         headerRow.appendChild(hashSpan);
         headerRow.appendChild(msgSpan);
 
         const metaRow = document.createElement("div");
-        metaRow.style.opacity = "0.7";
-        metaRow.style.display = "flex";
-        metaRow.style.justifyContent = "space-between";
-        metaRow.style.fontSize = "11px";
-        metaRow.style.opacity = "0.5";
+        metaRow.className = "commit-meta";
 
         const authorText = document.createElement("span");
         authorText.innerHTML = `${toInnerHTML(commit.author)}`;
