@@ -2,7 +2,7 @@ import type { HighlighterCore } from "shiki/core";
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
 import { getRegisteredPreviewRendererAdapters } from "../decorators/preview-renderer-adapter.decorator";
-import { ShikiManager } from "../render/highlighter-manager";
+import { HighlighterManager } from "../render/highlighter-manager";
 
 export type SyntaxHighlighter = HighlighterCore | null;
 
@@ -47,7 +47,7 @@ export class PreviewRendererAdapterRegistry {
     console.log("[PreviewAdapterRegistry] Loading syntax highlighter in background...");
 
     try {
-      this.syntaxHighlighter = await ShikiManager.initHighlighterCore();
+      this.syntaxHighlighter = await HighlighterManager.initHighlighterCore();
       for (const adapter of this.adapters.values()) {
         if ("setHighlighter" in adapter && typeof adapter.setHighlighter === "function") {
           adapter.setHighlighter(this.syntaxHighlighter);

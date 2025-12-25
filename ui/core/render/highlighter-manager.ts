@@ -1,6 +1,6 @@
 import type { HighlighterCore } from "shiki/core";
 
-export class ShikiManager {
+export class HighlighterManager {
   private static highlighter: HighlighterCore | null = null;
   private static loadedThemes = new Set<string>();
   private static loadedLanguages = new Set<string>();

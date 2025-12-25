@@ -1,7 +1,7 @@
 import { OptionListMessage, ToWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { debounce } from "../../utils/debounce";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
-import { ShikiManager } from "../render/highlighter-manager";
+import { HighlighterManager } from "../render/highlighter-manager";
 import { PreviewManager } from "../render/preview-manager";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
@@ -70,8 +70,8 @@ export class WebviewController {
       }
 
       case "shikiInit": {
-        const langsPromises = msg.data.languages.map((language) => ShikiManager.loadLanguageFromBundle(language));
-        await Promise.all([...langsPromises, ShikiManager.loadThemeFromBundle(msg.data.theme)]);
+        const langsPromises = msg.data.languages.map((language) => HighlighterManager.loadLanguageFromBundle(language));
+        await Promise.all([...langsPromises, HighlighterManager.loadThemeFromBundle(msg.data.theme)]);
 
         this.previewManager.setUserTheme(msg.data.theme);
         WebviewToExtensionMessenger.instance.onShikiInit();
@@ -80,7 +80,7 @@ export class WebviewController {
 
       case "themeUpdate": {
         console.log("Theme updated on webview");
-        await ShikiManager.loadThemeFromBundle(msg.data.theme);
+        await HighlighterManager.loadThemeFromBundle(msg.data.theme);
         await this.previewManager.rerenderWithTheme(msg.data.theme);
         break;
       }

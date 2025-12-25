@@ -3,6 +3,7 @@ import { vi } from "vitest";
 vi.mock("vscode", () => ({
   Uri: {
     file: vi.fn((path: string) => path),
+    joinPath: vi.fn((uri, ...parts) => ({ fsPath: parts.join("/") })),
   },
   Position: vi.fn(
     class {
@@ -39,7 +40,11 @@ vi.mock("vscode", () => ({
     findFiles: vi.fn(),
     fs: {
       stat: vi.fn(),
+      readFile: vi.fn(),
     },
+    getConfiguration: vi.fn().mockReturnValue({
+      get: vi.fn(),
+    }),
   },
   ExtensionContext: class {},
 }));
