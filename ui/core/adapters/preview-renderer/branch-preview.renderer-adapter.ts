@@ -15,32 +15,25 @@ export class BranchPreviewRendererAdapter implements IPreviewRendererAdapter {
     const allCommits = data.content;
 
     const searchContainer = document.createElement("div");
-    searchContainer.style.padding = "10px 10px";
     searchContainer.style.position = "sticky";
     searchContainer.style.top = "-10px";
     searchContainer.style.backgroundColor = "var(--vscode-editor-background)";
     searchContainer.style.zIndex = "10";
-    searchContainer.style.borderBottom = "1px solid var(--vscode-panel-border)";
+    searchContainer.style.border = "1px solid var(--border-color)";
+    searchContainer.classList.add("branch-preview-search");
 
     const searchInput = document.createElement("input");
     searchInput.type = "text";
-    searchInput.placeholder = "Filtrar por hash ou mensagem...";
+    searchInput.placeholder = "hash/message";
     searchInput.style.width = "100%";
     searchInput.style.fontFamily = "var(--vscode-editor-font-family)";
     searchInput.style.padding = "6px 8px";
     searchInput.style.boxSizing = "border-box";
-    searchInput.style.border = "1px solid var(--vscode-input-border, #ccc)";
-    searchInput.style.backgroundColor = "var(--vscode-input-background, #fff)";
-    searchInput.style.color = "var(--vscode-input-foreground, #000)";
-    searchInput.style.outline = "none";
-    searchInput.style.fontSize = "13px";
-
-    searchInput.addEventListener("focus", () => {
-      searchInput.style.borderColor = "var(--vscode-focusBorder, #007fd4)";
-    });
-    searchInput.addEventListener("blur", () => {
-      searchInput.style.borderColor = "var(--vscode-input-border, #ccc)";
-    });
+    searchInput.style.background = "transparent";
+    searchInput.style.boxShadow = "inset 0 -1px 0 var(--vscode-panel-border)";
+    searchInput.style.padding = "4px 0";
+    searchInput.style.fontSize = "12px";
+    searchInput.style.opacity = "0.9";
 
     searchContainer.appendChild(searchInput);
     previewElement.appendChild(searchContainer);
@@ -67,11 +60,11 @@ export class BranchPreviewRendererAdapter implements IPreviewRendererAdapter {
         const item = document.createElement("div");
 
         const isLast = index === commitsToRender.length - 1;
-        item.style.padding = "12px 10px";
         item.style.borderBottom = isLast ? "none" : "1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2))";
         item.style.display = "flex";
         item.style.flexDirection = "column";
-        item.style.gap = "4px";
+        item.style.padding = "6px 10px";
+        item.style.gap = "2px";
 
         const headerRow = document.createElement("div");
         headerRow.style.display = "flex";
@@ -81,26 +74,28 @@ export class BranchPreviewRendererAdapter implements IPreviewRendererAdapter {
         const hashSpan = document.createElement("span");
         hashSpan.textContent = commit.hash.substring(0, 7);
         hashSpan.style.fontFamily = "var(--vscode-editor-font-family), 'SF Mono', Monaco, monospace";
-        hashSpan.style.fontSize = "0.9em";
-        hashSpan.style.color = "var(--vscode-textLink-foreground, #3794ff)";
+        hashSpan.style.color = "var(--vscode-descriptionForeground)";
+        hashSpan.style.fontSize = "11px";
         hashSpan.style.minWidth = "fit-content";
 
         const msgSpan = document.createElement("span");
         msgSpan.textContent = commit.message;
-        msgSpan.style.fontWeight = "600";
         msgSpan.style.whiteSpace = "nowrap";
         msgSpan.style.overflow = "hidden";
         msgSpan.style.textOverflow = "ellipsis";
         msgSpan.title = commit.message;
+        msgSpan.style.fontWeight = "400";
+        msgSpan.style.fontSize = "13px";
 
         headerRow.appendChild(hashSpan);
         headerRow.appendChild(msgSpan);
 
         const metaRow = document.createElement("div");
-        metaRow.style.fontSize = "0.85em";
         metaRow.style.opacity = "0.7";
         metaRow.style.display = "flex";
         metaRow.style.justifyContent = "space-between";
+        metaRow.style.fontSize = "11px";
+        metaRow.style.opacity = "0.5";
 
         const authorText = document.createElement("span");
         authorText.innerHTML = `${toInnerHTML(commit.author)}`;

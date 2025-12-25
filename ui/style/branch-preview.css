@@ -1,0 +1,25 @@
+.branch-preview-search {
+  padding: 4px;
+}
+
+.branch-preview-search::before {
+  content: "❯ ";
+  position: absolute;
+  font-size: 12px;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.branch-preview-search input {
+  border: none;
+  outline: none;
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.branch-preview-search input::placeholder {
+  color: var(--muted-fg);
+  padding-left: 15px;
+  opacity: 0.5;
+}

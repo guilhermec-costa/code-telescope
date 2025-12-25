@@ -81,7 +81,6 @@ body {
   color: var(--status-bar-fg);
   background-color: var(--status-bar-bg);
   border-top: 1px solid var(--divider-color);
-  border-bottom: 1px solid var(--divider-color);
   display: flex;
   align-items: center;
   justify-content: space-between;

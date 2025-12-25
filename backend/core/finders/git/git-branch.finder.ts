@@ -30,6 +30,7 @@ export class GitBranchFuzzyFinder implements IFuzzyFinderProvider {
       fileName: "branch-fuzzy.view.html",
       placeholders: {
         "{{style}}": "ui/style/style.css",
+        "{{branch-styles}}": "ui/style/branch-preview.css",
         "{{script}}": "ui/dist/index.js",
       },
     };
