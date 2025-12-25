@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, Mock, type Mocked, vi } from "vitest";
 import { DIContainer } from "../core/common/di-container";
-import { WebviewController } from "../core/common/webview-controller";
+import { WebviewController } from "../core/common/webview.controller";
 
 vi.mock("@ui/core/common/di-container", () => {
   return {
@@ -15,7 +15,7 @@ vi.mock("@ui/core/common/di-container", () => {
   };
 });
 
-vi.mock("@ui/core/common/webview-controller", () => {
+vi.mock("@ui/core/common/webview.controller", () => {
   return {
     WebviewController: vi.fn(
       class {
