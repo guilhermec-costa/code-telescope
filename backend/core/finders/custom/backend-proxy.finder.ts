@@ -1,7 +1,7 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
-import { CustomFinderDefinition } from "../../../shared/custom-provider";
-import { PreviewData } from "../../../shared/extension-webview-protocol";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
+import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { CustomFinderDefinition } from "../../../../shared/custom-provider";
+import { PreviewData } from "../../../../shared/extension-webview-protocol";
+import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
 
 export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;

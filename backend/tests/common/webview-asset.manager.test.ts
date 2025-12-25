@@ -81,7 +81,7 @@ describe("WebviewAssetManager", () => {
     const rawHtml = "<div>{{__CUSTOM_DATA_ADAPTER__}}</div>";
 
     const mockCustomDef = { parseOptions: "() => {}" };
-    const spy = vi.spyOn(CustomProviderManager.instance, "getUiSerializedConfig").mockReturnValue(mockCustomDef as any);
+    const spy = vi.spyOn(CustomProviderManager.instance, "getUiProxyDefinition").mockReturnValue(mockCustomDef as any);
 
     vi.mocked(vscode.workspace.fs.readFile).mockResolvedValue(Buffer.from(rawHtml));
 

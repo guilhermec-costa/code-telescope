@@ -30,16 +30,26 @@ export class WebviewAssetManager {
   private static injectGlobalState(html: string, wv: vscode.Webview, provider: IFuzzyFinderProvider): string {
     const shikiUri = wv.asWebviewUri(joinPath(Globals.EXTENSION_URI, "ui", "dist", "shiki"));
 
-    const isCustom = provider.fuzzyAdapterType.startsWith(Globals.CUSTOM_PROVIDER_PREFIX);
-    const customUiDef = isCustom
-      ? CustomProviderManager.instance.getUiSerializedConfig(provider.fuzzyAdapterType)
-      : null;
+    let customUiPayload: any = null;
 
+    const isCustom = provider.fuzzyAdapterType.startsWith(Globals.CUSTOM_PROVIDER_PREFIX);
+
+    if (isCustom) {
+      const uiResult = CustomProviderManager.instance.getUiProxyDefinition(provider.fuzzyAdapterType);
+
+      if (uiResult) {
+        if (!uiResult.ok) {
+          console.error("[WebviewAssetManager] Failed to load custom UI adapter:", uiResult.error);
+        } else {
+          customUiPayload = uiResult.value.toSerializableObject();
+        }
+      }
+    }
     const state: Record<string, string> = {
       "{{__SHIKI_URI__}}": shikiUri.toString(),
       "{{__PREVIEW_CFG__}}": JSON.stringify(ExtensionConfigManager.previewManagerCfg),
       "{{__KEYBINDINGS_CFG__}}": JSON.stringify(ExtensionConfigManager.keybindings),
-      "{{__CUSTOM_DATA_ADAPTER__}}": JSON.stringify(customUiDef),
+      "{{__CUSTOM_DATA_ADAPTER__}}": JSON.stringify(customUiPayload),
       "{{__CUSTOM_RENDER_ADAPTERS__}}": JSON.stringify([]),
     };
 

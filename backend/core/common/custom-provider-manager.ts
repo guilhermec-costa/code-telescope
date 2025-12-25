@@ -1,5 +1,6 @@
 import { CustomFinderDefinition } from "../../../shared/custom-provider";
-import { CustomFinderBackendProxy } from "../finders/custom-proxy.finder";
+import { CustomFinderBackendProxy } from "../finders/custom/backend-proxy.finder";
+import { CustomFinderUiProxy } from "../finders/custom/ui-proxy.finder";
 
 export interface SerializedUiConfig {
   fuzzyAdapterType: CustomFinderDefinition["fuzzyAdapterType"];
@@ -35,20 +36,13 @@ export class CustomProviderManager {
     return Array.from(this.providers.keys());
   }
 
-  getUiSerializedConfig(fuzzyType: string): SerializedUiConfig | null {
-    const config = this.getConfig(fuzzyType);
-    if (!config) return null;
+  getUiProxyDefinition(fuzzyType: string): { ok: true; value: CustomFinderUiProxy } | { ok: false; error: string } {
+    const userConfig = this.getConfig(fuzzyType);
+    if (!userConfig) {
+      return { ok: false, error: "Custom finder configuration not found" };
+    }
 
-    return {
-      fuzzyAdapterType: config.fuzzyAdapterType,
-      previewAdapterType: config.previewAdapterType,
-      dataAdapter: {
-        parseOptions: config.ui.dataAdapter.parseOptions.toString(),
-        getDisplayText: config.ui.dataAdapter.getDisplayText.toString(),
-        getSelectionValue: config.ui.dataAdapter.getSelectionValue.toString(),
-        filterOption: config.ui.dataAdapter.filterOption?.toString(),
-      },
-    };
+    return CustomFinderUiProxy.create(userConfig);
   }
 
   getBackendProxyDefinition(
