@@ -80,14 +80,19 @@ describe("WebviewAssetManager", () => {
     mockProvider.fuzzyAdapterType = "custom.my-finder";
     const rawHtml = "<div>{{__CUSTOM_DATA_ADAPTER__}}</div>";
 
-    const mockCustomDef = { parseOptions: "() => {}" };
-    const spy = vi.spyOn(CustomProviderManager.instance, "getUiProxyDefinition").mockReturnValue(mockCustomDef as any);
+    const serializableUi = { parseOptions: "() => {}" };
+    const spy = vi.spyOn(CustomProviderManager.instance, "getUiProxyDefinition").mockReturnValue({
+      ok: true,
+      value: {
+        toSerializableObject: () => serializableUi,
+      },
+    } as any);
 
     vi.mocked(vscode.workspace.fs.readFile).mockResolvedValue(Buffer.from(rawHtml));
 
     const result = await WebviewAssetManager.getProcessedHtml(mockWebview, mockProvider);
 
-    expect(result).toContain(JSON.stringify(mockCustomDef));
+    expect(result).toContain(JSON.stringify(serializableUi));
     expect(spy).toHaveBeenCalledWith("custom.my-finder");
   });
 

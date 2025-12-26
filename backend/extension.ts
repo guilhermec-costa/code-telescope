@@ -89,14 +89,14 @@ export async function setupCustomProviders(context: vscode.ExtensionContext) {
       const dynProviderBackend = CustomProviderManager.instance.getBackendProxyDefinition(userConfig.fuzzyAdapterType);
       if (!dynProviderBackend.ok) {
         vscode.window.showErrorMessage(
-          `Failed to load custom finder "${userConfig.fuzzyAdapterType}": ${dynProviderBackend.error}`,
+          `Failed to load custom finder "${userConfig.fuzzyAdapterType}": ${dynProviderBackend.error} at (${fileUri.fsPath})`,
         );
         continue;
       }
       const dynProviderUI = CustomProviderManager.instance.getUiProxyDefinition(userConfig.fuzzyAdapterType);
       if (!dynProviderUI.ok) {
         vscode.window.showErrorMessage(
-          `Failed to load custom finder "${userConfig.fuzzyAdapterType}": ${dynProviderUI.error}`,
+          `Failed to load custom finder "${userConfig.fuzzyAdapterType}": ${dynProviderUI.error} at (${fileUri.fsPath})`,
         );
         continue;
       }

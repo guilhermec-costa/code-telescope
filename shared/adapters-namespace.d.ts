@@ -2,30 +2,24 @@
  * Fuzzy Adapters Namespace
  * Each type here connects a provider (extension) with its adapter (webview).
  */
-export type FuzzyProviderType =
-  // File & Workspace
+export type BuiltinFuzzyProviderType =
   | "workspace.files"
   | "workspace.text"
   | "workspace.recentFiles"
-
-  // Git
   | "git.branches"
   | "git.commits"
   | "git.fileHistory"
-
-  // Code Navigation
   | "code.workspaceSymbols"
   | "code.documentSymbols"
   | "code.gotoDefinition"
-
-  // Tasks & Commands
   | "tasks.all"
   | "commands.all"
   | "npm.scripts"
-
-  // Extensions
   | "extensions.all"
-  | "snippets.all"
-  | string;
+  | "snippets.all";
+
+export type CustomFuzzyProviderType = `custom.${string}`;
+
+export type FuzzyProviderType = BuiltinFuzzyProviderType | CustomFuzzyProviderType;
 
 export type PreviewRendererType = "preview.codeHighlighted" | "preview.branch" | "preview.commitDiff";

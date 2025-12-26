@@ -38,6 +38,7 @@ vi.mock("@backend/core/common/custom-provider-manager", () => ({
   CustomProviderManager: {
     instance: {
       getBackendProxyDefinition: vi.fn(),
+      getUiProxyDefinition: vi.fn(),
       registerConfig: vi.fn(),
     },
   },
@@ -123,10 +124,13 @@ describe("Extension entrypoint", () => {
     vi.doMock("/fake/providers/git-branch.js", () => customModules[0].module);
     vi.doMock("/fake/providers/ws-text.js", () => customModules[1].module);
 
-    const proxy2 = { fn: () => {} } as any;
+    const backendProxy = { fn: () => {} } as any;
+    const uiProxy = { render: () => {} } as any;
     vi.mocked(CustomProviderManager.instance.getBackendProxyDefinition)
       .mockReturnValueOnce({ ok: false, error: "failed to create provider" })
-      .mockReturnValueOnce({ ok: true, value: proxy2 });
+      .mockReturnValueOnce({ ok: true, value: backendProxy });
+
+    vi.mocked(CustomProviderManager.instance.getUiProxyDefinition).mockReturnValueOnce({ ok: true, value: uiProxy });
 
     const adapterRegistrySpy = vi.spyOn(FuzzyFinderAdapterRegistry.instance, "register");
 
@@ -146,8 +150,35 @@ describe("Extension entrypoint", () => {
     );
 
     expect(adapterRegistrySpy).toHaveBeenCalledTimes(1);
-    expect(FuzzyFinderAdapterRegistry.instance.register).toHaveBeenCalledWith(proxy2);
+    expect(FuzzyFinderAdapterRegistry.instance.register).toHaveBeenCalledWith(backendProxy);
     expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(expect.stringContaining("failed to create provider"));
+  });
+
+  it("should fail if backend UI proxy cannot be created", async () => {
+    vi.mocked(CustomProviderManager.instance.getBackendProxyDefinition).mockReturnValueOnce({
+      ok: false,
+      error: "backend error",
+    });
+
+    await setupCustomProviders({ extensionUri: "uri" } as any);
+
+    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(expect.stringContaining("backend error"));
+  });
+
+  it("should fail if UI proxy cannot be created", async () => {
+    vi.mocked(CustomProviderManager.instance.getBackendProxyDefinition).mockReturnValueOnce({
+      ok: true,
+      value: {} as any,
+    });
+
+    vi.mocked(CustomProviderManager.instance.getUiProxyDefinition).mockReturnValueOnce({
+      ok: false,
+      error: "ui error",
+    });
+
+    await setupCustomProviders({ extensionUri: "uri" } as any);
+
+    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(expect.stringContaining("ui error"));
   });
 
   it("should log deactivate message", () => {
