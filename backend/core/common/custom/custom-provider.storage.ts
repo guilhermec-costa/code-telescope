@@ -3,17 +3,6 @@ import { Result } from "../../../@types/result";
 import { CustomFinderBackendProxy } from "../../finders/custom/backend-proxy.finder";
 import { CustomFinderUiProxy } from "../../finders/custom/ui-proxy.finder";
 
-export interface SerializedUiConfig {
-  fuzzyAdapterType: CustomFinderDefinition["fuzzyAdapterType"];
-  previewAdapterType: CustomFinderDefinition["previewAdapterType"];
-  dataAdapter: {
-    parseOptions: string;
-    getDisplayText: string;
-    getSelectionValue: string;
-    filterOption?: string;
-  };
-}
-
 export class CustomProviderStorage {
   private static _instance: CustomProviderStorage;
   private providers: Map<string, CustomFinderDefinition> = new Map();
