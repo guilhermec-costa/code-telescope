@@ -28,6 +28,10 @@ export class FuzzyFinderAdapterRegistry {
     return this.adapters.get(finderType);
   }
 
+  deleteAdapter(finderType: string): void {
+    this.adapters.delete(finderType);
+  }
+
   getRegisteredTypes(): string[] {
     return Array.from(this.adapters.keys());
   }

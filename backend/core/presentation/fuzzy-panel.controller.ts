@@ -79,6 +79,11 @@ export class FuzzyFinderPanelController {
     return FuzzyFinderPanelController._instance;
   }
 
+  public static async setupProvider(providerType: FuzzyProviderType) {
+    const instance = FuzzyFinderPanelController.createOrShow();
+    await instance.startProvider(providerType);
+  }
+
   public async startProvider(providerType: FuzzyProviderType) {
     const provider = FuzzyFinderAdapterRegistry.instance.getAdapter(providerType);
     if (!provider) return;

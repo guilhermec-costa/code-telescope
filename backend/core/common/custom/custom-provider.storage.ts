@@ -1,6 +1,7 @@
-import { CustomFinderDefinition } from "../../../shared/custom-provider";
-import { CustomFinderBackendProxy } from "../finders/custom/backend-proxy.finder";
-import { CustomFinderUiProxy } from "../finders/custom/ui-proxy.finder";
+import { CustomFinderDefinition } from "../../../../shared/custom-provider";
+import { Result } from "../../../@types/result";
+import { CustomFinderBackendProxy } from "../../finders/custom/backend-proxy.finder";
+import { CustomFinderUiProxy } from "../../finders/custom/ui-proxy.finder";
 
 export interface SerializedUiConfig {
   fuzzyAdapterType: CustomFinderDefinition["fuzzyAdapterType"];
@@ -13,19 +14,23 @@ export interface SerializedUiConfig {
   };
 }
 
-export class CustomProviderManager {
-  private static _instance: CustomProviderManager;
+export class CustomProviderStorage {
+  private static _instance: CustomProviderStorage;
   private providers: Map<string, CustomFinderDefinition> = new Map();
 
   private constructor() {}
 
-  static get instance(): CustomProviderManager {
-    if (!this._instance) this._instance = new CustomProviderManager();
+  static get instance(): CustomProviderStorage {
+    if (!this._instance) this._instance = new CustomProviderStorage();
     return this._instance;
   }
 
   registerConfig(config: CustomFinderDefinition) {
     this.providers.set(config.fuzzyAdapterType, config);
+  }
+
+  deleteConfig(fuzzyType: string): void {
+    this.providers.delete(fuzzyType);
   }
 
   getConfig(fuzzyType: string): CustomFinderDefinition | undefined {
@@ -36,7 +41,7 @@ export class CustomProviderManager {
     return Array.from(this.providers.keys());
   }
 
-  getUiProxyDefinition(fuzzyType: string): { ok: true; value: CustomFinderUiProxy } | { ok: false; error: string } {
+  getUiProxyDefinition(fuzzyType: string): Result<CustomFinderUiProxy> {
     const userConfig = this.getConfig(fuzzyType);
     if (!userConfig) {
       return { ok: false, error: "Custom finder configuration not found" };
@@ -45,9 +50,7 @@ export class CustomProviderManager {
     return CustomFinderUiProxy.create(userConfig);
   }
 
-  getBackendProxyDefinition(
-    fuzzyType: string,
-  ): { ok: true; value: CustomFinderBackendProxy } | { ok: false; error: string } {
+  getBackendProxyDefinition(fuzzyType: string): Result<CustomFinderBackendProxy> {
     const userConfig = this.getConfig(fuzzyType);
     if (!userConfig) {
       return { ok: false, error: "Custom finder configuration not found" };

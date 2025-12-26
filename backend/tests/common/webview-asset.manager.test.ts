@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as vscode from "vscode";
 import { IFuzzyFinderProvider } from "../../core/abstractions/fuzzy-finder.provider";
-import { CustomProviderManager } from "../../core/common/custom-provider-manager";
+import { CustomProviderStorage } from "../../core/common/custom/custom-provider.storage";
 import { WebviewAssetManager } from "../../core/common/webview-asset.manager";
 
 vi.mock("@backend/globals", () => ({
@@ -81,7 +81,7 @@ describe("WebviewAssetManager", () => {
     const rawHtml = "<div>{{__CUSTOM_DATA_ADAPTER__}}</div>";
 
     const serializableUi = { parseOptions: "() => {}" };
-    const spy = vi.spyOn(CustomProviderManager.instance, "getUiProxyDefinition").mockReturnValue({
+    const spy = vi.spyOn(CustomProviderStorage.instance, "getUiProxyDefinition").mockReturnValue({
       ok: true,
       value: {
         toSerializableObject: () => serializableUi,

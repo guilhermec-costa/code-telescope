@@ -2,7 +2,7 @@ import { vi } from "vitest";
 
 vi.mock("vscode", () => ({
   Uri: {
-    file: vi.fn((path: string) => path),
+    file: (path: string) => ({ fsPath: path }),
     joinPath: vi.fn((uri, ...parts) => ({ fsPath: parts.join("/") })),
   },
   Position: vi.fn(
@@ -33,6 +33,7 @@ vi.mock("vscode", () => ({
     appRoot: "/app",
   },
   workspace: {
+    createFileSystemWatcher: vi.fn(),
     get workspaceFolders() {
       return [{ uri: { fsPath: "/workspace" } }];
     },

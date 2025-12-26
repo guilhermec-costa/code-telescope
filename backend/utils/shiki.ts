@@ -4,7 +4,7 @@ export function getShikiTheme(vscodeTheme: string) {
   const themeName = vscodeTheme.toLowerCase();
 
   for (const rule of themeMap.rules) {
-    if (rule.match.every((m) => themeName.includes(m))) {
+    if (rule.match.every((m) => themeName.includes(m.toLowerCase()))) {
       return rule.theme;
     }
   }

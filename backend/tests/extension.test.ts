@@ -1,17 +1,26 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, type Mocked, vi } from "vitest";
 import * as vscode from "vscode";
-import { CustomProviderManager } from "../core/common/custom-provider-manager";
+import { CustomProviderLoader } from "../core/common/custom/custom-provider.loader";
 import { loadFuzzyProviders } from "../core/finders/loader";
 import { FuzzyFinderPanelController } from "../core/presentation/fuzzy-panel.controller";
 import { loadWebviewHandlers } from "../core/presentation/handlers/loader";
-import { FuzzyFinderAdapterRegistry } from "../core/registry/fuzzy-provider.registry";
-import { activate, deactivate, setupCustomProviders } from "../extension";
+import { activate, deactivate } from "../extension";
 import { Globals } from "../globals";
-import { getCmdId, registerAndSubscribeCmd } from "../utils/commands";
+import { registerAndSubscribeCmd } from "../utils/commands";
 
 vi.mock("@backend/core/finders/loader", () => ({
   loadFuzzyProviders: vi.fn(),
 }));
+
+vi.mock("@backend/core/common/custom/custom-provider.loader", () => {
+  return {
+    CustomProviderLoader: vi.fn(
+      class {
+        initialize = vi.fn().mockResolvedValue(undefined);
+      },
+    ),
+  };
+});
 
 vi.mock("@backend/core/presentation/handlers/loader", () => ({
   loadWebviewHandlers: vi.fn(),
@@ -58,27 +67,6 @@ export function mockCustomProvider(path: string, def: any) {
 }
 
 describe("Extension entrypoint", () => {
-  const customModules = [
-    {
-      fsPath: "/fake/providers/git-branch.js",
-      module: {
-        default: {
-          fuzzyAdapterType: "git.branch",
-          backend: { querySelectableOptions: vi.fn() },
-        },
-      },
-    },
-    {
-      fsPath: "/fake/providers/ws-text.js",
-      module: {
-        default: {
-          fuzzyAdapterType: "ws.text",
-          backend: { querySelectableOptions: vi.fn() },
-        },
-      },
-    },
-  ];
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -111,74 +99,10 @@ describe("Extension entrypoint", () => {
     expect(registerAndSubscribeCmd).toHaveBeenCalledTimes(expectedCommands.length);
 
     const providerInstance = FuzzyFinderPanelController.createOrShow();
+    const loaderInstance = vi.mocked(CustomProviderLoader).mock.results[0].value as Mocked<CustomProviderLoader>;
+
     expect(providerInstance.startProvider).not.toHaveBeenCalled();
-  });
-
-  it("should load and register custom providers", async () => {
-    const mockedContext = { extensionUri: "uri" } as any;
-    vi.mocked(vscode.workspace.findFiles).mockResolvedValue([
-      { fsPath: customModules[0].fsPath } as any,
-      { fsPath: customModules[1].fsPath } as any,
-    ]);
-
-    vi.doMock("/fake/providers/git-branch.js", () => customModules[0].module);
-    vi.doMock("/fake/providers/ws-text.js", () => customModules[1].module);
-
-    const backendProxy = { fn: () => {} } as any;
-    const uiProxy = { render: () => {} } as any;
-    vi.mocked(CustomProviderManager.instance.getBackendProxyDefinition)
-      .mockReturnValueOnce({ ok: false, error: "failed to create provider" })
-      .mockReturnValueOnce({ ok: true, value: backendProxy });
-
-    vi.mocked(CustomProviderManager.instance.getUiProxyDefinition).mockReturnValueOnce({ ok: true, value: uiProxy });
-
-    const adapterRegistrySpy = vi.spyOn(FuzzyFinderAdapterRegistry.instance, "register");
-
-    await setupCustomProviders(mockedContext);
-
-    const manager = CustomProviderManager.instance;
-
-    expect(manager.registerConfig).toHaveBeenCalledWith(customModules[0].module.default);
-    expect(manager.registerConfig).toHaveBeenCalledWith(customModules[1].module.default);
-    expect(manager.getBackendProxyDefinition).toHaveBeenCalledWith(customModules[0].module.default.fuzzyAdapterType);
-    expect(manager.getBackendProxyDefinition).toHaveBeenCalledWith(customModules[1].module.default.fuzzyAdapterType);
-    expect(registerAndSubscribeCmd).toHaveBeenNthCalledWith(
-      1,
-      getCmdId("fuzzy", customModules[1].module.default.fuzzyAdapterType),
-      expect.any(Function),
-      mockedContext,
-    );
-
-    expect(adapterRegistrySpy).toHaveBeenCalledTimes(1);
-    expect(FuzzyFinderAdapterRegistry.instance.register).toHaveBeenCalledWith(backendProxy);
-    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(expect.stringContaining("failed to create provider"));
-  });
-
-  it("should fail if backend UI proxy cannot be created", async () => {
-    vi.mocked(CustomProviderManager.instance.getBackendProxyDefinition).mockReturnValueOnce({
-      ok: false,
-      error: "backend error",
-    });
-
-    await setupCustomProviders({ extensionUri: "uri" } as any);
-
-    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(expect.stringContaining("backend error"));
-  });
-
-  it("should fail if UI proxy cannot be created", async () => {
-    vi.mocked(CustomProviderManager.instance.getBackendProxyDefinition).mockReturnValueOnce({
-      ok: true,
-      value: {} as any,
-    });
-
-    vi.mocked(CustomProviderManager.instance.getUiProxyDefinition).mockReturnValueOnce({
-      ok: false,
-      error: "ui error",
-    });
-
-    await setupCustomProviders({ extensionUri: "uri" } as any);
-
-    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(expect.stringContaining("ui error"));
+    expect(loaderInstance.initialize).toHaveBeenCalledOnce();
   });
 
   it("should log deactivate message", () => {

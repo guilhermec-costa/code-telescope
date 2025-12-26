@@ -3,7 +3,7 @@ import { Globals } from "../../globals";
 import { joinPath } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { ExtensionConfigManager } from "../common/config-manager";
-import { CustomProviderManager } from "../common/custom-provider-manager";
+import { CustomProviderStorage } from "./custom/custom-provider.storage";
 
 export class WebviewAssetManager {
   public static async getProcessedHtml(wv: vscode.Webview, provider: IFuzzyFinderProvider): Promise<string> {
@@ -35,7 +35,7 @@ export class WebviewAssetManager {
     const isCustom = provider.fuzzyAdapterType.startsWith(Globals.CUSTOM_PROVIDER_PREFIX);
 
     if (isCustom) {
-      const uiResult = CustomProviderManager.instance.getUiProxyDefinition(provider.fuzzyAdapterType);
+      const uiResult = CustomProviderStorage.instance.getUiProxyDefinition(provider.fuzzyAdapterType);
 
       if (uiResult) {
         if (!uiResult.ok) {

@@ -59,6 +59,10 @@
     {
       "match": ["kanagawa wave"],
       "theme": "kanagawa-wave"
+    },
+    {
+      "match": ["rosé pine", "rosé pine", "rosé pine (no italics)"],
+      "theme": "rose-pine"
     }
   ],
   "fallback": {
