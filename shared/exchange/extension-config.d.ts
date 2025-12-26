@@ -19,6 +19,9 @@ export interface PanelSetupConfig {
   rightSideWidthPct: number;
   leftSideWidthPct: number;
   panelContainerPct: number;
+  promptFontSize: number;
+  resultsFontSize: number;
+  previewFontSize: number;
 }
 
 export interface PreviewManagerConfig {

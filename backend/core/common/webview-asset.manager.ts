@@ -66,6 +66,9 @@ export class WebviewAssetManager {
       "--left-pane-width": `${panelCfg.leftSideWidthPct}%`,
       "--right-pane-width": `${panelCfg.rightSideWidthPct}%`,
       "--panel-container-width": `${panelCfg.panelContainerPct}%`,
+      "--prompt-font-size": `${panelCfg.promptFontSize}px`,
+      "--results-font-size": `${panelCfg.resultsFontSize}px`,
+      "--preview-font-size": `${panelCfg.previewFontSize}px`,
     };
 
     const cssBody = Object.entries(vars)

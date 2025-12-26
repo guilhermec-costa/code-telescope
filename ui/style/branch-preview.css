@@ -4,6 +4,7 @@
   background-color: var(--vscode-editor-background);
   z-index: 10;
   border: 1px solid var(--border-color);
+  border-radius: 5px;
   padding: 4px;
 }
 

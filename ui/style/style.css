@@ -38,7 +38,7 @@ body {
 
 #container {
   width: var(--panel-container-width);
-  max-width: 1300px;
+  max-width: 98vw;
   height: 90%;
   background: transparent;
   border: none;
@@ -134,7 +134,7 @@ body {
   border: none;
   outline: none;
   font-family: var(--font-family);
-  font-size: 13px;
+  font-size: var(--prompt-font-size);
   font-weight: 400;
   letter-spacing: 0;
 }
@@ -192,7 +192,7 @@ body {
   padding: 2px 12px;
   cursor: pointer;
   font-family: var(--font-family), "Fira Code", monospace;
-  font-size: 15px;
+  font-size: var(--results-font-size);
   font-weight: 500;
   color: var(--fg);
   transition: background-color 0.1s ease;
@@ -283,7 +283,7 @@ body {
   white-space: pre;
   font-family: var(--font-family), "Fira Code", Consolas, monospace;
   position: relative;
-  font-size: 16px;
+  font-size: var(--preview-font-size);
   font-weight: 500;
   line-height: 1.3;
 }

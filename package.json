@@ -170,6 +170,21 @@
                     "default": 90,
                     "description": "Width in percentage of the panel container"
                 },
+                "codeTelescope.panelSetup.promptFontSize": {
+                    "type": "number",
+                    "default": 16,
+                    "description": "Font size (px) of the input prompt"
+                },
+                "codeTelescope.panelSetup.resultsFontSize": {
+                    "type": "number",
+                    "default": 16,
+                    "description": "Font size (px) of the results list items"
+                },
+                "codeTelescope.panelSetup.previewFontSize": {
+                    "type": "number",
+                    "default": 18,
+                    "description": "Font size (px) of the preview panel"
+                },
                 "codeTelescope.keybindings": {
                     "type": "object",
                     "description": "Custom keybindings for the Telescope panel",
