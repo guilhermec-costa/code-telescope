@@ -1,5 +1,6 @@
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
 import { Result } from "../../../@types/result";
+import { Globals } from "../../../globals";
 import { CustomFinderBackendProxy } from "../../finders/custom/backend-proxy.finder";
 import { CustomFinderUiProxy } from "../../finders/custom/ui-proxy.finder";
 
@@ -14,8 +15,18 @@ export class CustomProviderStorage {
     return this._instance;
   }
 
-  registerConfig(config: CustomFinderDefinition) {
+  registerConfig(config: CustomFinderDefinition): Result<null> {
+    const prefix = Globals.CUSTOM_PROVIDER_PREFIX;
+
+    if (!config.fuzzyAdapterType.startsWith(prefix)) {
+      return {
+        ok: false,
+        error: `Invalid fuzzyAdapterType "${config.fuzzyAdapterType}". Custom providers must start with "${prefix}". Example: "${prefix}my.provider"`,
+      };
+    }
+
     this.providers.set(config.fuzzyAdapterType, config);
+    return { ok: true, value: null };
   }
 
   deleteConfig(fuzzyType: string): void {

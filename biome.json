@@ -56,14 +56,16 @@
       "whitespaceSensitivity": "css",
       "indentScriptAndStyle": false,
       "selfCloseVoidElements": "never"
-    }
+    },
+    "parser": {"interpolation": true}
   },
   "json": {
     "formatter": {
       "enabled": true,
       "indentWidth": 4,
       "indentStyle": "space"
-    }
+    },
+    "parser": null
   },
   "assist": {
     "enabled": true,

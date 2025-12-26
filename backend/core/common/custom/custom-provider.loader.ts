@@ -2,6 +2,7 @@ import { pathToFileURL } from "url";
 import * as vscode from "vscode";
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
 import { AsyncResult } from "../../../@types/result";
+import { Globals } from "../../../globals";
 import { FuzzyFinderAdapterRegistry } from "../../registry/fuzzy-provider.registry";
 import { CustomProviderStorage } from "./custom-provider.storage";
 
@@ -15,14 +16,17 @@ export class CustomProviderLoader {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders || workspaceFolders.length === 0) return;
 
-    const glob = new vscode.RelativePattern(workspaceFolders[0], ".vscode/code-telescope/*.finder.cjs");
-    const files = await vscode.workspace.findFiles(glob);
+    const wsGlob = new vscode.RelativePattern(workspaceFolders[0], ".vscode/code-telescope/*.finder.cjs");
 
-    for (const uri of files) {
+    const workspaceFiles = await vscode.workspace.findFiles(wsGlob);
+
+    for (const uri of workspaceFiles) {
       await this.loadAndTrack(uri);
     }
 
-    this.watcher = vscode.workspace.createFileSystemWatcher(glob);
+    await this.loadExtensionExamples();
+
+    this.watcher = vscode.workspace.createFileSystemWatcher(wsGlob);
 
     this.watcher.onDidCreate((uri) => this.onCreate(uri));
     this.watcher.onDidChange((uri) => this.onChange(uri));
@@ -75,7 +79,10 @@ export class CustomProviderLoader {
       const module = await import(`${fileUrl}?update=${Date.now()}`);
       const userConfig: CustomFinderDefinition = module.default || module;
 
-      CustomProviderStorage.instance.registerConfig(userConfig);
+      const registerResult = CustomProviderStorage.instance.registerConfig(userConfig);
+      if (!registerResult.ok) {
+        return { ok: false, error: registerResult.error };
+      }
 
       const backend = CustomProviderStorage.instance.getBackendProxyDefinition(userConfig.fuzzyAdapterType);
       if (!backend.ok) {
@@ -99,6 +106,23 @@ export class CustomProviderLoader {
     } catch (err) {
       console.error(`Failed to load custom finder: ${fileUri.fsPath}`, err);
       return { ok: false, error: "Failed to load custom finder" };
+    }
+  }
+
+  private async loadExtensionExamples(): Promise<void> {
+    const examplesDir = vscode.Uri.joinPath(Globals.EXTENSION_URI, "examples");
+
+    try {
+      const entries = await vscode.workspace.fs.readDirectory(examplesDir);
+
+      for (const [name, type] of entries) {
+        if (type === vscode.FileType.File && name.endsWith(".finder.cjs")) {
+          const uri = vscode.Uri.joinPath(examplesDir, name);
+          await this.loadAndTrack(uri);
+        }
+      }
+    } catch (err) {
+      console.warn("[CodeTelescope] No extension examples found or failed to load", err);
     }
   }
 
