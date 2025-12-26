@@ -70,6 +70,7 @@ export class CustomProviderLoader {
     try {
       const filePath = fileUri.fsPath;
 
+      delete require.cache[filePath];
       const fileUrl = pathToFileURL(filePath).toString();
       const module = await import(`${fileUrl}?update=${Date.now()}`);
       const userConfig: CustomFinderDefinition = module.default || module;
