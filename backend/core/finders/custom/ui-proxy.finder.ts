@@ -58,15 +58,25 @@ export class CustomFinderUiProxy {
     }
   }
 
+  private normalizeFn(fn: Function): string {
+    const src = fn.toString();
+
+    if (!src.startsWith("function") && !src.startsWith("(")) {
+      return "function " + src;
+    }
+
+    return src;
+  }
+
   toSerializableObject() {
     return {
       fuzzyAdapterType: this.fuzzyAdapterType,
       previewAdapterType: this.previewAdapterType,
       dataAdapter: {
-        parseOptions: this.dataAdapter.parseOptions.toString(),
-        getDisplayText: this.dataAdapter.getDisplayText.toString(),
-        getSelectionValue: this.dataAdapter.getSelectionValue.toString(),
-        filterOption: this.dataAdapter.filterOption?.toString(),
+        parseOptions: this.normalizeFn(this.dataAdapter.parseOptions),
+        getDisplayText: this.normalizeFn(this.dataAdapter.getDisplayText),
+        getSelectionValue: this.normalizeFn(this.dataAdapter.getSelectionValue),
+        filterOption: this.dataAdapter.filterOption ? this.normalizeFn(this.dataAdapter.filterOption) : undefined,
       },
     };
   }

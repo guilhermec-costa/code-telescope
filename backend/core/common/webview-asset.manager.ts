@@ -49,7 +49,7 @@ export class WebviewAssetManager {
       "{{__SHIKI_URI__}}": shikiUri.toString(),
       "{{__PREVIEW_CFG__}}": JSON.stringify(ExtensionConfigManager.previewManagerCfg),
       "{{__KEYBINDINGS_CFG__}}": JSON.stringify(ExtensionConfigManager.keybindings),
-      "{{__CUSTOM_DATA_ADAPTER__}}": JSON.stringify(customUiPayload),
+      "{{__CUSTOM_DATA_ADAPTER__}}": JSON.stringify(customUiPayload, null, 2),
       "{{__CUSTOM_RENDER_ADAPTERS__}}": JSON.stringify([]),
     };
 

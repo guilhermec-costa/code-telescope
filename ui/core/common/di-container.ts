@@ -8,6 +8,12 @@ import { OptionListManager } from "./option-list-manager";
 
 declare const __CUSTOM_DATA_ADAPTER__: SerializedUiConfig | undefined;
 
+function readJson<T = unknown>(id: string): T | null {
+  const el = document.getElementById(id);
+  if (!el) return null;
+  return JSON.parse(el.textContent ?? "null");
+}
+
 export class DIContainer {
   previewManager!: PreviewManager;
   optionListManager!: OptionListManager;
@@ -31,8 +37,12 @@ export class DIContainer {
       console.log("[DIContainer] Initializing KeyboardHandler");
       this.keyboardHandler = new KeyboardHandler();
 
-      if (__CUSTOM_DATA_ADAPTER__) {
-        const customAdapter = new CustomDataAdapterProxy(__CUSTOM_DATA_ADAPTER__);
+      const serializedCustomAdapter = readJson<SerializedUiConfig>("__CUSTOM_DATA_ADAPTER__");
+
+      if (serializedCustomAdapter) {
+        console.log("[DIContainer] Registering custom data adapter:", serializedCustomAdapter.fuzzyAdapterType);
+
+        const customAdapter = new CustomDataAdapterProxy(serializedCustomAdapter);
         registerFuzzyDataAdapter(customAdapter);
       }
 

@@ -68,7 +68,7 @@ export class VSCodeEventsManager {
 
     if (FuzzyFinderPanelController.instance) {
       await FuzzyFinderPanelController.instance.emitInitShikiEvent({
-        languages: [...langsToLoad, "diff"],
+        languages: [...langsToLoad, "diff", "sql"],
         theme: getShikiTheme(Globals.USER_THEME),
       });
     }
