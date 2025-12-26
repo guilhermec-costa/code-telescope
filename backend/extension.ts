@@ -53,11 +53,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
         return;
       }
       const selected = await vscode.window.showQuickPick(customTypes, { placeHolder: "Select a custom provider" });
-      if (selected) {
-        await FuzzyFinderPanelController.setupProvider(selected as CustomFuzzyProviderType);
-        const instance = FuzzyFinderPanelController.createOrShow();
-        await instance.startProvider(selected as any);
-      }
+      if (selected) await FuzzyFinderPanelController.setupProvider(selected as CustomFuzzyProviderType);
     },
     ctx,
   );
