@@ -1,3 +1,5 @@
+@import "https://www.nerdfonts.com/assets/css/webfont.css";
+
 :root {
   --bg: var(--vscode-editor-background);
   --fg: var(--vscode-editor-foreground);
@@ -32,7 +34,6 @@ body {
   align-items: center;
   justify-content: center;
   background-color: var(--vscode-editor-background);
-  color: var(--vscode-editor-foreground);
   overflow: hidden;
 }
 
@@ -194,7 +195,6 @@ body {
   font-family: var(--font-family), "Fira Code", monospace;
   font-size: var(--results-font-size);
   font-weight: 500;
-  color: var(--fg);
   transition: background-color 0.1s ease;
   display: flex;
   align-items: center;

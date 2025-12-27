@@ -92,7 +92,7 @@ describe("WebviewAssetManager", () => {
 
     const result = await WebviewAssetManager.getProcessedHtml(mockWebview, mockProvider);
 
-    expect(result).toContain(JSON.stringify(serializableUi));
+    expect(result).toContain('"parseOptions": "() => {}"');
     expect(spy).toHaveBeenCalledWith("custom.my-finder");
   });
 

@@ -211,8 +211,14 @@ export class OptionListManager {
       li.classList.add("selected");
     }
 
-    const displayText = this.dataAdapter!.getDisplayText(option);
-    li.innerHTML = this.highlightMatch(displayText, query);
+    const iconEl = document.createElement("i");
+    iconEl.className = this.getIconClass(option);
+
+    const textSpan = document.createElement("span");
+    textSpan.innerHTML = this.highlightMatch(this.dataAdapter!.getDisplayText(option), query);
+
+    li.appendChild(iconEl);
+    li.appendChild(textSpan);
 
     li.onclick = () => {
       this.selectedIndex = idx;
@@ -221,6 +227,20 @@ export class OptionListManager {
     };
 
     return li;
+  }
+
+  private getIconClass(option: any): string {
+    const ext = option.relative.split(".").pop()?.toLowerCase() || "";
+    const map: Record<string, string> = {
+      ts: "nf-dev-typescript",
+      js: "nf-dev-javascript",
+      py: "nf-dev-python",
+      java: "nf-dev-java",
+      html: "nf-dev-html5",
+      css: "nf-dev-css3",
+      md: "nf-dev-markdown",
+    };
+    return map[ext] || "nf-dev-file";
   }
 
   private scrollToSelectedNormal(): void {

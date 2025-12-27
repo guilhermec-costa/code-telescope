@@ -12,6 +12,11 @@ vi.mock("vscode", () => ({
       }
     },
   ),
+  RelativePattern: vi.fn(
+    class {
+      constructor(base: string, pattern: string) {}
+    },
+  ),
   ViewColumn: {},
   Range: vi.fn(
     class {
@@ -32,6 +37,9 @@ vi.mock("vscode", () => ({
   env: {
     appRoot: "/app",
   },
+  FileType: {
+    File: 1,
+  },
   workspace: {
     createFileSystemWatcher: vi.fn(),
     get workspaceFolders() {
@@ -42,6 +50,7 @@ vi.mock("vscode", () => ({
     fs: {
       stat: vi.fn(),
       readFile: vi.fn(),
+      readDirectory: vi.fn(),
     },
     getConfiguration: vi.fn().mockReturnValue({
       get: vi.fn(),

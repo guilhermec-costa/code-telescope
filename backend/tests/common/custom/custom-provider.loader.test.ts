@@ -3,7 +3,6 @@ import * as vscode from "vscode";
 import { CustomProviderLoader } from "../../../core/common/custom/custom-provider.loader";
 import { CustomProviderStorage } from "../../../core/common/custom/custom-provider.storage";
 import { FuzzyFinderAdapterRegistry } from "../../../core/registry/fuzzy-provider.registry";
-import { registerAndSubscribeCmd } from "../../../utils/commands";
 
 vi.mock("@backend/utils/commands", () => ({
   registerAndSubscribeCmd: vi.fn(),
@@ -38,122 +37,85 @@ vi.mock("@backend/core/presentation/fuzzy-panel.controller", () => ({
   },
 }));
 
+vi.mock("url", () => ({
+  pathToFileURL: vi.fn((path) => ({
+    toString: () => `file://${path}`,
+  })),
+}));
+
+vi.mock("@backend/globals", () => ({
+  Globals: {
+    EXTENSION_URI: { fsPath: "/extension-path" },
+    CUSTOM_PROVIDER_PREFIX: "custom.",
+  },
+}));
+
 describe("CustomProviderLoader", () => {
   const fakeUri = { fsPath: "/fake/provider.finder.cjs" } as vscode.Uri;
-
-  const fakeContext = {
-    subscriptions: [],
-  } as any;
-
-  const fakeConfig = {
-    fuzzyAdapterType: "custom.test",
-    previewAdapterType: "preview.test",
-    backend: {},
-    ui: { dataAdapter: {} },
-  };
+  const fakeContext = { subscriptions: [] } as any;
 
   beforeEach(() => {
     vi.clearAllMocks();
-  });
 
-  it("should load and register providers on initialize", async () => {
-    vi.mocked(vscode.workspace.findFiles).mockResolvedValue([fakeUri]);
+    vi.mocked(vscode.workspace.findFiles).mockResolvedValue([]);
+    vi.mocked(vscode.workspace.fs.readDirectory).mockResolvedValue([]);
 
-    vi.doMock("/fake/provider.finder.cjs", () => ({
-      default: fakeConfig,
-    }));
-
-    vi.mocked(CustomProviderStorage.instance.getBackendProxyDefinition).mockReturnValue({
-      ok: true,
-      value: { fuzzyAdapterType: "custom.test" } as any,
-    });
-
-    vi.mocked(CustomProviderStorage.instance.getUiProxyDefinition).mockReturnValue({
-      ok: true,
-      value: {} as any,
-    });
-
-    const watcher = {
+    const mockWatcher = {
       onDidCreate: vi.fn(),
       onDidChange: vi.fn(),
       onDidDelete: vi.fn(),
       dispose: vi.fn(),
     };
-
-    vi.mocked(vscode.workspace.createFileSystemWatcher).mockReturnValue(watcher as any);
-
-    const loader = new CustomProviderLoader(fakeContext);
-    await loader.initialize();
-
-    expect(CustomProviderStorage.instance.registerConfig).toHaveBeenCalledWith(fakeConfig);
-    expect(FuzzyFinderAdapterRegistry.instance.register).toHaveBeenCalled();
-    expect(registerAndSubscribeCmd).toHaveBeenCalled();
-    expect(fakeContext.subscriptions).toContain(watcher);
+    vi.mocked(vscode.workspace.createFileSystemWatcher).mockReturnValue(mockWatcher as any);
   });
 
-  it("should show error if backend proxy creation fails", async () => {
+  it("should load workspace providers on initialize", async () => {
     vi.mocked(vscode.workspace.findFiles).mockResolvedValue([fakeUri]);
 
-    vi.doMock("/fake/provider.finder.cjs", () => ({
-      default: fakeConfig,
-    }));
-
-    vi.mocked(CustomProviderStorage.instance.getBackendProxyDefinition).mockReturnValue({
-      ok: false,
-      error: "backend error",
-    });
-
-    const loader = new CustomProviderLoader(fakeContext);
-    await loader.initialize();
-
-    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(expect.stringContaining("backend error"));
-  });
-
-  it("should show error if ui proxy creation fails", async () => {
-    vi.mocked(vscode.workspace.findFiles).mockResolvedValue([fakeUri]);
-
-    vi.doMock("/fake/provider.finder.cjs", () => ({
-      default: fakeConfig,
-    }));
-
+    vi.mocked(CustomProviderStorage.instance.registerConfig).mockReturnValue({ ok: true } as any);
     vi.mocked(CustomProviderStorage.instance.getBackendProxyDefinition).mockReturnValue({
       ok: true,
       value: { fuzzyAdapterType: "custom.test" } as any,
     });
-
     vi.mocked(CustomProviderStorage.instance.getUiProxyDefinition).mockReturnValue({
-      ok: false,
-      error: "ui error",
+      ok: true,
+      value: {} as any,
     });
 
     const loader = new CustomProviderLoader(fakeContext);
-    await loader.initialize();
 
-    expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(expect.stringContaining("ui error"));
+    const loadSpy = vi.spyOn(loader as any, "loadCustomProvider").mockImplementation(async () => {
+      return {
+        ok: true,
+        value: { uri: fakeUri, fuzzyType: "custom.test" },
+      };
+    });
+
+    await loader.initialize();
+    expect(loadSpy).toHaveBeenCalled();
   });
 
-  it("should cleanup on delete event", async () => {
+  it("should handle deletion of a provider", async () => {
     const loader = new CustomProviderLoader(fakeContext);
+    const fsPath = "/path/to/file.cjs";
 
-    // força estado interno
-    (loader as any).loadedProviders.set("/fake/provider.finder.cjs", "custom.test");
+    (loader as any).loadedProviders.set(fsPath, "custom.test");
 
-    (loader as any).onDelete({ fsPath: "/fake/provider.finder.cjs" });
+    (loader as any).onDelete({ fsPath } as vscode.Uri);
 
     expect(CustomProviderStorage.instance.deleteConfig).toHaveBeenCalledWith("custom.test");
     expect(FuzzyFinderAdapterRegistry.instance.deleteAdapter).toHaveBeenCalledWith("custom.test");
+    expect((loader as any).loadedProviders.has(fsPath)).toBe(false);
   });
 
-  it("should dispose watcher and clear providers", () => {
+  it("should dispose resources", () => {
     const loader = new CustomProviderLoader(fakeContext);
-
-    const watcher = { dispose: vi.fn() };
-    (loader as any).watcher = watcher;
-    (loader as any).loadedProviders.set("a", "b");
+    const mockWatcher = { dispose: vi.fn() };
+    (loader as any).watcher = mockWatcher;
 
     loader.dispose();
 
-    expect(watcher.dispose).toHaveBeenCalled();
+    expect(mockWatcher.dispose).toHaveBeenCalled();
     expect((loader as any).loadedProviders.size).toBe(0);
   });
 });

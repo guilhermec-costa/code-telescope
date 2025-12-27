@@ -17,6 +17,7 @@ vi.mock("@backend/core/common/custom/custom-provider.loader", () => {
     CustomProviderLoader: vi.fn(
       class {
         initialize = vi.fn().mockResolvedValue(undefined);
+        dispose = vi.fn();
       },
     ),
   };
