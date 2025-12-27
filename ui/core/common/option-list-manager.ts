@@ -3,20 +3,20 @@ import { escapeHtml } from "../../utils/html";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
 import { PreviewManager } from "../render/preview-manager";
 import { Virtualizer } from "../render/virtualizer";
+import { StateManager } from "./code/state-manager";
 import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
 
 export class OptionListManager {
   private allOptions: any[] = [];
   private filteredOptions: any[] = [];
-  private selectedIndex: number = 0;
   private dataAdapter: IFuzzyFinderDataAdapter | undefined;
-  private query: string = "";
 
   private listElement: HTMLUListElement;
   private itemsCountElement: HTMLElement | null;
 
   private readonly RENDER_THRESHOLD = 200;
   private readonly RENDER_MODE_CLASSNAME = "flexbox-render";
+  private readonly OPTION_ITEM_ID_PREFIX = "option-item-id-";
   private readonly virtualizer: Virtualizer;
   private debouncedRequestPreview: (value: string) => void;
 
@@ -53,10 +53,11 @@ export class OptionListManager {
 
     this.allOptions = options;
     this.filteredOptions = options;
-    this.selectedIndex = this.getRelativeFirstIndex();
-    this.query = "";
+    StateManager.selectedIndex = this.restoreSelectedIndex();
+    StateManager.prompt = "";
     this.updateItemsCount();
     this.render();
+    this.scrollToSelected();
 
     const first = this.getRelativeFirstItem();
     if (first) this.requestPreview(first);
@@ -65,19 +66,20 @@ export class OptionListManager {
   public filter(query: string): void {
     if (!this.dataAdapter) return;
 
-    this.query = query.toLowerCase();
+    StateManager.prompt = query.toLowerCase();
 
     if (this.dataAdapter.filterOption) {
-      this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter.filterOption(opt, this.query));
+      this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter.filterOption(opt, StateManager.prompt));
     } else {
       this.filteredOptions = this.allOptions.filter((opt) => {
         const text = this.dataAdapter.getDisplayText(opt);
-        return text.toLowerCase().includes(this.query);
+        return text.toLowerCase().includes(StateManager.prompt);
       });
     }
 
-    this.selectedIndex = this.getRelativeFirstIndex();
+    StateManager.selectedIndex = this.getRelativeFirstIndex();
     this.updateItemsCount();
+    this.applySortOnFiltered();
     this.render();
 
     const first = this.getRelativeFirstItem();
@@ -99,14 +101,14 @@ export class OptionListManager {
   public getSelectedValue(): string | undefined {
     if (!this.dataAdapter || this.filteredOptions.length === 0) return undefined;
 
-    const option = this.filteredOptions.at(this.selectedIndex);
+    const option = this.filteredOptions.at(StateManager.selectedIndex);
     return this.dataAdapter.getSelectionValue(option);
   }
 
   public clearOptions(): void {
     this.allOptions = [];
     this.filteredOptions = [];
-    this.selectedIndex = 0;
+    StateManager.selectedIndex = 0;
   }
 
   public onSelectionConfirmed() {
@@ -117,7 +119,7 @@ export class OptionListManager {
   }
 
   public resetIfNeeded() {
-    if (this.query === "" && this.dataAdapter.fuzzyAdapterType === "workspace.text") {
+    if (StateManager.prompt === "" && this.dataAdapter.fuzzyAdapterType === "workspace.text") {
       this.clearOptions();
       this.previewManager.clearPreview();
     }
@@ -125,6 +127,13 @@ export class OptionListManager {
 
   private get renderMode() {
     return this.shouldUseVirtualization() ? "virtualized" : "fullrender";
+  }
+
+  private restoreSelectedIndex(): number {
+    if (StateManager.selectedIndex != 0) {
+      return StateManager.selectedIndex;
+    }
+    return this.getRelativeFirstIndex();
   }
 
   private getRelativeFirstIndex(): number {
@@ -138,8 +147,11 @@ export class OptionListManager {
   private setupScrollListener(): void {
     this.listElement.addEventListener("scroll", () => {
       if (this.shouldUseVirtualization()) {
-        this.virtualizer.renderVirtualized(this.filteredOptions, this.selectedIndex, this.query, (item, idx, q) =>
-          this.createListItem(item, idx, q),
+        this.virtualizer.renderVirtualized(
+          this.filteredOptions,
+          StateManager.selectedIndex,
+          StateManager.prompt,
+          (item, idx, q) => this.createListItem(item, idx, q),
         );
       }
     });
@@ -148,21 +160,40 @@ export class OptionListManager {
   private moveSelection(direction: number): void {
     if (this.filteredOptions.length === 0) return;
 
-    this.selectedIndex = (this.selectedIndex + direction + this.filteredOptions.length) % this.filteredOptions.length;
+    const previousIndex = StateManager.selectedIndex;
+    StateManager.selectedIndex =
+      (StateManager.selectedIndex + direction + this.filteredOptions.length) % this.filteredOptions.length;
 
-    this.render();
+    const prevLi = document.getElementById(`${this.OPTION_ITEM_ID_PREFIX}${previousIndex}`);
+    if (prevLi) {
+      prevLi.classList.remove("selected");
+    }
 
-    const selectedOption = this.filteredOptions.at(this.selectedIndex);
+    const curLi = document.getElementById(`${this.OPTION_ITEM_ID_PREFIX}${StateManager.selectedIndex}`);
+    if (curLi) {
+      curLi.classList.add("selected");
+    }
+
+    this.scrollToSelected();
+    const selectedOption = this.filteredOptions.at(StateManager.selectedIndex);
     this.requestPreview(selectedOption);
+  }
+
+  private scrollToSelected() {
+    if (this.shouldUseVirtualization()) {
+      requestAnimationFrame(() => {
+        this.virtualizer.scrollToSelectedVirtualized(StateManager.selectedIndex);
+      });
+    } else {
+      this.scrollToSelectedNormal();
+    }
   }
 
   private shouldUseVirtualization(): boolean {
     return this.filteredOptions.length > this.RENDER_THRESHOLD;
   }
 
-  private render(): void {
-    if (!this.dataAdapter) return;
-
+  private applySortOnFiltered() {
     this.filteredOptions.sort((opt1, opt2) => {
       const a = this.dataAdapter.getDisplayText(opt1).toLowerCase();
       const b = this.dataAdapter.getDisplayText(opt2).toLowerCase();
@@ -171,23 +202,25 @@ export class OptionListManager {
 
       return this.renderMode === "fullrender" ? result : -result;
     });
+  }
+
+  private render(): void {
+    if (!this.dataAdapter) return;
 
     if (this.shouldUseVirtualization()) {
       this.listElement.classList.remove(this.RENDER_MODE_CLASSNAME);
 
-      this.virtualizer.renderVirtualized(this.filteredOptions, this.selectedIndex, this.query, (item, idx, q) =>
-        this.createListItem(item, idx, q),
+      this.virtualizer.renderVirtualized(
+        this.filteredOptions,
+        StateManager.selectedIndex,
+        StateManager.prompt,
+        (item, idx, q) => this.createListItem(item, idx, q),
       );
-
-      requestAnimationFrame(() => {
-        this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
-      });
     } else {
       this.virtualizer.clear();
       this.listElement.classList.add(this.RENDER_MODE_CLASSNAME);
 
       this.renderAll();
-      this.scrollToSelectedNormal();
     }
   }
 
@@ -197,7 +230,7 @@ export class OptionListManager {
 
     const fragment = document.createDocumentFragment();
     this.filteredOptions.forEach((option, idx) => {
-      const li = this.createListItem(option, idx, this.query);
+      const li = this.createListItem(option, idx, StateManager.prompt);
       fragment.appendChild(li);
     });
     this.listElement.appendChild(fragment);
@@ -206,8 +239,9 @@ export class OptionListManager {
   private createListItem(option: any, idx: number, query: string): HTMLLIElement {
     const li = document.createElement("li");
     li.className = "option-item";
+    li.id = `${this.OPTION_ITEM_ID_PREFIX}${idx}`;
 
-    if (idx === this.selectedIndex) {
+    if (idx === StateManager.selectedIndex) {
       li.classList.add("selected");
     }
 
@@ -215,26 +249,11 @@ export class OptionListManager {
     li.innerHTML = this.highlightMatch(displayText, query);
 
     li.onclick = () => {
-      this.selectedIndex = idx;
-      this.render();
+      StateManager.selectedIndex = idx;
       this.onSelectionConfirmed();
     };
 
     return li;
-  }
-
-  private getIconClass(option: any): string {
-    const ext = option.relative.split(".").pop()?.toLowerCase() || "";
-    const map: Record<string, string> = {
-      ts: "nf-dev-typescript",
-      js: "nf-dev-javascript",
-      py: "nf-dev-python",
-      java: "nf-dev-java",
-      html: "nf-dev-html5",
-      css: "nf-dev-css3",
-      md: "nf-dev-markdown",
-    };
-    return map[ext] || "nf-dev-file";
   }
 
   private scrollToSelectedNormal(): void {

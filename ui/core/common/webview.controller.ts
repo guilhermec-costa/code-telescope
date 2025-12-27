@@ -3,6 +3,7 @@ import { debounce } from "../../utils/debounce";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { HighlighterManager } from "../render/highlighter-manager";
 import { PreviewManager } from "../render/preview-manager";
+import { StateManager } from "./code/state-manager";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
@@ -21,6 +22,7 @@ export class WebviewController {
   ) {
     console.log("[WebviewController] Initializing controller");
     this.searchElement = document.getElementById("search") as HTMLInputElement;
+    this.searchElement.value = StateManager.prompt;
     this.setupEventListeners();
     this.setupKeyboardHandlers();
   }
@@ -105,7 +107,7 @@ export class WebviewController {
   private handleResetWebview() {
     this.previewManager.clearPreview();
     this.optionListManager.clearOptions();
-    this.searchElement.value = "";
+    this.searchElement.value = StateManager.prompt;
   }
 
   /**
@@ -128,6 +130,9 @@ export class WebviewController {
 
     const options = adapter.parseOptions(data);
     this.optionListManager.setOptions(options);
+    if (this.searchElement.value) {
+      this.optionListManager.filter(this.searchElement.value);
+    }
 
     this.focusSearchInput();
   }

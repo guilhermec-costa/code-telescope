@@ -1,4 +1,5 @@
 import { FromWebviewKindMessage } from "../../../shared/extension-webview-protocol";
+import { VSCodeApi } from "./code/code-api";
 
 /**
  * Messaging wrapper for the VS Code Webview API.
@@ -6,12 +7,7 @@ import { FromWebviewKindMessage } from "../../../shared/extension-webview-protoc
  * This class is responsible for all outbound communication from the Webview to the Extension
  */
 export class WebviewToExtensionMessenger {
-  private vscodeApi: ReturnType<typeof acquireVsCodeApi>;
   private static _instance: WebviewToExtensionMessenger | null = null;
-
-  private constructor() {
-    this.vscodeApi = acquireVsCodeApi();
-  }
 
   static get instance() {
     if (this._instance) return this._instance;
@@ -26,7 +22,7 @@ export class WebviewToExtensionMessenger {
    * @param message - The message payload following the {@link FromWebviewKindMessage} contract.
    */
   postMessage(message: FromWebviewKindMessage): void {
-    this.vscodeApi.postMessage(message);
+    VSCodeApi.postMessage(message);
   }
 
   /**
