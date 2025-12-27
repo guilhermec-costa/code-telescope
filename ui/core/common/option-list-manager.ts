@@ -211,14 +211,8 @@ export class OptionListManager {
       li.classList.add("selected");
     }
 
-    const iconEl = document.createElement("i");
-    iconEl.className = this.getIconClass(option);
-
-    const textSpan = document.createElement("span");
-    textSpan.innerHTML = this.highlightMatch(this.dataAdapter!.getDisplayText(option), query);
-
-    li.appendChild(iconEl);
-    li.appendChild(textSpan);
+    const displayText = this.dataAdapter.getDisplayText(option);
+    li.innerHTML = this.highlightMatch(displayText, query);
 
     li.onclick = () => {
       this.selectedIndex = idx;

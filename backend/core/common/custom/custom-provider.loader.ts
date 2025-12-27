@@ -16,7 +16,7 @@ export class CustomProviderLoader {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders || workspaceFolders.length === 0) return;
 
-    const wsGlob = new vscode.RelativePattern(workspaceFolders[0], ".vscode/code-telescope/*.finder.cjs");
+    const wsGlob = new vscode.RelativePattern(workspaceFolders[0], `.vscode/code-telescope/*.(finder|provider).cjs`);
 
     const workspaceFiles = await vscode.workspace.findFiles(wsGlob);
 
@@ -60,9 +60,7 @@ export class CustomProviderLoader {
     console.log("[CodeTelescope] Custom provider deleted:", uri.fsPath);
 
     const fuzzyType = this.loadedProviders.get(uri.fsPath);
-    if (!fuzzyType) {
-      return;
-    }
+    if (!fuzzyType) return;
 
     CustomProviderStorage.instance.deleteConfig(fuzzyType);
     FuzzyFinderAdapterRegistry.instance.deleteAdapter(fuzzyType);

@@ -27,10 +27,27 @@ export interface IFuzzyFinderProvider {
    */
   onSelect(item: string): void | Promise<void>;
 
+  /**
+   * Provides configuration required to load the HTML
+   * used by the fuzzy finder webview.
+   *
+   * This allows providers to inject custom HTML files
+   * and replace placeholders dynamically.
+   */
   getHtmlLoadConfig(): HtmlLoadConfig;
 
+  /**
+   * Returns the data necessary to render the preview
+   * for a given item.
+   */
   getPreviewData(identifier: string): Promise<PreviewData>;
 
+  /**
+   * Indicates whether this provider supports dynamic search.
+   *
+   * When enabled, the fuzzy finder will call `searchOnDynamicMode`
+   * on each query change instead of filtering locally.
+   */
   supportsDynamicSearch?: boolean;
 
   /**
@@ -40,7 +57,18 @@ export interface IFuzzyFinderProvider {
   searchOnDynamicMode?(query: string): Promise<any>;
 }
 
+/**
+ * Configuration used to load and hydrate the fuzzy finder HTML.
+ */
 export type HtmlLoadConfig = {
+  /**
+   * Name of the HTML file to be loaded.
+   */
   fileName: string;
+
+  /**
+   * Key-value map used to replace placeholders
+   * inside the HTML template.
+   */
   placeholders: Record<string, string>;
 };

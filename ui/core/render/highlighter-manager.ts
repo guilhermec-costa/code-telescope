@@ -23,6 +23,12 @@ export class HighlighterManager {
     return this.highlighter;
   }
 
+  static async loadLanguageIfNedeed(language: string) {
+    if (this.loadedLanguages.has(language)) return;
+
+    await this.loadLanguageFromBundle(language);
+  }
+
   static async loadThemeFromBundle(theme: string) {
     if (this.loadedThemes.has(theme)) return;
 

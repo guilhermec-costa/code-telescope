@@ -1,6 +1,6 @@
 import path from "path";
 import * as vscode from "vscode";
-import availableLangs from "../../config/highlight-langs.json";
+import extToLangMap from "../../config/highlight-langs.json";
 import { Globals } from "../../globals";
 import { getConfigurationSection } from "../../utils/configuration";
 import { getShikiTheme } from "../../utils/shiki.js";
@@ -11,6 +11,7 @@ import { ExtensionConfigManager } from "./config-manager";
 
 export class VSCodeEventsManager {
   private static instance: VSCodeEventsManager;
+  private loadedLangs: Set<string> = new Set();
 
   private constructor() {
     this.handleThemeChanges();
@@ -56,10 +57,11 @@ export class VSCodeEventsManager {
 
     const langsToLoad = files.reduce<Set<string>>((langs, f) => {
       const ext = path.extname(f.fsPath).slice(1).toLowerCase();
-      const shikiLang = ext && (availableLangs as any)[ext];
+      const language = ext && (extToLangMap as any)[ext];
 
-      if (shikiLang) {
-        langs.add(shikiLang);
+      if (language) {
+        langs.add(language);
+        this.instance.loadedLangs.add(language);
       }
       return langs;
     }, new Set<string>());
@@ -68,7 +70,7 @@ export class VSCodeEventsManager {
 
     if (FuzzyFinderPanelController.instance) {
       await FuzzyFinderPanelController.instance.emitInitShikiEvent({
-        languages: [...langsToLoad, "diff", "sql", "python"],
+        languages: [...langsToLoad, "diff"],
         theme: getShikiTheme(Globals.USER_THEME),
       });
     }

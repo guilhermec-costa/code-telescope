@@ -13,6 +13,10 @@ export function registerAndSubscribeCmd(cmdId: string, cb: () => void, ctx: vsco
   ctx.subscriptions.push(cmdDisposable);
 }
 
+export function registerProviderCmd(fuzzyName: string, cb: () => void, ctx: vscode.ExtensionContext) {
+  registerAndSubscribeCmd(getCmdId("fuzzy", fuzzyName), cb, ctx);
+}
+
 export async function execCmd(cmd: string, ...rest: any[]) {
   return await vscode.commands.executeCommand(cmd, ...rest);
 }

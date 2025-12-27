@@ -35,9 +35,6 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
     };
   }
 
-  /**
-   * Returns the list of file paths to display in the fuzzy finder.
-   */
   async querySelectableOptions() {
     const files = await this.getWorkspaceFiles();
 
@@ -51,9 +48,6 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
     );
   }
 
-  /**
-   * Opens the selected file in VS Code when the user chooses an item.
-   */
   async onSelect(filePath: string) {
     const uri = vscode.Uri.file(filePath);
     await execCmd(Globals.cmds.openFile, uri);

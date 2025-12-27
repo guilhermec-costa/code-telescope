@@ -6,7 +6,7 @@ import { loadFuzzyProviders } from "./core/finders/loader";
 import { FuzzyFinderPanelController } from "./core/presentation/fuzzy-panel.controller";
 import { loadWebviewHandlers } from "./core/presentation/handlers/loader";
 import { Globals } from "./globals";
-import { getCmdId, registerAndSubscribeCmd } from "./utils/commands";
+import { registerProviderCmd } from "./utils/commands";
 import { getConfigurationSection } from "./utils/configuration";
 
 let customProviderLoader: CustomProviderLoader;
@@ -24,28 +24,12 @@ export async function activate(ctx: vscode.ExtensionContext) {
   customProviderLoader = new CustomProviderLoader(ctx);
   await customProviderLoader.initialize();
 
-  registerAndSubscribeCmd(
-    getCmdId("fuzzy", "file"),
-    async () => await FuzzyFinderPanelController.setupProvider("workspace.files"),
-    ctx,
-  );
-  registerAndSubscribeCmd(
-    getCmdId("fuzzy", "branch"),
-    async () => await FuzzyFinderPanelController.setupProvider("git.branches"),
-    ctx,
-  );
-  registerAndSubscribeCmd(
-    getCmdId("fuzzy", "wsText"),
-    async () => await FuzzyFinderPanelController.setupProvider("workspace.text"),
-    ctx,
-  );
-  registerAndSubscribeCmd(
-    getCmdId("fuzzy", "commits"),
-    async () => await FuzzyFinderPanelController.setupProvider("git.commits"),
-    ctx,
-  );
-  registerAndSubscribeCmd(
-    getCmdId("fuzzy", "custom"),
+  registerProviderCmd("file", () => FuzzyFinderPanelController.setupProvider("workspace.files"), ctx);
+  registerProviderCmd("branch", () => FuzzyFinderPanelController.setupProvider("git.branches"), ctx);
+  registerProviderCmd("wsText", () => FuzzyFinderPanelController.setupProvider("workspace.text"), ctx);
+  registerProviderCmd("commits", () => FuzzyFinderPanelController.setupProvider("git.commits"), ctx);
+  registerProviderCmd(
+    "custom",
     async () => {
       const customTypes = CustomProviderStorage.instance.getAllTypes();
       if (customTypes.length === 0) {

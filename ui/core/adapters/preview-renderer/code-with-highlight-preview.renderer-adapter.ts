@@ -5,6 +5,7 @@ import { IPreviewRendererAdapter } from "../../abstractions/preview-renderer-ada
 import { WebviewToExtensionMessenger } from "../../common/wv-to-extension-messenger";
 import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapter.decorator";
 import { SyntaxHighlighter } from "../../registry/preview-adapter.registry";
+import { HighlighterManager } from "../../render/highlighter-manager";
 
 @PreviewRendererAdapter({
   adapter: "preview.codeHighlighted",
@@ -30,6 +31,7 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
       let html = text;
 
       if (!isCached) {
+        await HighlighterManager.loadLanguageIfNedeed(language);
         html = this.highlighter.codeToHtml(text, {
           lang: language,
           theme,
