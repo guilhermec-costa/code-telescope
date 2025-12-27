@@ -48,7 +48,9 @@ export class PreviewManager {
 
     this.clearPreview();
     await this.adapter.render(this.previewElement, data, this.userTheme);
-    this.scrollToHighlighted();
+    requestAnimationFrame(() => {
+      this.scrollToHighlighted();
+    });
     this.lastPreviewedData = data;
     console.log("[PreviewManager] Preview rendered");
   }

@@ -3,6 +3,7 @@ import { WebviewController } from "./core/common/webview.controller";
 
 import "./core/adapters/data/loader";
 import "./core/adapters/preview-renderer/loader";
+import { HorizontalSplitter } from "./core/render/horizontal-splitter";
 
 (async () => {
   try {
@@ -20,6 +21,17 @@ import "./core/adapters/preview-renderer/loader";
       container.keyboardHandler,
     );
     console.log("[Index] Controller created");
+
+    new HorizontalSplitter(
+      document.getElementById("split")!,
+      document.getElementById("left-side")!,
+      document.getElementById("resizer")!,
+      {
+        minLeftWidth: 250,
+        maxLeftWidth: 900,
+        // onResizeEnd: (width) => StateManager.setLeftPaneWidth(width),
+      },
+    );
 
     await controller.initialize();
     console.log("[Index] Controller initialized - Webview ready!");

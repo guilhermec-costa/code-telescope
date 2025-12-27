@@ -4,6 +4,7 @@ export class HighlighterManager {
   private static highlighter: HighlighterCore | null = null;
   private static loadedThemes = new Set<string>();
   private static loadedLanguages = new Set<string>();
+  private static bundlePromise: Promise<any> | null = null;
 
   static async initHighlighterCore(): Promise<HighlighterCore> {
     if (this.highlighter) return this.highlighter;
@@ -23,6 +24,13 @@ export class HighlighterManager {
     return this.highlighter;
   }
 
+  private static loadBundle() {
+    if (!this.bundlePromise) {
+      this.bundlePromise = import(`${__SHIKI_URI__}/shiki-bundle.js`);
+    }
+    return this.bundlePromise;
+  }
+
   static async loadLanguageIfNedeed(language: string) {
     if (this.loadedLanguages.has(language)) return;
 
@@ -32,7 +40,7 @@ export class HighlighterManager {
   static async loadThemeFromBundle(theme: string) {
     if (this.loadedThemes.has(theme)) return;
 
-    const { themes } = await import(`${__SHIKI_URI__}/shiki-bundle.js`);
+    const { themes } = await this.loadBundle();
     const bundledTheme = themes?.bundledThemes?.[theme];
     if (!bundledTheme) throw new Error(`[ShikiManager] Theme not found: ${theme}`);
 
@@ -44,7 +52,7 @@ export class HighlighterManager {
   static async loadLanguageFromBundle(lang: string) {
     if (this.loadedLanguages.has(lang)) return;
 
-    const { langs } = await import(`${__SHIKI_URI__}/shiki-bundle.js`);
+    const { langs } = await this.loadBundle();
     const bundledLang = langs?.bundledLanguages?.[lang];
     if (!lang) throw new Error(`[ShikiManager] Language not found: ${lang}`);
 

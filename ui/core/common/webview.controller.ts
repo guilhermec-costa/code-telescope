@@ -72,8 +72,15 @@ export class WebviewController {
       }
 
       case "shikiInit": {
-        const langsPromises = msg.data.languages.map((language) => HighlighterManager.loadLanguageFromBundle(language));
-        await Promise.all([...langsPromises, HighlighterManager.loadThemeFromBundle(msg.data.theme)]);
+        console.time("shiki-init");
+
+        msg.data.languages.forEach((language) => {
+          HighlighterManager.loadLanguageFromBundle(language);
+        });
+
+        HighlighterManager.loadThemeFromBundle(msg.data.theme);
+
+        console.timeEnd("shiki-init");
 
         this.previewManager.setUserTheme(msg.data.theme);
         WebviewToExtensionMessenger.instance.onShikiInit();

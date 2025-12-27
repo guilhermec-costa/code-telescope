@@ -8,7 +8,7 @@ export class Virtualizer {
   private itemHeight: number;
   private bufferSize: number;
 
-  constructor(container: HTMLElement, options: VirtualizerOptions = { itemHeight: 22, bufferSize: 10 }) {
+  constructor(container: HTMLElement, options: VirtualizerOptions = { itemHeight: 22, bufferSize: 5 }) {
     this.container = container;
     this.itemHeight = options.itemHeight;
     this.bufferSize = options.bufferSize;

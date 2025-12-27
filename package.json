@@ -108,7 +108,7 @@
                 },
                 "codeTelescope.wsTextFinder.maxFileSize": {
                     "type": "string",
-                    "default": "300K",
+                    "default": "800K",
                     "description": "Maximum file size ripgrep will search (e.g. 200k, 1M)"
                 },
                 "codeTelescope.wsTextFinder.ignoreCase": {

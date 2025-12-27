@@ -57,32 +57,15 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
    * Executes the search for workspace files based on configured patterns.
    * Merges exclude patterns and optionally filters out hidden files.
    */
-  private async getWorkspaceFiles() {
+  public async getWorkspaceFiles() {
     const { excludePatterns, excludeHidden, includePatterns, maxResults } = ExtensionConfigManager.wsFileFinderCfg;
 
     const excludes = [...excludePatterns];
     if (excludeHidden) excludes.push("**/.*");
 
-    const results: vscode.Uri[] = [];
+    const include = includePatterns.length === 1 ? includePatterns[0] : `{${includePatterns.join(",")}}`;
 
-    await Promise.all(
-      includePatterns.map(async (pattern) => {
-        const files = await vscode.workspace.findFiles(pattern, `{${excludes.join(",")}}`, maxResults);
-        const filtered = await Promise.all(
-          files.map(async (uri) => {
-            try {
-              const stat = await vscode.workspace.fs.stat(uri);
-              return stat.size <= 200 * 1024 ? uri : null;
-            } catch {
-              return null;
-            }
-          }),
-        );
-        results.push(...(filtered.filter(Boolean) as vscode.Uri[]));
-      }),
-    );
-
-    return results;
+    return vscode.workspace.findFiles(include, `{${excludes.join(",")}}`, maxResults);
   }
 
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {

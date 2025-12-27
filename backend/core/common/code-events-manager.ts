@@ -4,10 +4,10 @@ import extToLangMap from "../../config/highlight-langs.json";
 import { Globals } from "../../globals";
 import { getConfigurationSection } from "../../utils/configuration";
 import { getShikiTheme } from "../../utils/shiki.js";
+import { WorkspaceFileFinder } from "../finders/ws-files.finder";
 import { FuzzyFinderPanelController } from "../presentation/fuzzy-panel.controller";
 import { FileContentCache } from "./cache/file-content.cache";
 import { HighlightContentCache } from "./cache/highlight-content.cache";
-import { ExtensionConfigManager } from "./config-manager";
 
 export class VSCodeEventsManager {
   private static instance: VSCodeEventsManager;
@@ -52,8 +52,8 @@ export class VSCodeEventsManager {
   }
 
   static async emitInitialEvents() {
-    const { excludePatterns, includePatterns } = ExtensionConfigManager.wsFileFinderCfg;
-    const files = await vscode.workspace.findFiles(`{${includePatterns.join(",")}}`, `{${excludePatterns.join(",")}}`);
+    const finder = new WorkspaceFileFinder();
+    const files = await finder.getWorkspaceFiles();
 
     const langsToLoad = files.reduce<Set<string>>((langs, f) => {
       const ext = path.extname(f.fsPath).slice(1).toLowerCase();

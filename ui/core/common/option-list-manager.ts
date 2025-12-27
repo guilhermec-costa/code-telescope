@@ -31,7 +31,7 @@ export class OptionListManager {
 
     this.debouncedRequestPreview = debounce((value: string) => {
       this.previewManager.requestPreview(value);
-    }, 50);
+    }, 0);
 
     this.setupScrollListener();
   }
@@ -79,7 +79,6 @@ export class OptionListManager {
 
     StateManager.selectedIndex = this.getRelativeFirstIndex();
     this.updateItemsCount();
-    this.applySortOnFiltered();
     this.render();
 
     const first = this.getRelativeFirstItem();
@@ -205,6 +204,7 @@ export class OptionListManager {
   }
 
   private render(): void {
+    this.applySortOnFiltered();
     if (!this.dataAdapter) return;
 
     if (this.shouldUseVirtualization()) {
@@ -266,14 +266,19 @@ export class OptionListManager {
   private highlightMatch(text: string, query: string): string {
     if (!query) return escapeHtml(text);
 
-    const i = text.toLowerCase().indexOf(query);
+    const lowerText = text.toLowerCase();
+    const lowerQuery = query.toLowerCase();
+
+    const i = lowerText.indexOf(lowerQuery);
     if (i === -1) return escapeHtml(text);
 
-    const before = escapeHtml(text.slice(0, i));
-    const match = escapeHtml(text.slice(i, i + query.length));
-    const after = escapeHtml(text.slice(i + query.length));
+    const escaped = escapeHtml(text);
 
-    return `${before}<span class="highlight">${match}</span>${after}`;
+    return (
+      escaped.slice(0, i) +
+      `<span class="highlight">${escaped.slice(i, i + query.length)}</span>` +
+      escaped.slice(i + query.length)
+    );
   }
 
   private requestPreview(option: any): void {
