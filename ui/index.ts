@@ -24,7 +24,7 @@ import { HorizontalSplitter } from "./core/render/horizontal-splitter";
 
     new HorizontalSplitter(
       document.getElementById("split")!,
-      document.getElementById("left-side")!,
+      document.getElementById("search-results")!,
       document.getElementById("resizer")!,
       {
         minLeftWidth: 250,

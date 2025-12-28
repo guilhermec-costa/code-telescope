@@ -34,7 +34,7 @@ describe("GitBranchFuzzyFinder", () => {
   it("returns html load config", () => {
     const cfg = provider.getHtmlLoadConfig();
 
-    expect(cfg.fileName).toBe("branch-fuzzy.view.html");
+    expect(cfg.fileName).toBe("file-fuzzy.view.html");
     expect(cfg.placeholders["{{style}}"]).toBe("ui/style/style.css");
   });
 

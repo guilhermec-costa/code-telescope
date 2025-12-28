@@ -1,5 +1,4 @@
 import { debounce } from "../../utils/debounce";
-import { escapeHtml } from "../../utils/html";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
 import { PreviewManager } from "../render/preview-manager";
 import { Virtualizer } from "../render/virtualizer";
@@ -239,17 +238,19 @@ export class OptionListManager {
   private createListItem(option: any, idx: number, query: string): HTMLLIElement {
     const li = document.createElement("li");
     li.className = "option-item";
-    li.id = `${this.OPTION_ITEM_ID_PREFIX}${idx}`;
 
     if (idx === StateManager.selectedIndex) {
       li.classList.add("selected");
     }
 
     const displayText = this.dataAdapter.getDisplayText(option);
-    li.innerHTML = this.highlightMatch(displayText, query);
+
+    li.innerHTML = "";
+    li.appendChild(this.renderHighlight(displayText, query));
 
     li.onclick = () => {
       StateManager.selectedIndex = idx;
+      this.render();
       this.onSelectionConfirmed();
     };
 
@@ -263,22 +264,39 @@ export class OptionListManager {
     }
   }
 
-  private highlightMatch(text: string, query: string): string {
-    if (!query) return escapeHtml(text);
+  private renderHighlight(text: string, query: string): DocumentFragment {
+    const fragment = document.createDocumentFragment();
 
-    const lowerText = text.toLowerCase();
-    const lowerQuery = query.toLowerCase();
+    if (!query) {
+      fragment.appendChild(document.createTextNode(text));
+      return fragment;
+    }
 
-    const i = lowerText.indexOf(lowerQuery);
-    if (i === -1) return escapeHtml(text);
+    const index = text.toLowerCase().indexOf(query.toLowerCase());
 
-    const escaped = escapeHtml(text);
+    if (index === -1) {
+      fragment.appendChild(document.createTextNode(text));
+      return fragment;
+    }
 
-    return (
-      escaped.slice(0, i) +
-      `<span class="highlight">${escaped.slice(i, i + query.length)}</span>` +
-      escaped.slice(i + query.length)
-    );
+    // before match
+    if (index > 0) {
+      fragment.appendChild(document.createTextNode(text.slice(0, index)));
+    }
+
+    // in match
+    const span = document.createElement("span");
+    span.className = "highlight";
+    span.textContent = text.slice(index, index + query.length);
+    fragment.appendChild(span);
+
+    // after match
+    const after = text.slice(index + query.length);
+    if (after) {
+      fragment.appendChild(document.createTextNode(after));
+    }
+
+    return fragment;
   }
 
   private requestPreview(option: any): void {

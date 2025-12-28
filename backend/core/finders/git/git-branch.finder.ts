@@ -27,7 +27,7 @@ export class GitBranchFuzzyFinder implements IFuzzyFinderProvider {
 
   getHtmlLoadConfig() {
     return {
-      fileName: "branch-fuzzy.view.html",
+      fileName: "file-fuzzy.view.html",
       placeholders: {
         "{{style}}": "ui/style/style.css",
         "{{branch-styles}}": "ui/style/branch-preview.css",

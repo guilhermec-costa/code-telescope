@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Code Telescope - Fuzzy Finder</title>
+  <title>Code Telescope - Ivy Layout</title>
   <cssvariables></cssvariables>
-  <link rel="stylesheet" href="{{branch-styles}}">
   <link rel="stylesheet" href="{{style}}">
+  <link rel="stylesheet" href="{{branch-styles}}">
   <script>
     const __SHIKI_URI__ = '{{__SHIKI_URI__}}';
     const __PREVIEW_CFG__ = JSON.parse('{{__PREVIEW_CFG__}}');
@@ -23,21 +23,22 @@
 
 <body>
   <div id="container">
+    <div id="input-container">
+      <input id="search" type="text" autofocus placeholder="Find file...">
+      <span id="items-count">0 / 0</span>
+    </div>
     <div id="split">
       <div id="search-results">
-        <div id="results-label">Files</div>
         <ul id="option-list"></ul>
-        <div id="input-container">
-          <div id="input-container-label">Prompt</div>
-          <input id="search" type="text" autofocus>
-          <span id="items-count">0 / 0</span>
-        </div>
       </div>
       <div id="resizer"></div>
       <div id="preview-side">
-        <div id="preview-label">Preview</div>
         <div id="preview"></div>
       </div>
+    </div>
+    <div id="status-bar">
+      <span>Code Telescope</span>
+      <span id="status-info"></span>
     </div>
   </div>
 </body>
