@@ -37,6 +37,10 @@
                 "title": "Code Telescope: Commit Finder"
             },
             {
+                "command": "code-telescope.fuzzy.keybindings",
+                "title": "Code Telescope: Keybindings"
+            },
+            {
                 "command": "code-telescope.fuzzy.custom",
                 "title": "Code Telescope: Pick Custom Finder"
             }
@@ -108,7 +112,7 @@
                 },
                 "codeTelescope.wsTextFinder.maxFileSize": {
                     "type": "string",
-                    "default": "800K",
+                    "default": "500K",
                     "description": "Maximum file size ripgrep will search (e.g. 200k, 1M)"
                 },
                 "codeTelescope.wsTextFinder.ignoreCase": {

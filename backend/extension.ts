@@ -25,6 +25,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   await customProviderLoader.initialize();
 
   registerProviderCmd("file", () => FuzzyFinderPanelController.setupProvider("workspace.files"), ctx);
+  registerProviderCmd("keybindings", () => FuzzyFinderPanelController.setupProvider("workspace.keybindings"), ctx);
   registerProviderCmd("branch", () => FuzzyFinderPanelController.setupProvider("git.branches"), ctx);
   registerProviderCmd("wsText", () => FuzzyFinderPanelController.setupProvider("workspace.text"), ctx);
   registerProviderCmd("commits", () => FuzzyFinderPanelController.setupProvider("git.commits"), ctx);

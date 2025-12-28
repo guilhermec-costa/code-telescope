@@ -6,6 +6,7 @@ export type BuiltinFuzzyProviderType =
   | "workspace.files"
   | "workspace.text"
   | "workspace.recentFiles"
+  | "workspace.keybindings"
   | "git.branches"
   | "git.commits"
   | "git.fileHistory"
