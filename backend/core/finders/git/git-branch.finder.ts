@@ -2,7 +2,7 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapt
 import { BranchInfo, CommitInfo } from "../../../../shared/exchange/branch-search";
 import { PreviewData } from "../../../../shared/extension-webview-protocol";
 import { API, Ref } from "../../../@types/git";
-import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
+import { IFuzzyFinderProvider, LayoutCustomPlaceholders } from "../../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderAdapter } from "../../decorators/fuzzy-finder-provider.decorator";
 import { getGitApi } from "./api-utils";
 
@@ -25,9 +25,10 @@ export class GitBranchFuzzyFinder implements IFuzzyFinderProvider {
     throw new Error("Method not implemented.");
   }
 
-  customPlaceholders() {
+  customPlaceholders(): LayoutCustomPlaceholders {
     return {
-      "{{fileName}}": "ui/views/branch-fuzzy.view.html",
+      layoutHtmlFilename: "branch-fuzzy.view.html",
+      layoutCssFilename: "classic.css",
       "{{branch-styles}}": "ui/style/branch-preview.css",
     };
   }

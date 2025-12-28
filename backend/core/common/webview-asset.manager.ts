@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Globals } from "../../globals";
 import { joinPath } from "../../utils/files";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
+import { IFuzzyFinderProvider, LayoutCustomPlaceholders } from "../abstractions/fuzzy-finder.provider";
 import { ExtensionConfigManager } from "../common/config-manager";
 import { CustomProviderStorage } from "./custom/custom-provider.storage";
 
@@ -9,7 +9,8 @@ export class WebviewAssetManager {
   public static async getProcessedHtml(wv: vscode.Webview, provider: IFuzzyFinderProvider): Promise<string> {
     const customPlaceholders = provider.customPlaceholders?.() ?? {};
 
-    const layoutFilename = customPlaceholders.fileName ?? `${ExtensionConfigManager.layoutCfg.mode}.view.html`;
+    const layoutFilename =
+      customPlaceholders.layoutHtmlFilename ?? `${ExtensionConfigManager.layoutCfg.mode}.view.html`;
     const htmlPath = joinPath(Globals.EXTENSION_URI, "ui", "views", layoutFilename);
     const rawContent = (await vscode.workspace.fs.readFile(htmlPath)).toString();
 
@@ -23,12 +24,13 @@ export class WebviewAssetManager {
   private static resolveAssetUris(
     html: string,
     wv: vscode.Webview,
-    adapterPlaceholders: Record<string, string>,
+    adapterPlaceholders: LayoutCustomPlaceholders,
   ): string {
+    const layoutStyleName = adapterPlaceholders.layoutCssFilename ?? `${ExtensionConfigManager.layoutCfg.mode}.css`;
     const allPlaceholders = {
       ...adapterPlaceholders,
       "{{highlight-styles}}": "ui/style/highlight.css",
-      "{{style}}": `ui/style/${ExtensionConfigManager.layoutCfg.mode}.css`,
+      "{{style}}": `ui/style/${layoutStyleName}`,
       "{{script}}": "ui/dist/index.js",
     };
 

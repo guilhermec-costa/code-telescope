@@ -34,7 +34,7 @@ export interface IFuzzyFinderProvider {
    * This allows providers to inject custom HTML files
    * and replace placeholders dynamically.
    */
-  customPlaceholders?(): Record<string, string>;
+  customPlaceholders?(): LayoutCustomPlaceholders;
 
   /**
    * Returns the data necessary to render the preview
@@ -60,15 +60,15 @@ export interface IFuzzyFinderProvider {
 /**
  * Configuration used to load and hydrate the fuzzy finder HTML.
  */
-export type HtmlLoadConfig = {
+export type LayoutCustomPlaceholders = {
   /**
    * Name of the HTML file to be loaded.
    */
-  fileName?: string;
+  layoutHtmlFilename?: string;
 
   /**
    * Key-value map used to replace placeholders
    * inside the HTML template.
    */
-  placeholders: Record<string, string>;
-};
+  layoutCssFilename?: string;
+} & Record<string, string>;
