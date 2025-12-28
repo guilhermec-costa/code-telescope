@@ -47,7 +47,6 @@ export class KeybindingsFinderDataAdapter implements IFuzzyFinderDataAdapter<Key
   }
 
   getSelectionValue(option: KeybindingOption): string {
-    // Retorna o índice como string para ser usado na busca e seleção
     return option.index.toString();
   }
 
@@ -55,7 +54,6 @@ export class KeybindingsFinderDataAdapter implements IFuzzyFinderDataAdapter<Key
     const lowerQuery = query.toLowerCase();
     const kb = option.keybinding;
 
-    // Busca em múltiplos campos
     return (
       kb.key.toLowerCase().includes(lowerQuery) ||
       kb.command.toLowerCase().includes(lowerQuery) ||

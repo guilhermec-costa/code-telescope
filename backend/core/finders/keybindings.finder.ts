@@ -57,14 +57,16 @@ export class KeybindingsFinder implements IFuzzyFinderProvider {
     };
   }
 
-  async onSelect(selectedIndex: string) {
-    const index = parseInt(selectedIndex, 10);
+  async getKbFromIdx(idx: string) {
+    const index = parseInt(idx, 10);
     const keybindings = await this.getUserKeybindings();
-    const selected = keybindings[index];
+    return keybindings[index];
+  }
 
+  async onSelect(selectedIndex: string) {
+    const selected = await this.getKbFromIdx(selectedIndex);
     if (!selected) return;
 
-    // Abre o arquivo keybindings.json na linha do keybinding selecionado
     const keybindingsPath = this.getKeybindingsPath();
     if (keybindingsPath && fs.existsSync(keybindingsPath)) {
       const uri = vscode.Uri.file(keybindingsPath);
@@ -91,9 +93,7 @@ export class KeybindingsFinder implements IFuzzyFinderProvider {
   }
 
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
-    const index = parseInt(identifier, 10);
-    const keybindings = await this.getUserKeybindings();
-    const selected = keybindings[index];
+    const selected = await this.getKbFromIdx(identifier);
 
     if (!selected) {
       return {
