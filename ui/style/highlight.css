@@ -1,0 +1,45 @@
+#preview pre,
+#preview code {
+  background-color: transparent;
+  font-family: var(--font-family);
+  padding: 0;
+  margin: 0;
+}
+
+#preview pre span {
+  background-color: transparent;
+  font-family: var(--font-family);
+}
+
+.highlighted {
+  background-color: var(--vscode-editor-findMatchHighlightBackground) !important;
+  border-left: 2px solid var(--focus-border);
+  padding-left: 1em;
+  margin-left: -1em;
+}
+
+.shiki .line[data-line] {
+  position: relative;
+  padding-left: 2.5em;
+}
+
+.shiki .line[data-line]::before {
+  content: attr(data-line);
+  position: absolute;
+  left: 0;
+  width: 2em;
+  text-align: right;
+  padding-right: 0.8em;
+  color: var(--vscode-editorLineNumber-foreground);
+  opacity: 0.8;
+  user-select: none;
+  font-size: 0.9em;
+}
+
+.highlight {
+  background-color: var(--highlight-bg);
+  color: var(--fg);
+  font-weight: 600;
+  padding: 0 1px;
+  border-radius: 1px;
+}

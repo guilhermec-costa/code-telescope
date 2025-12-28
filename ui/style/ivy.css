@@ -186,14 +186,6 @@ body {
   font-weight: 700;
 }
 
-.highlight {
-  background-color: var(--highlight-bg);
-  color: var(--fg);
-  font-weight: 500;
-  padding: 0 0.3px;
-  border-radius: 1px;
-}
-
 #resizer {
   width: 4px;
   cursor: col-resize;
@@ -228,58 +220,6 @@ body {
   line-height: 1.4;
 }
 
-#preview pre,
-#preview code {
-  background-color: transparent;
-  font-family: var(--font-family);
-  padding: 0;
-  margin: 0;
-}
-
-#preview pre span {
-  background-color: transparent;
-  font-family: var(--font-family);
-}
-
-#status-bar {
-  width: 100%;
-  padding: 4px 12px;
-  font-size: 11px;
-  font-weight: 400;
-  font-family: var(--font-family);
-  color: var(--status-bar-fg);
-  background-color: var(--status-bar-bg);
-  border-top: 1px solid var(--divider-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-}
-
-.highlighted {
-  background-color: var(--vscode-editor-findMatchHighlightBackground) !important;
-  border-left: 2px solid var(--focus-border);
-  padding-left: 1em;
-  margin-left: -1em;
-}
-
-.shiki .line[data-line] {
-  position: relative;
-  padding-left: 2.5em;
-}
-
-.shiki .line[data-line]::before {
-  content: attr(data-line);
-  position: absolute;
-  left: 0;
-  width: 2em;
-  text-align: right;
-  padding-right: 0.8em;
-  color: var(--vscode-editorLineNumber-foreground);
-  opacity: 0.5;
-  user-select: none;
-  font-size: 0.9em;
-}
 
 #preview-label,
 #results-label {

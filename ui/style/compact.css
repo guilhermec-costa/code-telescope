@@ -174,14 +174,6 @@ body {
   font-weight: 500;
 }
 
-.highlight {
-  background-color: var(--highlight-bg);
-  color: var(--fg);
-  font-weight: 600;
-  padding: 0 1px;
-  border-radius: 1px;
-}
-
 #resizer {
   width: 3px;
   cursor: col-resize;
@@ -215,48 +207,6 @@ body {
   font-size: var(--preview-font-size);
   font-weight: 400;
   line-height: 1.35;
-}
-
-#preview pre,
-#preview code {
-  background-color: transparent;
-  font-family: var(--font-family);
-  padding: 0;
-  margin: 0;
-}
-
-#preview pre span {
-  background-color: transparent;
-  font-family: var(--font-family);
-}
-
-#status-bar {
-  display: none;
-}
-
-.highlighted {
-  background-color: var(--vscode-editor-findMatchHighlightBackground) !important;
-  border-left: 2px solid var(--focus-border);
-  padding-left: 0.8em;
-  margin-left: -0.8em;
-}
-
-.shiki .line[data-line] {
-  position: relative;
-  padding-left: 2.2em;
-}
-
-.shiki .line[data-line]::before {
-  content: attr(data-line);
-  position: absolute;
-  left: 0;
-  width: 1.8em;
-  text-align: right;
-  padding-right: 0.6em;
-  color: var(--vscode-editorLineNumber-foreground);
-  opacity: 0.4;
-  user-select: none;
-  font-size: 0.85em;
 }
 
 #preview-label,

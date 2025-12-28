@@ -18,9 +18,17 @@ export class WebviewAssetManager {
     return html;
   }
 
-  private static resolveAssetUris(html: string, wv: vscode.Webview, placeholders: Record<string, string>): string {
+  private static resolveAssetUris(
+    html: string,
+    wv: vscode.Webview,
+    adapterPlaceholders: Record<string, string>,
+  ): string {
+    const allPlaceholders = {
+      ...adapterPlaceholders,
+      "{{highlight-styles}}": "ui/style/highlight.css",
+    };
     let processed = html;
-    for (const [placeholder, distPath] of Object.entries(placeholders)) {
+    for (const [placeholder, distPath] of Object.entries(allPlaceholders)) {
       const uri = wv.asWebviewUri(joinPath(Globals.EXTENSION_URI, distPath));
       processed = processed.split(placeholder).join(uri.toString());
     }

@@ -27,9 +27,9 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
 
   getHtmlLoadConfig() {
     return {
-      fileName: "file-fuzzy.view.html",
+      fileName: "ivy.view.html",
       placeholders: {
-        "{{style}}": "ui/style/style.css",
+        "{{style}}": "ui/style/ivy.css",
         "{{script}}": "ui/dist/index.js",
       },
     };

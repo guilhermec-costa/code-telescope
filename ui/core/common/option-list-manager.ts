@@ -57,7 +57,6 @@ export class OptionListManager {
     StateManager.prompt = "";
     this.updateItemsCount();
     this.render();
-    this.scrollToSelected();
 
     const first = this.getRelativeFirstItem();
     if (first) this.requestPreview(first);
@@ -222,6 +221,7 @@ export class OptionListManager {
 
       this.renderAll();
     }
+    this.scrollToSelected();
   }
 
   private renderAll(): void {
