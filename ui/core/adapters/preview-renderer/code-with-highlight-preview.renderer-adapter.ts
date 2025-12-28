@@ -1,4 +1,5 @@
 import { PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { PreviewManagerConfig } from "../../../../shared/exchange/extension-config";
 import { HighlightedCodePreviewData } from "../../../../shared/extension-webview-protocol";
 import { toInnerHTML } from "../../../utils/html";
 import { IPreviewRendererAdapter } from "../../abstractions/preview-renderer-adapter";
@@ -60,25 +61,32 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
         theme,
       });
 
-      const container = document.createElement("div");
-      container.dataset.chunk = String(chunkIndex);
-      container.innerHTML = html;
+      const chunkContainer = document.createElement("div");
+      chunkContainer.innerHTML = html;
+
+      if ((__PREVIEW_CFG__ as PreviewManagerConfig).showLineNumbers) {
+        const linesEls = chunkContainer.querySelectorAll(".line");
+        linesEls.forEach((lineEl, i) => {
+          const absoluteLineNumber = start + i + 1;
+          (lineEl as HTMLElement).dataset.line = String(absoluteLineNumber);
+        });
+      }
 
       if (metadata?.highlightLine !== undefined) {
         const localIndex = metadata.highlightLine - start;
         if (localIndex >= 0) {
-          const line = container.querySelectorAll(".line")[localIndex];
+          const line = chunkContainer.querySelectorAll(".line")[localIndex];
           line?.classList.add("highlighted");
         }
       }
 
       if (position === "prepend") {
         const prevHeight = previewElement.scrollHeight;
-        previewElement.prepend(container);
+        previewElement.prepend(chunkContainer);
         const nextHeight = previewElement.scrollHeight;
         previewElement.scrollTop += nextHeight - prevHeight;
       } else {
-        previewElement.appendChild(container);
+        previewElement.appendChild(chunkContainer);
       }
     };
 

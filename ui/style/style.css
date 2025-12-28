@@ -316,3 +316,20 @@ body {
   padding-left: 1em;
   margin-left: -1em;
 }
+
+.shiki .line[data-line] {
+  position: relative;
+  padding-left: 1.8em;
+}
+
+.shiki .line[data-line]::before {
+  content: attr(data-line);
+  position: absolute;
+  left: 0;
+  width: 4em;
+  text-align: left;
+  padding-right: 1em;
+  color: var(--vscode-editorLineNumber-foreground);
+  opacity: 0.6;
+  user-select: none;
+}

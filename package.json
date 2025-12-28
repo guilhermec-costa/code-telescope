@@ -86,10 +86,14 @@
                     "description": "Max number of results to list"
                 },
                 "codeTelescope.wsFileFinder.textDisplay": {
-                  "type": "string",
-                  "enum": ["relative", "absolute", "filename-only"],
-                  "default": "relative",
-                  "description": "How to display file path"
+                    "type": "string",
+                    "enum": [
+                        "relative",
+                        "absolute",
+                        "filename-only"
+                    ],
+                    "default": "relative",
+                    "description": "How to display file path"
                 },
                 "codeTelescope.wsTextFinder.excludePatterns": {
                     "type": "array",
@@ -164,6 +168,11 @@
                     ],
                     "default": "1/2",
                     "description": "Controls how the preview scrolls horizontally to reveal the target column"
+                },
+                "codeTelescope.preview.showLineNumbers": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If line numbers should be displayed in the preview"
                 },
                 "codeTelescope.panelSetup.rightSideWidthPct": {
                     "type": "number",
