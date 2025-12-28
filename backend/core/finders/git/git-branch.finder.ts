@@ -25,14 +25,10 @@ export class GitBranchFuzzyFinder implements IFuzzyFinderProvider {
     throw new Error("Method not implemented.");
   }
 
-  getHtmlLoadConfig() {
+  customPlaceholders() {
     return {
-      fileName: "file-fuzzy.view.html",
-      placeholders: {
-        "{{style}}": "ui/style/style.css",
-        "{{branch-styles}}": "ui/style/branch-preview.css",
-        "{{script}}": "ui/dist/index.js",
-      },
+      "{{fileName}}": "ui/views/branch-fuzzy.view.html",
+      "{{branch-styles}}": "ui/style/branch-preview.css",
     };
   }
 

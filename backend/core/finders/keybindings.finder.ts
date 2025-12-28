@@ -31,16 +31,6 @@ export class KeybindingsFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
 
-  getHtmlLoadConfig() {
-    return {
-      fileName: "file-fuzzy.view.html",
-      placeholders: {
-        "{{style}}": "ui/style/style.css",
-        "{{script}}": "ui/dist/index.js",
-      },
-    };
-  }
-
   async querySelectableOptions(): Promise<KeybindingFinderData> {
     const keybindings = await this.getUserKeybindings();
 

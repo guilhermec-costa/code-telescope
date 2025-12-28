@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import {
   type KeybindingConfig,
-  type PanelSetupConfig,
+  type LayoutSetupConfig,
   type PreviewManagerConfig,
   type WsFileFinderConfig,
   type WsTextFinderConfig,
@@ -12,7 +12,7 @@ enum ExtensionCfgSection {
   WS_FILE_FINDER = "wsFileFinder",
   WS_TEXT_FINDER = "wsTextFinder",
   PREVIEW = "preview",
-  PANEL_SETUP = "panelSetup",
+  LAYOUT = "layout",
   KEYBINDINGS = "keybindings",
 }
 
@@ -33,8 +33,8 @@ export class ExtensionConfigManager {
     return this.root.get<PreviewManagerConfig>(ExtensionCfgSection.PREVIEW)!;
   }
 
-  static get uiPanelCfg(): PanelSetupConfig {
-    return this.root.get<PanelSetupConfig>(ExtensionCfgSection.PANEL_SETUP)!;
+  static get layoutCfg(): LayoutSetupConfig {
+    return this.root.get<LayoutSetupConfig>(ExtensionCfgSection.LAYOUT)!;
   }
 
   static get keybindings(): KeybindingConfig {

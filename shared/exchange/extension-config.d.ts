@@ -16,7 +16,8 @@ export interface WsTextFinderConfig {
   maxColumns: number;
 }
 
-export interface PanelSetupConfig {
+export interface LayoutSetupConfig {
+  mode: "classic" | "ivy" | "compact";
   rightSideWidthPct: number;
   leftSideWidthPct: number;
   panelContainerPct: number;

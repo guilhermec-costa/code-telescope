@@ -65,15 +65,6 @@ export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
 
   querySelectableOptions!: () => Promise<any>;
   onSelect!: (item: string) => void | Promise<void>;
-  getHtmlLoadConfig() {
-    return {
-      fileName: "file-fuzzy.view.html",
-      placeholders: {
-        "{{style}}": "ui/style/style.css",
-        "{{script}}": "ui/dist/index.js",
-      },
-    };
-  }
   getPreviewData!: (identifier: string) => Promise<PreviewData>;
 
   supportsDynamicSearch = false;

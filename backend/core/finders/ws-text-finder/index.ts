@@ -26,16 +26,6 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
     this.ripgrepFinder = new RipgrepFinder();
   }
 
-  getHtmlLoadConfig() {
-    return {
-      fileName: "file-fuzzy.view.html",
-      placeholders: {
-        "{{style}}": "ui/style/style.css",
-        "{{script}}": "ui/dist/index.js",
-      },
-    };
-  }
-
   async querySelectableOptions() {
     return { results: [], query: "", message: "Type to search..." };
   }

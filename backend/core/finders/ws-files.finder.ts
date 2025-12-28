@@ -25,16 +25,6 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
 
-  getHtmlLoadConfig() {
-    return {
-      fileName: "ivy.view.html",
-      placeholders: {
-        "{{style}}": "ui/style/ivy.css",
-        "{{script}}": "ui/dist/index.js",
-      },
-    };
-  }
-
   async querySelectableOptions() {
     const files = await this.getWorkspaceFiles();
 

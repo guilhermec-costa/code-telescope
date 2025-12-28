@@ -23,16 +23,6 @@ export class GitCommitFuzzyFinderProvider implements IFuzzyFinderProvider {
     this.repository = this.gitApi?.repositories[0] || null;
   }
 
-  getHtmlLoadConfig() {
-    return {
-      fileName: "file-fuzzy.view.html",
-      placeholders: {
-        "{{style}}": "ui/style/style.css",
-        "{{script}}": "ui/dist/index.js",
-      },
-    };
-  }
-
   async querySelectableOptions() {
     if (!this.repository) {
       return { commits: [] };

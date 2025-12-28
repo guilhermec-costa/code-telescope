@@ -174,42 +174,52 @@
                     "default": false,
                     "description": "If line numbers should be displayed in the preview"
                 },
-                "codeTelescope.panelSetup.rightSideWidthPct": {
+                "codeTelescope.layout.mode": {
+                    "type": "string",
+                    "enum": [
+                        "classic",
+                        "ivy",
+                        "compact"
+                    ],
+                    "default": "classic",
+                    "description": "Layout mode"
+                },
+                "codeTelescope.layout.rightSideWidthPct": {
                     "type": "number",
                     "default": 50,
                     "description": "Width in percentage of the right side of the panel"
                 },
-                "codeTelescope.panelSetup.leftSideWidthPct": {
+                "codeTelescope.layout.leftSideWidthPct": {
                     "type": "number",
                     "default": 50,
                     "description": "Width in percentage of the left side of the panel"
                 },
-                "codeTelescope.panelSetup.panelContainerPct": {
+                "codeTelescope.layout.panelContainerPct": {
                     "type": "number",
                     "default": 90,
                     "description": "Width in percentage of the panel container"
                 },
-                "codeTelescope.panelSetup.promptFontSize": {
+                "codeTelescope.layout.promptFontSize": {
                     "type": "number",
                     "default": 16,
                     "description": "Font size (px) of the input prompt"
                 },
-                "codeTelescope.panelSetup.resultsFontSize": {
+                "codeTelescope.layout.resultsFontSize": {
                     "type": "number",
                     "default": 16,
                     "description": "Font size (px) of the results list items"
                 },
-                "codeTelescope.panelSetup.previewFontSize": {
+                "codeTelescope.layout.previewFontSize": {
                     "type": "number",
                     "default": 18,
                     "description": "Font size (px) of the preview panel"
                 },
-                "codeTelescope.panelSetup.borderSizeInPx": {
+                "codeTelescope.layout.borderSizeInPx": {
                     "type": "number",
                     "default": 1,
                     "description": "Border size (px)"
                 },
-                "codeTelescope.panelSetup.borderRadiusInPx": {
+                "codeTelescope.layout.borderRadiusInPx": {
                     "type": "number",
                     "default": 5,
                     "description": "Border radius (px)"

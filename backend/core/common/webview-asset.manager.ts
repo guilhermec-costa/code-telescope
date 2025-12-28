@@ -7,11 +7,13 @@ import { CustomProviderStorage } from "./custom/custom-provider.storage";
 
 export class WebviewAssetManager {
   public static async getProcessedHtml(wv: vscode.Webview, provider: IFuzzyFinderProvider): Promise<string> {
-    const cfg = provider.getHtmlLoadConfig();
-    const htmlPath = joinPath(Globals.EXTENSION_URI, "ui", "views", cfg.fileName);
+    const customPlaceholders = provider.customPlaceholders?.() ?? {};
+
+    const layoutFilename = customPlaceholders.fileName ?? `${ExtensionConfigManager.layoutCfg.mode}.view.html`;
+    const htmlPath = joinPath(Globals.EXTENSION_URI, "ui", "views", layoutFilename);
     const rawContent = (await vscode.workspace.fs.readFile(htmlPath)).toString();
 
-    let html = this.resolveAssetUris(rawContent, wv, cfg.placeholders);
+    let html = this.resolveAssetUris(rawContent, wv, customPlaceholders);
     html = this.injectGlobalState(html, wv, provider);
     html = this.injectDynamicStyles(html);
 
@@ -26,7 +28,10 @@ export class WebviewAssetManager {
     const allPlaceholders = {
       ...adapterPlaceholders,
       "{{highlight-styles}}": "ui/style/highlight.css",
+      "{{style}}": `ui/style/${ExtensionConfigManager.layoutCfg.mode}.css`,
+      "{{script}}": "ui/dist/index.js",
     };
+
     let processed = html;
     for (const [placeholder, distPath] of Object.entries(allPlaceholders)) {
       const uri = wv.asWebviewUri(joinPath(Globals.EXTENSION_URI, distPath));
@@ -70,7 +75,7 @@ export class WebviewAssetManager {
   }
 
   private static injectDynamicStyles(html: string): string {
-    const panelCfg = ExtensionConfigManager.uiPanelCfg;
+    const panelCfg = ExtensionConfigManager.layoutCfg;
     const vars = {
       "--left-pane-width": `${panelCfg.leftSideWidthPct}%`,
       "--right-pane-width": `${panelCfg.rightSideWidthPct}%`,
