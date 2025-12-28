@@ -4,6 +4,7 @@ export interface WsFileFinderConfig {
   excludePatterns: string[];
   maxResults: number;
   asRelativePath: boolean;
+  textDisplay: "relative" | "absolte" | "filename-only";
 }
 
 export interface WsTextFinderConfig {
@@ -22,6 +23,8 @@ export interface PanelSetupConfig {
   promptFontSize: number;
   resultsFontSize: number;
   previewFontSize: number;
+  borderSizeInPx: number;
+  borderRadiusInPx: number;
 }
 
 export interface PreviewManagerConfig {

@@ -67,8 +67,8 @@ body {
   overflow: visible;
   min-width: 250px;
   padding: 8px 2px 6px 6px;
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
+  border: var(--border-size) solid var(--border-color);
+  border-radius: var(--border-radius);
   position: relative;
   height: 93%
 }
@@ -95,7 +95,7 @@ body {
   width: 100%;
   flex-shrink: 0;
   background: transparent;
-  border: 1px solid var(--border-color);
+  border: var(--border-size) solid var(--border-color);
   border-radius: 5px;
   padding-left: 10px;
 }
@@ -244,9 +244,8 @@ body {
   background-color: var(--bg);
   overflow: visible;
   min-width: 0;
-  border: 1px solid var(--border-color);
-  border-left: 1px solid var(--divider-color);
-  border-radius: 5px;
+  border: var(--border-size) solid var(--border-color);
+  border-radius: var(--border-radius);
   position: relative;
   height: 100%;
 }

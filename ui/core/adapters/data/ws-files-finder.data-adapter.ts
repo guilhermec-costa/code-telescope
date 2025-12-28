@@ -30,7 +30,16 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
   }
 
   getDisplayText(option: FileOption): string {
-    return option.relative;
+    switch (__FILE_PATH_DISPLAY__) {
+      case "relative":
+        return option.relative;
+      case "absolute":
+        return option.absolute;
+      case "filename-only":
+        return option.absolute.split(/[\\/]/).pop() || option.absolute;
+      default:
+        return option.relative;
+    }
   }
 
   getSelectionValue(option: FileOption): string {

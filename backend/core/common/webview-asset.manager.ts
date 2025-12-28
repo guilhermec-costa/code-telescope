@@ -48,6 +48,7 @@ export class WebviewAssetManager {
     const state: Record<string, string> = {
       "{{__SHIKI_URI__}}": shikiUri.toString(),
       "{{__PREVIEW_CFG__}}": JSON.stringify(ExtensionConfigManager.previewManagerCfg),
+      "{{__WS_PATH_DISPLAY__}}": ExtensionConfigManager.wsFileFinderCfg.textDisplay,
       "{{__KEYBINDINGS_CFG__}}": JSON.stringify(ExtensionConfigManager.keybindings),
       "{{__CUSTOM_DATA_ADAPTER__}}": JSON.stringify(customUiPayload, null, 2),
       "{{__CUSTOM_RENDER_ADAPTERS__}}": JSON.stringify([]),
@@ -69,6 +70,8 @@ export class WebviewAssetManager {
       "--prompt-font-size": `${panelCfg.promptFontSize}px`,
       "--results-font-size": `${panelCfg.resultsFontSize}px`,
       "--preview-font-size": `${panelCfg.previewFontSize}px`,
+      "--border-size": `${panelCfg.borderSizeInPx}px`,
+      "--border-radius": `${panelCfg.borderRadiusInPx}px`,
     };
 
     const cssBody = Object.entries(vars)
