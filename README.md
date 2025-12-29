@@ -196,11 +196,14 @@ The system automatically wires everything together through the type system.
 
 ## Built-in Finders
 
-- **Workspace Files**: Find files in workspace
-- **Workspace Text Search**: Search text across files (with ripgrep)
+- **Workspace Files**: Find files in the current workspace
+- **Workspace Text Search**: Search text across files using ripgrep
 - **Git Commits**: Browse git history with diff previews
-- **Git Branchs**: Quick access git branches 
-- (More coming soon...)
+- **Git Branches**: Quickly switch and inspect git branches
+- **Keybindings**: Browse and execute registered VS Code keybindings
+- **Custom**: Quick picker for user-defined custom finders
+
+*(More coming soon...)*
 
 # Extending Code Telescope
 
@@ -511,8 +514,6 @@ Complete working examples are available in the `examples/` directory:
 - **`custom-py.finder.cjs`** - Find python files 
 - **`custom-sql.finder.cjs`** - Find sql files 
 
-Each example demonstrates different aspects of the API and common patterns.
-
 ---
 
 ## Debugging Custom Finders
@@ -545,19 +546,6 @@ Each example demonstrates different aspects of the API and common patterns.
 
 ---
 
-## Type Safety
-
-All communication is strongly typed through shared interfaces. The `shared/` module ensures both backend and UI speak the same language, preventing runtime errors and improving developer experience.
-
-```typescript
-// shared/extension-webview-protocol.ts
-export interface PreviewData {
-  content: string;
-  language?: string;
-  metadata?: Record<string, any>;
-}
-```
-
 ## Why This Architecture?
 
 1. **Loose coupling**: Finders don't know about UI, UI doesn't know about implementation details
@@ -572,4 +560,4 @@ Inspired by [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) ð
 
 ## Contributing
 
-Found a bug or have a feature request? Please open an issue on [GitHub](https://github.com/guilhermec-costa/code-telescope).
+Found a bug or have a feature request? Please open an issue.
