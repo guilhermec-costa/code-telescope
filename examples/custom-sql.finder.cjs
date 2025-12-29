@@ -1,9 +1,8 @@
 /**
- * @type {import('./custom-provider').CustomFinderDefinition}
+ * @type {import('../shared/custom-provider').CustomFinderDefinition}
  */
 module.exports = {
   fuzzyAdapterType: "custom.database.queries",
-  previewAdapterType: "preview.codeHighlighted",
 
   backend: {
     async querySelectableOptions() {
@@ -42,13 +41,7 @@ ORDER BY month DESC;
     },
 
     async onSelect(item) {
-      return {
-        action: "copyQueryToClipboard",
-        data: {
-          id: item.id,
-          query: item.query
-        }
-      };
+      // any action
     },
 
     async getPreviewData(item) {

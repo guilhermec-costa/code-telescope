@@ -1,7 +1,11 @@
+import * as fs from "fs";
+import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
 import { PreviewData } from "../../../../shared/extension-webview-protocol";
 import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
+import { FuzzyFinderPanelController } from "../../presentation/fuzzy-panel.controller";
+import { WorkspaceFileFinder } from "../ws-files.finder";
 
 export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
@@ -9,13 +13,30 @@ export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
 
   private constructor(def: CustomFinderDefinition) {
     this.fuzzyAdapterType = def.fuzzyAdapterType as any;
-    this.previewAdapterType = def.previewAdapterType as any;
+    this.previewAdapterType = "preview.codeHighlighted";
 
     this.querySelectableOptions = def.backend.querySelectableOptions;
     this.onSelect = async (item: any) => {
-      const { data, action } = await def.backend.onSelect(item);
-      console.log({ data, action });
+      const selectedData = await def.backend.onSelect(item);
+      if (!selectedData) return;
+
+      const { action, path } = selectedData;
+      switch (action) {
+        case "openFile": {
+          if (!fs.existsSync(path)) {
+            await vscode.window.showErrorMessage(`Code Telescope: file not found\n${path}`);
+            break;
+          }
+          await new WorkspaceFileFinder().onSelect(path);
+          break;
+        }
+        case "none": {
+          FuzzyFinderPanelController.instance?.dispose();
+          break;
+        }
+      }
     };
+
     this.getPreviewData = async (identifier: string) => {
       const result = await def.backend.getPreviewData(identifier);
       return {
@@ -32,10 +53,6 @@ export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
   ): { ok: true; value: CustomFinderBackendProxy } | { ok: false; error: string } {
     if (!def || typeof def !== "object") {
       return { ok: false, error: "Invalid custom finder definition" };
-    }
-
-    if (!def.fuzzyAdapterType || !def.previewAdapterType) {
-      return { ok: false, error: "Missing fuzzyAdapterType or previewAdapterType" };
     }
 
     const backend = def.backend as any;

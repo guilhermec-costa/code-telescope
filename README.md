@@ -202,6 +202,349 @@ The system automatically wires everything together through the type system.
 - **Git Branchs**: Quick access git branches 
 - (More coming soon...)
 
+# Extending Code Telescope
+
+Code Telescope is designed to be extensible. You can create your own custom finders without modifying the extension code.
+
+## Creating Custom Finders
+
+Custom finders are defined as CommonJS modules (`.cjs` files) placed in the `.vscode/code-telescope/` directory of your workspace.
+
+### File Location
+
+Create your custom finder in:
+```
+.vscode/code-telescope/my-custom.finder.cjs
+```
+
+**Naming convention:**
+- Must end with `.finder.cjs` or `.provider.cjs`
+- Use descriptive names (e.g., `github-issues.finder.cjs`, `database-tables.finder.cjs`)
+
+### Basic Structure
+
+A custom finder must export a `CustomFinderDefinition` object that defines both backend logic and UI adapters:
+
+```javascript
+// .vscode/code-telescope/example.finder.cjs
+
+/** @type {import('code-telescope/shared/custom-provider').CustomFinderDefinition} */
+module.exports = {
+  // Unique identifier (must start with "custom.")
+  fuzzyAdapterType: "custom.example",
+  
+  // Backend logic (runs in extension host)
+  backend: {
+    async querySelectableOptions() {
+      // Return data to be displayed
+      return {
+        items: ["Item 1", "Item 2", "Item 3"]
+      };
+    },
+    
+    async onSelect(item) {
+      // Handle selection
+      return {
+        data: item,
+        action: "showMessage" // Built-in action
+      };
+    },
+    
+    async getPreviewData(identifier) {
+      // Return preview data for syntax-highlighted code view
+      return {
+        content: {
+          path: "Preview Title",
+          text: `Content for: ${identifier}`,
+          isCached: false
+        },
+        language: "text"
+      };
+    }
+  },
+  
+  // UI adapters (runs in webview)
+  ui: {
+    dataAdapter: {
+      parseOptions(data) {
+        // Transform backend data into options
+        return data.items.map((item, index) => ({
+          id: index,
+          text: item
+        }));
+      },
+      
+      getDisplayText(option) {
+        // Format option for display
+        return option.text;
+      },
+      
+      getSelectionValue(option) {
+        // Return identifier for selection
+        return option.text;
+      },
+      
+      filterOption(option, query) {
+        // Custom filtering logic (optional)
+        return option.text.toLowerCase().includes(query.toLowerCase());
+      }
+    }
+  }
+};
+```
+
+## API Reference
+
+### Backend Methods
+
+#### `querySelectableOptions()`
+Called when the finder is opened. Should return data that will be transformed by the UI adapter.
+
+**Signature:**
+```typescript
+async querySelectableOptions(): Promise<any>
+```
+
+**Returns:** Any data structure that your UI adapter's `parseOptions` can handle.
+
+**Example:**
+```javascript
+async querySelectableOptions() {
+  return {
+    items: [
+      { id: 1, name: "Item 1" },
+      { id: 2, name: "Item 2" }
+    ]
+  };
+}
+```
+
+---
+
+#### `onSelect(item)`
+Called when user selects an item. Should return action data.
+
+**Signature:**
+```typescript
+async onSelect(item: any): Promise<{
+  data: any;
+  action: string;
+}>
+```
+
+**Parameters:**
+- `item` - The selected item (as returned by UI adapter's `getSelectionValue`)
+
+**Returns:** An object with:
+- `path` — File path to be handled
+- `action` — Action identifier
+
+Or `void`, if the selection is handled internally by your own callback.
+
+**Built-in actions:**
+- `"openFile"` - Opens file at `data` (must be a file path)
+- `"none"` - No automatic action (you handled it manually in `onSelect`)
+
+**Example:**
+```javascript
+async onSelect(itemId) {
+  const item = await fetchItemDetails(itemId);
+  
+  return {
+    path: item,
+    action: "openFile"
+  };
+}
+```
+
+---
+
+#### `getPreviewData(identifier)`
+Returns data for the preview panel. This data is rendered as syntax-highlighted code.
+
+**Signature:**
+```typescript
+async getPreviewData(identifier: any): Promise<{
+  content: string;
+  language: string;
+}>
+```
+
+**Parameters:**
+- `identifier` - The value returned by UI adapter's `getSelectionValue`
+
+**Returns:** Object with:
+- `content` - Text to be syntax-highlighted
+- `language` - Language identifier for syntax highlighting (e.g., "javascript", "python", "json")
+
+**Example:**
+```javascript
+async getPreviewData(fileId) {
+  const file = await fetchFile(fileId);
+  const extension = path.extname(file.name).slice(1);
+  
+  return {
+    content: file.content,
+    language: extension || "text"
+  };
+}
+```
+
+**Supported languages:** All languages supported by VS Code's syntax highlighting (javascript, typescript, python, java, json, markdown, etc.)
+
+---
+
+### UI Data Adapter Methods
+
+#### `parseOptions(data)`
+Transforms backend data into an array of options.
+
+**Signature:**
+```typescript
+parseOptions(data: any): any[]
+```
+
+**Parameters:**
+- `data` - Data returned by backend's `querySelectableOptions`
+
+**Returns:** Array of options to be displayed in the list.
+
+**Example:**
+```javascript
+parseOptions(data) {
+  return data.items.map(item => ({
+    id: item.id,
+    name: item.name,
+    description: item.description
+  }));
+}
+```
+
+---
+
+#### `getDisplayText(option)`
+Returns the text displayed in the list for an option.
+
+**Signature:**
+```typescript
+getDisplayText(option: any): string
+```
+
+**Parameters:**
+- `option` - One option from the array returned by `parseOptions`
+
+**Returns:** String to be displayed in the finder list.
+
+**Example:**
+```javascript
+getDisplayText(option) {
+  // Format with padding for alignment
+  return `${option.name.padEnd(30)} ${option.description}`;
+}
+```
+
+---
+
+#### `getSelectionValue(option)`
+Returns identifier used for selection and preview.
+
+**Signature:**
+```typescript
+getSelectionValue(option: any): string
+```
+
+**Parameters:**
+- `option` - One option from the array returned by `parseOptions`
+
+**Returns:** String identifier passed to `onSelect` and `getPreviewData`.
+
+**Example:**
+```javascript
+getSelectionValue(option) {
+  // Return a unique identifier
+  return option.id.toString();
+}
+```
+
+---
+
+#### `filterOption(option, query)` *(optional)*
+Custom filtering logic. If not provided, uses default fuzzy matching on `getDisplayText` result.
+
+**Signature:**
+```typescript
+filterOption(option: any, query: string): boolean
+```
+
+**Parameters:**
+- `option` - One option from the array returned by `parseOptions`
+- `query` - Current search query (lowercase)
+
+**Returns:** `true` if option matches the query, `false` otherwise.
+
+**Example:**
+```javascript
+filterOption(option, query) {
+  const lowerQuery = query.toLowerCase();
+  return (
+    option.name.toLowerCase().includes(lowerQuery) ||
+    option.description.toLowerCase().includes(lowerQuery)
+  );
+}
+```
+
+**Flow:**
+1. User opens custom finder
+2. Backend's `querySelectableOptions()` is called
+3. UI's `parseOptions()` transforms the data
+4. User types → UI's `filterOption()` filters results
+5. User navigates → Backend's `getPreviewData()` shows preview
+6. User selects → Backend's `onSelect()` executes action
+
+---
+
+## Examples
+
+Complete working examples are available in the `examples/` directory:
+
+- **`custom-md.finder.cjs`** - Find markdown files 
+- **`custom-py.finder.cjs`** - Find python files 
+- **`custom-sql.finder.cjs`** - Find sql files 
+
+Each example demonstrates different aspects of the API and common patterns.
+
+---
+
+## Debugging Custom Finders
+
+1. **Check the Developer Console**  
+   Open with `Help > Toggle Developer Tools` in VS Code
+
+2. **Add logging in your finder**:
+   ```javascript
+   async querySelectableOptions() {
+     console.log("[Custom Finder] Querying options...");
+     const result = await fetchData();
+     console.log("[Custom Finder] Found:", result.length, "items");
+     return result;
+   }
+   ```
+
+3. **Validate data structure**  
+   Ensure your backend returns what your UI adapter expects
+
+---
+
+## Limitations
+
+- Custom finders run in the extension host (Node.js environment)
+- Cannot use browser-only APIs
+- Must use CommonJS module format (`.cjs`)
+- Preview is always rendered as syntax-highlighted code
+- No access to extension's internal state
+
+---
+
 ## Type Safety
 
 All communication is strongly typed through shared interfaces. The `shared/` module ensures both backend and UI speak the same language, preventing runtime errors and improving developer experience.
@@ -226,3 +569,7 @@ export interface PreviewData {
 ---
 
 Inspired by [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) 🔭
+
+## Contributing
+
+Found a bug or have a feature request? Please open an issue on [GitHub](https://github.com/guilhermec-costa/code-telescope).

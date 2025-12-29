@@ -1,12 +1,11 @@
 /**
- * @type {import('./custom-provider').CustomFinderDefinition}
+ * @type {import('../shared/custom-provider').CustomFinderDefinition}
  */
 module.exports = {
   fuzzyAdapterType: "custom.github.issues",
-  previewAdapterType: "preview.codeHighlighted",
 
   backend: {
-    async querySelectableOptions(query) {
+    async querySelectableOptions() {
       const issues = [
         {
           id: 101,
@@ -42,14 +41,11 @@ module.exports = {
       return issues;
     },
 
-    async onSelect(issue) {
+    async onSelect(issuePath) {
       return {
-        action: issue.status === "open" ? "openIssue" : "reopenIssue",
-        data: {
-          issueId: issue.id,
-          title: issue.title,
-        },
-      };
+        action: "openFile",
+        path: issuePath
+      }
     },
 
     async getPreviewData(issueId) {

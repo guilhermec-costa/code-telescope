@@ -6,23 +6,16 @@ export class CustomFinderUiProxy {
   previewAdapterType!: PreviewRendererType;
 
   dataAdapter!: CustomFinderDefinition["ui"]["dataAdapter"];
-  renderAdapter?: CustomFinderDefinition["ui"]["renderAdapter"];
 
   private constructor(def: CustomFinderDefinition) {
     this.fuzzyAdapterType = def.fuzzyAdapterType as any;
-    this.previewAdapterType = def.previewAdapterType as any;
 
     this.dataAdapter = def.ui.dataAdapter;
-    this.renderAdapter = def.ui.renderAdapter;
   }
 
   static create(def: CustomFinderDefinition): { ok: true; value: CustomFinderUiProxy } | { ok: false; error: string } {
     if (!def || typeof def !== "object") {
       return { ok: false, error: "Invalid custom finder definition" };
-    }
-
-    if (!def.fuzzyAdapterType || !def.previewAdapterType) {
-      return { ok: false, error: "Missing fuzzyAdapterType or previewAdapterType" };
     }
 
     const ui = def.ui as any;

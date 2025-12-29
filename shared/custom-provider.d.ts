@@ -29,16 +29,6 @@ export interface CustomFinderDefinition {
   fuzzyAdapterType: `custom.${string}`;
 
   /**
-   * Identifier of the preview renderer associated with this finder.
-   *
-   * This controls how preview data is rendered inside the preview panel.
-   *
-   * Example:
-   * - "preview.simple"
-   */
-  previewAdapterType: string;
-
-  /**
    * Backend implementation executed in the extension host.
    *
    * This layer is responsible for:
@@ -60,9 +50,9 @@ export interface CustomFinderDefinition {
      * Should return the data to be used by the action and an action identifier.
      */
     onSelect: (item: any) => Promise<{
-      data: any;
-      action: string;
-    }>;
+      path: string;
+      action: "openFile" | "none";
+    } | void>;
 
     /**
      * Returns preview data for the given identifier.
@@ -104,13 +94,5 @@ export interface CustomFinderDefinition {
        */
       filterOption?: (option: any, query: string) => boolean;
     };
-
-    /**
-     * Optional custom render adapter for advanced UI customization.
-     *
-     * This can be used to provide custom rendering logic or components
-     * for the finder UI.
-     */
-    renderAdapter?: {};
   };
 }

@@ -1,9 +1,8 @@
 /**
- * @type {import('./custom-provider').CustomFinderDefinition}
+ * @type {import('../shared/custom-provider').CustomFinderDefinition}
  */
 module.exports = {
   fuzzyAdapterType: "custom.python.snippets",
-  previewAdapterType: "preview.codeHighlighted",
 
   backend: {
     async querySelectableOptions() {
@@ -45,10 +44,11 @@ print(response.json())
       ];
     },
 
-    async onSelect(item) {
+    async onSelect(itemPath) {
+      console.log("hello world");
       return {
-        data: item,
-        action: "selectedPythonSnippet",
+        path: itemPath,
+        action: "none",
       };
     },
 
