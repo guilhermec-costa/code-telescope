@@ -66,8 +66,8 @@ export interface WebviewReadyMessage {
   data?: undefined;
 }
 
-export interface ShikiInitDone {
-  type: "shikInitDone";
+export interface HighlighterInitDone {
+  type: "highlighterInitDone";
 }
 
 export interface HighlightCacheMessage {
@@ -105,8 +105,8 @@ export interface DynamicSearchMessage {
   query: string;
 }
 
-export interface InitShiki {
-  type: "shikiInit";
+export interface InitHighlighter {
+  type: "highlighterInit";
   data: {
     theme: string;
     languages: string[];
@@ -123,7 +123,7 @@ export type ToWebviewKindMessage =
   | PreviewUpdateMessage
   | OptionListMessage
   | ThemeUpdateMessage
-  | InitShiki
+  | InitHighlighter
   | ResetFuzzyPanel;
 
 /**
@@ -139,4 +139,4 @@ export type FromWebviewKindMessage =
   | DynamicSearchMessage
   | OptionSelectedMessage
   | HighlightCacheMessage
-  | ShikiInitDone;
+  | HighlighterInitDone;

@@ -1,6 +1,10 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
 
+/**
+ * UI-side proxy for a custom finder.
+ * Validates and exposes UI adapters in a serializable format
+ */
 export class CustomFinderUiProxy {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
@@ -13,6 +17,10 @@ export class CustomFinderUiProxy {
     this.dataAdapter = def.ui.dataAdapter;
   }
 
+  /**
+   * Factory method that validates a CustomFinderDefinition
+   * and returns a safe UI proxy instance.
+   */
   static create(def: CustomFinderDefinition): { ok: true; value: CustomFinderUiProxy } | { ok: false; error: string } {
     if (!def || typeof def !== "object") {
       return { ok: false, error: "Invalid custom finder definition" };
@@ -51,6 +59,10 @@ export class CustomFinderUiProxy {
     }
   }
 
+  /**
+   * Normalizes a function into a string that can be safely
+   * reconstructed via `new Function` on the webview side.
+   */
   private normalizeFn(fn: Function): string {
     const src = fn.toString();
 
@@ -61,6 +73,10 @@ export class CustomFinderUiProxy {
     return src;
   }
 
+  /**
+   * Converts the UI proxy into a fully serializable object
+   * that can be sent to the webview.
+   */
   toSerializableObject() {
     return {
       fuzzyAdapterType: this.fuzzyAdapterType,

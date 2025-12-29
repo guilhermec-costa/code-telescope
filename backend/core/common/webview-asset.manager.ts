@@ -5,6 +5,12 @@ import { IFuzzyFinderProvider, LayoutCustomPlaceholders } from "../abstractions/
 import { ExtensionConfigManager } from "../common/config-manager";
 import { CustomProviderStorage } from "./custom/custom-provider.storage";
 
+/**
+ * Responsible for resolving and processing webview HTML assets.
+ *
+ * Handles placeholder replacement, asset URI resolution,
+ * global state injection and dynamic styling.
+ */
 export class WebviewAssetManager {
   public static async getProcessedHtml(wv: vscode.Webview, provider: IFuzzyFinderProvider): Promise<string> {
     const customPlaceholders = provider.customPlaceholders?.() ?? {};
@@ -21,6 +27,9 @@ export class WebviewAssetManager {
     return html;
   }
 
+  /**
+   * Resolves asset placeholders into webview-safe URIs.
+   */
   private static resolveAssetUris(
     html: string,
     wv: vscode.Webview,
@@ -42,6 +51,9 @@ export class WebviewAssetManager {
     return processed;
   }
 
+  /**
+   * Injects global runtime state and configuration into the HTML.
+   */
   private static injectGlobalState(html: string, wv: vscode.Webview, provider: IFuzzyFinderProvider): string {
     const shikiUri = wv.asWebviewUri(joinPath(Globals.EXTENSION_URI, "ui", "dist", "shiki"));
 
@@ -76,6 +88,9 @@ export class WebviewAssetManager {
     return processed;
   }
 
+  /**
+   * Injects dynamic CSS variables based on layout configuration.
+   */
   private static injectDynamicStyles(html: string): string {
     const panelCfg = ExtensionConfigManager.layoutCfg;
     const vars = {

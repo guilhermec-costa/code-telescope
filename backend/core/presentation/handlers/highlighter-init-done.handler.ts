@@ -5,11 +5,17 @@ import { WebviewMessageHandler } from "../../decorators/webview-message-handler.
 import { FuzzyFinderPanelController } from "../fuzzy-panel.controller";
 import { WebviewController } from "../webview.controller";
 
+/**
+ * Handles the webview notification indicating that Shiki
+ * syntax highlighting has finished initializing.
+ *
+ * Triggers the initial query to populate the option list.
+ */
 @WebviewMessageHandler()
-export class ShikiInitDoneHandler implements IWebviewMessageHandler<"shikInitDone"> {
-  readonly type = "shikInitDone";
+export class HighlighterInitDoneHandler implements IWebviewMessageHandler<"highlighterInitDone"> {
+  readonly type = "highlighterInitDone";
 
-  async handle(msg: Extract<FromWebviewKindMessage, { type: "shikInitDone" }>, wv: vscode.Webview) {
+  async handle(msg: Extract<FromWebviewKindMessage, { type: "highlighterInitDone" }>, wv: vscode.Webview) {
     const provider = FuzzyFinderPanelController.instance!.provider;
     const items = await provider.querySelectableOptions();
 

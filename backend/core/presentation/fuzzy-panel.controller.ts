@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
-import { FromWebviewKindMessage, InitShiki } from "../../../shared/extension-webview-protocol";
+import { FromWebviewKindMessage, InitHighlighter } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { joinPath } from "../../utils/files";
 import { getShikiTheme } from "../../utils/shiki";
@@ -129,9 +129,9 @@ export class FuzzyFinderPanelController {
     });
   }
 
-  public async emitInitShikiEvent(data: InitShiki["data"]) {
+  public async emitInitShikiEvent(data: InitHighlighter["data"]) {
     await WebviewController.sendMessage(this.webview, {
-      type: "shikiInit",
+      type: "highlighterInit",
       data,
     });
   }
@@ -141,7 +141,7 @@ export class FuzzyFinderPanelController {
    */
   public listenWebview() {
     console.log("[FuzzyPanel] Listening for webview messages");
-    WebviewController.onMessage(this.webview, async (msg: FromWebviewKindMessage) => {
+    WebviewController.receiveMessage(this.webview, async (msg: FromWebviewKindMessage) => {
       console.log(`[FuzzyPanel] Received message of type: ${msg.type}`);
       const handler = WebviewMessageHandlerRegistry.instance.getAdapter(msg.type);
       if (!handler) {

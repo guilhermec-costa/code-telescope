@@ -116,6 +116,10 @@ export class KeybindingsFinder implements IFuzzyFinderProvider {
     };
   }
 
+  /**
+   * Resolves the absolute path to the VS Code `keybindings.json` file
+   * based on the current operating system.
+   */
   private getKeybindingsPath(): string | null {
     const homeDir = process.env.HOME || process.env.USERPROFILE;
     if (!homeDir) return null;
@@ -151,10 +155,11 @@ export class KeybindingsFinder implements IFuzzyFinderProvider {
     }
   }
 
+  /**
+   * Removes line and block comments from a JSON-like string.
+   */
   private removeJsonComments(text: string): string {
-    // line comments
     let result = text.replace(/\/\/.*$/gm, "");
-    // block comments
     result = result.replace(/\/\*[\s\S]*?\*\//g, "");
 
     return result;

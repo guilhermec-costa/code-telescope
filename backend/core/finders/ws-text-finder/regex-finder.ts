@@ -1,11 +1,15 @@
 import * as fs from "fs/promises";
-import * as vscode from "vscode";
 import { TextSearchMatch } from "../../../../shared/exchange/workspace-text-search";
+import { WorkspaceFileFinder } from "../ws-files.finder";
 
 function escapeRegExp(string: string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/**
+ * Workspace text search provider that scans workspace files
+ * using a regular expression-based approach.
+ */
 export class RegexFinder {
   public async search(query: string): Promise<any> {
     const matches: TextSearchMatch[] = [];
@@ -15,11 +19,8 @@ export class RegexFinder {
     const queryRegex = new RegExp(escapeRegExp(query), "gi");
 
     try {
-      const uris = await vscode.workspace.findFiles(
-        "**/*",
-        "**/{node_modules,.git,dist,out,build,coverage,*.min.js,*.map}/**",
-        3000,
-      );
+      const wsFileFinder = new WorkspaceFileFinder();
+      const uris = await wsFileFinder.getWorkspaceFiles();
 
       for (let i = 0; i < uris.length; i += BATCH_SIZE) {
         if (matches.length >= MAX_RESULTS) break;

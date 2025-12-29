@@ -7,10 +7,24 @@ import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderPanelController } from "../../presentation/fuzzy-panel.controller";
 import { WorkspaceFileFinder } from "../ws-files.finder";
 
+/**
+ * Backend proxy that adapts a user-defined {@link CustomFinderDefinition}
+ * to the internal IFuzzyFinderProvider interface.
+ *
+ * This class:
+ * - Validates and wires custom backend implementations
+ * - Proxies selection actions to built-in behaviors
+ * - Normalizes preview data for the preview renderer pipeline
+ */
 export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
 
+  /**
+   * Creates a backend proxy from a validated custom finder definition.
+   *
+   * Use the static {@link create} factory instead of calling this constructor directly.
+   */
   private constructor(def: CustomFinderDefinition) {
     this.fuzzyAdapterType = def.fuzzyAdapterType as any;
     this.previewAdapterType = "preview.codeHighlighted";
@@ -48,6 +62,11 @@ export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
     };
   }
 
+  /**
+   * Validates a custom finder definition and creates a backend proxy.
+   *
+   * @returns A result object containing either the proxy instance or an error message.
+   */
   static create(
     def: CustomFinderDefinition,
   ): { ok: true; value: CustomFinderBackendProxy } | { ok: false; error: string } {

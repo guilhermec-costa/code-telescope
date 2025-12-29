@@ -88,7 +88,7 @@ export class WebviewToExtensionMessenger {
 
   onShikiInit() {
     this.postMessage({
-      type: "shikInitDone",
+      type: "highlighterInitDone",
     });
   }
 }

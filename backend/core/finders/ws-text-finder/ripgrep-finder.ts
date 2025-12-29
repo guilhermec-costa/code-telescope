@@ -6,6 +6,10 @@ import { TextSearchMatch } from "../../../../shared/exchange/workspace-text-sear
 import { ExtensionConfigManager } from "../../common/config-manager";
 import { RipgrepArgsBuilder } from "./ripgrep-args.builder";
 
+/**
+ * Workspace text search implementation backed by ripgrep.
+ * Provides fast, indexed search with structured JSON output.
+ */
 export class RipgrepFinder {
   private _rgAvailable = false;
   private _rgPath = "";
@@ -14,10 +18,17 @@ export class RipgrepFinder {
     this.checkRipgrepAvailability();
   }
 
+  /**
+   * Indicates whether ripgrep is available on the system.
+   */
   get ripgrepAvailable() {
     return this._rgAvailable;
   }
 
+  /**
+   * Detects ripgrep availability by checking bundled binaries
+   * and falling back to the system PATH.
+   */
   private async checkRipgrepAvailability() {
     const appRoot = vscode.env.appRoot;
     const possiblePaths = [

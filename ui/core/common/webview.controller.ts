@@ -71,7 +71,7 @@ export class WebviewController {
         break;
       }
 
-      case "shikiInit": {
+      case "highlighterInit": {
         console.time("shiki-init");
 
         msg.data.languages.forEach((language) => {

@@ -9,6 +9,10 @@ import { FuzzyFinderAdapter } from "../../decorators/fuzzy-finder-provider.decor
 import { RegexFinder } from "./regex-finder";
 import { RipgrepFinder } from "./ripgrep-finder";
 
+/**
+ * Provides workspace-wide text search with dynamic querying.
+ * Uses ripgrep when available and falls back to regex-based search.
+ */
 @FuzzyFinderAdapter({
   fuzzy: "workspace.text",
   previewRenderer: "preview.codeHighlighted",
@@ -30,6 +34,10 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
     return { results: [], query: "", message: "Type to search..." };
   }
 
+  /**
+   * Performs a dynamic search as the user types.
+   * Prefers ripgrep and falls back to regex search on failure.
+   */
   async searchOnDynamicMode(query: string): Promise<any> {
     if (!query || query.trim().length < 2) {
       return { results: [], query };
