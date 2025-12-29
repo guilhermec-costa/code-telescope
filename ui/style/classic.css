@@ -70,7 +70,7 @@ body {
   border: var(--border-size) solid var(--border-color);
   border-radius: var(--border-radius);
   position: relative;
-  height: 93%
+  height: 91%
 }
 
 #status-bar {

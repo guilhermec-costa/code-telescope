@@ -9,8 +9,8 @@ import { FuzzyFinderPanelController } from "../presentation/fuzzy-panel.controll
 import { FileContentCache } from "./cache/file-content.cache";
 import { HighlightContentCache } from "./cache/highlight-content.cache";
 
-export class VSCodeEventsManager {
-  private static instance: VSCodeEventsManager;
+export class EventManager {
+  private static instance: EventManager;
   private loadedLangs: Set<string> = new Set();
 
   private constructor() {
@@ -19,10 +19,10 @@ export class VSCodeEventsManager {
   }
 
   static init() {
-    if (!VSCodeEventsManager.instance) {
-      VSCodeEventsManager.instance = new VSCodeEventsManager();
+    if (!EventManager.instance) {
+      EventManager.instance = new EventManager();
     }
-    return VSCodeEventsManager.instance;
+    return EventManager.instance;
   }
 
   private handleThemeChanges() {
@@ -70,7 +70,7 @@ export class VSCodeEventsManager {
 
     if (FuzzyFinderPanelController.instance) {
       await FuzzyFinderPanelController.instance.emitInitShikiEvent({
-        languages: [...langsToLoad, "diff", "python", "sql"],
+        languages: [...langsToLoad, "diff"],
         theme: getShikiTheme(Globals.USER_THEME),
       });
     }

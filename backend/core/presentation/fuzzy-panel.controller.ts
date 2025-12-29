@@ -5,7 +5,7 @@ import { Globals } from "../../globals";
 import { joinPath } from "../../utils/files";
 import { getShikiTheme } from "../../utils/shiki";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { VSCodeEventsManager } from "../common/code-events-manager";
+import { EventManager } from "../common/event-manager";
 import { FuzzyFinderAdapterRegistry } from "../registry/fuzzy-provider.registry";
 import { WebviewMessageHandlerRegistry } from "../registry/webview-handler.registry";
 import { WebviewController } from "./webview.controller";
@@ -74,7 +74,7 @@ export class FuzzyFinderPanelController {
 
     const panel = this.createPanel();
     FuzzyFinderPanelController._instance = new FuzzyFinderPanelController(panel);
-    VSCodeEventsManager.init();
+    EventManager.init();
     FuzzyFinderPanelController._instance.listenWebview();
     return FuzzyFinderPanelController._instance;
   }

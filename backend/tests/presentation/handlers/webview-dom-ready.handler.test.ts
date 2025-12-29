@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { VSCodeEventsManager } from "../../../core/common/code-events-manager";
+import { EventManager } from "../../../core/common/event-manager";
 import { WebviewDOMReadyHandler } from "../../../core/presentation/handlers/webview-dom-ready.handler";
 
-vi.mock("@backend/core/common/code-events-manager", () => ({
-  VSCodeEventsManager: {
+vi.mock("@backend/core/common/event-manager", () => ({
+  EventManager: {
     emitInitialEvents: vi.fn().mockResolvedValue(undefined),
   },
 }));
@@ -14,6 +14,6 @@ describe("WebviewDOMReadyHandler", () => {
 
     await handler.handle();
 
-    expect(VSCodeEventsManager.emitInitialEvents).toHaveBeenCalledTimes(1);
+    expect(EventManager.emitInitialEvents).toHaveBeenCalledTimes(1);
   });
 });
