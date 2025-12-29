@@ -510,9 +510,7 @@ filterOption(option, query) {
 
 Complete working examples are available in the `examples/` directory:
 
-- **`custom-md.finder.cjs`** - Find markdown files 
-- **`custom-py.finder.cjs`** - Find python files 
-- **`custom-sql.finder.cjs`** - Find sql files 
+- **`custom-json.finder.cjs`** - Find json files 
 
 ---
 
