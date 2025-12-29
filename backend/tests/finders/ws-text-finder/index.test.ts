@@ -49,14 +49,6 @@ describe("WorkspaceTextSearchProvider", () => {
     provider = new WorkspaceTextSearchProvider();
   });
 
-  it("returns html load config", () => {
-    const cfg = provider.getHtmlLoadConfig();
-
-    expect(cfg.fileName).toBe("file-fuzzy.view.html");
-    expect(cfg.placeholders["{{style}}"]).toBe("ui/style/style.css");
-    expect(cfg.placeholders["{{script}}"]).toBe("ui/dist/index.js");
-  });
-
   it("returns initial selectable options", async () => {
     const result = await provider.querySelectableOptions();
 

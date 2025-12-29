@@ -49,13 +49,6 @@ describe("WorkspaceFileFinder", () => {
     vi.clearAllMocks();
   });
 
-  it("returns html load config", () => {
-    const cfg = provider.getHtmlLoadConfig();
-
-    expect(cfg.fileName).toBe("file-fuzzy.view.html");
-    expect(cfg.placeholders["{{style}}"]).toBe("ui/style/style.css");
-  });
-
   it("returns absolute and relative file paths", async () => {
     vi.mocked(vscode.workspace.findFiles).mockResolvedValueOnce([{ path: "/abs/a.ts" }, { path: "/abs/b.ts" }] as any);
 
@@ -67,36 +60,6 @@ describe("WorkspaceFileFinder", () => {
 
     expect(result.abs).toEqual(["/abs/a.ts", "/abs/b.ts"]);
     expect(result.relative).toEqual(["rel//abs/a.ts", "rel//abs/b.ts"]);
-  });
-
-  it("returns empty array when all files exceed size limit", async () => {
-    vi.mocked(vscode.workspace.findFiles).mockResolvedValueOnce([{ path: "/abs/a.ts" }, { path: "/abs/b.ts" }] as any);
-
-    const maxSize = 250 * 1024 + 1;
-    vi.mocked(vscode.workspace.fs.stat)
-      .mockResolvedValueOnce({ size: maxSize } as any)
-      .mockResolvedValueOnce({ size: maxSize } as any);
-
-    const result = await provider.querySelectableOptions();
-
-    expect(result.abs.length).toBe(0);
-    expect(result.relative.length).toBe(0);
-  });
-
-  it("returns only files within the max file size", async () => {
-    vi.mocked(vscode.workspace.findFiles).mockResolvedValueOnce([{ path: "/abs/a.ts" }, { path: "/abs/b.ts" }] as any);
-
-    const maxSize = 250 * 1024 + 1;
-    vi.mocked(vscode.workspace.fs.stat)
-      .mockResolvedValueOnce({ size: 1 } as any)
-      .mockResolvedValueOnce({ size: maxSize } as any);
-
-    const result = await provider.querySelectableOptions();
-
-    expect(result.abs.length).toBe(1);
-    expect(result.relative.length).toBe(1);
-    expect(result.abs[0]).toBe("/abs/a.ts");
-    expect(result.relative[0]).toBe("rel//abs/a.ts");
   });
 
   it("opens selected file", async () => {

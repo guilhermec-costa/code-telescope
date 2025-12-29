@@ -178,8 +178,7 @@
                     "type": "string",
                     "enum": [
                         "classic",
-                        "ivy",
-                        "compact"
+                        "ivy"
                     ],
                     "default": "classic",
                     "description": "Layout mode"

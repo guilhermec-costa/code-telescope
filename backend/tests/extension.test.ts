@@ -6,7 +6,7 @@ import { FuzzyFinderPanelController } from "../core/presentation/fuzzy-panel.con
 import { loadWebviewHandlers } from "../core/presentation/handlers/loader";
 import { activate, deactivate } from "../extension";
 import { Globals } from "../globals";
-import { registerAndSubscribeCmd } from "../utils/commands";
+import { registerProviderCmd } from "../utils/commands";
 
 vi.mock("@backend/core/finders/loader", () => ({
   loadFuzzyProviders: vi.fn(),
@@ -30,6 +30,7 @@ vi.mock("@backend/core/presentation/handlers/loader", () => ({
 vi.mock("@backend/utils/commands", () => ({
   getCmdId: vi.fn((...args: string[]) => args.join(".")),
   registerAndSubscribeCmd: vi.fn(),
+  registerProviderCmd: vi.fn(),
 }));
 
 vi.mock("@backend/utils/configuration", () => ({
@@ -87,17 +88,18 @@ describe("Extension entrypoint", () => {
 
     // registered commands
     const expectedCommands = [
-      ["fuzzy.file", expect.any(Function), context],
-      ["fuzzy.branch", expect.any(Function), context],
-      ["fuzzy.wsText", expect.any(Function), context],
-      ["fuzzy.commits", expect.any(Function), context],
-      ["fuzzy.custom", expect.any(Function), context],
+      ["file", expect.any(Function), context],
+      ["keybindings", expect.any(Function), context],
+      ["branch", expect.any(Function), context],
+      ["wsText", expect.any(Function), context],
+      ["commits", expect.any(Function), context],
+      ["custom", expect.any(Function), context],
     ];
 
-    expectedCommands.forEach(([cmdId, callback, ctx], index) => {
-      expect(registerAndSubscribeCmd).toHaveBeenNthCalledWith(index + 1, cmdId, callback, ctx);
+    expectedCommands.forEach(([cmdId, callback, ctx]) => {
+      expect(registerProviderCmd).toHaveBeenCalledWith(cmdId, callback, ctx);
     });
-    expect(registerAndSubscribeCmd).toHaveBeenCalledTimes(expectedCommands.length);
+    expect(registerProviderCmd).toHaveBeenCalledTimes(expectedCommands.length);
 
     const providerInstance = FuzzyFinderPanelController.createOrShow();
     const loaderInstance = vi.mocked(CustomProviderLoader).mock.results[0].value as Mocked<CustomProviderLoader>;

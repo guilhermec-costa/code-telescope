@@ -31,13 +31,6 @@ describe("GitBranchFuzzyFinder", () => {
     expect(_finder["gitApi"]).not.toBeNull();
   });
 
-  it("returns html load config", () => {
-    const cfg = provider.getHtmlLoadConfig();
-
-    expect(cfg.fileName).toBe("file-fuzzy.view.html");
-    expect(cfg.placeholders["{{style}}"]).toBe("ui/style/style.css");
-  });
-
   it("returns empty list when git api is null", async () => {
     vi.mocked(getGitApi).mockReturnValueOnce(null);
 

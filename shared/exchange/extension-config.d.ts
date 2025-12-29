@@ -17,7 +17,7 @@ export interface WsTextFinderConfig {
 }
 
 export interface LayoutSetupConfig {
-  mode: "classic" | "ivy" | "compact";
+  mode: "classic" | "ivy";
   rightSideWidthPct: number;
   leftSideWidthPct: number;
   panelContainerPct: number;
