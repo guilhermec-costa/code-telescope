@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, Mock, type Mocked, vi } from "vitest";
 import { DIContainer } from "../core/common/di-container";
 import { WebviewController } from "../core/common/webview.controller";
+import { HorizontalSplitter } from "../core/render/horizontal-splitter";
 
 vi.mock("@ui/core/common/di-container", () => {
   return {
@@ -10,6 +11,16 @@ vi.mock("@ui/core/common/di-container", () => {
         previewManager = {};
         optionListManager = {};
         keyboardHandler = {};
+      },
+    ),
+  };
+});
+
+vi.mock("@ui/core/render/horizontal-splitter", () => {
+  return {
+    HorizontalSplitter: vi.fn(
+      class {
+        constructor() {}
       },
     ),
   };
@@ -41,6 +52,7 @@ describe("UI entrypoint", () => {
     expect(diMock.init).toHaveBeenCalledTimes(1);
 
     expect(WebviewController).toHaveBeenCalledTimes(1);
+    expect(HorizontalSplitter).toHaveBeenCalled();
     expect((WebviewController as any).mock.results[0].value.initialize).toHaveBeenCalledTimes(1);
   });
 

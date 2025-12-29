@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { FileFinderData } from "../../../../shared/exchange/file-search";
 import { FileOption, WorkspaceFilesFinderDataAdapter } from "../../../core/adapters/data/ws-files-finder.data-adapter";
 
@@ -44,6 +44,7 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
 
   describe("getDisplayText", () => {
     it("should return the relative path", () => {
+      vi.stubGlobal("__FILE_PATH_DISPLAY__", "relative");
       const option: FileOption = {
         absolute: "/root/file.ts",
         relative: "file.ts",
