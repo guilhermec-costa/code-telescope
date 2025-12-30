@@ -92,10 +92,5 @@ export class WebviewToExtensionMessenger {
     });
   }
 
-  requestSetLeftWidthPct(width: number) {
-    this.postMessage({
-      type: "",
-      data: width,
-    });
-  }
+  requestSetLeftWidthPct(width: number) {}
 }
