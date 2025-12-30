@@ -183,6 +183,11 @@
                     "default": "classic",
                     "description": "Layout mode"
                 },
+                "codeTelescope.layout.ivyHeightPct": {
+                    "type": "number",
+                    "default": 75,
+                    "description": "Height in percentage of the ivy layout container"
+                },
                 "codeTelescope.layout.rightSideWidthPct": {
                     "type": "number",
                     "default": 50,

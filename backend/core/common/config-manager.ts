@@ -6,6 +6,7 @@ import {
   type WsFileFinderConfig,
   type WsTextFinderConfig,
 } from "../../../shared/exchange/extension-config";
+import { Result } from "../../@types/result";
 import { Globals } from "../../globals";
 
 enum ExtensionCfgSection {
@@ -18,7 +19,7 @@ enum ExtensionCfgSection {
 
 export class ExtensionConfigManager {
   private static get root() {
-    return vscode.workspace.getConfiguration(Globals.EXTENSION_CONFIGURATION_PREFIX);
+    return vscode.workspace.getConfiguration(Globals.EXTENSION_CONFIGURATION_PREFIX, null);
   }
 
   static get wsFileFinderCfg(): WsFileFinderConfig {
@@ -35,6 +36,21 @@ export class ExtensionConfigManager {
 
   static get layoutCfg(): LayoutSetupConfig {
     return this.root.get<LayoutSetupConfig>(ExtensionCfgSection.LAYOUT)!;
+  }
+
+  static async updateLayoutProperty<T = any>(property: string, value: T): Promise<Result<boolean>> {
+    try {
+      await this.root.update(`${ExtensionCfgSection.LAYOUT}.${property}`, value, vscode.ConfigurationTarget.Global);
+      return {
+        ok: true,
+        value: true,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: "Failed to updated property",
+      };
+    }
   }
 
   static get keybindings(): KeybindingConfig {

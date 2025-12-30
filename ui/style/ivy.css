@@ -39,13 +39,15 @@ body {
 
 #container {
   width: var(--panel-container-width);
+  height: var(--ivy-layout-height-pct);
   max-width: 98vw;
-  height: 70%;
+  max-height: 95%;
   background: var(--bg);
   display: flex;
   flex-direction: column;
   border: 1px solid var(--border-color);
   border-radius: 2px;
+  position: relative;
 }
 
 #input-container {
@@ -128,6 +130,11 @@ body {
   flex-direction: column-reverse;
 }
 
+#option-list.flexbox-render.ivy-layout {
+  display: flex;
+  flex-direction: column;
+}
+
 #option-list::-webkit-scrollbar {
   width: 6px;
 }
@@ -188,12 +195,13 @@ body {
 }
 
 #horizontal-resizer {
-  width: 98%;
+  width: 100%;
   height: 4px;
-  margin-bottom: 6px;
   cursor: row-resize;
   background: transparent;
+  position: absolute;
   transition: background-color 0.15s ease;
+  top: -7px;
 }
 
 #vertical-resizer:hover {
@@ -204,9 +212,10 @@ body {
   background: var(--bg);
   width: var(--right-pane-width);
   display: flex;
+  min-width: 30vw;
   flex-direction: column;
   overflow: hidden;
-  min-width: 0;
+  height: 100%;
 }
 
 #preview {
@@ -217,6 +226,7 @@ body {
   padding: 12px 16px;
   overflow: auto;
   white-space: pre;
+  position: relative;
   font-family: var(--font-family);
   font-size: var(--preview-font-size);
   font-weight: 400;

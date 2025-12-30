@@ -95,6 +95,7 @@ export class WebviewAssetManager {
     const panelCfg = ExtensionConfigManager.layoutCfg;
     const vars = {
       "--left-pane-width": `${panelCfg.leftSideWidthPct}%`,
+      "--ivy-layout-height-pct": `${panelCfg.ivyHeightPct}%`,
       "--right-pane-width": `${panelCfg.rightSideWidthPct}%`,
       "--panel-container-width": `${panelCfg.panelContainerPct}%`,
       "--prompt-font-size": `${panelCfg.promptFontSize}px`,

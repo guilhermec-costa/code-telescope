@@ -264,6 +264,9 @@ export class OptionListManager {
     } else {
       this.virtualizer.clear();
       this.listElement.classList.add(this.RENDER_MODE_CLASSNAME);
+      if (document.body.dataset.layout === "ivy") {
+        this.listElement.classList.add("ivy-layout");
+      }
 
       this.renderNonVirtualized();
     }

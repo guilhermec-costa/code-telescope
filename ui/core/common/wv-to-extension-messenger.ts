@@ -1,4 +1,4 @@
-import { FromWebviewKindMessage } from "../../../shared/extension-webview-protocol";
+import { FromWebviewKindMessage, UpdateLayoutPropMessage } from "../../../shared/extension-webview-protocol";
 import { VSCodeApi } from "./code/code-api";
 
 /**
@@ -92,5 +92,10 @@ export class WebviewToExtensionMessenger {
     });
   }
 
-  requestSetLeftWidthPct(width: number) {}
+  requestLayoutPropUpdate(data: UpdateLayoutPropMessage["data"]) {
+    this.postMessage({
+      type: "updateLayoutProp",
+      data,
+    });
+  }
 }

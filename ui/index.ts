@@ -3,8 +3,9 @@ import { WebviewController } from "./core/common/webview.controller";
 
 import "./core/adapters/data/loader";
 import "./core/adapters/preview-renderer/loader";
-import { ClassicLayoutResizer } from "./core/render/resizers/classic-layout-resizer";
-import { IvyLayoutResizer } from "./core/render/resizers/ivy-layout-resizer";
+import { WebviewToExtensionMessenger } from "./core/common/wv-to-extension-messenger";
+import { HorizontalLayoutResizer } from "./core/render/resizers/ivy-layout-resizer";
+import { VerticalLayoutResizer } from "./core/render/resizers/vertical-layout-resizer";
 
 (async () => {
   try {
@@ -23,11 +24,22 @@ import { IvyLayoutResizer } from "./core/render/resizers/ivy-layout-resizer";
     );
     console.log("[Index] Controller created");
 
+    new VerticalLayoutResizer({
+      onResizeEnd: (leftWidthVw, rightWidthVw) => {
+        WebviewToExtensionMessenger.instance.requestLayoutPropUpdate([
+          { property: "leftSideWidthPct", value: leftWidthVw },
+          { property: "rightSideWidthPct", value: rightWidthVw },
+        ]);
+      },
+    });
+
     const layout = document.body.dataset.layout;
-    if (layout === "classic") {
-      new ClassicLayoutResizer();
-    } else if (layout === "ivy") {
-      new IvyLayoutResizer();
+    if (layout === "ivy") {
+      new HorizontalLayoutResizer({
+        onResizeEnd: (heightVh) => {
+          WebviewToExtensionMessenger.instance.requestLayoutPropUpdate([{ property: "ivyHeightPct", value: heightVh }]);
+        },
+      });
     }
 
     await controller.initialize();

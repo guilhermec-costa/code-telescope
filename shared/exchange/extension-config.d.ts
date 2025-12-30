@@ -21,6 +21,7 @@ export interface LayoutSetupConfig {
   rightSideWidthPct: number;
   leftSideWidthPct: number;
   panelContainerPct: number;
+  ivyHeightPct: number;
   promptFontSize: number;
   resultsFontSize: number;
   previewFontSize: number;

@@ -1,10 +1,10 @@
 type ClassicLayoutResizerOptions = {
   minWidth?: number;
   maxWidth?: number;
-  onResizeEnd?: (width: number) => void;
+  onResizeEnd?: (leftWidthVw: number, rightWidthVw: number) => void;
 };
 
-export class ClassicLayoutResizer {
+export class VerticalLayoutResizer {
   private isDragging = false;
   private containerRect!: DOMRect;
 
@@ -26,6 +26,18 @@ export class ClassicLayoutResizer {
     this.resizer.addEventListener("mousedown", this.onMouseDown);
     document.addEventListener("mousemove", this.onMouseMove);
     document.addEventListener("mouseup", this.onMouseUp);
+  }
+
+  private get searchResultsSideVw() {
+    const viewportWidth = window.innerWidth;
+    const widthPx = this.target.getBoundingClientRect().width;
+    return Math.round((widthPx / viewportWidth) * 100);
+  }
+
+  private get previewSideVw() {
+    const viewportWidth = window.innerWidth;
+    const widthPx = this.previewSide.getBoundingClientRect().width;
+    return Math.round((widthPx / viewportWidth) * 100);
   }
 
   private onMouseDown = () => {
@@ -56,8 +68,7 @@ export class ClassicLayoutResizer {
     document.body.style.cursor = "";
     document.body.style.userSelect = "";
 
-    const width = Math.round(this.target.getBoundingClientRect().width);
-    this.options.onResizeEnd?.(width);
+    this.options.onResizeEnd?.(this.searchResultsSideVw, this.previewSideVw);
   };
 
   dispose() {

@@ -70,6 +70,25 @@ export interface HighlighterInitDone {
   type: "highlighterInitDone";
 }
 
+type LayoutPropUpdate =
+  | {
+      property: "ivyHeightPct";
+      value: number;
+    }
+  | {
+      property: "leftSideWidthPct";
+      value: number;
+    }
+  | {
+      property: "rightSideWidthPct";
+      value: number;
+    };
+
+export interface UpdateLayoutPropMessage {
+  type: "updateLayoutProp";
+  data: LayoutPropUpdate[];
+}
+
 export interface HighlightCacheMessage {
   type: "highlightCache";
   data: {
@@ -139,4 +158,5 @@ export type FromWebviewKindMessage =
   | DynamicSearchMessage
   | OptionSelectedMessage
   | HighlightCacheMessage
-  | HighlighterInitDone;
+  | HighlighterInitDone
+  | UpdateLayoutPropMessage;
