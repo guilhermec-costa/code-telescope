@@ -1,5 +1,5 @@
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
-import { Result } from "../../../@types/result";
+import { Result } from "../../../../shared/result";
 import { Globals } from "../../../globals";
 import { CustomFinderBackendProxy } from "../../finders/custom/backend-proxy.finder";
 import { CustomFinderUiProxy } from "../../finders/custom/ui-proxy.finder";

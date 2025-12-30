@@ -45,6 +45,7 @@ body {
   background: var(--bg);
   display: flex;
   flex-direction: column;
+  margin: 0 auto;
   border: 1px solid var(--border-color);
   border-radius: 2px;
   position: relative;

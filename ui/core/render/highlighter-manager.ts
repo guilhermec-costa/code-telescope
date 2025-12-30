@@ -1,4 +1,5 @@
 import type { HighlighterCore } from "shiki/core";
+import { AsyncResult } from "../../../shared/result";
 
 /**
  * Centralized manager for Highlighter lifecycle.
@@ -41,10 +42,11 @@ export class HighlighterManager {
    * Loads a language definition if it has not been loaded yet.
    * This method is idempotent and safe to call repeatedly.
    */
-  static async loadLanguageIfNedeed(language: string) {
-    if (this.loadedLanguages.has(language)) return;
-
-    await this.loadLanguageFromBundle(language);
+  static async loadLanguageIfNedeed(language: string): AsyncResult<string> {
+    if (this.loadedLanguages.has(language)) {
+      return { ok: true, value: language };
+    }
+    return await this.loadLanguageFromBundle(language);
   }
 
   /**
@@ -69,15 +71,25 @@ export class HighlighterManager {
    *
    * @throws Error if the language is not found in the bundle
    */
-  static async loadLanguageFromBundle(lang: string) {
-    if (this.loadedLanguages.has(lang)) return;
+  static async loadLanguageFromBundle(lang: string): AsyncResult<string> {
+    if (this.loadedLanguages.has(lang)) return { ok: true, value: lang };
 
     const { langs } = await this.loadBundle();
     const bundledLang = langs?.bundledLanguages?.[lang];
-    if (!lang) throw new Error(`[ShikiManager] Language not found: ${lang}`);
+    if (!bundledLang) {
+      return {
+        ok: false,
+        error: `[ShikiManager] Language not found: ${lang}`,
+      };
+    }
 
     await this.highlighter.loadLanguage(bundledLang);
     this.loadedLanguages.add(lang);
     console.log(`[ShikiManager] Language loaded from bundle: ${lang}`);
+
+    return {
+      ok: true,
+      value: lang,
+    };
   }
 }

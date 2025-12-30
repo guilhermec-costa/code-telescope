@@ -23,4 +23,8 @@ export type CustomFuzzyProviderType = `custom.${string}`;
 
 export type FuzzyProviderType = BuiltinFuzzyProviderType | CustomFuzzyProviderType;
 
-export type PreviewRendererType = "preview.codeHighlighted" | "preview.branch" | "preview.commitDiff";
+export type PreviewRendererType =
+  | "preview.codeHighlighted"
+  | "preview.branch"
+  | "preview.commitDiff"
+  | "preview.failed";

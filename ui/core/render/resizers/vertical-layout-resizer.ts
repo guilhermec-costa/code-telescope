@@ -34,12 +34,6 @@ export class VerticalLayoutResizer {
     return Math.round((widthPx / viewportWidth) * 100);
   }
 
-  private get previewSideVw() {
-    const viewportWidth = window.innerWidth;
-    const widthPx = this.previewSide.getBoundingClientRect().width;
-    return Math.round((widthPx / viewportWidth) * 100);
-  }
-
   private onMouseDown = () => {
     this.isDragging = true;
     this.containerRect = this.container.getBoundingClientRect();
@@ -68,7 +62,10 @@ export class VerticalLayoutResizer {
     document.body.style.cursor = "";
     document.body.style.userSelect = "";
 
-    this.options.onResizeEnd?.(this.searchResultsSideVw, this.previewSideVw);
+    const leftVw = this.searchResultsSideVw;
+    const rightVw = 100 - leftVw;
+
+    this.options.onResizeEnd?.(leftVw, rightVw);
   };
 
   dispose() {

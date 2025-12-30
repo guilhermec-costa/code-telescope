@@ -6,7 +6,7 @@ import {
   type WsFileFinderConfig,
   type WsTextFinderConfig,
 } from "../../../shared/exchange/extension-config";
-import { Result } from "../../@types/result";
+import { Result } from "../../../shared/result";
 import { Globals } from "../../globals";
 
 enum ExtensionCfgSection {

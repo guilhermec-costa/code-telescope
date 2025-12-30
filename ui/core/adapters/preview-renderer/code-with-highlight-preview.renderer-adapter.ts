@@ -4,7 +4,7 @@ import { HighlightedCodePreviewData } from "../../../../shared/extension-webview
 import { toInnerHTML } from "../../../utils/html";
 import { IPreviewRendererAdapter } from "../../abstractions/preview-renderer-adapter";
 import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapter.decorator";
-import { SyntaxHighlighter } from "../../registry/preview-adapter.registry";
+import { PreviewRendererAdapterRegistry, SyntaxHighlighter } from "../../registry/preview-adapter.registry";
 import { HighlighterManager } from "../../render/highlighter-manager";
 
 const CHUNK_SIZE = 200;
@@ -44,7 +44,21 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
 
     const initialChunk = Math.floor(highlightLine / CHUNK_SIZE);
 
-    await HighlighterManager.loadLanguageIfNedeed(language);
+    const loadResult = await HighlighterManager.loadLanguageIfNedeed(language);
+    if (!loadResult.ok) {
+      const failedAdapter = PreviewRendererAdapterRegistry.instance.getAdapter("preview.failed");
+      await failedAdapter.render(
+        previewElement,
+        {
+          content: {
+            title: "Preview error",
+            message: "An error occurred while rendering this preview.",
+          },
+        },
+        theme,
+      );
+      return;
+    }
 
     const renderChunk = async (chunkIndex: number, position: "append" | "prepend" = "append") => {
       if (this.loadedChunks.has(chunkIndex)) return;

@@ -1,7 +1,7 @@
 import { pathToFileURL } from "url";
 import * as vscode from "vscode";
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
-import { AsyncResult } from "../../../@types/result";
+import { AsyncResult } from "../../../../shared/result";
 import { Globals } from "../../../globals";
 import { FuzzyFinderAdapterRegistry } from "../../registry/fuzzy-provider.registry";
 import { CustomProviderStorage } from "./custom-provider.storage";

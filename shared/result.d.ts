@@ -7,5 +7,4 @@ export type Result<T extends any = any> =
       ok: false;
       error: string;
     };
-
 export type AsyncResult<T> = Promise<Result<T>>;
