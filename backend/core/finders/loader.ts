@@ -1,9 +1,15 @@
-import "./git/git-branch.finder";
-import "./git/git-commit.finder";
-import "./ws-files.finder";
-import "./ws-text-finder/index";
-import "./keybindings.finder";
+import { pathToFileURL } from "node:url";
+import { glob } from "glob";
 
-export function loadFuzzyProviders() {
-  console.log("[Fuzzy] All providers loaded.");
+export async function loadFuzzyProviders() {
+  const files = await glob("**/*.finder.js", {
+    cwd: __dirname,
+    absolute: true,
+  });
+
+  for (const file of files) {
+    await import(pathToFileURL(file).href);
+  }
+
+  console.log(`[Fuzzy] ${files.length} providers loaded.`);
 }

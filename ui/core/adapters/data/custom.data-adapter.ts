@@ -4,7 +4,6 @@ import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-ad
 
 export interface SerializedUiConfig {
   fuzzyAdapterType: CustomFinderDefinition["fuzzyAdapterType"];
-  previewAdapterType: CustomFinderDefinition["previewAdapterType"];
   dataAdapter: CustomFinderDefinition["ui"]["dataAdapter"];
 }
 
@@ -24,7 +23,7 @@ export class CustomDataAdapterProxy implements IFuzzyFinderDataAdapter {
     }
 
     this.fuzzyAdapterType = serializedConfig.fuzzyAdapterType as any;
-    this.previewAdapterType = serializedConfig.previewAdapterType as any;
+    this.previewAdapterType = "preview.codeHighlighted";
   }
 
   parseOptions!: (options: any) => string[];

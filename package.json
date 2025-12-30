@@ -76,7 +76,9 @@
                         "**/.parcel-cache/**",
                         "**/.vite/**",
                         "**/.nuxt/**",
-                        "**/coverage/**"
+                        "**/coverage/**",
+                        "**/*.jar",
+                        "**/*.jar*"
                     ],
                     "description": "Glob patterns to exclude from file search"
                 },
@@ -319,5 +321,8 @@
         "overrides": {
             "jsdom": "22.1.0"
         }
+    },
+    "dependencies": {
+        "glob": "^13.0.0"
     }
 }
