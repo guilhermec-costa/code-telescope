@@ -6,6 +6,15 @@ import { Virtualizer } from "../render/virtualizer";
 import { StateManager } from "./code/state-manager";
 import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
 
+/**
+ * Manages the option list lifecycle inside the webview.
+ *
+ * Responsibilities:
+ * - Hold all options and filtered options
+ * - Apply filtering, sorting and selection logic
+ * - Decide between full render and virtualized render
+ * - Synchronize selection with preview requests
+ */
 export class OptionListManager {
   private allOptions: any[] = [];
   private filteredOptions: any[] = [];
@@ -14,9 +23,14 @@ export class OptionListManager {
   private listElement: HTMLUListElement;
   private itemsCountElement: HTMLElement | null;
 
+  /** Threshold to switch between full render and virtualized render */
   private readonly RENDER_THRESHOLD = 200;
+
   private readonly RENDER_MODE_CLASSNAME = "flexbox-render";
+
+  /** Prefix used to generate DOM ids for option items */
   private readonly OPTION_ITEM_ID_PREFIX = "option-item-id-";
+
   private readonly virtualizer: Virtualizer;
   private debouncedRequestPreview: (value: string) => void;
 
@@ -36,15 +50,25 @@ export class OptionListManager {
     this.setupScrollListener();
   }
 
+  /**
+   * Sets the data adapter responsible for interpreting and filtering options.
+   */
   public setAdapter(adapter: IFuzzyFinderDataAdapter): void {
     this.dataAdapter = adapter;
   }
 
-  public getAdapterDebounceTime(): number {
+  /**
+   * Returns the debounce time used when filtering/searching,
+   */
+  public getAdapterSearchDebounceTime(): number {
     if (this.dataAdapter && this.dataAdapter.debounceSearchTime) return this.dataAdapter.debounceSearchTime;
     return 50;
   }
 
+  /**
+   * Initializes the option list with a new dataset.
+   * Resets state, renders items and requests preview for the first option.
+   */
   public setOptions(options: any[]): void {
     if (!this.dataAdapter) {
       console.error("[OptionListManager] No adapter set");
@@ -62,6 +86,10 @@ export class OptionListManager {
     if (first) this.requestPreview(first);
   }
 
+  /**
+   * Filters options based on the provided query.
+   * Uses adapter-specific filtering if available.
+   */
   public filter(query: string): void {
     if (!this.dataAdapter) return;
 
@@ -96,6 +124,9 @@ export class OptionListManager {
     this.moveSelection(this.renderMode === "fullrender" ? -1 : 1);
   }
 
+  /**
+   * Returns the selection value for the currently selected option.
+   */
   public getSelectedValue(): string | undefined {
     if (!this.dataAdapter || this.filteredOptions.length === 0) return undefined;
 
@@ -109,6 +140,9 @@ export class OptionListManager {
     StateManager.selectedIndex = 0;
   }
 
+  /**
+   * Confirms the current selection and notifies the extension.
+   */
   public onSelectionConfirmed() {
     const selectedValue = this.getSelectedValue();
     if (selectedValue) {
@@ -116,6 +150,9 @@ export class OptionListManager {
     }
   }
 
+  /**
+   * Clears options and preview when required by specific adapters.
+   */
   public resetIfNeeded() {
     if (StateManager.prompt === "" && this.dataAdapter.fuzzyAdapterType === "workspace.text") {
       this.clearOptions();
@@ -127,6 +164,9 @@ export class OptionListManager {
     return this.shouldUseVirtualization() ? "virtualized" : "fullrender";
   }
 
+  /**
+   * Returns the first index relative to the render mode.
+   */
   private restoreSelectedIndex(): number {
     if (StateManager.selectedIndex != 0) {
       return StateManager.selectedIndex;
@@ -177,13 +217,16 @@ export class OptionListManager {
     this.requestPreview(selectedOption);
   }
 
+  /**
+   * Scrolls the list to keep the selected item visible.
+   */
   private scrollToSelected() {
     if (this.shouldUseVirtualization()) {
       requestAnimationFrame(() => {
         this.virtualizer.scrollToSelectedVirtualized(StateManager.selectedIndex);
       });
     } else {
-      this.scrollToSelectedNormal();
+      this.scrollToSelectedNonVirtualized();
     }
   }
 
@@ -202,6 +245,9 @@ export class OptionListManager {
     });
   }
 
+  /**
+   * Renders the option list using either full render or virtualization.
+   */
   private render(): void {
     this.applySortOnFiltered();
     if (!this.dataAdapter) return;
@@ -219,12 +265,15 @@ export class OptionListManager {
       this.virtualizer.clear();
       this.listElement.classList.add(this.RENDER_MODE_CLASSNAME);
 
-      this.renderAll();
+      this.renderNonVirtualized();
     }
     this.scrollToSelected();
   }
 
-  private renderAll(): void {
+  /**
+   * Renders all options at once (non-virtualized).
+   */
+  private renderNonVirtualized(): void {
     this.listElement.style.height = "";
     this.listElement.innerHTML = "";
 
@@ -236,6 +285,9 @@ export class OptionListManager {
     this.listElement.appendChild(fragment);
   }
 
+  /**
+   * Creates a DOM list item for an option.
+   */
   private createListItem(option: any, idx: number, query: string): HTMLLIElement {
     const li = document.createElement("li");
     li.className = "option-item";
@@ -256,13 +308,19 @@ export class OptionListManager {
     return li;
   }
 
-  private scrollToSelectedNormal(): void {
+  /**
+   * Scrolls to the selected item in non-virtualized mode.
+   */
+  private scrollToSelectedNonVirtualized(): void {
     const selected = this.listElement.querySelector(".option-item.selected") as HTMLElement | null;
     if (selected) {
       selected.scrollIntoView({ block: "center", behavior: "instant" });
     }
   }
 
+  /**
+   * Highlights the query match inside a text string.
+   */
   private highlightMatch(text: string, query: string): string {
     if (!query) return escapeHtml(text);
 

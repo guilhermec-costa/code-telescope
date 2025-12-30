@@ -5,6 +5,9 @@ import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapte
 import { WebviewToExtensionMessenger } from "../common/wv-to-extension-messenger";
 import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.registry";
 
+/**
+ * Manages the preview panel lifecycle inside the webview.
+ */
 export class PreviewManager {
   private previewElement: HTMLElement;
   private userTheme: string;
@@ -22,10 +25,12 @@ export class PreviewManager {
     this.previewElement = document.getElementById("preview")!;
   }
 
+  /** Horizontal scroll step divisor (e.g. "1/4" → 4) */
   private get horizontalScrollFraction() {
     return +this.cfg.horizontalScrollFraction.split("/")[1];
   }
 
+  /** Vertical scroll step divisor (e.g. "1/4" → 4) */
   private get verticalScrollFraction() {
     return +this.cfg.verticalScrollFraction.split("/")[1];
   }
@@ -48,6 +53,8 @@ export class PreviewManager {
 
     this.clearPreview();
     await this.adapter.render(this.previewElement, data, this.userTheme);
+
+    // Scroll after DOM is painted
     requestAnimationFrame(() => {
       this.scrollToHighlighted();
     });
@@ -78,6 +85,10 @@ export class PreviewManager {
     this.previewElement.scrollTop = 0;
   }
 
+  /**
+   * Scrolls preview to the highlighted line if present,
+   * otherwise scrolls to top.
+   */
   scrollToHighlighted() {
     const highlightedLine = this.previewElement.querySelector(".line.highlighted");
     if (!highlightedLine) {

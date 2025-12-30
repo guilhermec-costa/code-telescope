@@ -1,5 +1,8 @@
 import type { HighlighterCore } from "shiki/core";
 
+/**
+ * Centralized manager for Highlighter lifecycle.
+ */
 export class HighlighterManager {
   private static highlighter: HighlighterCore | null = null;
   private static loadedThemes = new Set<string>();
@@ -19,11 +22,14 @@ export class HighlighterManager {
       engine: createOnigurumaEngine(wasm),
     });
 
-    await Promise.all([this.loadThemeFromBundle("dark-plus")]);
     console.log("[ShikiManager] Highlighter ready.");
     return this.highlighter;
   }
 
+  /**
+   * Loads the Shiki bundle dynamically. Ensures the bundle is imported only once, even when multiple
+   * concurrent requests are made.
+   */
   private static loadBundle() {
     if (!this.bundlePromise) {
       this.bundlePromise = import(`${__SHIKI_URI__}/shiki-bundle.js`);
@@ -31,12 +37,21 @@ export class HighlighterManager {
     return this.bundlePromise;
   }
 
+  /**
+   * Loads a language definition if it has not been loaded yet.
+   * This method is idempotent and safe to call repeatedly.
+   */
   static async loadLanguageIfNedeed(language: string) {
     if (this.loadedLanguages.has(language)) return;
 
     await this.loadLanguageFromBundle(language);
   }
 
+  /**
+   * Loads a theme from the bundled Shiki themes.
+   *
+   * @throws Error if the theme is not found in the bundle
+   */
   static async loadThemeFromBundle(theme: string) {
     if (this.loadedThemes.has(theme)) return;
 
@@ -49,6 +64,11 @@ export class HighlighterManager {
     console.log(`[ShikiManager] Theme loaded from bundle: ${theme}`);
   }
 
+  /**
+   * Loads a language grammar from the bundled Shiki languages.
+   *
+   * @throws Error if the language is not found in the bundle
+   */
   static async loadLanguageFromBundle(lang: string) {
     if (this.loadedLanguages.has(lang)) return;
 

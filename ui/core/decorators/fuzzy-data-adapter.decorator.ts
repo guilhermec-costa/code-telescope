@@ -8,6 +8,12 @@ interface FuzzyDataAdapterConfig {
 
 const GlobalFuzzyDataAdapterRegistry: IFuzzyFinderDataAdapter[] = [];
 
+/**
+ * Decorator used to register a fuzzy finder data adapter.
+ *
+ * It injects adapter metadata into the class prototype and
+ * registers a singleton instance in the global adapter registry.
+ */
 export function FuzzyFinderDataAdapter(config: FuzzyDataAdapterConfig) {
   return function <T extends { new (...args: any[]) }>(constructor: T) {
     const castedPrototype = constructor.prototype as IFuzzyFinderDataAdapter;

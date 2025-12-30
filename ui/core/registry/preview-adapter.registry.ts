@@ -8,7 +8,10 @@ export type SyntaxHighlighter = HighlighterCore | null;
 
 export class PreviewRendererAdapterRegistry {
   private adapters = new Map<string, IPreviewRendererAdapter>();
+
+  /** Shared syntax highlighter instance */
   private syntaxHighlighter: SyntaxHighlighter = null;
+
   private static _instance: PreviewRendererAdapterRegistry | undefined;
 
   private constructor() {}
@@ -41,6 +44,10 @@ export class PreviewRendererAdapterRegistry {
     return Array.from(this.adapters.keys());
   }
 
+  /**
+   * Lazily initializes the syntax highlighter and injects it
+   * into adapters that support highlighting.
+   */
   private async initAdapterHighlighters() {
     if (this.syntaxHighlighter) return;
 

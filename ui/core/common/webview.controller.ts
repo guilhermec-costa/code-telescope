@@ -83,7 +83,7 @@ export class WebviewController {
         console.timeEnd("shiki-init");
 
         this.previewManager.setUserTheme(msg.data.theme);
-        WebviewToExtensionMessenger.instance.onShikiInit();
+        WebviewToExtensionMessenger.instance.onHighlighterDone();
         break;
       }
 
@@ -119,8 +119,6 @@ export class WebviewController {
 
   /**
    * Processes a list of options received from the extension.
-   *
-   * @param msg - Message containing the finder type and option data.
    */
   private async handleOptionListMessage(msg: OptionListMessage) {
     const { fuzzyProviderType, data } = msg;
@@ -151,7 +149,7 @@ export class WebviewController {
     const debouncedFilter = debounce((query: string) => {
       WebviewToExtensionMessenger.instance.requestDynamicSearch(query);
       this.optionListManager.filter(query);
-    }, this.optionListManager.getAdapterDebounceTime());
+    }, this.optionListManager.getAdapterSearchDebounceTime());
 
     this.searchElement.addEventListener("input", async () => {
       const query = this.searchElement.value;
@@ -160,9 +158,6 @@ export class WebviewController {
     });
   }
 
-  /**
-   * Registers keyboard shortcuts for:
-   */
   private setupKeyboardHandlers(): void {
     this.keyboardHandler.setMoveUpHandler(this.optionListManager.moveSelectionUp.bind(this.optionListManager));
     this.keyboardHandler.setMoveDownHandler(this.optionListManager.moveSelectionDown.bind(this.optionListManager));

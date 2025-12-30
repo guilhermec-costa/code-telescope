@@ -6,8 +6,6 @@ import { Virtualizer } from "../render/virtualizer";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 
-declare const __CUSTOM_DATA_ADAPTER__: SerializedUiConfig | undefined;
-
 function readJson<T = unknown>(id: string): T | null {
   const el = document.getElementById(id);
   if (!el) return null;

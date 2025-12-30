@@ -3,7 +3,8 @@ import { WebviewController } from "./core/common/webview.controller";
 
 import "./core/adapters/data/loader";
 import "./core/adapters/preview-renderer/loader";
-import { HorizontalSplitter } from "./core/render/horizontal-splitter";
+import { ClassicLayoutResizer } from "./core/render/resizers/classic-layout-resizer";
+import { IvyLayoutResizer } from "./core/render/resizers/ivy-layout-resizer";
 
 (async () => {
   try {
@@ -22,16 +23,12 @@ import { HorizontalSplitter } from "./core/render/horizontal-splitter";
     );
     console.log("[Index] Controller created");
 
-    new HorizontalSplitter(
-      document.getElementById("split")!,
-      document.getElementById("search-results")!,
-      document.getElementById("resizer")!,
-      {
-        minLeftWidth: 250,
-        maxLeftWidth: 900,
-        // onResizeEnd: (width) => StateManager.setLeftPaneWidth(width),
-      },
-    );
+    const layout = document.body.dataset.layout;
+    if (layout === "classic") {
+      new ClassicLayoutResizer();
+    } else if (layout === "ivy") {
+      new IvyLayoutResizer();
+    }
 
     await controller.initialize();
     console.log("[Index] Controller initialized - Webview ready!");

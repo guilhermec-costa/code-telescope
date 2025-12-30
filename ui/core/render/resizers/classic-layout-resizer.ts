@@ -1,19 +1,24 @@
-type SplitterOptions = {
-  minLeftWidth?: number;
-  maxLeftWidth?: number;
+type ClassicLayoutResizerOptions = {
+  minWidth?: number;
+  maxWidth?: number;
   onResizeEnd?: (width: number) => void;
 };
 
-export class Splitter {
+export class ClassicLayoutResizer {
   private isDragging = false;
   private containerRect!: DOMRect;
 
-  constructor(
-    private readonly container: HTMLElement,
-    private readonly left: HTMLElement,
-    private readonly resizer: HTMLElement,
-    private readonly options: SplitterOptions = {},
-  ) {
+  private readonly container: HTMLElement;
+  private readonly target: HTMLElement;
+  private readonly resizer: HTMLElement;
+  private readonly previewSide: HTMLElement;
+
+  constructor(private readonly options: ClassicLayoutResizerOptions = {}) {
+    this.container = document.getElementById("split")!;
+    this.target = document.getElementById("search-results")!;
+    this.resizer = document.getElementById("vertical-resizer")!;
+    this.previewSide = document.getElementById("preview-side")!;
+
     this.bind();
   }
 
@@ -25,7 +30,6 @@ export class Splitter {
 
   private onMouseDown = () => {
     this.isDragging = true;
-
     this.containerRect = this.container.getBoundingClientRect();
 
     document.body.style.cursor = "col-resize";
@@ -38,15 +42,11 @@ export class Splitter {
     const mouseX = e.clientX;
     const relativeX = mouseX - this.containerRect.left;
 
-    const { minLeftWidth = 200, maxLeftWidth = Infinity } = this.options;
+    const { minWidth = 200, maxWidth = Infinity } = this.options;
+    const leftSideWidth = Math.max(minWidth, Math.min(relativeX, maxWidth));
 
-    const width = Math.max(minLeftWidth, Math.min(relativeX, maxLeftWidth));
-    this.setLeftWidth(width);
-
-    if (this.left.id === "search-results") {
-      const rightSize = document.getElementById("preview-side")!;
-      rightSize.style.width = `${this.container.clientWidth - width}px`;
-    }
+    this.target.style.width = `${leftSideWidth}px`;
+    this.previewSide.style.width = `${this.container.clientWidth - leftSideWidth}px`;
   };
 
   private onMouseUp = () => {
@@ -56,13 +56,9 @@ export class Splitter {
     document.body.style.cursor = "";
     document.body.style.userSelect = "";
 
-    const width = this.left.getBoundingClientRect().width;
-    this.options.onResizeEnd?.(Math.round(width));
+    const width = Math.round(this.target.getBoundingClientRect().width);
+    this.options.onResizeEnd?.(width);
   };
-
-  setLeftWidth(width: number) {
-    this.left.style.width = `${width}px`;
-  }
 
   dispose() {
     this.resizer.removeEventListener("mousedown", this.onMouseDown);

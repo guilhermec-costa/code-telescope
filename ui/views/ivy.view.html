@@ -21,8 +21,9 @@
   <script defer src="{{script}}"></script>
 </head>
 
-<body>
+<body data-layout="ivy">
   <div id="container">
+    <div id="horizontal-resizer"></div>
     <div id="input-container">
       <input id="search" type="text" autofocus placeholder="Find file...">
       <span id="items-count">0 / 0</span>
@@ -31,7 +32,7 @@
       <div id="search-results">
         <ul id="option-list"></ul>
       </div>
-      <div id="resizer"></div>
+      <div id="vertical-resizer"></div>
       <div id="preview-side">
         <div id="preview"></div>
       </div>

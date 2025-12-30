@@ -235,7 +235,7 @@ body {
   flex-direction: column;
   background-color: var(--bg);
   overflow: visible;
-  min-width: 0;
+  min-width: 30vw;
   border: var(--border-size) solid var(--border-color);
   border-radius: var(--border-radius);
   position: relative;
@@ -279,7 +279,7 @@ body {
   line-height: 1.3;
 }
 
-#resizer {
+#vertical-resizer {
   width: 6px;
   cursor: col-resize;
   background: transparent;

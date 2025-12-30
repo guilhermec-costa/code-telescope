@@ -180,14 +180,23 @@ body {
   font-weight: 700;
 }
 
-#resizer {
+#vertical-resizer {
   width: 4px;
   cursor: col-resize;
   background: transparent;
   transition: background-color 0.15s ease;
 }
 
-#resizer:hover {
+#horizontal-resizer {
+  width: 98%;
+  height: 4px;
+  margin-bottom: 6px;
+  cursor: row-resize;
+  background: transparent;
+  transition: background-color 0.15s ease;
+}
+
+#vertical-resizer:hover {
   background: var(--focus-border);
 }
 

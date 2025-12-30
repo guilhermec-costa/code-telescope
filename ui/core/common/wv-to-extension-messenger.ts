@@ -41,6 +41,12 @@ export class WebviewToExtensionMessenger {
     this.postMessage({ type: "optionSelected", data: option });
   }
 
+  onHighlighterDone() {
+    this.postMessage({
+      type: "highlighterInitDone",
+    });
+  }
+
   /**
    * Requests the extension to close the webview panel.
    */
@@ -86,9 +92,10 @@ export class WebviewToExtensionMessenger {
     });
   }
 
-  onShikiInit() {
+  requestSetLeftWidthPct(width: number) {
     this.postMessage({
-      type: "highlighterInitDone",
+      type: "",
+      data: width,
     });
   }
 }
