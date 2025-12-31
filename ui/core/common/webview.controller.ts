@@ -152,8 +152,8 @@ export class WebviewController {
     }, this.optionListManager.getAdapterSearchDebounceTime());
 
     this.searchElement.addEventListener("input", async () => {
-      const query = this.searchElement.value;
-      debouncedFilter(query);
+      StateManager.prompt = this.searchElement.value;
+      debouncedFilter(StateManager.prompt);
       this.optionListManager.resetIfNeeded();
     });
   }
