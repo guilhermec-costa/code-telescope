@@ -7,7 +7,7 @@ import { AsyncResult } from "../../../shared/result";
 export class HighlighterManager {
   private static highlighter: HighlighterCore | null = null;
   private static loadedThemes = new Set<string>();
-  private static loadedLanguages = new Set<string>();
+  private static loadedLanguages = new Set<string>(["text"]);
   private static bundlePromise: Promise<any> | null = null;
 
   static async initHighlighterCore(): Promise<HighlighterCore> {

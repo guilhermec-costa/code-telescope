@@ -22,11 +22,13 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
   constructor(private highlighter: SyntaxHighlighter) {}
 
   async render(previewElement: HTMLElement, data: HighlightedCodePreviewData, theme: string): Promise<void> {
-    const {
+    let {
       content: { text },
       language = "text",
       metadata,
     } = data;
+
+    language = language === "txt" ? "text" : language;
 
     if (!this.highlighter) {
       previewElement.innerHTML = `<pre style="padding:1rem;">${toInnerHTML(text)}</pre>`;
