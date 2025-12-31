@@ -1,3 +1,4 @@
+import { getClassWithColor } from "file-icons-js";
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { TextSearchData } from "../../../../shared/exchange/workspace-text-search";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
@@ -30,7 +31,10 @@ export class WorkspaceTextFinderDataAdapter implements IFuzzyFinderDataAdapter<T
 
   getDisplayText(option: SearchOption): string {
     const fileName = this.getFileName(option.file);
-    return `${fileName}:${option.line} - ${option.preview}`;
+    const iconClass = getClassWithColor(fileName);
+    const displayText = `${fileName}:${option.line} - ${option.preview}`;
+
+    return `<i class="${iconClass} file-icon"></i><span class="file-path">${displayText}</span>`;
   }
 
   getSelectionValue(option: SearchOption): string {

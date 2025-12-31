@@ -43,9 +43,9 @@ export interface IFuzzyFinderDataAdapter<TData = any, TOption = string> {
   getSelectionValue(option: TOption): string;
 
   /**
-   * Optional: Custom filter logic for a single option
+   * Custom filter logic for a single option
    */
-  filterOption?(option: TOption, query: string): boolean;
+  filterOption(option: TOption, query: string): boolean;
 
   debounceSearchTime?: number;
 }

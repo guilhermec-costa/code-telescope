@@ -95,14 +95,7 @@ export class OptionListManager {
 
     StateManager.prompt = query.toLowerCase();
 
-    if (this.dataAdapter.filterOption) {
-      this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter.filterOption(opt, StateManager.prompt));
-    } else {
-      this.filteredOptions = this.allOptions.filter((opt) => {
-        const text = this.dataAdapter.getDisplayText(opt);
-        return text.toLowerCase().includes(StateManager.prompt);
-      });
-    }
+    this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter.filterOption(opt, StateManager.prompt));
 
     StateManager.selectedIndex = this.getRelativeFirstIndex();
     this.updateItemsCount();
@@ -246,8 +239,8 @@ export class OptionListManager {
 
   private applySortOnFiltered() {
     this.filteredOptions.sort((opt1, opt2) => {
-      const a = this.dataAdapter.getDisplayText(opt1).toLowerCase();
-      const b = this.dataAdapter.getDisplayText(opt2).toLowerCase();
+      const a = this.dataAdapter.getSelectionValue(opt1).toLowerCase();
+      const b = this.dataAdapter.getSelectionValue(opt2).toLowerCase();
 
       const result = a.localeCompare(b);
 
@@ -334,8 +327,15 @@ export class OptionListManager {
   /**
    * Highlights the query match inside a text string.
    */
+  /**
+   * Highlights the query match inside a text string.
+   */
   private highlightMatch(text: string, query: string): string {
-    if (!query) return escapeHtml(text);
+    if (!query) return text;
+
+    if (text.includes("<i class=")) {
+      return this.highlightMatchWithIcon(text, query);
+    }
 
     const lowerText = text.toLowerCase();
     const lowerQuery = query.toLowerCase();
@@ -350,6 +350,35 @@ export class OptionListManager {
       `<span class="highlight">${escaped.slice(i, i + query.length)}</span>` +
       escaped.slice(i + query.length)
     );
+  }
+
+  /**
+   * Highlights matches in text that contains an icon.
+   */
+  private highlightMatchWithIcon(html: string, query: string): string {
+    const iconMatch = html.match(/^(<i[^>]+><\/i>)/);
+    if (!iconMatch) return html;
+
+    const icon = iconMatch[1];
+    const pathMatch = html.match(/<span class="file-path">([^<]+)<\/span>/);
+    if (!pathMatch) return html;
+
+    const path = pathMatch[1];
+    const lowerPath = path.toLowerCase();
+    const lowerQuery = query.toLowerCase();
+
+    const i = lowerPath.indexOf(lowerQuery);
+    if (i === -1) {
+      return html;
+    }
+
+    // Aplica highlight apenas no path
+    const highlightedPath =
+      escapeHtml(path.slice(0, i)) +
+      `<span class="highlight">${escapeHtml(path.slice(i, i + query.length))}</span>` +
+      escapeHtml(path.slice(i + query.length));
+
+    return `${icon}<span class="file-path">${highlightedPath}</span>`;
   }
 
   private requestPreview(option: any): void {

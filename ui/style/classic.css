@@ -1,4 +1,5 @@
 @import "https://www.nerdfonts.com/assets/css/webfont.css";
+@import "../vendor/file-icons/style.css";
 
 :root {
   --bg: var(--vscode-editor-background);
@@ -56,7 +57,6 @@ body {
   height: 100%;
   min-width: 0;
   min-height: 0;
-  gap: 5px;
 }
 
 #search-results {
@@ -225,7 +225,7 @@ body {
 .option-item.selected::before {
   content: "❯";
   margin-right: 8px;
-  color: var(--highlight-bg);
+  color: var(--vscode-editorLineNumber-foreground);
 }
 
 #preview-side {

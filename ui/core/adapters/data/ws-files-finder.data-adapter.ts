@@ -1,3 +1,4 @@
+import { getClassWithColor } from "file-icons-js";
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { FileFinderData } from "../../../../shared/exchange/file-search";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
@@ -30,7 +31,8 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
   }
 
   getDisplayText(option: FileOption): string {
-    const icon = this.getIconForFile(option.absolute);
+    const filename = this.getFilename(option.absolute);
+    const iconClass = getClassWithColor(filename);
 
     let displayPath: string;
     switch (__FILE_PATH_DISPLAY__) {
@@ -41,100 +43,13 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
         displayPath = option.absolute;
         break;
       case "filename-only":
-        displayPath = option.absolute.split(/[\\/]/).pop() || option.absolute;
+        displayPath = filename;
         break;
       default:
         displayPath = option.relative;
     }
 
-    return `${icon} ${displayPath}`;
-  }
-
-  private getIconForFile(filepath: string): string {
-    const filename = filepath.split(/[\\/]/).pop() || "";
-
-    // Casos especiais por nome completo
-    const specialFiles: Record<string, string> = {
-      "package.json": "",
-      "tsconfig.json": "󰛦",
-      ".gitignore": "",
-      dockerfile: "",
-      "docker-compose.yml": "",
-      ".env": "",
-      "readme.md": "",
-      license: "",
-    };
-
-    const lowerFilename = filename.toLowerCase();
-    if (specialFiles[lowerFilename]) {
-      return specialFiles[lowerFilename];
-    }
-
-    // Por extensão
-    const extension = this.getFileExtension(filename);
-    return this.getIconForExtension(extension);
-  }
-
-  private getFileExtension(filename: string): string {
-    const lastDot = filename.lastIndexOf(".");
-    if (lastDot === -1) return "";
-    return filename.slice(lastDot + 1).toLowerCase();
-  }
-
-  private getIconForExtension(extension: string): string {
-    const iconMap: Record<string, string> = {
-      ts: "nf-dev-typescript",
-      tsx: "",
-      js: "󰌞",
-      jsx: "",
-      py: "󰌠",
-      java: "",
-      cpp: "",
-      c: "",
-      cs: "󰌛",
-      go: "󰟓",
-      rs: "",
-      php: "󰌟",
-      rb: "",
-      swift: "",
-      kt: "󱈙",
-
-      // Web
-      html: "",
-      css: "",
-      scss: "",
-      sass: "",
-      less: "",
-      vue: "󰡄",
-      svelte: "",
-
-      // Dados e config
-      json: "",
-      yaml: "",
-      yml: "",
-      toml: "",
-      xml: "󰗀",
-      md: "",
-      txt: "󰈙",
-
-      // Outros
-      sql: "",
-      sh: "",
-      bash: "",
-      env: "",
-      lock: "",
-      pdf: "",
-      zip: "",
-      tar: "",
-      gz: "",
-      png: "",
-      jpg: "",
-      jpeg: "",
-      gif: "",
-      svg: "󰜡",
-    };
-
-    return iconMap[extension] || "󰈔"; // ícone padrão
+    return `<i class="${iconClass} file-icon"></i><span class="file-path">${displayPath}</span>`;
   }
 
   getSelectionValue(option: FileOption): string {
@@ -144,5 +59,9 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
   filterOption(option: FileOption, query: string): boolean {
     const lowerQuery = query.toLowerCase();
     return option.relative.toLowerCase().includes(lowerQuery);
+  }
+
+  private getFilename(filepath: string): string {
+    return filepath.split(/[\\/]/).pop() || filepath;
   }
 }

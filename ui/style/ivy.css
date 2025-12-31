@@ -1,4 +1,5 @@
 @import "https://www.nerdfonts.com/assets/css/webfont.css";
+@import "../vendor/file-icons/style.css";
 
 :root {
   --bg: var(--vscode-editor-background);
@@ -184,7 +185,7 @@ body {
   color: var(--focus-border);
   content: "❯";
   margin-right: 8px;
-  color: var(--highlight-bg);
+  color: var(--vscode-editorLineNumber-foreground);
   font-weight: 700;
 }
 
