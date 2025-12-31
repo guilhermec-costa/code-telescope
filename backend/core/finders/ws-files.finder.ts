@@ -59,8 +59,12 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   }
 
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
-    const ext = path.extname(identifier).slice(1).toLowerCase();
+    let ext = path.extname(identifier).slice(1).toLowerCase();
 
+    // for dockerfiles
+    if (path.basename(identifier) === "Dockerfile") {
+      ext = "docker";
+    }
     const cachedHighlightedContent = HighlightContentCache.instance.get(identifier);
     if (cachedHighlightedContent) {
       return {
@@ -76,7 +80,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
         text: content,
         isCached: false,
       },
-      language: ext,
+      language: ext !== "" ? ext : "txt",
     };
   }
 }
