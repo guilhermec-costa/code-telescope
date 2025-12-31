@@ -3,9 +3,8 @@ import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { FromWebviewKindMessage, InitHighlighter } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { joinPath } from "../../utils/files";
-import { getShikiTheme } from "../../utils/shiki";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { EventManager } from "../common/event-manager";
+import { EventManager } from "../common/events/event-manager";
 import { FuzzyFinderAdapterRegistry } from "../registry/fuzzy-provider.registry";
 import { WebviewMessageHandlerRegistry } from "../registry/webview-handler.registry";
 import { WebviewController } from "./webview.controller";
@@ -128,7 +127,7 @@ export class FuzzyFinderPanelController {
   public async emitThemeUpdateEvent(theme: string) {
     await WebviewController.sendMessage(this.webview, {
       type: "themeUpdate",
-      data: { theme: getShikiTheme(theme) },
+      data: { theme },
     });
   }
 

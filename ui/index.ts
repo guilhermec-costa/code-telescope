@@ -8,43 +8,43 @@ import { WebviewToExtensionMessenger } from "./core/common/wv-to-extension-messe
 import { HorizontalLayoutResizer } from "./core/render/resizers/ivy-layout-resizer";
 import { VerticalLayoutResizer } from "./core/render/resizers/vertical-layout-resizer";
 
-(async () => {
-  try {
-    console.log("[Index] Starting webview initialization...");
+async function bootstrap() {
+  console.log("[Index] Starting webview initialization...");
 
-    const container = new DIContainer();
-    console.log("[Index] Container created");
+  const container = new DIContainer();
+  console.log("[Index] Container created");
 
-    await container.init();
-    console.log("[Index] Container initialized");
+  await container.init();
+  console.log("[Index] Container initialized");
 
-    const controller = new WebviewController(
-      container.previewManager,
-      container.optionListManager,
-      container.keyboardHandler,
-    );
-    console.log("[Index] Controller created");
+  const controller = new WebviewController(
+    container.previewManager,
+    container.optionListManager,
+    container.keyboardHandler,
+  );
+  console.log("[Index] Controller created");
 
-    new VerticalLayoutResizer({
-      onResizeEnd: (leftWidthVw, rightWidthVw) => {
-        WebviewToExtensionMessenger.instance.requestLayoutPropUpdate([
-          { property: "leftSideWidthPct", value: leftWidthVw },
-          { property: "rightSideWidthPct", value: rightWidthVw },
-        ]);
+  new VerticalLayoutResizer({
+    onResizeEnd: (leftWidthVw, rightWidthVw) => {
+      WebviewToExtensionMessenger.instance.requestLayoutPropUpdate([
+        { property: "leftSideWidthPct", value: leftWidthVw },
+        { property: "rightSideWidthPct", value: rightWidthVw },
+      ]);
+    },
+  });
+
+  if (StateManager.layoutMode === "ivy") {
+    new HorizontalLayoutResizer({
+      onResizeEnd: (heightVh) => {
+        WebviewToExtensionMessenger.instance.requestLayoutPropUpdate([{ property: "ivyHeightPct", value: heightVh }]);
       },
     });
-
-    if (StateManager.layoutMode === "ivy") {
-      new HorizontalLayoutResizer({
-        onResizeEnd: (heightVh) => {
-          WebviewToExtensionMessenger.instance.requestLayoutPropUpdate([{ property: "ivyHeightPct", value: heightVh }]);
-        },
-      });
-    }
-
-    await controller.initialize();
-    console.log("[Index] Controller initialized - Webview ready!");
-  } catch (error) {
-    console.error("[Index] Fatal error during initialization:", error);
   }
-})();
+
+  await controller.initialize();
+  console.log("[Index] Controller initialized - Webview ready!");
+}
+
+bootstrap().catch((error) => {
+  console.error("[Index] Fatal error during initialization:", error);
+});

@@ -28,5 +28,6 @@ export namespace Globals {
   /** Common VS Code configuration sections */
   export const cfgSections = {
     colorTheme: "workbench.colorTheme",
+    fontSize: "window.zoomLevel",
   };
 }

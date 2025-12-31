@@ -1,5 +1,5 @@
 import { IWebviewMessageHandler } from "../../abstractions/webview-message-handler";
-import { EventManager } from "../../common/event-manager";
+import { EventManager } from "../../common/events/event-manager";
 import { WebviewMessageHandler } from "../../decorators/webview-message-handler.decorator";
 
 @WebviewMessageHandler()
