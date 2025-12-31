@@ -29,7 +29,7 @@ export class CustomDataAdapterProxy implements IFuzzyFinderDataAdapter {
   parseOptions!: (options: any) => string[];
   getDisplayText!: (option: string) => string;
   getSelectionValue!: (option: string) => string;
-  filterOption?: (option: string, query: string) => boolean;
+  filterOption: (option: string, query: string) => boolean;
   debounceSearchTime?: number;
 }
 

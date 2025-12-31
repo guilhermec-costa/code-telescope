@@ -1,10 +1,10 @@
-import path from "path";
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { FileFinderData } from "../../../shared/exchange/file-search";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
+import { resolvePathExt } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileContentCache } from "../common/cache/file-content.cache";
 import { HighlightContentCache } from "../common/cache/highlight-content.cache";
@@ -59,12 +59,8 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   }
 
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
-    let ext = path.extname(identifier).slice(1).toLowerCase();
+    let ext = resolvePathExt(identifier);
 
-    // for dockerfiles
-    if (path.basename(identifier) === "Dockerfile") {
-      ext = "docker";
-    }
     const cachedHighlightedContent = HighlightContentCache.instance.get(identifier);
     if (cachedHighlightedContent) {
       return {
@@ -80,7 +76,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
         text: content,
         isCached: false,
       },
-      language: ext !== "" ? ext : "txt",
+      language: ext,
     };
   }
 }

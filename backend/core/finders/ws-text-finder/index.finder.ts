@@ -1,7 +1,7 @@
-import * as path from "path";
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { HighlightedCodePreviewData } from "../../../../shared/extension-webview-protocol";
+import { resolvePathExt } from "../../../utils/files";
 import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
 import { FileContentCache } from "../../common/cache/file-content.cache";
 import { HighlightContentCache } from "../../common/cache/highlight-content.cache";
@@ -57,7 +57,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
 
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
     const [filePath, line] = identifier.split(":");
-    const language = path.extname(filePath).slice(1) || "text";
+    let ext = resolvePathExt(filePath);
 
     const highlightLine = line ? parseInt(line, 10) - 1 : undefined;
 
@@ -69,7 +69,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
           text: cachedHighlightedContent,
           isCached: true,
         },
-        language,
+        language: ext,
         metadata: {
           filePath,
           highlightLine,
@@ -87,7 +87,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
           text: content,
           isCached: false,
         },
-        language,
+        language: ext,
         metadata: {
           filePath,
           highlightLine: line ? parseInt(line, 10) - 1 : undefined,
