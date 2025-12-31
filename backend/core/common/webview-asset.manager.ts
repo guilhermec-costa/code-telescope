@@ -57,7 +57,7 @@ export class WebviewAssetManager {
   private static injectGlobalState(html: string, wv: vscode.Webview, provider: IFuzzyFinderProvider): string {
     const shikiUri = wv.asWebviewUri(joinPath(Globals.EXTENSION_URI, "ui", "dist", "shiki"));
 
-    let customUiPayload: any = null;
+    let customUiPayload: unknown = null;
 
     const isCustom = provider.fuzzyAdapterType.startsWith(Globals.CUSTOM_PROVIDER_PREFIX);
 

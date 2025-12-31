@@ -116,12 +116,22 @@ export class OptionListManager {
     }
   }
 
+  private getDelta(isUp: boolean): number {
+    let delta = isUp ? 1 : -1;
+
+    if (this.renderMode === "virtualized" || StateManager.layoutMode === "ivy") {
+      delta *= -1;
+    }
+
+    return delta;
+  }
+
   public moveSelectionUp() {
-    this.moveSelection(this.renderMode === "fullrender" ? 1 : -1);
+    this.moveSelection(this.getDelta(true));
   }
 
   public moveSelectionDown() {
-    this.moveSelection(this.renderMode === "fullrender" ? -1 : 1);
+    this.moveSelection(this.getDelta(false));
   }
 
   /**

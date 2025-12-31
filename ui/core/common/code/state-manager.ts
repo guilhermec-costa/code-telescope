@@ -75,4 +75,10 @@ export class StateManager {
   static reset(): void {
     this.write({ ...this.DEFAULT_STATE });
   }
+
+  static get layoutMode() {
+    return document.body.dataset.layout as LayoutMode;
+  }
 }
+
+type LayoutMode = "classic" | "ivy";

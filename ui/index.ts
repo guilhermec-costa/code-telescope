@@ -3,6 +3,7 @@ import { WebviewController } from "./core/common/webview.controller";
 
 import "./core/adapters/data/loader";
 import "./core/adapters/preview-renderer/loader";
+import { StateManager } from "./core/common/code/state-manager";
 import { WebviewToExtensionMessenger } from "./core/common/wv-to-extension-messenger";
 import { HorizontalLayoutResizer } from "./core/render/resizers/ivy-layout-resizer";
 import { VerticalLayoutResizer } from "./core/render/resizers/vertical-layout-resizer";
@@ -33,8 +34,7 @@ import { VerticalLayoutResizer } from "./core/render/resizers/vertical-layout-re
       },
     });
 
-    const layout = document.body.dataset.layout;
-    if (layout === "ivy") {
+    if (StateManager.layoutMode === "ivy") {
       new HorizontalLayoutResizer({
         onResizeEnd: (heightVh) => {
           WebviewToExtensionMessenger.instance.requestLayoutPropUpdate([{ property: "ivyHeightPct", value: heightVh }]);

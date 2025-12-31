@@ -106,10 +106,6 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
 
     await renderChunk(initialChunk);
 
-    requestAnimationFrame(() => {
-      previewElement.querySelector(".line.highlighted")?.scrollIntoView({ block: "center" });
-    });
-
     let ticking = false;
 
     this.scrollHandler = () => {
