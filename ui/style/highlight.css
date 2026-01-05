@@ -121,3 +121,59 @@
 .symbol-text {
   white-space: nowrap;
 }
+
+.sk-file {
+  color: var(--vscode-icon-foreground);
+}
+
+.sk-symbol-class,
+.sk-symbol-interface,
+.sk-symbol-struct {
+  color: var(--vscode-symbolIcon-classForeground);
+}
+
+.sk-symbol-method,
+.sk-symbol-function,
+.sk-symbol-constructor {
+  color: var(--vscode-symbolIcon-methodForeground);
+}
+
+.sk-symbol-variable,
+.sk-symbol-field,
+.sk-symbol-property {
+  color: var(--vscode-symbolIcon-variableForeground);
+}
+
+.sk-symbol-enum,
+.sk-symbol-enum-member {
+  color: var(--vscode-symbolIcon-enumForeground);
+}
+
+.sk-symbol-constant {
+  color: var(--vscode-symbolIcon-constantForeground);
+}
+
+.sk-symbol-string {
+  color: var(--vscode-symbolIcon-stringForeground);
+}
+
+.sk-symbol-number,
+.sk-symbol-boolean {
+  color: var(--vscode-symbolIcon-numberForeground);
+}
+
+.sk-symbol-operator {
+  color: var(--vscode-symbolIcon-operatorForeground);
+}
+
+.sk-symbol-key {
+  color: var(--vscode-symbolIcon-keywordForeground);
+}
+
+.sk-symbol-null {
+  color: var(--vscode-disabledForeground);
+}
+
+.sk-symbol-default {
+  color: var(--vscode-foreground);
+}

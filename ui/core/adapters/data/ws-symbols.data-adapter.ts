@@ -1,18 +1,7 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { WorkspaceSymbolData, WorkspaceSymbolFinderData } from "../../../../shared/exchange/ws-symbols";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
-
-interface WorkspaceSymbolData {
-  name: string;
-  containerName: string;
-  codicon: string;
-  uri: string;
-}
-
-interface WorkspaceSymbolFinderData {
-  symbols: WorkspaceSymbolData[];
-  displayTexts: string[];
-}
 
 export interface WorkspaceSymbolOption {
   index: number;
@@ -46,11 +35,10 @@ export class WorkspaceSymbolsFinderDataAdapter
 
   getDisplayText(option: WorkspaceSymbolOption): string {
     const codicon = option.symbol.codicon;
-    return `<i class="codicon codicon-${codicon} file-icon"></i><span class="file-path">${option.displayText}</span>`;
+    return `<i class="codicon codicon-${codicon} file-icon sk-${codicon}"></i><span class="file-path">${option.displayText}</span>`;
   }
 
   getSelectionValue(option: WorkspaceSymbolOption): string {
-    // Return index as string for identification
     return option.index.toString();
   }
 

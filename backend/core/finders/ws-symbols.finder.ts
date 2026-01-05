@@ -58,7 +58,6 @@ export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
 
     if (!selected) return;
 
-    // Open the file and navigate to the symbol location
     const document = await vscode.workspace.openTextDocument(selected.uri);
     const editor = await vscode.window.showTextDocument(document);
 
