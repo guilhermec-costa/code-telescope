@@ -49,7 +49,8 @@ export class WorkspaceSymbolsFinderDataAdapter
     // Search in multiple fields
     return (
       symbol.name.toLowerCase().includes(lowerQuery) ||
-      (symbol.containerName?.toLowerCase().includes(lowerQuery) ?? false)
+      (symbol.containerName?.toLowerCase().includes(lowerQuery) ?? false) ||
+      symbol.kindName.toLowerCase().includes(lowerQuery)
     );
   }
 }

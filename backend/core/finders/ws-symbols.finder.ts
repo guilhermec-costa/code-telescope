@@ -11,6 +11,7 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
 interface WorkspaceSymbolData {
   name: string;
   kind: vscode.SymbolKind;
+  kindName: string;
   containerName: string;
   location: vscode.Location;
   uri: vscode.Uri;
@@ -42,7 +43,7 @@ export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
       const container = symbol.containerName ? ` [${symbol.containerName}]` : "";
       const filePath = vscode.workspace.asRelativePath(symbol.uri);
 
-      return `${symbolName} ${filePath}${container}`;
+      return `${symbolName} -> ${filePath}${container}`;
     });
 
     return {
@@ -123,6 +124,7 @@ export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
       return symbolInformation.map((symbol) => ({
         name: symbol.name,
         kind: symbol.kind,
+        kindName: vscode.SymbolKind[symbol.kind],
         codicon: this.getSymbolCodicon(symbol.kind),
         containerName: symbol.containerName,
         location: symbol.location,

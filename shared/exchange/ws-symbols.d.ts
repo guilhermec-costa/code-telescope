@@ -1,6 +1,7 @@
 export interface WorkspaceSymbolData {
   name: string;
   containerName: string;
+  kindName: string;
   codicon: string;
 }
 
