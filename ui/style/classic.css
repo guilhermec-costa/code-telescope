@@ -1,5 +1,6 @@
 @import "https://www.nerdfonts.com/assets/css/webfont.css";
 @import "../vendor/file-icons/style.css";
+@import "../vendor/codicons/style.css";
 
 :root {
   --bg: var(--vscode-editor-background);
@@ -71,21 +72,6 @@ body {
   border-radius: var(--border-radius);
   position: relative;
   height: 91%
-}
-
-#status-bar {
-  width: 100%;
-  padding: 5px 15px;
-  font-size: 12px;
-  font-weight: 500;
-  font-family: var(--font-family);
-  color: var(--status-bar-fg);
-  background-color: var(--status-bar-bg);
-  border-top: 1px solid var(--divider-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
 }
 
 #input-container {

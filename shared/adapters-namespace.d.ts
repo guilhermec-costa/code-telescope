@@ -10,7 +10,7 @@ export type BuiltinFuzzyProviderType =
   | "git.branches"
   | "git.commits"
   | "git.fileHistory"
-  | "code.workspaceSymbols"
+  | "workspace.symbols"
   | "code.documentSymbols"
   | "code.gotoDefinition"
   | "tasks.all"

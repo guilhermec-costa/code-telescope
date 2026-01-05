@@ -17,6 +17,6 @@ export function registerProviderCmd(fuzzyName: string, cb: () => void, ctx: vsco
   registerAndSubscribeCmd(getCmdId("fuzzy", fuzzyName), cb, ctx);
 }
 
-export async function execCmd(cmd: string, ...rest: any[]) {
-  return await vscode.commands.executeCommand(cmd, ...rest);
+export async function execCmd<T = any>(cmd: string, ...rest: any[]): Promise<T> {
+  return (await vscode.commands.executeCommand(cmd, ...rest)) as T;
 }

@@ -27,6 +27,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerProviderCmd("keybindings", () => FuzzyFinderPanelController.setupProvider("workspace.keybindings"), ctx);
   registerProviderCmd("branch", () => FuzzyFinderPanelController.setupProvider("git.branches"), ctx);
   registerProviderCmd("wsText", () => FuzzyFinderPanelController.setupProvider("workspace.text"), ctx);
+  registerProviderCmd("wsSymbols", () => FuzzyFinderPanelController.setupProvider("workspace.symbols"), ctx);
   registerProviderCmd("commits", () => FuzzyFinderPanelController.setupProvider("git.commits"), ctx);
   registerProviderCmd(
     "custom",

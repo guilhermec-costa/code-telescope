@@ -43,6 +43,10 @@
             {
                 "command": "code-telescope.fuzzy.custom",
                 "title": "Code Telescope: Pick Custom Finder"
+            },
+            {
+                "command": "code-telescope.fuzzy.wsSymbols",
+                "title": "Code Telescope: Workspace Symbols"
             }
         ],
         "configuration": {
@@ -323,6 +327,7 @@
         }
     },
     "dependencies": {
+        "@vscode/codicons": "^0.0.44",
         "file-icons-js": "^1.1.0",
         "glob": "^13.0.0"
     }

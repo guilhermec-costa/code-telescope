@@ -36,6 +36,7 @@ export class WebviewAssetManager {
     adapterPlaceholders: LayoutCustomPlaceholders,
   ): string {
     const layoutStyleName = adapterPlaceholders.layoutCssFilename ?? `${ExtensionConfigManager.layoutCfg.mode}.css`;
+
     const allPlaceholders = {
       ...adapterPlaceholders,
       "{{highlight-styles}}": "ui/style/highlight.css",

@@ -107,3 +107,17 @@
 .file-path {
   vertical-align: middle;
 }
+
+.symbol-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.symbol-entry .codicon {
+  font-size: 14px;
+}
+
+.symbol-text {
+  white-space: nowrap;
+}
