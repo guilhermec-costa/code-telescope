@@ -46,7 +46,7 @@ export class WorkspaceSymbolsFinderDataAdapter
 
   getDisplayText(option: WorkspaceSymbolOption): string {
     const codicon = option.symbol.codicon;
-    return `<i class="codicon ${codicon} file-icon"></i><span class="file-path">${option.displayText}</span>`;
+    return `<i class="codicon codicon-${codicon} file-icon"></i><span class="file-path">${option.displayText}</span>`;
   }
 
   getSelectionValue(option: WorkspaceSymbolOption): string {
