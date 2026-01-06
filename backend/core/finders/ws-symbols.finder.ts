@@ -74,7 +74,7 @@ export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
 
     if (!selected) {
       return {
-        content: { path: "", text: "No symbol selected", isCached: false },
+        content: { path: "", text: "No symbol selected", isCached: false, kind: "text" },
         language: "plaintext",
       };
     }
@@ -87,7 +87,7 @@ export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
     const cachedHighlightedContent = HighlightContentCache.instance.get(filePath);
     if (cachedHighlightedContent) {
       return {
-        content: { path: filePath, text: cachedHighlightedContent, isCached: true },
+        content: { path: filePath, text: cachedHighlightedContent, isCached: true, kind: "text" },
         language,
         metadata: {
           highlightLine,
@@ -99,8 +99,9 @@ export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
 
     return {
       content: {
+        kind: "text",
         path: filePath,
-        text: content,
+        text: content as string,
         isCached: false,
       },
       language,

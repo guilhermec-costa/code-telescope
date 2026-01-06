@@ -27,4 +27,5 @@ export type PreviewRendererType =
   | "preview.codeHighlighted"
   | "preview.branch"
   | "preview.commitDiff"
+  | "preview.image"
   | "preview.failed";

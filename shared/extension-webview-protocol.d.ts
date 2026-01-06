@@ -8,14 +8,27 @@ export interface PreviewData<C = any> {
   content: C;
   language?: string;
   metadata?: Record<string, any>;
+  overridePreviewer?: PreviewRendererType;
 }
 
-export interface HighlightedCodePreviewData
-  extends PreviewData<{
-    text: string;
-    path: string;
-    isCached: boolean;
-  }> {}
+type TextPreviewContent = {
+  kind: "text";
+  text: string;
+  path: string;
+  isCached: boolean;
+};
+
+type ImagePreviewContent = {
+  kind: "image";
+  buffer: Uint8Array;
+  mimeType: string;
+  path: string;
+  isCached: boolean;
+};
+
+export type HighlightedCodePreviewContent = TextPreviewContent | ImagePreviewContent;
+
+export interface HighlightedCodePreviewData extends PreviewData<HighlightedCodePreviewContent> {}
 
 /**
  * Message sent from the backend to update the theme applied in the webview.

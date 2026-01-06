@@ -7,7 +7,6 @@ import { execCmd } from "../../utils/commands";
 import { resolvePathExt } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileContentCache } from "../common/cache/file-content.cache";
-import { HighlightContentCache } from "../common/cache/highlight-content.cache";
 import { ExtensionConfigManager } from "../common/config-manager";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
 
@@ -59,24 +58,34 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   }
 
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
-    let ext = resolvePathExt(identifier);
+    const ext = resolvePathExt(identifier);
+    const isImg = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext);
 
-    const cachedHighlightedContent = HighlightContentCache.instance.get(identifier);
-    if (cachedHighlightedContent) {
+    const content = await FileContentCache.instance.get(identifier);
+
+    if (isImg) {
       return {
-        content: { path: identifier, text: cachedHighlightedContent, isCached: true },
+        content: {
+          kind: "image",
+          path: identifier,
+          buffer: content as Uint8Array,
+          mimeType: `image/${ext === "jpg" ? "jpeg" : ext}`,
+          isCached: false,
+        },
         language: ext,
+        overridePreviewer: "preview.image",
       };
     }
 
-    const content = await FileContentCache.instance.get(identifier);
     return {
       content: {
+        kind: "text",
         path: identifier,
-        text: content,
+        text: content as string,
         isCached: false,
       },
       language: ext,
+      overridePreviewer: this.previewAdapterType,
     };
   }
 }

@@ -40,7 +40,9 @@ export class PreviewManager {
   }
 
   async updatePreview(data: PreviewData, finderType: PreviewRendererType): Promise<void> {
-    const adapter = PreviewRendererAdapterRegistry.instance.getAdapter(finderType);
+    let adapter = data.overridePreviewer
+      ? PreviewRendererAdapterRegistry.instance.getAdapter(data.overridePreviewer)
+      : PreviewRendererAdapterRegistry.instance.getAdapter(finderType);
 
     if (!adapter) {
       console.error(`No adapter found for finder type: ${finderType}`);

@@ -68,6 +68,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
           path: filePath,
           text: cachedHighlightedContent,
           isCached: true,
+          kind: "text",
         },
         language: ext,
         metadata: {
@@ -79,12 +80,13 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
 
     try {
       const content = await FileContentCache.instance.get(filePath);
-      const lines = content.split("\n");
+      const lines = (content as string).split("\n");
 
       return {
         content: {
+          kind: "text",
           path: filePath,
-          text: content,
+          text: content as string,
           isCached: false,
         },
         language: ext,
@@ -98,6 +100,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
       return {
         content: {
           path: filePath,
+          kind: "text",
           text: "Error loading file",
           isCached: false,
         },

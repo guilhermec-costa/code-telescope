@@ -87,7 +87,7 @@ export class KeybindingsFinder implements IFuzzyFinderProvider {
 
     if (!selected) {
       return {
-        content: { path: "", text: "No keybinding selected", isCached: false },
+        content: { path: "", text: "No keybinding selected", isCached: false, kind: "text" },
         language: "plaintext",
       };
     }
@@ -110,6 +110,7 @@ export class KeybindingsFinder implements IFuzzyFinderProvider {
       content: {
         path: "Keybinding Details",
         text: previewLines.join("\n"),
+        kind: "text",
         isCached: false,
       },
       language: "json",
