@@ -1,4 +1,3 @@
-import { getClassWithColor } from "file-icons-js";
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { FileFinderData } from "../../../../shared/exchange/file-search";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
@@ -7,6 +6,7 @@ import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.deco
 export interface FileOption {
   absolute: string;
   relative: string;
+  svgIconUrl: string;
 }
 
 @FuzzyFinderDataAdapter({
@@ -24,6 +24,7 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
       options.push({
         absolute: data.abs[i],
         relative: data.relative[i],
+        svgIconUrl: data.svgIconUrl[i],
       });
     }
 
@@ -32,7 +33,6 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
 
   getDisplayText(option: FileOption): string {
     const filename = this.getFilename(option.absolute);
-    const iconClass = getClassWithColor(filename);
 
     let displayPath: string;
     switch (__FILE_PATH_DISPLAY__) {
@@ -49,7 +49,12 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
         displayPath = option.relative;
     }
 
-    return `<i class="${iconClass} file-icon"></i><span class="file-path">${displayPath}</span>`;
+    return `
+      <i class="file-icon">
+        <img src="${option.svgIconUrl}" alt="" />
+      </i>
+      <span class="file-path">${displayPath}</span>
+    `;
   }
 
   getSelectionValue(option: FileOption): string {

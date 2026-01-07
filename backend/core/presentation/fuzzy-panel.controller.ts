@@ -53,6 +53,7 @@ export class FuzzyFinderPanelController {
           joinPath(Globals.EXTENSION_URI, "ui"),
           joinPath(Globals.EXTENSION_URI, "ui/dist"),
           joinPath(Globals.EXTENSION_URI, "ui/dist/shiki"),
+          joinPath(Globals.EXTENSION_URI, "node_modules/material-icon-theme/icons"),
         ],
       },
     );
@@ -106,7 +107,7 @@ export class FuzzyFinderPanelController {
     this._provider = provider;
   }
 
-  private get webview() {
+  public get webview() {
     return this.wvPanel.webview;
   }
 

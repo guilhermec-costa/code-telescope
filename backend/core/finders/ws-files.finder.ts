@@ -4,11 +4,12 @@ import { FileFinderData } from "../../../shared/exchange/file-search";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
-import { resolvePathExt } from "../../utils/files";
+import { guessLanguageIdFromPath, joinPath, resolvePathExt } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileContentCache } from "../common/cache/file-content.cache";
 import { ExtensionConfigManager } from "../common/config-manager";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyFinderPanelController } from "../presentation/fuzzy-panel.controller";
 
 /**
  * Fuzzy provider that retrieves files from the current workspace.
@@ -24,17 +25,24 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
 
-  async querySelectableOptions() {
+  async querySelectableOptions(): Promise<FileFinderData> {
     const files = await this.getWorkspaceFiles();
 
-    return files.reduce<FileFinderData>(
-      (result, file) => {
-        result.abs.push(file.path);
-        result.relative.push(vscode.workspace.asRelativePath(file.path));
-        return result;
-      },
-      { abs: [], relative: [] },
-    );
+    const result: FileFinderData = {
+      abs: [],
+      relative: [],
+      svgIconUrl: [],
+    };
+
+    for (const file of files) {
+      result.abs.push(file.path);
+      result.relative.push(vscode.workspace.asRelativePath(file.path));
+
+      const languageId = guessLanguageIdFromPath(file.fsPath);
+      result.svgIconUrl.push(getSvgIconUrl(languageId));
+    }
+
+    return result;
   }
 
   async onSelect(filePath: string) {
@@ -88,4 +96,10 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
       overridePreviewer: this.previewAdapterType,
     };
   }
+}
+
+function getSvgIconUrl(language: string) {
+  const svgPath = joinPath(Globals.EXTENSION_URI, "node_modules", "material-icon-theme", "icons", `${language}.svg`);
+  const wv = FuzzyFinderPanelController.instance?.webview!;
+  return wv.asWebviewUri(svgPath).toString();
 }
