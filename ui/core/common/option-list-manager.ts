@@ -254,6 +254,7 @@ export class OptionListManager {
    * Creates a DOM list item for an option.
    */
   private createListItem(option: any, idx: number, query: string): HTMLLIElement {
+    console.log("Index: ", idx);
     const li = document.createElement("li");
     li.className = "option-item";
     li.id = `${this.OPTION_ITEM_ID_PREFIX}${idx}`;

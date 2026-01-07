@@ -19,7 +19,8 @@ export class BranchFinderDataAdapter implements IFuzzyFinderDataAdapter<BranchIn
   getDisplayText(option: BranchInfo): string {
     const prefix = option.current ? "* " : "  ";
     const remote = option.remote ? ` (${option.remote})` : "";
-    return `${prefix}${option.name}${remote}`;
+    const displayText = `${prefix}${option.name}${remote}`;
+    return `<i class="codicon codicon-git-branch file-icon sk-git-branch"></i><span class="file-path">${displayText}</span>`;
   }
 
   getSelectionValue(option: BranchInfo): string {

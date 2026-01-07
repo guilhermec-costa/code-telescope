@@ -31,7 +31,8 @@ export class GitCommitFinderDataAdapter implements IFuzzyFinderDataAdapter<Commi
   getDisplayText(option: CommitInfo): string {
     const shortHash = option.hash.substring(0, 7);
     const relativeDate = this.getRelativeDate(option.date);
-    return `${shortHash} ${option.message} (${option.author}, ${relativeDate})`;
+    const displayText = `${shortHash} ${option.message} (${option.author}, ${relativeDate})`;
+    return `<i class="codicon codicon-git-commit file-icon sk-git-commit"></i><span class="file-path">${displayText}</span>`;
   }
 
   getSelectionValue(option: CommitInfo): string {

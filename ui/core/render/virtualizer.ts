@@ -37,7 +37,6 @@ export class Virtualizer {
     query: string,
     createItem: (item: any, index: number, query: string) => HTMLElement,
   ): void {
-    // Garante que o spacer está no DOM
     if (!this.spacer.parentElement) {
       this.container.appendChild(this.spacer);
     }
@@ -52,17 +51,13 @@ export class Virtualizer {
     const totalHeight = items.length * this.itemHeight;
     const viewportHeight = this.container.clientHeight;
 
-    // Define o scrollHeight REAL
     this.spacer.style.height = `${totalHeight}px`;
 
-    // Ajusta o alinhamento baseado no layout
     if (isIvy) {
-      // Ivy: itens ficam no topo
       this.spacer.style.marginTop = "0";
       this.spacer.style.marginBottom = "auto";
       this.spacer.style.minHeight = `${totalHeight}px`;
     } else {
-      // Default: itens ficam embaixo
       this.spacer.style.marginTop = "auto";
       this.spacer.style.marginBottom = "0";
       const minHeight = Math.max(totalHeight, viewportHeight);
@@ -72,17 +67,12 @@ export class Virtualizer {
     const scrollTop = this.container.scrollTop;
     const effectiveScrollTop = !isIvy && totalHeight < viewportHeight ? 0 : scrollTop;
 
-    let startIndex = Math.max(0, Math.floor(effectiveScrollTop / this.itemHeight) - this.bufferSize);
-    let endIndex = Math.min(
+    // Calcula a janela de renderização baseada APENAS no scroll
+    const startIndex = Math.max(0, Math.floor(effectiveScrollTop / this.itemHeight) - this.bufferSize);
+    const endIndex = Math.min(
       items.length,
       Math.ceil((effectiveScrollTop + viewportHeight) / this.itemHeight) + this.bufferSize,
     );
-
-    // Garante que o item selecionado está na janela de renderização
-    if (selectedIndex >= 0 && selectedIndex < items.length) {
-      startIndex = Math.min(startIndex, Math.max(0, selectedIndex - this.bufferSize));
-      endIndex = Math.max(endIndex, Math.min(items.length, selectedIndex + this.bufferSize + 1));
-    }
 
     // Limpa apenas o conteúdo do spacer
     this.spacer.innerHTML = "";

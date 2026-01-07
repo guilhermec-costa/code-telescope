@@ -161,7 +161,9 @@
 .sk-symbol-variable,
 .sk-symbol-field,
 .sk-symbol-property,
-.sk-record-keys {
+.sk-record-keys,
+.sk-git-commit,
+.sk-git-branch {
   color: var(--vscode-symbolIcon-variableForeground);
 }
 
