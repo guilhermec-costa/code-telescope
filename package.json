@@ -82,7 +82,8 @@
                         "**/.nuxt/**",
                         "**/coverage/**",
                         "**/*.jar",
-                        "**/*.jar*"
+                        "**/*.jar*",
+                        "**/*.zip"
                     ],
                     "description": "Glob patterns to exclude from file search"
                 },

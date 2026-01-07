@@ -26,7 +26,7 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
       content: { text },
       language = "text",
       metadata,
-    } = data;
+    } = data as any;
 
     language = language === "txt" ? "text" : language;
 

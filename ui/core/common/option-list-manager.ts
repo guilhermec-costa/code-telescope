@@ -275,23 +275,23 @@ export class OptionListManager {
   }
 
   /**
-   * Highlights the query match inside a text string.
+   * Highlights matches in text that contains an icon.
    */
   private highlightMatch(text: string, query: string): string {
     if (!query) return text;
 
-    if (text.includes("<i class=")) {
+    // icon structure
+    if (text.includes("<i class=") || text.includes("<i>")) {
       return this.highlightMatchWithIcon(text, query);
     }
 
+    // only text
     const lowerText = text.toLowerCase();
     const lowerQuery = query.toLowerCase();
-
     const i = lowerText.indexOf(lowerQuery);
     if (i === -1) return escapeHtml(text);
 
     const escaped = escapeHtml(text);
-
     return (
       escaped.slice(0, i) +
       `<span class="highlight">${escaped.slice(i, i + query.length)}</span>` +
@@ -303,26 +303,40 @@ export class OptionListManager {
    * Highlights matches in text that contains an icon.
    */
   private highlightMatchWithIcon(html: string, query: string): string {
-    const iconMatch = html.match(/^(<i[^>]+><\/i>)/);
-    if (!iconMatch) return html;
+    // white spaces/lb
+    const cleanHtml = html.replace(/\s+/g, " ").trim();
+
+    // icon match
+    // everything between <i and </i>
+    const iconMatch = cleanHtml.match(/^(<i[^>]*>.*?<\/i>)/);
+
+    if (!iconMatch) {
+      return html;
+    }
 
     const icon = iconMatch[1];
-    const pathMatch = html.match(/<span class="file-path">([^<]+)<\/span>/);
+
+    // match text in span
+    const pathMatch = cleanHtml.match(/<span class="file-path">([^<]+)<\/span>/);
+
     if (!pathMatch) return html;
 
     const path = pathMatch[1];
     const lowerPath = path.toLowerCase();
     const lowerQuery = query.toLowerCase();
-
     const i = lowerPath.indexOf(lowerQuery);
+
     if (i === -1) {
-      return html;
+      return cleanHtml;
     }
 
+    // highlight only in path
+    const beforeMatch = path.slice(0, i);
+    const match = path.slice(i, i + query.length);
+    const afterMatch = path.slice(i + query.length);
+
     const highlightedPath =
-      escapeHtml(path.slice(0, i)) +
-      `<span class="highlight">${escapeHtml(path.slice(i, i + query.length))}</span>` +
-      escapeHtml(path.slice(i + query.length));
+      escapeHtml(beforeMatch) + `<span class="highlight">${escapeHtml(match)}</span>` + escapeHtml(afterMatch);
 
     return `${icon}<span class="file-path">${highlightedPath}</span>`;
   }

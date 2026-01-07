@@ -20,7 +20,7 @@ export function resolvePathExt(_path: string) {
     return "makefile";
   }
   if (basename === ".gitignore") {
-    return "gitignore";
+    return "txt";
   }
   if (basename === ".gitattributes") {
     return "gitattributes";
@@ -43,8 +43,8 @@ export function resolvePathExt(_path: string) {
   if (basename === "package.json") {
     return "json";
   }
-  if (basename === "package-lock.json" || basename === "yarn.lock" || basename === "pnpm-lock.yaml") {
-    return "lock";
+  if (ext === "feature") {
+    return "txt";
   }
 
   return ext !== "" ? ext : "txt";

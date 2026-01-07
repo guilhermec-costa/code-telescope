@@ -26,7 +26,14 @@ type ImagePreviewContent = {
   isCached: boolean;
 };
 
-export type HighlightedCodePreviewContent = TextPreviewContent | ImagePreviewContent;
+type PdfPreviewContent = {
+  kind: "pdf";
+  buffer: Uint8Array;
+  path: string;
+  isCached: boolean;
+};
+
+export type HighlightedCodePreviewContent = TextPreviewContent | ImagePreviewContent | PdfPreviewContent;
 
 export interface HighlightedCodePreviewData extends PreviewData<HighlightedCodePreviewContent> {}
 
