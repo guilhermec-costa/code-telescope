@@ -192,6 +192,7 @@ body {
   text-overflow: ellipsis;
   flex-shrink: 0;
   border-left: 3px solid transparent;
+  gap: 3px;
 }
 
 .option-item:hover {

@@ -25,24 +25,18 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
 
-  async querySelectableOptions(): Promise<FileFinderData> {
+  async querySelectableOptions() {
     const files = await this.getWorkspaceFiles();
 
-    const result: FileFinderData = {
-      abs: [],
-      relative: [],
-      svgIconUrl: [],
-    };
-
-    for (const file of files) {
-      result.abs.push(file.path);
-      result.relative.push(vscode.workspace.asRelativePath(file.path));
-
-      const languageId = guessLanguageIdFromPath(file.fsPath);
-      result.svgIconUrl.push(getSvgIconUrl(languageId));
-    }
-
-    return result;
+    return files.reduce<FileFinderData>(
+      (result, file) => {
+        result.abs.push(file.path);
+        result.relative.push(vscode.workspace.asRelativePath(file.path));
+        result.svgIconUrl.push(getSvgIconUrl(file.fsPath));
+        return result;
+      },
+      { abs: [], relative: [], svgIconUrl: [] },
+    );
   }
 
   async onSelect(filePath: string) {
@@ -98,7 +92,8 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   }
 }
 
-function getSvgIconUrl(language: string) {
+function getSvgIconUrl(path: string) {
+  const language = guessLanguageIdFromPath(path);
   const svgPath = joinPath(Globals.EXTENSION_URI, "node_modules", "material-icon-theme", "icons", `${language}.svg`);
   const wv = FuzzyFinderPanelController.instance?.webview!;
   return wv.asWebviewUri(svgPath).toString();
