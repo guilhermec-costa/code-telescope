@@ -5,6 +5,7 @@ export interface VirtualizerOptions {
 
 export class Virtualizer {
   private container: HTMLElement;
+  private spacer: HTMLElement;
   private itemHeight: number;
   private bufferSize: number;
 
@@ -13,7 +14,21 @@ export class Virtualizer {
     this.itemHeight = options.itemHeight;
     this.bufferSize = options.bufferSize;
 
+    // viewport setup
     this.container.style.position = "relative";
+    this.container.style.overflowY = "auto";
+    this.container.style.display = "flex";
+    this.container.style.flexDirection = "column";
+
+    // spacer = virtual content height
+    this.spacer = document.createElement("div");
+    this.spacer.style.position = "relative";
+    this.spacer.style.width = "100%";
+    this.container.appendChild(this.spacer);
+  }
+
+  private isIvyLayout(): boolean {
+    return document.body.dataset.layout === "ivy";
   }
 
   public renderVirtualized(
@@ -22,63 +37,116 @@ export class Virtualizer {
     query: string,
     createItem: (item: any, index: number, query: string) => HTMLElement,
   ): void {
+    // Garante que o spacer está no DOM
+    if (!this.spacer.parentElement) {
+      this.container.appendChild(this.spacer);
+    }
+
     if (items.length === 0) {
-      this.clear();
+      this.spacer.style.height = "0px";
+      this.spacer.innerHTML = "";
       return;
     }
 
+    const isIvy = this.isIvyLayout();
     const totalHeight = items.length * this.itemHeight;
-    this.container.style.height = `${totalHeight}px`;
-
-    const scrollTop = this.container.scrollTop;
     const viewportHeight = this.container.clientHeight;
 
-    let startIndex = Math.max(0, Math.floor(scrollTop / this.itemHeight) - this.bufferSize);
-    let endIndex = Math.min(items.length, Math.ceil((scrollTop + viewportHeight) / this.itemHeight) + this.bufferSize);
+    // Define o scrollHeight REAL
+    this.spacer.style.height = `${totalHeight}px`;
 
-    if (selectedIndex >= 0) {
-      if (selectedIndex < startIndex) {
-        startIndex = Math.max(0, selectedIndex - this.bufferSize);
-      }
-      if (selectedIndex >= endIndex) {
-        endIndex = Math.min(items.length, selectedIndex + this.bufferSize + 1);
-      }
+    // Ajusta o alinhamento baseado no layout
+    if (isIvy) {
+      // Ivy: itens ficam no topo
+      this.spacer.style.marginTop = "0";
+      this.spacer.style.marginBottom = "auto";
+      this.spacer.style.minHeight = `${totalHeight}px`;
+    } else {
+      // Default: itens ficam embaixo
+      this.spacer.style.marginTop = "auto";
+      this.spacer.style.marginBottom = "0";
+      const minHeight = Math.max(totalHeight, viewportHeight);
+      this.spacer.style.minHeight = `${minHeight}px`;
     }
 
-    this.container.innerHTML = "";
+    const scrollTop = this.container.scrollTop;
+    const effectiveScrollTop = !isIvy && totalHeight < viewportHeight ? 0 : scrollTop;
+
+    let startIndex = Math.max(0, Math.floor(effectiveScrollTop / this.itemHeight) - this.bufferSize);
+    let endIndex = Math.min(
+      items.length,
+      Math.ceil((effectiveScrollTop + viewportHeight) / this.itemHeight) + this.bufferSize,
+    );
+
+    // Garante que o item selecionado está na janela de renderização
+    if (selectedIndex >= 0 && selectedIndex < items.length) {
+      startIndex = Math.min(startIndex, Math.max(0, selectedIndex - this.bufferSize));
+      endIndex = Math.max(endIndex, Math.min(items.length, selectedIndex + this.bufferSize + 1));
+    }
+
+    // Limpa apenas o conteúdo do spacer
+    this.spacer.innerHTML = "";
 
     const fragment = document.createDocumentFragment();
-    for (let i = startIndex; i < endIndex; i++) {
-      const item = items.at(i);
-      const li = createItem(item, i, query);
 
+    // Calcula o offset para posicionar os itens baseado no layout
+    let topOffset = 0;
+    if (!isIvy && totalHeight < viewportHeight) {
+      topOffset = viewportHeight - totalHeight;
+    }
+
+    for (let i = startIndex; i < endIndex; i++) {
+      const li = createItem(items[i], i, query);
       li.style.position = "absolute";
-      li.style.top = `${i * this.itemHeight}px`;
+      li.style.top = `${topOffset + i * this.itemHeight}px`;
       li.style.left = "0";
+      li.style.right = "0";
       li.style.width = "100%";
       li.style.height = `${this.itemHeight}px`;
-
+      li.style.boxSizing = "border-box";
       fragment.appendChild(li);
     }
 
-    this.container.appendChild(fragment);
+    this.spacer.appendChild(fragment);
   }
 
   public scrollToSelectedVirtualized(selectedIndex: number): void {
     if (selectedIndex < 0) return;
 
+    const totalHeight = this.spacer.scrollHeight;
     const viewportHeight = this.container.clientHeight;
-    const targetTop = selectedIndex * this.itemHeight;
+    const isIvy = this.isIvyLayout();
 
-    let desiredScrollTop = targetTop - viewportHeight / 2 + this.itemHeight / 2;
-    desiredScrollTop = Math.max(0, desiredScrollTop);
-    desiredScrollTop = Math.min(desiredScrollTop, this.container.scrollHeight - viewportHeight);
+    // Se o conteúdo é menor que a viewport e não é ivy, não precisa fazer scroll
+    if (!isIvy && totalHeight <= viewportHeight) {
+      this.container.scrollTop = 0;
+      return;
+    }
 
-    this.container.scrollTop = desiredScrollTop;
+    const itemTop = selectedIndex * this.itemHeight;
+    const itemBottom = itemTop + this.itemHeight;
+
+    const scrollTop = this.container.scrollTop;
+    const scrollBottom = scrollTop + viewportHeight;
+
+    // Adiciona uma margem de segurança para ivy
+    const margin = isIvy ? this.itemHeight : 0;
+
+    // Só ajusta o scroll se o item não estiver visível
+    if (itemTop < scrollTop + margin) {
+      // Item está acima da viewport
+      this.container.scrollTop = Math.max(0, itemTop - margin);
+    } else if (itemBottom > scrollBottom - margin) {
+      // Item está abaixo da viewport
+      this.container.scrollTop = itemBottom - viewportHeight + margin;
+    }
   }
 
   public clear(): void {
-    this.container.innerHTML = "";
-    this.container.style.height = "";
+    // Limpa apenas o conteúdo, mantém a estrutura
+    this.spacer.innerHTML = "";
+    this.spacer.style.height = "0px";
+    this.spacer.style.minHeight = "0px";
+    this.container.scrollTop = 0;
   }
 }

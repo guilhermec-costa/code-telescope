@@ -12,7 +12,7 @@ import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
  * Responsibilities:
  * - Hold all options and filtered options
  * - Apply filtering, sorting and selection logic
- * - Decide between full render and virtualized render
+ * - Use virtualized rendering
  * - Synchronize selection with preview requests
  */
 export class OptionListManager {
@@ -22,11 +22,6 @@ export class OptionListManager {
 
   private listElement: HTMLUListElement;
   private itemsCountElement: HTMLElement | null;
-
-  /** Threshold to switch between full render and virtualized render */
-  private readonly RENDER_THRESHOLD = 200;
-
-  private readonly RENDER_MODE_CLASSNAME = "flexbox-render";
 
   /** Prefix used to generate DOM ids for option items */
   private readonly OPTION_ITEM_ID_PREFIX = "option-item-id-";
@@ -48,6 +43,13 @@ export class OptionListManager {
     }, 0);
 
     this.setupScrollListener();
+  }
+
+  /**
+   * Returns true if ivy layout is active
+   */
+  private isIvyLayout(): boolean {
+    return StateManager.layoutMode === "ivy";
   }
 
   /**
@@ -109,22 +111,12 @@ export class OptionListManager {
     }
   }
 
-  private getDelta(isUp: boolean): number {
-    let delta = isUp ? 1 : -1;
-
-    if (this.renderMode === "virtualized" || StateManager.layoutMode === "ivy") {
-      delta *= -1;
-    }
-
-    return delta;
-  }
-
   public moveSelectionUp() {
-    this.moveSelection(this.getDelta(true));
+    this.moveSelection(-1);
   }
 
   public moveSelectionDown() {
-    this.moveSelection(this.getDelta(false));
+    this.moveSelection(1);
   }
 
   /**
@@ -163,12 +155,8 @@ export class OptionListManager {
     }
   }
 
-  private get renderMode() {
-    return this.shouldUseVirtualization() ? "virtualized" : "fullrender";
-  }
-
   /**
-   * Returns the first index relative to the render mode.
+   * Returns the first index for virtualized mode.
    */
   private restoreSelectedIndex(): number {
     if (StateManager.selectedIndex != 0) {
@@ -178,7 +166,11 @@ export class OptionListManager {
   }
 
   private getRelativeFirstIndex(): number {
-    return this.renderMode === "fullrender" ? 0 : this.filteredOptions.length - 1;
+    const isIvy = this.isIvyLayout();
+
+    // No ivy, index 0 é o último item visualmente
+    // No default, index N-1 é o último item visualmente
+    return isIvy ? 0 : this.filteredOptions.length - 1;
   }
 
   private getRelativeFirstItem() {
@@ -187,14 +179,12 @@ export class OptionListManager {
 
   private setupScrollListener(): void {
     this.listElement.addEventListener("scroll", () => {
-      if (this.shouldUseVirtualization()) {
-        this.virtualizer.renderVirtualized(
-          this.filteredOptions,
-          StateManager.selectedIndex,
-          StateManager.prompt,
-          (item, idx, q) => this.createListItem(item, idx, q),
-        );
-      }
+      this.virtualizer.renderVirtualized(
+        this.filteredOptions,
+        StateManager.selectedIndex,
+        StateManager.prompt,
+        (item, idx, q) => this.createListItem(item, idx, q),
+      );
     });
   }
 
@@ -224,71 +214,40 @@ export class OptionListManager {
    * Scrolls the list to keep the selected item visible.
    */
   private scrollToSelected() {
-    if (this.shouldUseVirtualization()) {
-      requestAnimationFrame(() => {
-        this.virtualizer.scrollToSelectedVirtualized(StateManager.selectedIndex);
-      });
-    } else {
-      this.scrollToSelectedNonVirtualized();
-    }
-  }
-
-  private shouldUseVirtualization(): boolean {
-    return this.filteredOptions.length > this.RENDER_THRESHOLD;
+    requestAnimationFrame(() => {
+      this.virtualizer.scrollToSelectedVirtualized(StateManager.selectedIndex);
+    });
   }
 
   private applySortOnFiltered() {
+    const isIvy = this.isIvyLayout();
+
     this.filteredOptions.sort((opt1, opt2) => {
       const a = this.dataAdapter.getSelectionValue(opt1).toLowerCase();
       const b = this.dataAdapter.getSelectionValue(opt2).toLowerCase();
 
       const result = a.localeCompare(b);
 
-      return this.renderMode === "fullrender" ? result : -result;
+      // No ivy, invertemos a ordem para que index 0 seja o último item alfabético
+      return isIvy ? -result : result;
     });
   }
 
   /**
-   * Renders the option list using either full render or virtualization.
+   * Renders the option list using virtualization.
    */
   private render(): void {
     this.applySortOnFiltered();
     if (!this.dataAdapter) return;
 
-    if (this.shouldUseVirtualization()) {
-      this.listElement.classList.remove(this.RENDER_MODE_CLASSNAME);
+    this.virtualizer.renderVirtualized(
+      this.filteredOptions,
+      StateManager.selectedIndex,
+      StateManager.prompt,
+      (item, idx, q) => this.createListItem(item, idx, q),
+    );
 
-      this.virtualizer.renderVirtualized(
-        this.filteredOptions,
-        StateManager.selectedIndex,
-        StateManager.prompt,
-        (item, idx, q) => this.createListItem(item, idx, q),
-      );
-    } else {
-      this.virtualizer.clear();
-      this.listElement.classList.add(this.RENDER_MODE_CLASSNAME);
-      if (document.body.dataset.layout === "ivy") {
-        this.listElement.classList.add("ivy-layout");
-      }
-
-      this.renderNonVirtualized();
-    }
     this.scrollToSelected();
-  }
-
-  /**
-   * Renders all options at once (non-virtualized).
-   */
-  private renderNonVirtualized(): void {
-    this.listElement.style.height = "";
-    this.listElement.innerHTML = "";
-
-    const fragment = document.createDocumentFragment();
-    this.filteredOptions.forEach((option, idx) => {
-      const li = this.createListItem(option, idx, StateManager.prompt);
-      fragment.appendChild(li);
-    });
-    this.listElement.appendChild(fragment);
   }
 
   /**
@@ -314,19 +273,6 @@ export class OptionListManager {
     return li;
   }
 
-  /**
-   * Scrolls to the selected item in non-virtualized mode.
-   */
-  private scrollToSelectedNonVirtualized(): void {
-    const selected = this.listElement.querySelector(".option-item.selected") as HTMLElement | null;
-    if (selected) {
-      selected.scrollIntoView({ block: "center", behavior: "instant" });
-    }
-  }
-
-  /**
-   * Highlights the query match inside a text string.
-   */
   /**
    * Highlights the query match inside a text string.
    */
@@ -372,7 +318,6 @@ export class OptionListManager {
       return html;
     }
 
-    // Aplica highlight apenas no path
     const highlightedPath =
       escapeHtml(path.slice(0, i)) +
       `<span class="highlight">${escapeHtml(path.slice(i, i + query.length))}</span>` +
