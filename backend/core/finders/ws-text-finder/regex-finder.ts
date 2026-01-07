@@ -1,5 +1,6 @@
 import * as fs from "fs/promises";
 import { TextSearchMatch } from "../../../../shared/exchange/workspace-text-search";
+import { getSvgIconUrl } from "../../../utils/files";
 import { WorkspaceFileFinder } from "../ws-files.finder";
 
 function escapeRegExp(string: string) {
@@ -60,6 +61,7 @@ export class RegexFinder {
                 matches.push({
                   file: uri.fsPath,
                   line: lineNumber,
+                  svgIconUrl: getSvgIconUrl(uri.fsPath),
                   column: matchIndex - lineStart + 1,
                   text: lineContent.trim(),
                   preview: lineContent.trim(),

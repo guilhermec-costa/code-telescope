@@ -43,7 +43,7 @@ export class KeybindingsFinderDataAdapter implements IFuzzyFinderDataAdapter<Key
   }
 
   getDisplayText(option: KeybindingOption): string {
-    return option.displayText;
+    return `<i class="codicon codicon-record-keys file-icon sk-record-keys"></i><span class="file-path">${option.displayText}</span>`;
   }
 
   getSelectionValue(option: KeybindingOption): string {

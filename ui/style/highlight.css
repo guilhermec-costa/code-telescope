@@ -125,6 +125,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-left: 3px;
 }
 
 .symbol-entry {
@@ -159,7 +160,8 @@
 
 .sk-symbol-variable,
 .sk-symbol-field,
-.sk-symbol-property {
+.sk-symbol-property,
+.sk-record-keys {
   color: var(--vscode-symbolIcon-variableForeground);
 }
 

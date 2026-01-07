@@ -1,3 +1,4 @@
+import { getClassWithColor } from "file-icons-js";
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { FileFinderData } from "../../../../shared/exchange/file-search";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
@@ -33,6 +34,7 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
 
   getDisplayText(option: FileOption): string {
     const filename = this.getFilename(option.absolute);
+    const iconClass = getClassWithColor(filename);
 
     let displayPath: string;
     switch (__FILE_PATH_DISPLAY__) {
@@ -48,6 +50,8 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
       default:
         displayPath = option.relative;
     }
+
+    // return `<i class="${iconClass} file-icon"></i><span class="file-path">${displayPath}</span>`;
 
     return `
       <i class="file-icon">

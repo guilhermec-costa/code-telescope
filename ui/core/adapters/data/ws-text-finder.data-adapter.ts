@@ -1,4 +1,3 @@
-import { getClassWithColor } from "file-icons-js";
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { TextSearchData } from "../../../../shared/exchange/workspace-text-search";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
@@ -6,6 +5,7 @@ import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.deco
 
 interface SearchOption {
   identifier: string;
+  svgIconUrl: string;
   file: string;
   line: number;
   preview: string;
@@ -23,6 +23,7 @@ export class WorkspaceTextFinderDataAdapter implements IFuzzyFinderDataAdapter<T
   parseOptions(data: TextSearchData): SearchOption[] {
     return data.results.map((match) => ({
       identifier: `${match.file}:${match.line}:${match.column}`,
+      svgIconUrl: match.svgIconUrl,
       file: match.file,
       line: match.line,
       preview: match.preview,
@@ -31,10 +32,21 @@ export class WorkspaceTextFinderDataAdapter implements IFuzzyFinderDataAdapter<T
 
   getDisplayText(option: SearchOption): string {
     const fileName = this.getFileName(option.file);
-    const iconClass = getClassWithColor(fileName);
     const displayText = `${fileName}:${option.line} - ${option.preview}`;
 
-    return `<i class="${iconClass} file-icon"></i><span class="file-path">${displayText}</span>`;
+    return `
+      <i class="file-icon">
+       <img 
+        src="${option.svgIconUrl}" 
+        alt="" 
+        loading="eager" 
+        decoding="async"
+        width="16"
+        height="16"
+      />
+      </i>
+      <span class="file-path">${displayText}</span>
+    `;
   }
 
   getSelectionValue(option: SearchOption): string {

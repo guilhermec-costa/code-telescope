@@ -1,5 +1,7 @@
 import path from "path";
 import * as vscode from "vscode";
+import { FuzzyFinderPanelController } from "../core/presentation/fuzzy-panel.controller";
+import { Globals } from "../globals";
 
 export function joinPath(baseUri: vscode.Uri, ...paths: string[]): vscode.Uri {
   return vscode.Uri.joinPath(baseUri, ...paths);
@@ -215,4 +217,11 @@ const EXT_TO_LANGUAGE: Record<string, string> = {
 export function guessLanguageIdFromPath(path: string): string {
   const ext = resolvePathExt(path);
   return EXT_TO_LANGUAGE[ext] ?? "file";
+}
+
+export function getSvgIconUrl(path: string) {
+  const language = guessLanguageIdFromPath(path);
+  const svgPath = joinPath(Globals.EXTENSION_URI, "node_modules", "material-icon-theme", "icons", `${language}.svg`);
+  const wv = FuzzyFinderPanelController.instance?.webview!;
+  return wv.asWebviewUri(svgPath).toString();
 }

@@ -3,6 +3,7 @@ import * as fs from "fs/promises";
 import path from "path";
 import * as vscode from "vscode";
 import { TextSearchMatch } from "../../../../shared/exchange/workspace-text-search";
+import { getSvgIconUrl } from "../../../utils/files";
 import { ExtensionConfigManager } from "../../common/config-manager";
 import { RipgrepArgsBuilder } from "./ripgrep-args.builder";
 
@@ -147,6 +148,7 @@ export class RipgrepFinder {
                 matches.push({
                   file: path.join(cwd, data.path.text),
                   line: data.line_number,
+                  svgIconUrl: getSvgIconUrl(data.path.text),
                   column: data.submatches[0]?.start || 1,
                   text: lineText,
                   preview: lineText,

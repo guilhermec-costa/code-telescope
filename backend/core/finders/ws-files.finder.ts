@@ -4,12 +4,11 @@ import { FileFinderData } from "../../../shared/exchange/file-search";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
-import { guessLanguageIdFromPath, joinPath, resolvePathExt } from "../../utils/files";
+import { getSvgIconUrl, resolvePathExt } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileContentCache } from "../common/cache/file-content.cache";
 import { ExtensionConfigManager } from "../common/config-manager";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
-import { FuzzyFinderPanelController } from "../presentation/fuzzy-panel.controller";
 
 /**
  * Fuzzy provider that retrieves files from the current workspace.
@@ -90,11 +89,4 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
       overridePreviewer: this.previewAdapterType,
     };
   }
-}
-
-function getSvgIconUrl(path: string) {
-  const language = guessLanguageIdFromPath(path);
-  const svgPath = joinPath(Globals.EXTENSION_URI, "node_modules", "material-icon-theme", "icons", `${language}.svg`);
-  const wv = FuzzyFinderPanelController.instance?.webview!;
-  return wv.asWebviewUri(svgPath).toString();
 }
