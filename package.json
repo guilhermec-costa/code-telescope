@@ -321,7 +321,7 @@
         "bundle:shiki": "tsx scripts/bundle-shiki.ts"
     },
     "devDependencies": {
-        "@biomejs/biome": "2.3.10",
+        "@biomejs/biome": "2.3.11",
         "@types/mocha": "^10.0.10",
         "@types/node": "25.x",
         "@types/vscode": "^1.106.1",
