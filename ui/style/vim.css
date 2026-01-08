@@ -1,0 +1,73 @@
+/* Vim mode cursor styles */
+.vim-normal-mode {
+  caret-color: transparent;
+  position: relative;
+}
+
+/* Block cursor effect for normal mode */
+.vim-normal-mode::after {
+  content: '->';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 1.2em;
+  background-color: rgba(255, 165, 0, 0.5);
+  pointer-events: none;
+  animation: vim-cursor-blink 1s step-end infinite;
+}
+
+.vim-insert-mode {
+  caret-color: auto;
+}
+
+/* Optional: Add a visual indicator of the mode */
+.vim-normal-mode {
+  border-left: 3px solid #ff6b35;
+}
+
+.vim-insert-mode {
+  border-left: 3px solid #4ecdc4;
+}
+
+@keyframes vim-cursor-blink {
+
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* #input-container::before {
+  content: attr(data-vim-mode);
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: bold;
+  border-radius: 3px;
+  pointer-events: none;
+  text-transform: uppercase;
+  font-family: monospace;
+} */
+
+/* .vim-normal-mode~#input-container::before,
+#search.vim-normal-mode::after {
+  background-color: #ff6b35;
+  color: white;
+  content: 'NORMAL';
+}
+
+.vim-insert-mode~#input-container::before {
+  background-color: #4ecdc4;
+  color: white;
+  content: 'INSERT';
+} */

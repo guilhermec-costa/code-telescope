@@ -40,6 +40,7 @@ export class WebviewAssetManager {
     const allPlaceholders = {
       ...adapterPlaceholders,
       "{{highlight-styles}}": "ui/style/highlight.css",
+      "{{vim}}": `ui/style/vim.css`,
       "{{style}}": `ui/style/${layoutStyleName}`,
       "{{script}}": "ui/dist/index.js",
     };

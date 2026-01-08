@@ -15,7 +15,7 @@ export class VerticalLayoutResizer {
 
   constructor(private readonly options: ClassicLayoutResizerOptions = {}) {
     this.container = document.getElementById("split")!;
-    this.target = document.getElementById("search-results")!;
+    this.target = document.getElementById("results-container")!;
     this.resizer = document.getElementById("vertical-resizer")!;
     this.previewSide = document.getElementById("preview-side")!;
 

@@ -55,7 +55,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
 
     const include = includePatterns.length === 1 ? includePatterns[0] : `{${includePatterns.join(",")}}`;
 
-    return vscode.workspace.findFiles(include, `{${excludes.join(",")}}`, maxResults);
+    return await vscode.workspace.findFiles(include, `{${excludes.join(",")}}`, maxResults);
   }
 
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {

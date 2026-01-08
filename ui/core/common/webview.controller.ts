@@ -3,6 +3,7 @@ import { debounce } from "../../utils/debounce";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { HighlighterManager } from "../render/highlighter-manager";
 import { PreviewManager } from "../render/preview-manager";
+import { VimInputHandler } from "../vim-input.handler";
 import { StateManager } from "./code/state-manager";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
@@ -15,6 +16,9 @@ export class WebviewController {
   /** Search input HTML element used for filtering options. */
   private searchElement: HTMLInputElement;
 
+  /** Vim motion handler for the search input */
+  private vimHandler: VimInputHandler;
+
   constructor(
     private readonly previewManager: PreviewManager,
     private readonly optionListManager: OptionListManager,
@@ -23,6 +27,8 @@ export class WebviewController {
     console.log("[WebviewController] Initializing controller");
     this.searchElement = document.getElementById("search") as HTMLInputElement;
     this.searchElement.value = StateManager.prompt;
+    this.vimHandler = new VimInputHandler(this.searchElement);
+
     this.setupEventListeners();
     this.setupKeyboardHandlers();
   }
