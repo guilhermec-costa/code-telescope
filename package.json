@@ -47,6 +47,10 @@
             {
                 "command": "code-telescope.fuzzy.wsSymbols",
                 "title": "Code Telescope: Workspace Symbols"
+            },
+            {
+                "command": "code-telescope.fuzzy.recentFiles",
+                "title": "Code Telescope: Recent Files"
             }
         ],
         "configuration": {

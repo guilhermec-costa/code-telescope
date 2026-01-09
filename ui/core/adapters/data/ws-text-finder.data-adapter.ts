@@ -1,5 +1,6 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { TextSearchData } from "../../../../shared/exchange/workspace-text-search";
+import { formatFileOptionHtml } from "../../../utils/html";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
 
@@ -33,20 +34,7 @@ export class WorkspaceTextFinderDataAdapter implements IFuzzyFinderDataAdapter<T
   getDisplayText(option: SearchOption): string {
     const fileName = this.getFileName(option.file);
     const displayText = `${fileName}:${option.line} - ${option.preview}`;
-
-    return `
-      <i class="file-icon">
-       <img 
-        src="${option.svgIconUrl}" 
-        alt="" 
-        loading="eager" 
-        decoding="async"
-        width="16"
-        height="16"
-      />
-      </i>
-      <span class="file-path">${displayText}</span>
-    `;
+    return formatFileOptionHtml(option.svgIconUrl, displayText);
   }
 
   getSelectionValue(option: SearchOption): string {

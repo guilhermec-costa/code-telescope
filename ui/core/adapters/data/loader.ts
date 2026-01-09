@@ -4,3 +4,4 @@ import "./ws-files-finder.data-adapter";
 import "./ws-text-finder.data-adapter";
 import "./keybindings.data-adapter";
 import "./ws-symbols.data-adapter";
+import "./recent-files.data-adapter";

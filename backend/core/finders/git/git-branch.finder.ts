@@ -27,9 +27,7 @@ export class GitBranchFuzzyFinder implements IFuzzyFinderProvider {
 
   customPlaceholders(): LayoutCustomPlaceholders {
     return {
-      layoutHtmlFilename: "branch-fuzzy.view.html",
       layoutCssFilename: "classic.css",
-      "{{branch-styles}}": "ui/style/branch-preview.css",
     };
   }
 
