@@ -1,72 +1,276 @@
 {
-  "rules": [
-    {
-      "match": ["dark+", "dark plus"],
-      "theme": "dark-plus"
-    },
-    {
-      "match": ["light+", "light plus"],
-      "theme": "light-plus"
-    },
-    {
-      "match": ["gruvbox dark hard"],
-      "theme": "gruvbox-dark-hard"
-    },
-    {
-      "match": ["monokai"],
-      "theme": "monokai"
-    },
-    {
-      "match": ["solarized", "dark"],
-      "theme": "solarized-dark"
-    },
-    {
-      "match": ["solarized", "light"],
-      "theme": "solarized-light"
-    },
-    {
-      "match": ["dracula"],
-      "theme": "dracula"
-    },
-    {
-      "match": ["github", "dark"],
-      "theme": "github-dark"
-    },
-    {
-      "match": ["github", "light"],
-      "theme": "github-light"
-    },
-    {
-      "match": ["nord"],
-      "theme": "nord"
-    },
-    {
-      "match": ["one dark"],
-      "theme": "one-dark-pro"
-    },
-    {
-      "match": ["night owl"],
-      "theme": "night-owl"
-    },
-    {
-      "match": ["tokyo night"],
-      "theme": "tokyo-night"
-    },
-    {
-      "match": ["kanagawa dragon"],
-      "theme": "kanagawa-dragon"
-    },
-    {
-      "match": ["kanagawa wave"],
-      "theme": "kanagawa-wave"
-    },
-    {
-      "match": ["rosé pine", "rosé pine", "rosé pine (no italics)"],
-      "theme": "rose-pine"
+    "rules": [
+        {
+            "match": ["dark+", "dark plus"],
+            "theme": "dark-plus"
+        },
+        {
+            "match": ["light+", "light plus"],
+            "theme": "light-plus"
+        },
+        {
+            "match": ["gruvbox dark hard"],
+            "theme": "gruvbox-dark-hard"
+        },
+        {
+            "match": ["gruvbox dark medium"],
+            "theme": "gruvbox-dark-medium"
+        },
+        {
+            "match": ["gruvbox dark soft"],
+            "theme": "gruvbox-dark-soft"
+        },
+        {
+            "match": ["gruvbox light hard"],
+            "theme": "gruvbox-light-hard"
+        },
+        {
+            "match": ["gruvbox light medium"],
+            "theme": "gruvbox-light-medium"
+        },
+        {
+            "match": ["gruvbox light soft"],
+            "theme": "gruvbox-light-soft"
+        },
+        {
+            "match": ["monokai"],
+            "theme": "monokai"
+        },
+        {
+            "match": ["solarized", "dark"],
+            "theme": "solarized-dark"
+        },
+        {
+            "match": ["solarized", "light"],
+            "theme": "solarized-light"
+        },
+        {
+            "match": ["dracula", "soft"],
+            "theme": "dracula-soft"
+        },
+        {
+            "match": ["dracula"],
+            "theme": "dracula"
+        },
+        {
+            "match": ["github dark default"],
+            "theme": "github-dark-default"
+        },
+        {
+            "match": ["github dark dimmed"],
+            "theme": "github-dark-dimmed"
+        },
+        {
+            "match": ["github dark high contrast"],
+            "theme": "github-dark-high-contrast"
+        },
+        {
+            "match": ["github dark"],
+            "theme": "github-dark"
+        },
+        {
+            "match": ["github light default"],
+            "theme": "github-light-default"
+        },
+        {
+            "match": ["github light high contrast"],
+            "theme": "github-light-high-contrast"
+        },
+        {
+            "match": ["github", "light"],
+            "theme": "github-light"
+        },
+        {
+            "match": ["nord"],
+            "theme": "nord"
+        },
+        {
+            "match": ["one dark pro"],
+            "theme": "one-dark-pro"
+        },
+        {
+            "match": ["one dark"],
+            "theme": "one-dark-pro"
+        },
+        {
+            "match": ["night owl"],
+            "theme": "night-owl"
+        },
+        {
+            "match": ["tokyo night storm"],
+            "theme": "tokyo-night-storm"
+        },
+        {
+            "match": ["tokyo night"],
+            "theme": "tokyo-night"
+        },
+        {
+            "match": ["kanagawa dragon"],
+            "theme": "kanagawa-dragon"
+        },
+        {
+            "match": ["kanagawa lotus"],
+            "theme": "kanagawa-lotus"
+        },
+        {
+            "match": ["kanagawa wave"],
+            "theme": "kanagawa-wave"
+        },
+        {
+            "match": ["rosé pine moon"],
+            "theme": "rose-pine-moon"
+        },
+        {
+            "match": ["rosé pine dawn"],
+            "theme": "rose-pine-dawn"
+        },
+        {
+            "match": ["rosé pine"],
+            "theme": "rose-pine"
+        },
+        {
+            "match": ["rose pine moon"],
+            "theme": "rose-pine-moon"
+        },
+        {
+            "match": ["rose pine dawn"],
+            "theme": "rose-pine-dawn"
+        },
+        {
+            "match": ["rose pine"],
+            "theme": "rose-pine"
+        },
+        {
+            "match": ["catppuccin mocha"],
+            "theme": "catppuccin-mocha"
+        },
+        {
+            "match": ["catppuccin macchiato"],
+            "theme": "catppuccin-macchiato"
+        },
+        {
+            "match": ["catppuccin frappé"],
+            "theme": "catppuccin-frappe"
+        },
+        {
+            "match": ["catppuccin frappe"],
+            "theme": "catppuccin-frappe"
+        },
+        {
+            "match": ["catppuccin latte"],
+            "theme": "catppuccin-latte"
+        },
+        {
+            "match": ["material theme ocean"],
+            "theme": "material-theme-ocean"
+        },
+        {
+            "match": ["material theme palenight"],
+            "theme": "material-theme-palenight"
+        },
+        {
+            "match": ["material theme darker"],
+            "theme": "material-theme-darker"
+        },
+        {
+            "match": ["material theme lighter"],
+            "theme": "material-theme-lighter"
+        },
+        {
+            "match": ["material theme"],
+            "theme": "material-theme"
+        },
+        {
+            "match": ["ayu dark"],
+            "theme": "ayu-dark"
+        },
+        {
+            "match": ["ayu light"],
+            "theme": "ayu-light"
+        },
+        {
+            "match": ["ayu mirage"],
+            "theme": "ayu-dark"
+        },
+        {
+            "match": ["synthwave"],
+            "theme": "synthwave-84"
+        },
+        {
+            "match": ["cobalt2"],
+            "theme": "cobalt2"
+        },
+        {
+            "match": ["slack", "dark"],
+            "theme": "slack-dark"
+        },
+        {
+            "match": ["slack", "ochin"],
+            "theme": "slack-ochin"
+        },
+        {
+            "match": ["vitesse dark"],
+            "theme": "vitesse-dark"
+        },
+        {
+            "match": ["vitesse light"],
+            "theme": "vitesse-light"
+        },
+        {
+            "match": ["vitesse black"],
+            "theme": "vitesse-black"
+        },
+        {
+            "match": ["min dark"],
+            "theme": "min-dark"
+        },
+        {
+            "match": ["min light"],
+            "theme": "min-light"
+        },
+        {
+            "match": ["everforest dark"],
+            "theme": "everforest-dark"
+        },
+        {
+            "match": ["everforest light"],
+            "theme": "everforest-light"
+        },
+        {
+            "match": ["poimandres"],
+            "theme": "poimandres"
+        },
+        {
+            "match": ["red"],
+            "theme": "red"
+        },
+        {
+            "match": ["snazzy"],
+            "theme": "snazzy-light"
+        },
+        {
+            "match": ["houston"],
+            "theme": "houston"
+        },
+        {
+            "match": ["vesper"],
+            "theme": "vesper"
+        },
+        {
+            "match": ["andromeeda"],
+            "theme": "andromeeda"
+        },
+        {
+            "match": ["laserwave"],
+            "theme": "laserwave"
+        },
+        {
+            "match": ["plastic"],
+            "theme": "plastic"
+        }
+    ],
+    "fallback": {
+        "dark": "dark-plus",
+        "light": "light-plus"
     }
-  ],
-  "fallback": {
-    "dark": "dark-plus",
-    "light": "light-plus"
-  }
 }

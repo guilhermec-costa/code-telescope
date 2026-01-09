@@ -9,13 +9,13 @@ export interface PreviewData<C = any> {
   language?: string;
   metadata?: Record<string, any>;
   overridePreviewer?: PreviewRendererType;
+  overrideTheme?: string;
 }
 
 type TextPreviewContent = {
   kind: "text";
   text: string;
   path: string;
-  isCached: boolean;
 };
 
 type ImagePreviewContent = {
@@ -23,14 +23,12 @@ type ImagePreviewContent = {
   buffer: Uint8Array;
   mimeType: string;
   path: string;
-  isCached: boolean;
 };
 
 type PdfPreviewContent = {
   kind: "pdf";
   buffer: Uint8Array;
   path: string;
-  isCached: boolean;
 };
 
 export type HighlightedCodePreviewContent = TextPreviewContent | ImagePreviewContent | PdfPreviewContent;
@@ -109,15 +107,6 @@ export interface UpdateLayoutPropMessage {
   data: LayoutPropUpdate[];
 }
 
-export interface HighlightCacheMessage {
-  type: "highlightCache";
-  data: {
-    content: string;
-    path: string;
-    highlightedLine?: number;
-  };
-}
-
 /**
  * Message sent from the webview requesting the backend to close the panel.
  */
@@ -177,6 +166,5 @@ export type FromWebviewKindMessage =
   | PreviewRequestMessage
   | DynamicSearchMessage
   | OptionSelectedMessage
-  | HighlightCacheMessage
   | HighlighterInitDone
   | UpdateLayoutPropMessage;

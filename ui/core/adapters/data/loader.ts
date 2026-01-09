@@ -5,3 +5,4 @@ import "./ws-text-finder.data-adapter";
 import "./keybindings.data-adapter";
 import "./ws-symbols.data-adapter";
 import "./recent-files.data-adapter";
+import "./colorschemes.data-adapter";

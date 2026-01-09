@@ -4,7 +4,6 @@ import { HighlightedCodePreviewData } from "../../../../shared/extension-webview
 import { resolvePathExt } from "../../../utils/files";
 import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
 import { FileContentCache } from "../../common/cache/file-content.cache";
-import { HighlightContentCache } from "../../common/cache/highlight-content.cache";
 import { FuzzyFinderAdapter } from "../../decorators/fuzzy-finder-provider.decorator";
 import { RegexFinder } from "./regex-finder";
 import { RipgrepFinder } from "./ripgrep-finder";
@@ -59,25 +58,6 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
     const [filePath, line] = identifier.split(":");
     let ext = resolvePathExt(filePath);
 
-    const highlightLine = line ? parseInt(line, 10) - 1 : undefined;
-
-    const cachedHighlightedContent = HighlightContentCache.instance.get(`${filePath}:${highlightLine}`);
-    if (cachedHighlightedContent) {
-      return {
-        content: {
-          path: filePath,
-          text: cachedHighlightedContent,
-          isCached: true,
-          kind: "text",
-        },
-        language: ext,
-        metadata: {
-          filePath,
-          highlightLine,
-        },
-      };
-    }
-
     try {
       const content = await FileContentCache.instance.get(filePath);
       const lines = (content as string).split("\n");
@@ -87,7 +67,6 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
           kind: "text",
           path: filePath,
           text: content as string,
-          isCached: false,
         },
         language: ext,
         metadata: {
@@ -102,7 +81,6 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
           path: filePath,
           kind: "text",
           text: "Error loading file",
-          isCached: false,
         },
         language: "text",
       };

@@ -5,7 +5,6 @@ import { execCmd } from "../../utils/commands";
 import { resolvePathExt } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileContentCache } from "../common/cache/file-content.cache";
-import { HighlightContentCache } from "../common/cache/highlight-content.cache";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
 
 interface WorkspaceSymbolData {
@@ -74,7 +73,7 @@ export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
 
     if (!selected) {
       return {
-        content: { path: "", text: "No symbol selected", isCached: false, kind: "text" },
+        content: { path: "", text: "No symbol selected", kind: "text" },
         language: "plaintext",
       };
     }
@@ -84,17 +83,6 @@ export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
 
     const highlightLine = selected.location.range.start.line;
 
-    const cachedHighlightedContent = HighlightContentCache.instance.get(filePath);
-    if (cachedHighlightedContent) {
-      return {
-        content: { path: filePath, text: cachedHighlightedContent, isCached: true, kind: "text" },
-        language,
-        metadata: {
-          highlightLine,
-        },
-      };
-    }
-
     const content = await FileContentCache.instance.get(filePath);
 
     return {
@@ -102,7 +90,6 @@ export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
         kind: "text",
         path: filePath,
         text: content as string,
-        isCached: false,
       },
       language,
       metadata: {

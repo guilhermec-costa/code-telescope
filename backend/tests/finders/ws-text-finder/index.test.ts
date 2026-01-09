@@ -1,21 +1,12 @@
 import { beforeEach, describe, expect, it, type Mocked, vi } from "vitest";
 import * as vscode from "vscode";
 import { FileContentCache } from "../../../core/common/cache/file-content.cache";
-import { HighlightContentCache } from "../../../core/common/cache/highlight-content.cache";
-import { WorkspaceTextSearchProvider } from "../../../core/finders/ws-text-finder";
+import { WorkspaceTextSearchProvider } from "../../../core/finders/ws-text-finder/index.finder";
 import { RegexFinder } from "../../../core/finders/ws-text-finder/regex-finder";
 import { RipgrepFinder } from "../../../core/finders/ws-text-finder/ripgrep-finder";
 
 vi.mock("@backend/core/common/cache/file-content.cache", () => ({
   FileContentCache: {
-    instance: {
-      get: vi.fn(),
-    },
-  },
-}));
-
-vi.mock("@backend/core/common/cache/highlight-content.cache", () => ({
-  HighlightContentCache: {
     instance: {
       get: vi.fn(),
     },
@@ -88,31 +79,10 @@ describe("WorkspaceTextSearchProvider", () => {
     expect(result.results).toEqual(["fallback"]);
   });
 
-  it("returns cached highlighted preview when available", async () => {
-    vi.mocked(HighlightContentCache.instance.get).mockReturnValueOnce("cached content");
-
-    const preview = await provider.getPreviewData("/tmp/file.ts:2");
-
-    expect(preview.content.isCached).toBe(true);
-    expect(preview.content.text).toBe("cached content");
-    expect(preview.metadata?.highlightLine).toBe(1);
-  });
-
-  it("loads file content when highlight cache is empty", async () => {
-    vi.mocked(HighlightContentCache.instance.get).mockReturnValueOnce(undefined);
-    vi.mocked(FileContentCache.instance.get).mockResolvedValueOnce("line1\nline2\nline3");
-
-    const preview = await provider.getPreviewData("/tmp/file.ts:2");
-
-    expect(preview.content.isCached).toBe(false);
-    expect(preview.metadata?.totalLines).toBe(3);
-  });
-
   it("returns error preview when file loading fails", async () => {
-    vi.mocked(HighlightContentCache.instance.get).mockReturnValueOnce(undefined);
     vi.mocked(FileContentCache.instance.get).mockRejectedValueOnce(new Error("fail"));
 
-    const preview = await provider.getPreviewData("/tmp/file.ts");
+    const preview: any = await provider.getPreviewData("/tmp/file.ts");
 
     expect(preview.content.text).toBe("Error loading file");
     expect(preview.language).toBe("text");

@@ -4,7 +4,6 @@ import { getConfigurationSection } from "../../../../utils/configuration";
 import { getShikiTheme } from "../../../../utils/shiki";
 import { ConfigChangeHandler } from "../../../abstractions/config-change-handler";
 import { FuzzyFinderPanelController } from "../../../presentation/fuzzy-panel.controller";
-import { HighlightContentCache } from "../../cache/highlight-content.cache";
 
 export class ThemeChangeHandler implements ConfigChangeHandler {
   readonly section = Globals.cfgSections.colorTheme;
@@ -13,7 +12,6 @@ export class ThemeChangeHandler implements ConfigChangeHandler {
     const newTheme = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
 
     Globals.USER_THEME = newTheme;
-    HighlightContentCache.instance.clear();
 
     if (FuzzyFinderPanelController.instance) {
       await FuzzyFinderPanelController.instance.emitThemeUpdateEvent(getShikiTheme(newTheme));

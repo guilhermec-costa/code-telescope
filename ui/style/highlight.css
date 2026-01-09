@@ -163,7 +163,8 @@
 .sk-symbol-property,
 .sk-record-keys,
 .sk-git-commit,
-.sk-git-branch {
+.sk-git-branch,
+.sk-symbol-color {
   color: var(--vscode-symbolIcon-variableForeground);
 }
 

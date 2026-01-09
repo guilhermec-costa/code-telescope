@@ -6,7 +6,6 @@ import { getShikiTheme } from "../../../utils/shiki";
 import { WorkspaceFileFinder } from "../../finders/ws-files.finder";
 import { FuzzyFinderPanelController } from "../../presentation/fuzzy-panel.controller";
 import { FileContentCache } from "../cache/file-content.cache";
-import { HighlightContentCache } from "../cache/highlight-content.cache";
 import { CONFIG_CHANGE_HANDLERS } from ".";
 
 export class EventManager {
@@ -36,7 +35,6 @@ export class EventManager {
 
   private registerFileListener() {
     vscode.workspace.onDidSaveTextDocument((e) => {
-      HighlightContentCache.instance.invalidateByFilePrefix(e.fileName);
       FileContentCache.instance.invalidate(e.fileName);
     });
   }

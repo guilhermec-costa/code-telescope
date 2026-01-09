@@ -50,20 +50,45 @@ export class HighlighterManager {
   }
 
   /**
+   * Loads a theme definition if it has not been loaded yet.
+   * This method is idempotent and safe to call repeatedly.
+   */
+  static async loadThemeIfNeeded(theme: string): AsyncResult<string> {
+    if (this.loadedThemes.has(theme)) {
+      return { ok: true, value: theme };
+    }
+    return await this.loadThemeFromBundle(theme);
+  }
+
+  /**
    * Loads a theme from the bundled Shiki themes.
    *
    * @throws Error if the theme is not found in the bundle
    */
-  static async loadThemeFromBundle(theme: string) {
-    if (this.loadedThemes.has(theme)) return;
+  static async loadThemeFromBundle(theme: string): AsyncResult<string> {
+    if (this.loadedThemes.has(theme)) {
+      return { ok: true, value: theme };
+    }
 
     const { themes } = await this.loadBundle();
     const bundledTheme = themes?.bundledThemes?.[theme];
-    if (!bundledTheme) throw new Error(`[ShikiManager] Theme not found: ${theme}`);
+
+    if (!bundledTheme) {
+      return {
+        ok: false,
+        error: `[ShikiManager] Theme not found: ${theme}`,
+      };
+    }
 
     await this.highlighter.loadTheme(bundledTheme);
     this.loadedThemes.add(theme);
+
     console.log(`[ShikiManager] Theme loaded from bundle: ${theme}`);
+
+    return {
+      ok: true,
+      value: theme,
+    };
   }
 
   /**

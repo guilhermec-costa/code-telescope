@@ -56,7 +56,6 @@ export class RecentFilesFinder implements IFuzzyFinderProvider {
         path: path,
         text: content as string,
         kind: "text",
-        isCached: false,
       },
       language,
     };

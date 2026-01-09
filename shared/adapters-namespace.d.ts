@@ -17,7 +17,8 @@ export type BuiltinFuzzyProviderType =
   | "commands.all"
   | "npm.scripts"
   | "extensions.all"
-  | "snippets.all";
+  | "snippets.all"
+  | "workspace.colorschemes";
 
 export type CustomFuzzyProviderType = `custom.${string}`;
 

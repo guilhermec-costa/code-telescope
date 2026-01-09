@@ -1,6 +1,6 @@
 import { PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { PreviewManagerConfig } from "../../../../shared/exchange/extension-config";
-import { HighlightedCodePreviewData } from "../../../../shared/extension-webview-protocol";
+import { PreviewData, TextPreviewContent } from "../../../../shared/extension-webview-protocol";
 import { toInnerHTML } from "../../../utils/html";
 import { IPreviewRendererAdapter } from "../../abstractions/preview-renderer-adapter";
 import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapter.decorator";
@@ -21,14 +21,16 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
 
   constructor(private highlighter: SyntaxHighlighter) {}
 
-  async render(previewElement: HTMLElement, data: HighlightedCodePreviewData, theme: string): Promise<void> {
+  async render(previewElement: HTMLElement, data: PreviewData<TextPreviewContent>, theme: string): Promise<void> {
     let {
       content: { text },
       language = "text",
       metadata,
-    } = data as any;
+      overrideTheme,
+    } = data;
 
     language = language === "txt" ? "text" : language;
+    const renderTheme = overrideTheme ?? theme;
 
     if (!this.highlighter) {
       previewElement.innerHTML = `<pre style="padding:1rem;">${toInnerHTML(text)}</pre>`;
@@ -46,8 +48,12 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
 
     const initialChunk = Math.floor(highlightLine / CHUNK_SIZE);
 
-    const loadResult = await HighlighterManager.loadLanguageIfNedeed(language);
-    if (!loadResult.ok) {
+    const [langLoadResult, themeLoadResult] = await Promise.all([
+      HighlighterManager.loadLanguageIfNedeed(language),
+      HighlighterManager.loadThemeIfNeeded(renderTheme),
+    ]);
+
+    if (!langLoadResult.ok || !themeLoadResult.ok) {
       const failedAdapter = PreviewRendererAdapterRegistry.instance.getAdapter("preview.failed");
       await failedAdapter.render(
         previewElement,
@@ -57,7 +63,7 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
             message: "An error occurred while rendering this preview.",
           },
         },
-        theme,
+        renderTheme,
       );
       return;
     }
@@ -74,7 +80,7 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
 
       const html = this.highlighter.codeToHtml(chunkText, {
         lang: language,
-        theme,
+        theme: renderTheme,
       });
 
       const chunkContainer = document.createElement("div");
