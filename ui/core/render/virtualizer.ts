@@ -33,7 +33,6 @@ export class Virtualizer {
 
   public renderVirtualized(
     items: any[],
-    selectedIndex: number,
     query: string,
     createItem: (item: any, index: number, query: string) => HTMLElement,
   ): void {
@@ -107,7 +106,6 @@ export class Virtualizer {
     const viewportHeight = this.container.clientHeight;
     const isIvy = this.isIvyLayout();
 
-    // Se o conteúdo é menor que a viewport e não é ivy, não precisa fazer scroll
     if (!isIvy && totalHeight <= viewportHeight) {
       this.container.scrollTop = 0;
       return;
@@ -119,21 +117,20 @@ export class Virtualizer {
     const scrollTop = this.container.scrollTop;
     const scrollBottom = scrollTop + viewportHeight;
 
-    // Adiciona uma margem de segurança para ivy
+    // for ivy layout
     const margin = isIvy ? this.itemHeight : 0;
 
-    // Só ajusta o scroll se o item não estiver visível
+    // only adjust if item is visible
     if (itemTop < scrollTop + margin) {
-      // Item está acima da viewport
+      // item is above viewport
       this.container.scrollTop = Math.max(0, itemTop - margin);
     } else if (itemBottom > scrollBottom - margin) {
-      // Item está abaixo da viewport
+      // item is below viewport
       this.container.scrollTop = itemBottom - viewportHeight + margin;
     }
   }
 
   public clear(): void {
-    // Limpa apenas o conteúdo, mantém a estrutura
     this.spacer.innerHTML = "";
     this.spacer.style.height = "0px";
     this.spacer.style.minHeight = "0px";

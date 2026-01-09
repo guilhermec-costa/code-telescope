@@ -179,11 +179,8 @@ export class OptionListManager {
 
   private setupScrollListener(): void {
     this.listElement.addEventListener("scroll", () => {
-      this.virtualizer.renderVirtualized(
-        this.filteredOptions,
-        StateManager.selectedIndex,
-        StateManager.prompt,
-        (item, idx, q) => this.createListItem(item, idx, q),
+      this.virtualizer.renderVirtualized(this.filteredOptions, StateManager.prompt, (item, idx, q) =>
+        this.createListItem(item, idx, q),
       );
     });
   }
@@ -240,11 +237,8 @@ export class OptionListManager {
     this.applySortOnFiltered();
     if (!this.dataAdapter) return;
 
-    this.virtualizer.renderVirtualized(
-      this.filteredOptions,
-      StateManager.selectedIndex,
-      StateManager.prompt,
-      (item, idx, q) => this.createListItem(item, idx, q),
+    this.virtualizer.renderVirtualized(this.filteredOptions, StateManager.prompt, (item, idx, q) =>
+      this.createListItem(item, idx, q),
     );
 
     this.scrollToSelected();
