@@ -81,17 +81,6 @@ export class WebviewToExtensionMessenger {
     });
   }
 
-  requestHighlightCache(content: string, path: string, highlightedLine?: number) {
-    this.postMessage({
-      type: "highlightCache",
-      data: {
-        content,
-        path,
-        highlightedLine,
-      },
-    });
-  }
-
   requestLayoutPropUpdate(data: UpdateLayoutPropMessage["data"]) {
     this.postMessage({
       type: "updateLayoutProp",

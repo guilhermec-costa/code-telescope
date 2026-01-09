@@ -24,21 +24,40 @@ async function bootstrap() {
   );
   console.log("[Index] Controller created");
 
-  new VerticalLayoutResizer({
-    onResizeEnd: (leftWidthVw, rightWidthVw) => {
-      WebviewToExtensionMessenger.instance.requestLayoutPropUpdate([
-        { property: "leftSideWidthPct", value: leftWidthVw },
-        { property: "rightSideWidthPct", value: rightWidthVw },
-      ]);
-    },
-  });
-
-  if (StateManager.layoutMode === "ivy") {
-    new HorizontalLayoutResizer({
-      onResizeEnd: (heightVh) => {
-        WebviewToExtensionMessenger.instance.requestLayoutPropUpdate([{ property: "ivyHeightPct", value: heightVh }]);
-      },
-    });
+  switch (StateManager.layoutMode) {
+    case "classic": {
+      new VerticalLayoutResizer(
+        {
+          onResizeEnd: (leftWidthVw, rightWidthVw) => {
+            WebviewToExtensionMessenger.instance.requestLayoutPropUpdate([
+              { property: "leftSideWidthPct", value: leftWidthVw },
+              { property: "rightSideWidthPct", value: rightWidthVw },
+            ]);
+          },
+        },
+        "results-container",
+      );
+      break;
+    }
+    case "ivy": {
+      new VerticalLayoutResizer(
+        {
+          onResizeEnd: (leftWidthVw, rightWidthVw) => {
+            WebviewToExtensionMessenger.instance.requestLayoutPropUpdate([
+              { property: "leftSideWidthPct", value: leftWidthVw },
+              { property: "rightSideWidthPct", value: rightWidthVw },
+            ]);
+          },
+        },
+        "search-results",
+      );
+      new HorizontalLayoutResizer({
+        onResizeEnd: (heightVh) => {
+          WebviewToExtensionMessenger.instance.requestLayoutPropUpdate([{ property: "ivyHeightPct", value: heightVh }]);
+        },
+      });
+      break;
+    }
   }
 
   await controller.initialize();

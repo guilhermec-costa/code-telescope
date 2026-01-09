@@ -13,9 +13,12 @@ export class VerticalLayoutResizer {
   private readonly resizer: HTMLElement;
   private readonly previewSide: HTMLElement;
 
-  constructor(private readonly options: ClassicLayoutResizerOptions = {}) {
+  constructor(
+    private readonly options: ClassicLayoutResizerOptions = {},
+    targetElId: string,
+  ) {
     this.container = document.getElementById("split")!;
-    this.target = document.getElementById("results-container")!;
+    this.target = document.getElementById(targetElId)!;
     this.resizer = document.getElementById("vertical-resizer")!;
     this.previewSide = document.getElementById("preview-side")!;
 

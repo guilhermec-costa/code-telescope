@@ -28,7 +28,6 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerProviderCmd("branch", () => FuzzyFinderPanelController.setupProvider("git.branches"), ctx);
   registerProviderCmd("wsText", () => FuzzyFinderPanelController.setupProvider("workspace.text"), ctx);
   registerProviderCmd("wsSymbols", () => FuzzyFinderPanelController.setupProvider("workspace.symbols"), ctx);
-  registerProviderCmd("commits", () => FuzzyFinderPanelController.setupProvider("git.commits"), ctx);
   registerProviderCmd("recentFiles", () => FuzzyFinderPanelController.setupProvider("workspace.recentFiles"), ctx);
   registerProviderCmd("colorschemes", () => FuzzyFinderPanelController.setupProvider("workspace.colorschemes"), ctx);
   registerProviderCmd("diagnostics", () => FuzzyFinderPanelController.setupProvider("workspace.diagnostics"), ctx);

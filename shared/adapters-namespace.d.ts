@@ -8,7 +8,6 @@ export type BuiltinFuzzyProviderType =
   | "workspace.recentFiles"
   | "workspace.keybindings"
   | "git.branches"
-  | "git.commits"
   | "git.fileHistory"
   | "workspace.symbols"
   | "code.documentSymbols"
@@ -25,9 +24,4 @@ export type CustomFuzzyProviderType = `custom.${string}`;
 
 export type FuzzyProviderType = BuiltinFuzzyProviderType | CustomFuzzyProviderType;
 
-export type PreviewRendererType =
-  | "preview.codeHighlighted"
-  | "preview.branch"
-  | "preview.commitDiff"
-  | "preview.image"
-  | "preview.failed";
+export type PreviewRendererType = "preview.codeHighlighted" | "preview.branch" | "preview.image" | "preview.failed";

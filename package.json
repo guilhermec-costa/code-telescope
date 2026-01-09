@@ -33,10 +33,6 @@
                 "title": "Code Telescope: Workspace Text Finder"
             },
             {
-                "command": "code-telescope.fuzzy.commits",
-                "title": "Code Telescope: Commit Finder"
-            },
-            {
                 "command": "code-telescope.fuzzy.keybindings",
                 "title": "Code Telescope: Keybindings"
             },
