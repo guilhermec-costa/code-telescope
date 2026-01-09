@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
 import { PreviewData } from "../../../../shared/extension-webview-protocol";
+import { Result } from "../../../../shared/result";
 import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderPanelController } from "../../presentation/fuzzy-panel.controller";
 import { WorkspaceFileFinder } from "../ws-files.finder";
@@ -67,9 +68,7 @@ export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
    *
    * @returns A result object containing either the proxy instance or an error message.
    */
-  static create(
-    def: CustomFinderDefinition,
-  ): { ok: true; value: CustomFinderBackendProxy } | { ok: false; error: string } {
+  static create(def: CustomFinderDefinition): Result<CustomFinderBackendProxy> {
     if (!def || typeof def !== "object") {
       return { ok: false, error: "Invalid custom finder definition" };
     }

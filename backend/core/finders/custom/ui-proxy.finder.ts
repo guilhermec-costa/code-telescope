@@ -1,5 +1,6 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
+import { Result } from "../../../../shared/result";
 
 /**
  * UI-side proxy for a custom finder.
@@ -21,7 +22,7 @@ export class CustomFinderUiProxy {
    * Factory method that validates a CustomFinderDefinition
    * and returns a safe UI proxy instance.
    */
-  static create(def: CustomFinderDefinition): { ok: true; value: CustomFinderUiProxy } | { ok: false; error: string } {
+  static create(def: CustomFinderDefinition): Result<CustomFinderUiProxy> {
     if (!def || typeof def !== "object") {
       return { ok: false, error: "Invalid custom finder definition" };
     }
