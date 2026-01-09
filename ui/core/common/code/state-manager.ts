@@ -81,4 +81,4 @@ export class StateManager {
   }
 }
 
-type LayoutMode = "classic" | "ivy";
+export type LayoutMode = "classic" | "ivy";
