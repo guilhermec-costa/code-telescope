@@ -55,6 +55,10 @@
             {
                 "command": "code-telescope.fuzzy.colorschemes",
                 "title": "Code Telescope: Colorschemes"
+            },
+            {
+                "command": "code-telescope.fuzzy.diagnostics",
+                "title": "Code Telescope: Diagnostics"
             }
         ],
         "configuration": {

@@ -202,6 +202,30 @@
   color: var(--vscode-foreground);
 }
 
+.sk-diagnostic-error {
+  color: var(--vscode-editorError-foreground);
+}
+
+/* Diagnostic: Warning */
+.sk-diagnostic-warning {
+  color: var(--vscode-editorWarning-foreground);
+}
+
+/* Diagnostic: Info */
+.sk-diagnostic-info {
+  color: var(--vscode-editorInfo-foreground);
+}
+
+/* Diagnostic: Hint */
+.sk-diagnostic-hint {
+  color: var(--vscode-editorHint-foreground);
+}
+
+/* Fallback / Debug */
+.sk-diagnostic-debug {
+  color: var(--vscode-debugIcon-logMessageForeground);
+}
+
 .preview-image-container {
   display: flex;
   justify-content: center;
