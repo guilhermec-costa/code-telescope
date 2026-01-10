@@ -6,3 +6,4 @@ import "./ws-symbols.data-adapter";
 import "./recent-files.data-adapter";
 import "./colorschemes.data-adapter";
 import "./diagnostics.data-adapter";
+import "./call-hierarchy.data-adapter";

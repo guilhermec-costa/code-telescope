@@ -10,7 +10,9 @@ export async function loadDecorators(pattern: string, cwd: string) {
   for (const file of files) {
     try {
       await import(pathToFileURL(file).href);
-    } catch {}
+    } catch (err) {
+      console.log("error");
+    }
   }
 
   console.log(`[Fuzzy] ${files.length} providers loaded.`);

@@ -18,6 +18,7 @@ export type BuiltinFuzzyProviderType =
   | "extensions.all"
   | "snippets.all"
   | "workspace.colorschemes"
+  | "workspace.callHierarchy"
   | "workspace.diagnostics";
 
 export type CustomFuzzyProviderType = `custom.${string}`;

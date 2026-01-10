@@ -168,6 +168,16 @@
   color: var(--vscode-symbolIcon-variableForeground);
 }
 
+/* Incoming calls */
+.sk-call-incoming {
+  color: var(--vscode-symbolIcon-functionForeground);
+}
+
+/* Outgoing calls */
+.sk-call-outgoing {
+  color: var(--vscode-symbolIcon-methodForeground);
+}
+
 .sk-symbol-enum,
 .sk-symbol-enum-member {
   color: var(--vscode-symbolIcon-enumForeground);

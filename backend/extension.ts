@@ -3,7 +3,9 @@ import { CustomFuzzyProviderType } from "../shared/adapters-namespace";
 import { CustomProviderLoader } from "./core/common/custom/custom-provider.loader";
 import { CustomProviderStorage } from "./core/common/custom/custom-provider.storage";
 import { loadDecorators } from "./core/decorators/loader";
+import { CallHierarchyFinder } from "./core/finders/call-hierarchy.finder";
 import { FuzzyFinderPanelController } from "./core/presentation/fuzzy-panel.controller";
+import { FuzzyFinderAdapterRegistry } from "./core/registry/fuzzy-provider.registry";
 import { Globals } from "./globals";
 import { registerProviderCmd } from "./utils/commands";
 import { getConfigurationSection } from "./utils/configuration";
@@ -31,6 +33,16 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerProviderCmd("recentFiles", () => FuzzyFinderPanelController.setupProvider("workspace.recentFiles"), ctx);
   registerProviderCmd("colorschemes", () => FuzzyFinderPanelController.setupProvider("workspace.colorschemes"), ctx);
   registerProviderCmd("diagnostics", () => FuzzyFinderPanelController.setupProvider("workspace.diagnostics"), ctx);
+  registerProviderCmd(
+    "callHierarchy",
+    async () => {
+      const finderType = "workspace.callHierarchy";
+      const finder = FuzzyFinderAdapterRegistry.instance.getAdapter(finderType) as CallHierarchyFinder;
+      finder.captureEditorContext();
+      await FuzzyFinderPanelController.setupProvider(finderType);
+    },
+    ctx,
+  );
   registerProviderCmd(
     "custom",
     async () => {

@@ -87,6 +87,7 @@ export class FuzzyFinderPanelController {
   public async startProvider(providerType: FuzzyProviderType) {
     const provider = FuzzyFinderAdapterRegistry.instance.getAdapter(providerType);
     if (!provider) {
+      this.dispose();
       await vscode.window.showErrorMessage("Failed to start provider: ", providerType);
       return;
     }
