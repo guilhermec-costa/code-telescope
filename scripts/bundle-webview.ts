@@ -1,6 +1,7 @@
 import esbuild from "esbuild";
 import fs from "fs";
 import path from "path";
+import { decoratorsPlugin } from "./decorators-plugin";
 
 const args = process.argv.slice(2);
 const envArg = args.find((a) => a.startsWith("--env="))?.split("=")[1] || args[0];
@@ -37,6 +38,7 @@ async function run() {
       const relDir = path.dirname(path.relative("ui", entry));
       const outdir = path.join("./ui/dist", relDir);
 
+      const uiDirPath = path.resolve(process.cwd(), "ui");
       const opts: esbuild.BuildOptions = {
         entryPoints: [entry],
         outfile: path.join(outdir, "index.js"),
@@ -44,6 +46,14 @@ async function run() {
         format: "esm",
         target: ["chrome110"],
         loader: { ".css": "css", ".ts": "ts" },
+        plugins: [
+          decoratorsPlugin(
+            "core/adapters/preview-renderer/*.renderer-adapter.ts",
+            uiDirPath,
+            "virtual:preview-renderers",
+          ),
+          decoratorsPlugin("core/adapters/data/*.data-adapter.ts", uiDirPath, "virtual:data-adapters"),
+        ],
         minify: isProd,
         sourcemap: !isProd,
       };

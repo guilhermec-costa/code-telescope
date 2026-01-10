@@ -1,9 +1,0 @@
-import "./branch-finder.data-adapter";
-import "./ws-files-finder.data-adapter";
-import "./ws-text-finder.data-adapter";
-import "./keybindings.data-adapter";
-import "./ws-symbols.data-adapter";
-import "./recent-files.data-adapter";
-import "./colorschemes.data-adapter";
-import "./diagnostics.data-adapter";
-import "./call-hierarchy.data-adapter";

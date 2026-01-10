@@ -1,19 +1,7 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { ColorSchemesFinderData, ColorThemeData } from "../../../../shared/exchange/colorschemes";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
-
-interface ColorThemeData {
-  id: string;
-  label: string;
-  uiTheme: string;
-  extensionId?: string;
-  isCurrent: boolean;
-}
-
-interface ColorSchemesFinderData {
-  themes: ColorThemeData[];
-  displayTexts: string[];
-}
 
 export interface ColorSchemeOption {
   index: number;

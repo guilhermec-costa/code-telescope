@@ -2,21 +2,10 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { KeybindingData, KeybindingFinderData } from "../../../shared/exchange/keybindings";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
-
-interface KeybindingData {
-  key: string;
-  command: string;
-  when?: string;
-  args?: any;
-}
-
-interface KeybindingFinderData {
-  keybindings: KeybindingData[];
-  displayTexts: string[];
-}
 
 /**
  * Fuzzy provider that retrieves user keybindings.

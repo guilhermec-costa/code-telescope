@@ -1,18 +1,7 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { KeybindingData, KeybindingFinderData } from "../../../../shared/exchange/keybindings";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
-
-interface KeybindingData {
-  key: string;
-  command: string;
-  when?: string;
-  args?: any;
-}
-
-interface KeybindingFinderData {
-  keybindings: KeybindingData[];
-  displayTexts: string[];
-}
 
 export interface KeybindingOption {
   index: number;

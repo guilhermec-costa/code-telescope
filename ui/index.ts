@@ -1,9 +1,7 @@
+import { StateManager } from "./core/common/code/state-manager";
 import { DIContainer } from "./core/common/di-container";
 import { WebviewController } from "./core/common/webview.controller";
-
-import "./core/adapters/data/loader";
-import "./core/adapters/preview-renderer/loader";
-import { StateManager } from "./core/common/code/state-manager";
+import { loadDecorators } from "./core/decorators/loader";
 import { resizerInitializers } from "./core/render/resizers/config";
 
 async function bootstrap() {
@@ -11,6 +9,7 @@ async function bootstrap() {
 
   const container = new DIContainer();
   console.log("[Index] Container created");
+  await loadDecorators();
 
   await container.init();
   console.log("[Index] Container initialized");

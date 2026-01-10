@@ -1,28 +1,11 @@
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { DiagnosticData, DiagnosticsFinderData } from "../../../shared/exchange/diagnostics";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { resolvePathExt } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileContentCache } from "../common/cache/file-content.cache";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
-
-interface DiagnosticData {
-  uri: vscode.Uri;
-  diagnostic: vscode.Diagnostic;
-  relativePath: string;
-  line: number;
-  column: number;
-  severity: vscode.DiagnosticSeverity;
-  message: string;
-  source?: string;
-  code?: string | number;
-}
-
-interface DiagnosticsFinderData {
-  diagnostics: DiagnosticData[];
-  displayTexts: string[];
-  iconsClasses: string[];
-}
 
 /**
  * Fuzzy provider that retrieves all diagnostics (errors, warnings, etc.) in the workspace.
