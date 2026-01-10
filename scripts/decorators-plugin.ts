@@ -25,7 +25,9 @@ export function decoratorsPlugin(pattern: string, cwd: string, moduleName: strin
         console.log(`[${moduleName}] Glob cwd:`, cwd);
         console.log(`[${moduleName}] Files on plugin:`, files);
 
+        // inject static imports
         const contents = files.map((file) => `import "${file.replace(/\\/g, "/")}";`).join("\n");
+        console.log(contents);
 
         return {
           contents,

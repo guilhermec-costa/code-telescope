@@ -7,7 +7,6 @@ import { CustomFinderUiProxy } from "../../../core/finders/custom/ui-proxy.finde
 describe("CustomProviderManager", () => {
   const mockConfig: CustomFinderDefinition = {
     fuzzyAdapterType: "custom.test",
-    previewAdapterType: "preview.test",
     backend: {
       querySelectableOptions: vi.fn(),
       onSelect: vi.fn(),

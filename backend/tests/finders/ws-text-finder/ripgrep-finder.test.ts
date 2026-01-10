@@ -31,6 +31,10 @@ vi.mock("@backend/core/finders/ws-text-finder/ripgrep-args.builder", () => ({
   ),
 }));
 
+vi.mock("@backend/utils/files", () => ({
+  getSvgIconUrl: vi.fn(() => "file-icon"),
+}));
+
 describe("RipgrepFinder", () => {
   it("detects ripgrep via filesystem", async () => {
     vi.mocked(fs.access).mockResolvedValueOnce(undefined);

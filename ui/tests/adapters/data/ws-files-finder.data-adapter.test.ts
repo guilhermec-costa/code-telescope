@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { FileFinderData } from "../../../../shared/exchange/file-search";
 import { FileOption, WorkspaceFilesFinderDataAdapter } from "../../../core/adapters/data/ws-files-finder.data-adapter";
+import { formatFileOptionHtml } from "../../../utils/html";
 
 describe("WorkspaceFilesFinderDataAdapter", () => {
   let adapter: WorkspaceFilesFinderDataAdapter;
@@ -14,6 +15,7 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
       const data: FileFinderData = {
         abs: ["/root/file1.ts", "/root/file2.ts"],
         relative: ["file1.ts", "file2.ts"],
+        svgIconUrl: ["file-icon1", "file-icon2"],
       };
 
       const result = adapter.parseOptions(data);
@@ -22,10 +24,12 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
         {
           absolute: "/root/file1.ts",
           relative: "file1.ts",
+          svgIconUrl: "file-icon1",
         },
         {
           absolute: "/root/file2.ts",
           relative: "file2.ts",
+          svgIconUrl: "file-icon2",
         },
       ]);
     });
@@ -34,6 +38,7 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
       const data: FileFinderData = {
         abs: [],
         relative: [],
+        svgIconUrl: [],
       };
 
       const result = adapter.parseOptions(data);
@@ -48,11 +53,12 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
       const option: FileOption = {
         absolute: "/root/file.ts",
         relative: "file.ts",
+        svgIconUrl: "file-icon",
       };
 
       const result = adapter.getDisplayText(option);
-
-      expect(result).toBe("file.ts");
+      const output = formatFileOptionHtml(option.svgIconUrl, option.relative);
+      expect(result).toBe(output);
     });
   });
 
@@ -61,11 +67,11 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
       const option: FileOption = {
         absolute: "/root/file.ts",
         relative: "file.ts",
+        svgIconUrl: "file-icon",
       };
 
       const result = adapter.getSelectionValue(option);
-
-      expect(result).toBe("/root/file.ts");
+      expect(result).toBe(option.absolute);
     });
   });
 
@@ -74,6 +80,7 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
       const option: FileOption = {
         absolute: "/root/MyFile.ts",
         relative: "MyFile.ts",
+        svgIconUrl: "file-icon",
       };
 
       expect(adapter.filterOption(option, "myfile")).toBe(true);
@@ -85,6 +92,7 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
       const option: FileOption = {
         absolute: "/root/file.ts",
         relative: "file.ts",
+        svgIconUrl: "file-icon",
       };
 
       expect(adapter.filterOption(option, "json")).toBe(false);

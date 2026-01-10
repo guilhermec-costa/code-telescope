@@ -1,5 +1,8 @@
 {
 	"recommendations": [
 		"ms-vscode.extension-test-runner"
-	]
+	],
+  "unwantedRecommendations": [
+    "firsttris.vscode-jest-runner"
+  ]
 }

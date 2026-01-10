@@ -1,3 +1,5 @@
+import path from "node:path";
+
 export default (async function () {
   const { defineConfig } = await import("vitest/config");
 
@@ -37,6 +39,8 @@ export default (async function () {
             alias: {
               "@ui": "/ui",
               "@shared": "/shared",
+              "virtual:data-adapters": path.resolve(__dirname, "./ui/tests/mocks/virtual-modules.ts"),
+              "virtual:preview-renderers": path.resolve(__dirname, "./ui/tests/mocks/virtual-modules.ts"),
             },
           },
         },

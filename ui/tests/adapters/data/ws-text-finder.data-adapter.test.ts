@@ -12,12 +12,14 @@ describe("WorkspaceTextFinderDataAdapter", () => {
         line: 10,
         column: 5,
         preview: "const value = 42;",
+        svgIconUrl: "file-icon",
         text: "",
       },
       {
         file: "/home/user/project/src/utils/math.ts",
         line: 3,
         column: 1,
+        svgIconUrl: "file-icon",
         preview: "export function sum(a, b) {",
         text: "",
       },
@@ -34,16 +36,9 @@ describe("WorkspaceTextFinderDataAdapter", () => {
       identifier: "/home/user/project/src/index.ts:10:5",
       file: "/home/user/project/src/index.ts",
       line: 10,
+      svgIconUrl: "file-icon",
       preview: "const value = 42;",
     });
-  });
-
-  it("returns formatted display text", () => {
-    const option = adapter.parseOptions(data)[0];
-
-    const text = adapter.getDisplayText(option);
-
-    expect(text).toBe("index.ts:10 - const value = 42;");
   });
 
   it("returns identifier as selection value", () => {

@@ -33,19 +33,23 @@ describe("BranchFinderDataAdapter", () => {
   it("formats display text for current local branch", () => {
     const text = adapter.getDisplayText(branches[0]);
 
-    expect(text).toBe("* main");
+    expect(text).toBe(
+      `<i class="codicon codicon-git-branch file-icon sk-git-branch"></i><span class="file-path">* main</span>`,
+    );
   });
 
   it("formats display text for non-current local branch", () => {
     const text = adapter.getDisplayText(branches[1]);
-
-    expect(text).toBe("  develop");
+    expect(text).toBe(
+      `<i class="codicon codicon-git-branch file-icon sk-git-branch"></i><span class="file-path">  develop</span>`,
+    );
   });
 
   it("formats display text for remote branch", () => {
     const text = adapter.getDisplayText(branches[2]);
-
-    expect(text).toBe("  feature/login (origin)");
+    expect(text).toBe(
+      `<i class="codicon codicon-git-branch file-icon sk-git-branch"></i><span class="file-path">  feature/login (origin)</span>`,
+    );
   });
 
   it("returns branch name as selection value", () => {

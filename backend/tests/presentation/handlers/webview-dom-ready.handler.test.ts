@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import { EventManager } from "../../../core/common/event-manager";
+import { EventManager } from "../../../core/common/events/event-manager";
 import { WebviewDOMReadyHandler } from "../../../core/presentation/handlers/webview-dom-ready.handler";
 
-vi.mock("@backend/core/common/event-manager", () => ({
+vi.mock("@backend/core/common/events/event-manager", () => ({
   EventManager: {
     emitInitialEvents: vi.fn().mockResolvedValue(undefined),
   },

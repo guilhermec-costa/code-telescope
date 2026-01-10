@@ -10,6 +10,8 @@ vi.mock("@backend/utils/commands", () => ({
 
 vi.mock("@backend/utils/files", () => ({
   getLanguageFromPath: vi.fn(() => "ts"),
+  getSvgIconUrl: vi.fn(() => "file-icon"),
+  resolvePathExt: vi.fn(() => "ts"),
 }));
 
 vi.mock("@backend/core/common/cache/file-content.cache", () => ({

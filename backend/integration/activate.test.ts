@@ -14,12 +14,7 @@ suite("Integration", () => {
 
   test("All fuzzy commands should be registered in VS Code", async () => {
     const allCommands = await vscode.commands.getCommands(true);
-    const expectedCommands = [
-      getCmdId("fuzzy", "file"),
-      getCmdId("fuzzy", "branch"),
-      getCmdId("fuzzy", "wsText"),
-      getCmdId("fuzzy", "commits"),
-    ];
+    const expectedCommands = [getCmdId("fuzzy", "file"), getCmdId("fuzzy", "branch"), getCmdId("fuzzy", "wsText")];
     for (const cmdId of expectedCommands) {
       const isRegistered = allCommands.includes(cmdId);
       assert.ok(isRegistered, `Command ${cmdId} is not registered!`);
