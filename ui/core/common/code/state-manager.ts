@@ -13,6 +13,7 @@ export type WebviewState = {
  * Exposes semantic state properties via static getters/setters.
  */
 export class StateManager {
+  public static pathsToExclude: string[] = [];
   private static readonly DEFAULT_STATE: WebviewState = {
     prompt: "",
     selectedIndex: 0,

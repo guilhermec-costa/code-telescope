@@ -106,6 +106,13 @@ export class WebviewController {
         await this.previewManager.updatePreview(data, previewAdapterType);
         break;
       }
+
+      case "postQueryHandler": {
+        const { data, action } = msg;
+        if (action === "filterLargeFiles") {
+          StateManager.pathsToExclude = data;
+        }
+      }
     }
   }
 
@@ -141,6 +148,7 @@ export class WebviewController {
     }
 
     this.focusSearchInput();
+    WebviewToExtensionMessenger.instance.onPostHandleListMessage();
   }
 
   /**

@@ -12,6 +12,11 @@ export interface PreviewData<C = any> {
   overrideTheme?: string;
 }
 
+export interface PostQueryHandlerResult {
+  data: any;
+  action: PostQueryHandlerAction;
+}
+
 type TextPreviewContent = {
   kind: "text";
   text: string;
@@ -66,6 +71,10 @@ export interface PreviewUpdateMessage {
 
 export interface ResetFuzzyPanel {
   type: "resetWebview";
+}
+
+export interface PostHandleListMessage {
+  type: "postHandleListMessage";
 }
 
 /**
@@ -141,6 +150,14 @@ export interface InitHighlighter {
   };
 }
 
+export type PostQueryHandlerAction = "filterLargeFiles";
+
+export interface PostQueryhandlerResultMessage {
+  type: "postQueryHandler";
+  data: any;
+  action: PostQueryHandlerAction;
+}
+
 /**
  * Represents all messages that **the backend sends to the webview**.
  *
@@ -152,6 +169,7 @@ export type ToWebviewKindMessage =
   | OptionListMessage
   | ThemeUpdateMessage
   | InitHighlighter
+  | PostQueryhandlerResultMessage
   | ResetFuzzyPanel;
 
 /**
@@ -167,4 +185,5 @@ export type FromWebviewKindMessage =
   | DynamicSearchMessage
   | OptionSelectedMessage
   | HighlighterInitDone
+  | PostHandleListMessage
   | UpdateLayoutPropMessage;

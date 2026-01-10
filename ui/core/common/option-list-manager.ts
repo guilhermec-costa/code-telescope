@@ -22,6 +22,7 @@ export class OptionListManager {
 
   private listElement: HTMLUListElement;
   private itemsCountElement: HTMLElement | null;
+  private oversizedOptionsExcluded = false;
 
   /** Prefix used to generate DOM ids for option items */
   private readonly OPTION_ITEM_ID_PREFIX = "option-item-id-";
@@ -71,7 +72,7 @@ export class OptionListManager {
    * Initializes the option list with a new dataset.
    * Resets state, renders items and requests preview for the first option.
    */
-  public setOptions(options: any[]): void {
+  public setOptions(options: any[], updateItemsCount: boolean = true): void {
     if (!this.dataAdapter) {
       console.error("[OptionListManager] No adapter set");
       return;
@@ -81,7 +82,9 @@ export class OptionListManager {
     this.filteredOptions = options;
     StateManager.selectedIndex = this.restoreSelectedIndex();
     StateManager.prompt = "";
-    this.updateItemsCount();
+    if (updateItemsCount) {
+      this.updateItemsCount();
+    }
     this.render();
 
     const first = this.getRelativeFirstItem();
@@ -94,6 +97,10 @@ export class OptionListManager {
    */
   public filter(query: string): void {
     if (!this.dataAdapter) return;
+
+    if (!this.oversizedOptionsExcluded && StateManager.prompt === "") {
+      this.excludeOptionsByPaths(StateManager.pathsToExclude ?? []);
+    }
 
     StateManager.prompt = query.toLowerCase();
 
@@ -345,5 +352,17 @@ export class OptionListManager {
     if (this.itemsCountElement) {
       this.itemsCountElement.textContent = `${this.filteredOptions.length} / ${this.allOptions.length}`;
     }
+  }
+
+  private excludeOptionsByPaths(pathList: string[]) {
+    if (this.oversizedOptionsExcluded) return;
+
+    const set = new Set(pathList);
+
+    this.allOptions = this.allOptions.filter((option) => !set.has(option.absolute));
+
+    this.filteredOptions = this.filteredOptions.filter((option) => !set.has(option.absolute));
+
+    this.oversizedOptionsExcluded = true;
   }
 }

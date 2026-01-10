@@ -47,6 +47,11 @@ export class WebviewToExtensionMessenger {
     });
   }
 
+  onPostHandleListMessage() {
+    this.postMessage({
+      type: "postHandleListMessage",
+    });
+  }
   /**
    * Requests the extension to close the webview panel.
    */

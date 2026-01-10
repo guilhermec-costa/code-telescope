@@ -1,5 +1,5 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
-import { PreviewData } from "../../../shared/extension-webview-protocol";
+import { PostQueryHandlerResult, PreviewData } from "../../../shared/extension-webview-protocol";
 
 /**
  * Represents a provider responsible for supplying data and behavior to the fuzzy finder
@@ -22,6 +22,7 @@ export interface IFuzzyFinderProvider {
    */
   querySelectableOptions(): Promise<any>;
 
+  postQueryHandler?(): Promise<PostQueryHandlerResult>;
   /**
    * Triggered when the user selects an item (Enter).
    */

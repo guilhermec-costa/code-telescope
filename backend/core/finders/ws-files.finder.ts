@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { FileFinderData } from "../../../shared/exchange/file-search";
-import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
+import { HighlightedCodePreviewData, PostQueryHandlerResult } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { getSvgIconUrl, resolvePathExt } from "../../utils/files";
@@ -85,6 +85,32 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
       },
       language: ext,
       overridePreviewer: this.previewAdapterType,
+    };
+  }
+
+  async postQueryHandler(): Promise<PostQueryHandlerResult> {
+    const wsFiles = await this.querySelectableOptions();
+
+    const filesToHide = (
+      await Promise.all(
+        wsFiles.abs.map(async (fsPath) => {
+          try {
+            const uri = vscode.Uri.file(fsPath);
+            const stat = await vscode.workspace.fs.stat(uri);
+
+            if (stat.size > 1024 * 250) {
+              return fsPath;
+            }
+          } catch {}
+
+          return null;
+        }),
+      )
+    ).filter((fsPath): fsPath is string => fsPath !== null);
+
+    return {
+      data: filesToHide,
+      action: "filterLargeFiles",
     };
   }
 }
