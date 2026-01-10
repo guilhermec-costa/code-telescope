@@ -1,3 +1,5 @@
+import { type PreviewData } from "./extension-webview-protocol";
+
 /**
  * Defines a custom fuzzy finder provider.
  *
@@ -59,7 +61,7 @@ export interface CustomFinderDefinition {
      *
      * The returned object will be passed to the preview renderer.
      */
-    getPreviewData: (identifier: any) => Promise<Record<string, any>>;
+    getPreviewData: (identifier: any) => Promise<PreviewData>;
   };
 
   /**

@@ -258,8 +258,8 @@ module.exports = {
       return {
         content: {
           path: "Preview Title",
-          text: `Content for: ${identifier}`,
-          isCached: false
+          content: `Content for: ${identifier}`,
+          kind: "text"
         },
         language: "text"
       };
