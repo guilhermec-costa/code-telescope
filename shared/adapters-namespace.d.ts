@@ -7,19 +7,13 @@ export type BuiltinFuzzyProviderType =
   | "workspace.text"
   | "workspace.recentFiles"
   | "workspace.keybindings"
-  | "git.branches"
-  | "git.fileHistory"
-  | "workspace.symbols"
-  | "code.documentSymbols"
-  | "code.gotoDefinition"
-  | "tasks.all"
-  | "commands.all"
-  | "npm.scripts"
-  | "extensions.all"
-  | "snippets.all"
+  | "workspace.tasks"
   | "workspace.colorschemes"
   | "workspace.callHierarchy"
-  | "workspace.diagnostics";
+  | "workspace.diagnostics"
+  | "git.branches"
+  | "workspace.symbols"
+  | "code.documentSymbols";
 
 export type CustomFuzzyProviderType = `custom.${string}`;
 

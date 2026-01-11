@@ -59,6 +59,10 @@
             {
                 "command": "code-telescope.fuzzy.callHierarchy",
                 "title": "Code Telescope: Call hierarchy"
+            },
+            {
+                "command": "code-telescope.fuzzy.tasks",
+                "title": "Code Telescope: Tasks"
             }
         ],
         "configuration": {

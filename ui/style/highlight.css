@@ -236,6 +236,60 @@
   color: var(--vscode-debugIcon-logMessageForeground);
 }
 
+/* npm */
+.sk-source-npm {
+  color: #cb3837;
+  /* npm red */
+}
+
+/* yarn */
+.sk-source-yarn {
+  color: #2c8ebb;
+  /* yarn blue */
+}
+
+/* gulp */
+.sk-source-gulp {
+  color: #cf4647;
+  /* gulp red */
+}
+
+/* grunt */
+.sk-source-grunt {
+  color: #fba919;
+  /* grunt yellow */
+}
+
+/* make */
+.sk-source-make {
+  color: #6e6e6e;
+  /* tool / build neutral */
+}
+
+/* shell */
+.sk-source-shell {
+  color: #4caf50;
+  /* terminal green */
+}
+
+/* process */
+.sk-source-process {
+  color: #ff9800;
+  /* execution orange */
+}
+
+/* workspace */
+.sk-source-workspace {
+  color: #9c27b0;
+  /* config / environment purple */
+}
+
+/* default / unknown */
+.sk-source-default {
+  color: #b0b0b0;
+  /* neutral gray */
+}
+
 .preview-image-container {
   display: flex;
   justify-content: center;
