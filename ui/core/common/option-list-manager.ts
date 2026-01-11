@@ -129,7 +129,7 @@ export class OptionListManager {
   /**
    * Returns the selection value for the currently selected option.
    */
-  public getSelectedValue(): string | undefined {
+  public getSelectedValue(): any | undefined {
     if (!this.dataAdapter || this.filteredOptions.length === 0) return undefined;
 
     const option = this.filteredOptions.at(StateManager.selectedIndex);

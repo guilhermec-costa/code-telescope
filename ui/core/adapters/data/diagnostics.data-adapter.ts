@@ -1,32 +1,7 @@
-import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DiagnosticOption, DiagnosticsFinderData } from "../../../../shared/exchange/diagnostics";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
-
-interface DiagnosticData {
-  uri: vscode.Uri;
-  diagnostic: vscode.Diagnostic;
-  relativePath: string;
-  line: number;
-  column: number;
-  severity: vscode.DiagnosticSeverity;
-  message: string;
-  source?: string;
-  code?: string | number;
-}
-
-interface DiagnosticsFinderData {
-  diagnostics: DiagnosticData[];
-  displayTexts: string[];
-  iconsClasses: string[];
-}
-
-export interface DiagnosticOption {
-  index: number;
-  diagnostic: DiagnosticData;
-  displayText: string;
-  codicon: string;
-}
 
 @FuzzyFinderDataAdapter({
   fuzzy: "workspace.diagnostics",

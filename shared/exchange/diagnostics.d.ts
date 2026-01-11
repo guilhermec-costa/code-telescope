@@ -17,3 +17,10 @@ export interface DiagnosticsFinderData {
   displayTexts: string[];
   iconsClasses: string[];
 }
+
+export interface DiagnosticOption {
+  index: number;
+  diagnostic: DiagnosticData;
+  displayText: string;
+  codicon: string;
+}
