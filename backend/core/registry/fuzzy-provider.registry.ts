@@ -2,6 +2,7 @@ import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { Globals } from "../../globals";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { getRegisteredFuzzyFinderAdapters } from "../decorators/fuzzy-finder-provider.decorator";
+import { withPerformanceLogging } from "../perf";
 
 export class FuzzyFinderAdapterRegistry {
   private adapters = new Map<string, IFuzzyFinderProvider>();
@@ -21,7 +22,8 @@ export class FuzzyFinderAdapterRegistry {
   }
 
   register(adapter: IFuzzyFinderProvider) {
-    this.adapters.set(adapter.fuzzyAdapterType, adapter);
+    const wrappedProvider = withPerformanceLogging(adapter);
+    this.adapters.set(adapter.fuzzyAdapterType, wrappedProvider);
   }
 
   getAdapter(finderType: FuzzyProviderType): IFuzzyFinderProvider | undefined {
