@@ -40,12 +40,14 @@ export interface IFuzzyFinderDataAdapter<TData = any, TOption = string> {
    *
    * @param option The option to format.
    */
-  getSelectionValue(option: TOption): string;
+  getSelectionValue(option: TOption): any;
 
   /**
    * Custom filter logic for a single option
    */
   filterOption(option: TOption, query: string): boolean;
+
+  sortFn?(x1: TOption, x2: TOption): number;
 
   debounceSearchTime?: number;
 }

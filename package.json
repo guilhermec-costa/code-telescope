@@ -77,8 +77,8 @@
                     "description": "Glob patterns to include"
                 },
                 "codeTelescope.wsFileFinder.maxFileSize": {
-                    "type": "string",
-                    "default": "150K",
+                    "type": "number",
+                    "default": 150,
                     "description": "Maximum file size ripgrep will search (e.g. 200k, 1M)"
                 },
                 "codeTelescope.wsFileFinder.excludePatterns": {
@@ -146,7 +146,7 @@
                 },
                 "codeTelescope.wsTextFinder.maxFileSize": {
                     "type": "string",
-                    "default": "350K",
+                    "default": "200K",
                     "description": "Maximum file size ripgrep will search (e.g. 200k, 1M)"
                 },
                 "codeTelescope.wsTextFinder.ignoreCase": {

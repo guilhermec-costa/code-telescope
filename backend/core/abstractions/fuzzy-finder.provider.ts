@@ -26,7 +26,7 @@ export interface IFuzzyFinderProvider {
   /**
    * Triggered when the user selects an item (Enter).
    */
-  onSelect(item: string): void | Promise<void>;
+  onSelect(item: any): void | Promise<void>;
 
   /**
    * Provides configuration required to load the HTML
@@ -41,7 +41,7 @@ export interface IFuzzyFinderProvider {
    * Returns the data necessary to render the preview
    * for a given item.
    */
-  getPreviewData(identifier: string): Promise<PreviewData>;
+  getPreviewData(identifier: any): Promise<PreviewData>;
 
   /**
    * Indicates whether this provider supports dynamic search.

@@ -3,7 +3,7 @@ export interface WsFileFinderConfig {
   includePatterns: string[];
   excludePatterns: string[];
   maxResults: number;
-  maxFileSize: string;
+  maxFileSize: number;
   asRelativePath: boolean;
   textDisplay: "relative" | "absolte" | "filename-only";
 }

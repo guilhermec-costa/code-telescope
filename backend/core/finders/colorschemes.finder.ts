@@ -37,38 +37,27 @@ export class ColorSchemesFinder implements IFuzzyFinderProvider {
     };
   }
 
-  async onSelect(selectedLabel: string) {
-    await vscode.workspace
-      .getConfiguration()
-      .update(Globals.cfgSections.colorTheme, selectedLabel, vscode.ConfigurationTarget.Global);
-
-    await vscode.window.showInformationMessage(`Theme changed to: ${selectedLabel}`);
+  async onSelect(themeData: ColorThemeData) {
+    try {
+      await vscode.workspace
+        .getConfiguration()
+        .update(Globals.cfgSections.colorTheme, themeData.label, vscode.ConfigurationTarget.Global);
+      await vscode.window.showInformationMessage(`Theme changed to: ${themeData.label}`);
+    } catch (error) {
+      console.error((error as any).message);
+      await vscode.window.showErrorMessage("Failed to update theme: ");
+    }
   }
 
-  async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
-    const index = parseInt(identifier, 10);
-    const themes = await this.getColorThemes();
-    const selected = themes[index];
-
-    if (!selected) {
-      return {
-        content: {
-          path: "",
-          kind: "text",
-          text: "No theme selected",
-        },
-        language: "plaintext",
-      };
-    }
-
+  async getPreviewData(themeData: ColorThemeData): Promise<HighlightedCodePreviewData> {
     return {
       content: {
         kind: "text",
-        path: `Theme: ${selected.label}`,
-        text: this.generatePreviewContent(selected),
+        path: `Theme: ${themeData.label}`,
+        text: this.generatePreviewContent(themeData),
       },
       language: "typescript",
-      overrideTheme: getShikiTheme(selected.id),
+      overrideTheme: getShikiTheme(themeData.id),
     };
   }
 

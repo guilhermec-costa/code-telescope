@@ -37,8 +37,8 @@ export class ColorSchemesFinderDataAdapter
     return `<i class="codicon codicon-symbol-color file-icon sk-symbol-color"></i><span class="file-path">${option.displayText}</span>`;
   }
 
-  getSelectionValue(option: ColorSchemeOption): string {
-    return option.index.toString();
+  getSelectionValue(option: ColorSchemeOption) {
+    return option.theme;
   }
 
   filterOption(option: ColorSchemeOption, query: string): boolean {
@@ -48,5 +48,9 @@ export class ColorSchemesFinderDataAdapter
     return (
       theme.label.toLowerCase().includes(lowerQuery) || (theme.extensionId?.toLowerCase().includes(lowerQuery) ?? false)
     );
+  }
+
+  sortFn(x1: ColorSchemeOption, x2: ColorSchemeOption): number {
+    return x1.displayText.localeCompare(x2.displayText);
   }
 }

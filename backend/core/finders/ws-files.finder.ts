@@ -90,6 +90,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
 
   async postQueryHandler(): Promise<PostQueryHandlerResult> {
     const wsFiles = await this.querySelectableOptions();
+    const { maxFileSize } = ExtensionConfigManager.wsFileFinderCfg;
 
     const filesToHide = (
       await Promise.all(
@@ -98,7 +99,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
             const uri = vscode.Uri.file(fsPath);
             const stat = await vscode.workspace.fs.stat(uri);
 
-            if (stat.size > 1024 * 250) {
+            if (stat.size > 1024 * maxFileSize) {
               return fsPath;
             }
           } catch {}

@@ -14,7 +14,7 @@ function findJsonFiles(dir, fileList = []) {
           continue;
         }
         findJsonFiles(filePath, fileList);
-      } else if (file.endsWith('.json')) {
+      } else if (file.endsWith('.sql')) {
         fileList.push(filePath);
       }
     }

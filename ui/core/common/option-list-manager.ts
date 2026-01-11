@@ -225,14 +225,19 @@ export class OptionListManager {
 
   private applySortOnFiltered() {
     const isIvy = this.isIvyLayout();
+    const customSort = this.dataAdapter.sortFn;
 
     this.filteredOptions.sort((opt1, opt2) => {
-      const a = this.dataAdapter.getSelectionValue(opt1).toLowerCase();
-      const b = this.dataAdapter.getSelectionValue(opt2).toLowerCase();
+      let result: number;
 
-      const result = a.localeCompare(b);
+      if (customSort) {
+        result = customSort(opt1, opt2);
+      } else {
+        const a = this.dataAdapter.getSelectionValue(opt1).toLowerCase();
+        const b = this.dataAdapter.getSelectionValue(opt2).toLowerCase();
+        result = a.localeCompare(b);
+      }
 
-      // No ivy, invertemos a ordem para que index 0 seja o último item alfabético
       return isIvy ? -result : result;
     });
   }
