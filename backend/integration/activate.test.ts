@@ -44,7 +44,6 @@ suite("Integration Tests", () => {
         "postHandleListMessage",
         "optionSelected",
         "highlighterInitDone",
-        "highlightCache",
         "dynamicSearch",
         "closePanel",
       ];

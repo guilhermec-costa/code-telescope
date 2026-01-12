@@ -75,8 +75,7 @@ export class IntegrationTestHelper {
   }
 
   static getRegisteredProviders(): string[] {
-    const registry = FuzzyFinderAdapterRegistry.instance;
-    return Array.from((registry as any).adapters?.keys() || []);
+    return FuzzyFinderAdapterRegistry.instance.getRegisteredTypes();
   }
 
   static getRegisteredHandlers(): string[] {
