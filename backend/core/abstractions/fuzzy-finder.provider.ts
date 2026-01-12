@@ -18,7 +18,7 @@ export interface IFuzzyFinderProvider {
   previewAdapterType: PreviewRendererType;
   /**
    * Returns the list of items to be displayed in the fuzzy finder.
-   * Example: files, branches, symbols, commands...
+   * Example: files, branches, symbols, commands
    */
   querySelectableOptions(): Promise<any>;
 
