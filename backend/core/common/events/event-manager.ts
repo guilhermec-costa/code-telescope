@@ -53,7 +53,7 @@ export class EventManager {
 
     if (FuzzyFinderPanelController.instance) {
       await FuzzyFinderPanelController.instance.emitInitShikiEvent({
-        languages: [...langs, "diff"],
+        languages: [...langs, "diff", "md"],
         theme: getShikiTheme(Globals.USER_THEME),
       });
     }

@@ -50,26 +50,16 @@ export class PreviewManager {
       return;
     }
 
-    console.log("[PreviewManager] File read started");
-    console.log("[PreviewManager] Adapter found, rendering preview");
     this.setAdapter(adapter);
 
-    const renderCallStart = performance.now();
     this.clearPreview();
     await this.adapter.render(this.previewElement, data, this.userTheme);
-    console.log(`[PreviewManager] Adapter returned in ${(performance.now() - renderCallStart).toFixed(2)}ms`);
-
-    console.log("[PreviewManager] Waiting for DOM paint");
-    requestAnimationFrame(() => {
-      console.log("[PreviewManager] DOM painted");
-    });
 
     // Scroll after DOM is painted
     requestAnimationFrame(() => {
       this.scrollToHighlighted();
     });
     this.lastPreviewedData = data;
-    console.log("[PreviewManager] Preview rendered");
   }
 
   clearPreview() {

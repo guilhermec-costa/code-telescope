@@ -10,11 +10,11 @@ import { HighlighterManager } from "../../render/highlighter-manager";
 const CHUNK_SIZE = 150;
 const SCROLL_THRESHOLD = 300;
 const INITIAL_CHUNKS_TO_LOAD = 2;
-const MAX_FILE_SIZE_FOR_FULL_PARSE = 5 * 1024 * 1024; // 5MB
+const MAX_CACHE_SIZE = 5000;
 
 class LazyLineParser {
   private lineCache = new Map<number, string>();
-  private lineOffsets: number[] | null = null;
+  private lineOffsets: number[] = [];
   private totalLines = 0;
 
   constructor(private text: string) {
@@ -22,19 +22,15 @@ class LazyLineParser {
   }
 
   private indexLines(): void {
-    // Só indexa as posições das quebras de linha, não cria strings
     this.lineOffsets = [0];
-    let lastNewline = 0;
 
     for (let i = 0; i < this.text.length; i++) {
       if (this.text[i] === "\n") {
         this.lineOffsets.push(i + 1);
-        lastNewline = i;
       }
     }
 
-    // Se o arquivo não termina com \n, adiciona o final
-    if (lastNewline < this.text.length - 1) {
+    if (this.text[this.text.length - 1] !== "\n") {
       this.lineOffsets.push(this.text.length);
     }
 
@@ -46,25 +42,22 @@ class LazyLineParser {
   }
 
   getLines(start: number, end: number): string[] {
-    if (!this.lineOffsets) return [];
-
     const lines: string[] = [];
     const actualEnd = Math.min(end, this.totalLines);
 
     for (let i = start; i < actualEnd; i++) {
-      // Usa cache se já extraiu essa linha
       let line = this.lineCache.get(i);
 
       if (line === undefined) {
         const startPos = this.lineOffsets[i];
         const endPos = this.lineOffsets[i + 1];
-        line = this.text.substring(startPos, endPos - 1); // -1 para remover \n
+        line = this.text.substring(startPos, endPos - (this.text[endPos - 1] === "\n" ? 1 : 0));
 
-        // Cacheia apenas linhas já acessadas
-        if (this.lineCache.size < 10000) {
-          // Limita cache
-          this.lineCache.set(i, line);
+        if (this.lineCache.size >= MAX_CACHE_SIZE) {
+          const firstKey = this.lineCache.keys().next().value;
+          this.lineCache.delete(firstKey);
         }
+        this.lineCache.set(i, line);
       }
 
       lines.push(line);
@@ -83,7 +76,6 @@ class LazyLineParser {
 })
 export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRendererAdapter {
   type: PreviewRendererType;
-
   private loadedChunks = new Set<number>();
   private minLoadedChunk = Infinity;
   private maxLoadedChunk = -Infinity;
@@ -91,6 +83,7 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
   private currentPreviewElement?: HTMLElement;
   private isRendering = false;
   private lineParser?: LazyLineParser;
+  private abortController?: AbortController;
 
   constructor(private highlighter: SyntaxHighlighter) {}
 
@@ -110,7 +103,6 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
       return;
     }
 
-    // Cleanup anterior
     this.cleanup();
 
     previewElement.innerHTML = "";
@@ -119,21 +111,17 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
     this.minLoadedChunk = Infinity;
     this.maxLoadedChunk = -Infinity;
     this.currentPreviewElement = previewElement;
+    this.abortController = new AbortController();
 
-    // Usa parser lazy para arquivos grandes
-    const useLayParsing = text.length > MAX_FILE_SIZE_FOR_FULL_PARSE;
-
-    let lines: string[];
+    const THRESHOLD = 5000;
     let totalLines: number;
 
-    if (useLayParsing) {
+    if (text.length > THRESHOLD) {
       this.lineParser = new LazyLineParser(text);
       totalLines = this.lineParser.getTotalLines();
-      lines = []; // Não precisa do array completo
     } else {
-      lines = text.split("\n");
-      totalLines = lines.length;
       this.lineParser = undefined;
+      totalLines = text.split("\n").length;
     }
 
     const highlightLine = metadata?.highlightLine ?? 0;
@@ -159,7 +147,8 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
       return;
     }
 
-    const renderChunk = async (chunkIndex: number, position: "append" | "prepend" = "append") => {
+    const renderChunk = async (chunkIndex: number, position: "append" | "prepend" = "append"): Promise<void> => {
+      if (this.abortController?.signal.aborted) return;
       if (this.loadedChunks.has(chunkIndex)) return;
       if (chunkIndex < 0 || chunkIndex * CHUNK_SIZE >= totalLines) return;
 
@@ -170,10 +159,13 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
       const start = chunkIndex * CHUNK_SIZE;
       const end = Math.min(start + CHUNK_SIZE, totalLines);
 
-      // Extrai apenas as linhas necessárias
-      const chunkLines = this.lineParser ? this.lineParser.getLines(start, end) : lines.slice(start, end);
-
-      const chunkText = chunkLines.join("\n");
+      let chunkText: string;
+      if (this.lineParser) {
+        chunkText = this.lineParser.getLines(start, end).join("\n");
+      } else {
+        const lines = text.split("\n");
+        chunkText = lines.slice(start, end).join("\n");
+      }
 
       const html = this.highlighter.codeToHtml(chunkText, {
         lang: language,
@@ -183,20 +175,21 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
       const chunkContainer = document.createElement("div");
       chunkContainer.innerHTML = html;
 
-      if ((__PREVIEW_CFG__ as PreviewManagerConfig).showLineNumbers) {
-        const linesEls = chunkContainer.querySelectorAll(".line");
-        linesEls.forEach((lineEl, i) => {
-          const absoluteLineNumber = start + i + 1;
-          (lineEl as HTMLElement).dataset.line = String(absoluteLineNumber);
-        });
-      }
+      const showLineNumbers = (__PREVIEW_CFG__ as PreviewManagerConfig).showLineNumbers;
+      const highlightLineNum = metadata?.highlightLine;
 
-      if (metadata?.highlightLine !== undefined) {
-        const localIndex = metadata.highlightLine - start;
-        if (localIndex >= 0 && localIndex < end - start) {
-          const line = chunkContainer.querySelectorAll(".line")[localIndex];
-          line?.classList.add("highlighted");
-        }
+      if (showLineNumbers || highlightLineNum !== undefined) {
+        const linesEls = chunkContainer.querySelectorAll(".line");
+        const localHighlightIndex = highlightLineNum !== undefined ? highlightLineNum - start : -1;
+
+        linesEls.forEach((lineEl, i) => {
+          if (showLineNumbers) {
+            (lineEl as HTMLElement).dataset.line = String(start + i + 1);
+          }
+          if (i === localHighlightIndex) {
+            lineEl.classList.add("highlighted");
+          }
+        });
       }
 
       if (position === "prepend") {
@@ -209,48 +202,38 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
       }
     };
 
-    // Renderiza primeiro chunk imediatamente para feedback visual rápido
     await renderChunk(initialChunk);
 
-    // Carrega chunks adjacentes em background
-    const adjacentChunks: Promise<void>[] = [];
+    const adjacentPromises: Promise<void>[] = [];
     for (let i = 1; i <= INITIAL_CHUNKS_TO_LOAD; i++) {
-      adjacentChunks.push(renderChunk(initialChunk + i, "append"));
-      adjacentChunks.push(renderChunk(initialChunk - i, "prepend"));
+      adjacentPromises.push(renderChunk(initialChunk + i, "append"));
+      adjacentPromises.push(renderChunk(initialChunk - i, "prepend"));
     }
 
-    // Não bloqueia na renderização dos chunks adjacentes
-    Promise.all(adjacentChunks).then(() => {
-      // Scroll para a linha destacada após carregar contexto
+    Promise.all(adjacentPromises).then(() => {
+      if (this.abortController?.signal.aborted) return;
+
       if (metadata?.highlightLine !== undefined) {
         const highlightedLine = previewElement.querySelector(".line.highlighted");
-        if (highlightedLine) {
-          highlightedLine.scrollIntoView({ block: "center", behavior: "instant" });
-        }
+        highlightedLine?.scrollIntoView({ block: "center", behavior: "instant" });
       }
     });
 
     let ticking = false;
-
     this.scrollHandler = () => {
-      if (ticking || this.isRendering) return;
+      if (ticking || this.isRendering || this.abortController?.signal.aborted) return;
 
       ticking = true;
       requestAnimationFrame(async () => {
         const { scrollTop, scrollHeight, clientHeight } = previewElement;
-
         this.isRendering = true;
 
         try {
-          const maxChunk = this.maxLoadedChunk;
-          const minChunk = this.minLoadedChunk;
-
           if (scrollTop + clientHeight >= scrollHeight - SCROLL_THRESHOLD) {
-            await renderChunk(maxChunk + 1, "append");
+            await renderChunk(this.maxLoadedChunk + 1, "append");
           }
-
           if (scrollTop <= SCROLL_THRESHOLD) {
-            await renderChunk(minChunk - 1, "prepend");
+            await renderChunk(this.minLoadedChunk - 1, "prepend");
           }
         } finally {
           this.isRendering = false;
@@ -267,10 +250,14 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
   }
 
   cleanup(): void {
+    this.abortController?.abort();
+    this.abortController = undefined;
+
     if (this.scrollHandler && this.currentPreviewElement) {
       this.currentPreviewElement.removeEventListener("scroll", this.scrollHandler);
       this.scrollHandler = undefined;
     }
+
     this.currentPreviewElement = undefined;
     this.isRendering = false;
     this.lineParser?.clearCache();

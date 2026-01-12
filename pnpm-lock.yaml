@@ -14,9 +14,6 @@ importers:
       '@vscode/codicons':
         specifier: ^0.0.44
         version: 0.0.44
-      file-icons-js:
-        specifier: ^1.1.0
-        version: 1.1.0
       glob:
         specifier: ^13.0.0
         version: 13.0.0
@@ -893,9 +890,6 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
-
-  file-icons-js@1.1.0:
-    resolution: {integrity: sha512-EwR5RJoNIp5Wnzc+AF1oyBYZhOqPuPm0QHzfCaeh5KJpLB5lWIsxswiAwj3m8lIj7ddBzYBJDDnIr6IVrRCy8Q==}
 
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
@@ -2483,8 +2477,6 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.3):
     optionalDependencies:
       picomatch: 4.0.3
-
-  file-icons-js@1.1.0: {}
 
   fill-range@7.1.1:
     dependencies:
