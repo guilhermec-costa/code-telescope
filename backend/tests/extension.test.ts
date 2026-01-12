@@ -94,6 +94,7 @@ describe("Extension entrypoint", () => {
       "colorschemes",
       "diagnostics",
       "callHierarchy",
+      "tasks",
       "custom",
     ];
 

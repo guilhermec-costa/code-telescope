@@ -8,6 +8,7 @@ import {
 } from "../../../shared/exchange/extension-config";
 import { Result } from "../../../shared/result";
 import { Globals } from "../../globals";
+import { Logger } from "../log";
 
 enum ExtensionCfgSection {
   WS_FILE_FINDER = "wsFileFinder",
@@ -41,11 +42,14 @@ export class ExtensionConfigManager {
   static async updateLayoutProperty<T = any>(property: string, value: T): Promise<Result<boolean>> {
     try {
       await this.root.update(`${ExtensionCfgSection.LAYOUT}.${property}`, value, vscode.ConfigurationTarget.Global);
+
+      Logger.info(`Layout property updated: ${property}`);
       return {
         ok: true,
         value: true,
       };
-    } catch {
+    } catch (error) {
+      Logger.error(`Failed to update layout property: ${property}`, error as Error);
       return {
         ok: false,
         error: "Failed to updated property",

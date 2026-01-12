@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
 import { AsyncResult } from "../../../../shared/result";
 import { Globals } from "../../../globals";
+import { Logger } from "../../log";
 import { FuzzyFinderAdapterRegistry } from "../../registry/fuzzy-provider.registry";
 import { CustomProviderStorage } from "./custom-provider.storage";
 
@@ -47,7 +48,7 @@ export class CustomProviderLoader {
   }
 
   private async onCreate(uri: vscode.Uri) {
-    console.log("[CodeTelescope] Custom provider created:", uri.fsPath);
+    Logger.info(`[CodeTelescope] Custom provider created: ${uri.fsPath}`);
     await this.loadAndTrack(uri);
   }
 
@@ -102,7 +103,7 @@ export class CustomProviderLoader {
         },
       };
     } catch (err) {
-      console.error(`Failed to load custom finder: ${fileUri.fsPath}`, err);
+      Logger.error(`Failed to load custom finder: ${fileUri.fsPath} -> ${err}`);
       return { ok: false, error: "Failed to load custom finder" };
     }
   }

@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { IFuzzyFinderProvider } from "./abstractions/fuzzy-finder.provider";
+import { IWebviewMessageHandler } from "./abstractions/webview-message-handler";
 
 export class PerformanceLogger {
   private static outputChannel = vscode.window.createOutputChannel("Code Telescope Performance");
@@ -16,7 +17,7 @@ export class PerformanceLogger {
   }
 }
 
-export function withPerformanceLogging<T extends IFuzzyFinderProvider>(provider: T): T {
+export function withPerformanceLogging<T extends IFuzzyFinderProvider | IWebviewMessageHandler>(provider: T): T {
   return new Proxy(provider, {
     get(target, prop) {
       const original = (target as any)[prop];

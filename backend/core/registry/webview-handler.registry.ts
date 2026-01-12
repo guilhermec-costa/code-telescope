@@ -1,6 +1,8 @@
 import { FromWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { IWebviewMessageHandler } from "../abstractions/webview-message-handler";
 import { getRegisteredWebviewMessageHandlers } from "../decorators/webview-message-handler.decorator";
+import { Logger } from "../log";
+import { withPerformanceLogging } from "../perf";
 
 export class WebviewMessageHandlerRegistry {
   private adapters = new Map<string, IWebviewMessageHandler>();
@@ -20,7 +22,9 @@ export class WebviewMessageHandlerRegistry {
   }
 
   register(adapter: IWebviewMessageHandler) {
-    this.adapters.set(adapter.type, adapter);
+    const wrappedProvider = withPerformanceLogging(adapter);
+    this.adapters.set(adapter.type, wrappedProvider);
+    Logger.debug(`Registered fuzzy finder adapter: ${adapter.type} (${adapter.constructor?.name})`);
   }
 
   getAdapter(finderType: FromWebviewKindMessage["type"]): IWebviewMessageHandler | undefined {

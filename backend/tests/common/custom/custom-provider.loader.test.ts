@@ -50,6 +50,16 @@ vi.mock("@backend/globals", () => ({
   },
 }));
 
+vi.mock("@backend/core/log", () => {
+  return {
+    Logger: vi.fn(
+      class {
+        constructor() {}
+      },
+    ),
+  };
+});
+
 describe("CustomProviderLoader", () => {
   const fakeUri = { fsPath: "/fake/provider.finder.cjs" } as vscode.Uri;
   const fakeContext = { subscriptions: [] } as any;
