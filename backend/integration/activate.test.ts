@@ -14,7 +14,16 @@ suite("Integration", () => {
 
   test("All fuzzy commands should be registered in VS Code", async () => {
     const allCommands = await vscode.commands.getCommands(true);
-    const expectedCommands = [getCmdId("fuzzy", "file"), getCmdId("fuzzy", "branch"), getCmdId("fuzzy", "wsText")];
+    const expectedCommands = [
+      getCmdId("fuzzy", "file"),
+      getCmdId("fuzzy", "branch"),
+      getCmdId("fuzzy", "wsText"),
+      getCmdId("fuzzy", "recentFiles"),
+      getCmdId("fuzzy", "colorschemes"),
+      getCmdId("fuzzy", "diagnostics"),
+      getCmdId("fuzzy", "tasks"),
+      getCmdId("fuzzy", "callHierarchy"),
+    ];
     for (const cmdId of expectedCommands) {
       const isRegistered = allCommands.includes(cmdId);
       assert.ok(isRegistered, `Command ${cmdId} is not registered!`);
@@ -26,7 +35,12 @@ suite("Integration", () => {
       { cmd: getCmdId("fuzzy", "file"), provider: "workspace.files" },
       { cmd: getCmdId("fuzzy", "branch"), provider: "git.branches" },
       { cmd: getCmdId("fuzzy", "wsText"), provider: "workspace.text" },
-      { cmd: getCmdId("fuzzy", "commits"), provider: "git.commits" },
+      { cmd: getCmdId("fuzzy", "wsSymbols"), provider: "workspace.symbols" },
+      { cmd: getCmdId("fuzzy", "recentFiles"), provider: "workspace.recentFiles" },
+      { cmd: getCmdId("fuzzy", "colorschemes"), provider: "workspace.colorschemes" },
+      { cmd: getCmdId("fuzzy", "diagnostics"), provider: "workspace.diagnostics" },
+      { cmd: getCmdId("fuzzy", "tasks"), provider: "workspace.tasks" },
+      { cmd: getCmdId("fuzzy", "callHierarchy"), provider: "workspace.callHierarchy" },
     ];
 
     testCases.forEach(({ cmd, provider }) => {
