@@ -15,6 +15,25 @@ export class Logger {
     this.level = level;
   }
 
+  static log(level: "DEBUG" | "INFO" | "WARN" | "ERROR", message: string, data?: any) {
+    const formattedMessage = this.format(level, message);
+
+    switch (level) {
+      case "ERROR":
+        console.error(formattedMessage);
+        break;
+      case "WARN":
+        console.warn(formattedMessage);
+        break;
+      case "DEBUG":
+        console.debug(formattedMessage);
+        break;
+      default:
+        console.log(formattedMessage);
+    }
+    this.outputChannel.appendLine(formattedMessage);
+  }
+
   static error(message: string, error?: Error) {
     if (this.level < LogLevel.ERROR) return;
     const msg = this.format("ERROR", message, error);

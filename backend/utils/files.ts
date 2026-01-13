@@ -43,6 +43,9 @@ export function resolvePathExt(_path: string) {
   if (basename === "package.json") {
     return "json";
   }
+  if (ext === "h") {
+    return "c";
+  }
   if (ext === "feature" || ext === "example") {
     return "txt";
   }

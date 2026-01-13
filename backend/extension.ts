@@ -4,6 +4,8 @@ import { CustomProviderLoader } from "./core/common/custom/custom-provider.loade
 import { CustomProviderStorage } from "./core/common/custom/custom-provider.storage";
 import { loadDecorators } from "./core/decorators/loader";
 import { CallHierarchyFinder } from "./core/finders/call-hierarchy.finder";
+import { Logger } from "./core/log";
+import { PerformanceDevModule } from "./core/perf/perf-dev.module";
 import { FuzzyFinderPanelController } from "./core/presentation/fuzzy-panel.controller";
 import { FuzzyFinderAdapterRegistry } from "./core/registry/fuzzy-provider.registry";
 import { Globals } from "./globals";
@@ -11,11 +13,16 @@ import { registerProviderCmd } from "./utils/commands";
 import { getConfigurationSection } from "./utils/configuration";
 
 let customProviderLoader: CustomProviderLoader;
+
 /**
  * code-telescope activation entrypoint
  */
 export async function activate(ctx: vscode.ExtensionContext) {
-  console.log(`${Globals.EXTENSION_NAME} activated!`);
+  if (ctx.extensionMode === vscode.ExtensionMode.Development) {
+    PerformanceDevModule.activate(ctx);
+    Logger.info("[DEV MODE] Performance debugging enabled");
+  }
+
   Globals.EXTENSION_URI = ctx.extensionUri;
   Globals.USER_THEME = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
 
@@ -57,6 +64,8 @@ export async function activate(ctx: vscode.ExtensionContext) {
     },
     ctx,
   );
+
+  Logger.info(`${Globals.EXTENSION_NAME} activated!`);
 }
 
 export function deactivate() {
