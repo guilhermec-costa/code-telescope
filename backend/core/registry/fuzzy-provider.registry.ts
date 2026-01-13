@@ -1,9 +1,9 @@
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { Globals } from "../../globals";
+import { withPerformanceLogging } from "../../perf/perf-log";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { getRegisteredFuzzyFinderAdapters } from "../decorators/fuzzy-finder-provider.decorator";
 import { Logger } from "../log";
-import { withPerformanceLogging } from "../perf/perf-log";
 
 export class FuzzyFinderAdapterRegistry {
   private adapters = new Map<string, IFuzzyFinderProvider>();

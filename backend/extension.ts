@@ -5,10 +5,10 @@ import { CustomProviderStorage } from "./core/common/custom/custom-provider.stor
 import { loadDecorators } from "./core/decorators/loader";
 import { CallHierarchyFinder } from "./core/finders/call-hierarchy.finder";
 import { Logger } from "./core/log";
-import { PerformanceDevModule } from "./core/perf/perf-dev.module";
 import { FuzzyFinderPanelController } from "./core/presentation/fuzzy-panel.controller";
 import { FuzzyFinderAdapterRegistry } from "./core/registry/fuzzy-provider.registry";
 import { Globals } from "./globals";
+import { PerformanceDevModule } from "./perf/perf-dev.module";
 import { registerProviderCmd } from "./utils/commands";
 import { getConfigurationSection } from "./utils/configuration";
 
