@@ -7,6 +7,15 @@ import { RipgrepFinder } from "../../../core/finders/ws-text-finder/ripgrep-find
 
 vi.mock("child_process");
 vi.mock("fs/promises");
+vi.mock(import("path"), async (original) => {
+  const originalModule = await original();
+  return {
+    default: {
+      ...originalModule,
+      isAbsolute: vi.fn().mockReturnValue(true),
+    },
+  };
+});
 
 vi.mock("@backend/core/common/config-manager", () => ({
   ExtensionConfigManager: {
@@ -26,6 +35,7 @@ vi.mock("@backend/core/finders/ws-text-finder/ripgrep-args.builder", () => ({
       maxColumns = vi.fn().mockReturnThis();
       maxFileSize = vi.fn().mockReturnThis();
       exclude = vi.fn().mockReturnThis();
+      withPaths = vi.fn().mockReturnThis();
       build = vi.fn().mockReturnValue(["--json", "test"]);
     },
   ),
@@ -86,7 +96,7 @@ describe("RipgrepFinder", () => {
 
     expect(result.results).toHaveLength(1);
     expect(result.results[0]).toMatchObject({
-      file: "/workspace/file.ts",
+      file: "file.ts",
       line: 10,
       column: 5,
       text: "hello world",

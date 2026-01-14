@@ -25,6 +25,7 @@ const RIPGREP_BASE_FLAGS = [
 export class RipgrepArgsBuilder {
   /** Ripgrep flags and values (no positional args). */
   private args: string[] = [...RIPGREP_BASE_FLAGS];
+  private paths: string[] = [];
 
   /** Search pattern (required). */
   private _query?: string;
@@ -56,11 +57,16 @@ export class RipgrepArgsBuilder {
     return this;
   }
 
+  withPaths(paths: string[]) {
+    this.paths = paths;
+    return this;
+  }
+
   /** Builds the final argument list. */
   build() {
     if (!this._query) {
       throw new Error("RipgrepArgsBuilder: query is required");
     }
-    return [this._query, ...this.args];
+    return [this._query, ...this.args, ...this.paths];
   }
 }

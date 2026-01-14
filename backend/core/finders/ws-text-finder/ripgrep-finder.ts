@@ -76,15 +76,16 @@ export class RipgrepFinder {
     }
 
     const matches: TextSearchMatch[] = [];
-    const cwd = workspaceFolders[0].uri.fsPath;
+    const roots = workspaceFolders.map((f) => f.uri.fsPath);
 
-    console.log("Starting ripgrep search:", { query, cwd, rgPath: this._rgPath });
+    console.log("Starting ripgrep search:", { query, roots, rgPath: this._rgPath });
     const searchCfg = ExtensionConfigManager.wsTextFinderCfg;
     const args = new RipgrepArgsBuilder()
       .query(query)
       .maxColumns(searchCfg.maxColumns)
       .maxFileSize(searchCfg.maxFileSize)
       .exclude(searchCfg.excludePatterns)
+      .withPaths(roots)
       .build();
 
     await new Promise<void>((resolve, reject) => {
@@ -93,7 +94,7 @@ export class RipgrepFinder {
       let rg;
       try {
         rg = spawn(this._rgPath, args, {
-          cwd,
+          cwd: roots[0],
           shell: false,
           stdio: ["ignore", "pipe", "pipe"], // ignore stdin, pipe stdout and stderr
         });
@@ -144,9 +145,10 @@ export class RipgrepFinder {
               if (result.type === "match") {
                 const data = result.data;
                 const lineText = data.lines.text.trim();
+                const resolvedPath = path.isAbsolute(data.path.text) ? data.path.text : path.resolve(data.path.text);
 
                 matches.push({
-                  file: path.join(cwd, data.path.text),
+                  file: resolvedPath,
                   line: data.line_number,
                   svgIconUrl: getSvgIconUrl(data.path.text),
                   column: data.submatches[0]?.start || 1,
