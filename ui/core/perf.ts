@@ -2,14 +2,15 @@ import { IFuzzyFinderDataAdapter } from "./abstractions/fuzzy-finder-data-adapte
 import { IPreviewRendererAdapter } from "./abstractions/preview-renderer-adapter";
 
 export class PerformanceLogger {
-  static measure<T>(operation: string, fn: () => Promise<T>): Promise<T> {
+  static measure<T>(operation: string, fn: () => T | Promise<T>): Promise<T> {
     const start = performance.now();
-    return fn().finally(() => {
-      const duration = performance.now() - start;
-      const message = `${operation}: ${duration.toFixed(2)}ms`;
 
-      console.log(`[Performance] ${message}`);
-    });
+    return Promise.resolve()
+      .then(fn)
+      .finally(() => {
+        const duration = performance.now() - start;
+        console.log(`[Performance] ${operation}: ${duration.toFixed(2)}ms`);
+      });
   }
 }
 

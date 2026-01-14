@@ -132,7 +132,12 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
       HighlighterManager.loadThemeIfNeeded(renderTheme),
     ]);
 
-    if (!langLoadResult.ok || !themeLoadResult.ok) {
+    if (!langLoadResult.ok) {
+      console.log(`[Highlighter] Failed to load language "${language}". Falling back to plain text.`);
+      language = "text";
+    }
+
+    if (!themeLoadResult.ok) {
       const failedAdapter = PreviewRendererAdapterRegistry.instance.getAdapter("preview.failed");
       await failedAdapter.render(
         previewElement,

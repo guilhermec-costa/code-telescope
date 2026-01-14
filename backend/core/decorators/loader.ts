@@ -1,5 +1,7 @@
 import { pathToFileURL } from "node:url";
 import { glob } from "glob";
+import { stringifyError } from "../../utils/commands";
+import { Logger } from "../log";
 
 export async function loadDecorators(pattern: string, cwd: string) {
   const files = await glob(pattern, {
@@ -11,9 +13,9 @@ export async function loadDecorators(pattern: string, cwd: string) {
     try {
       await import(pathToFileURL(file).href);
     } catch (err) {
-      console.log("error");
+      Logger.error(`Failed to load decoratror at ${pattern}: ${stringifyError(err)}`);
     }
   }
 
-  console.log(`[Fuzzy] ${files.length} providers loaded.`);
+  Logger.info(`[Decorator Loader] ${files.length} providers loaded.`);
 }

@@ -100,11 +100,6 @@ export class PerformanceLogger {
     // log level based on thresholds
     if (duration > 1000 || Math.abs(heapDelta) > 10) {
       this.log("WARN", message);
-
-      // show output channel for slow/memory-heavy operations
-      if (duration > 2000 || Math.abs(heapDelta) > 50) {
-        this.outputChannel.show(true);
-      }
     } else if (duration > 500 || Math.abs(heapDelta) > 5) {
       this.log("INFO", message);
     } else {

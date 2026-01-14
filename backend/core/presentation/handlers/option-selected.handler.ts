@@ -9,7 +9,7 @@ export class OptionSelectedHandler implements IWebviewMessageHandler<"optionSele
 
   async handle(msg: Extract<FromWebviewKindMessage, { type: "optionSelected" }>) {
     const provider = FuzzyFinderPanelController.instance!.provider;
-    FuzzyFinderPanelController.instance!.dispose();
     await provider.onSelect(msg.data);
+    FuzzyFinderPanelController.instance!.dispose();
   }
 }

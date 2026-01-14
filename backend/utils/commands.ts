@@ -20,3 +20,7 @@ export function registerProviderCmd(fuzzyName: string, cb: () => void, ctx: vsco
 export async function execCmd<T = any>(cmd: string, ...rest: any[]): Promise<T> {
   return (await vscode.commands.executeCommand(cmd, ...rest)) as T;
 }
+
+export function stringifyError(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
