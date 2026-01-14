@@ -24,6 +24,15 @@ beforeAll(() => {
       ),
     };
   });
+  vi.mock("@backend/core/log", () => {
+    return {
+      Logger: vi.fn(
+        class {
+          static info() {}
+        },
+      ),
+    };
+  });
 });
 
 afterEach(() => {

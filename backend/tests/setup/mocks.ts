@@ -57,4 +57,7 @@ vi.mock("vscode", () => ({
     }),
   },
   ExtensionContext: class {},
+  ExtensionMode: {
+    Development: 1,
+  },
 }));
