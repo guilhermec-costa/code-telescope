@@ -39,10 +39,9 @@ export class ColorSchemesFinder implements IFuzzyFinderProvider {
 
   async onSelect(themeData: ColorThemeData) {
     try {
-      await vscode.workspace
+      vscode.workspace
         .getConfiguration()
         .update(Globals.cfgSections.colorTheme, themeData.label, vscode.ConfigurationTarget.Global);
-      await vscode.window.showInformationMessage(`Theme changed to: ${themeData.label}`);
     } catch (error) {
       console.error((error as any).message);
       await vscode.window.showErrorMessage("Failed to update theme: ");
@@ -50,6 +49,7 @@ export class ColorSchemesFinder implements IFuzzyFinderProvider {
   }
 
   async getPreviewData(themeData: ColorThemeData): Promise<HighlightedCodePreviewData> {
+    await this.onSelect(themeData);
     return {
       content: {
         kind: "text",
