@@ -37,19 +37,14 @@ export class WebviewAssetManager {
     adapterPlaceholders: LayoutCustomPlaceholders,
   ): string {
     const layoutStyleName = adapterPlaceholders.layoutCssFilename ?? `${ExtensionConfigManager.layoutCfg.mode}.css`;
-
-    const isDev = Globals.ENV === vscode.ExtensionMode.Development;
-
-    const basePath = isDev
-      ? path.join(Globals.EXTENSION_URI.fsPath, "ui") // original ui folder
-      : path.join(Globals.EXTENSION_URI.fsPath, "ui", "dist"); // VSIX bundle
+    const basePath = path.join(Globals.EXTENSION_URI.fsPath, "ui", "dist"); // VSIX bundle
 
     const allPlaceholders = {
       ...adapterPlaceholders,
       "{{highlight-styles}}": path.join(basePath, "style/highlight.css"),
       "{{style}}": path.join(basePath, `style/${layoutStyleName}`),
       "{{branch-styles}}": path.join(basePath, "style/branch-preview.css"),
-      "{{script}}": isDev ? path.join(basePath, "dist/index.js") : path.join(basePath, "index.js"),
+      "{{script}}": path.join(basePath, "index.js"),
     };
 
     let processed = html;
