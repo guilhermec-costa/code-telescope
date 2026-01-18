@@ -18,7 +18,7 @@ export class WebviewAssetManager {
 
     const layoutFilename =
       customPlaceholders.layoutHtmlFilename ?? `${ExtensionConfigManager.layoutCfg.mode}.view.html`;
-    const htmlPath = joinPath(Globals.EXTENSION_URI, "ui", "views", layoutFilename);
+    const htmlPath = joinPath(Globals.EXTENSION_URI, "ui", "dist", "views", layoutFilename);
     const rawContent = (await vscode.workspace.fs.readFile(htmlPath)).toString();
 
     let html = this.resolveAssetUris(rawContent, wv, customPlaceholders);
