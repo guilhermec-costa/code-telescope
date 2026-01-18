@@ -15,7 +15,7 @@
       "outFiles": [
         "${workspaceFolder}/backend/dist/**/*.js"
       ],
-      "preLaunchTask": "build all",
+      "preLaunchTask": "backend bundle prod",
     }
   ]
 }

@@ -18,6 +18,7 @@ let customProviderLoader: CustomProviderLoader;
  * code-telescope activation entrypoint
  */
 export async function activate(ctx: vscode.ExtensionContext) {
+  Globals.ENV = ctx.extensionMode;
   if (ctx.extensionMode === vscode.ExtensionMode.Development) {
     PerformanceDevModule.activate(ctx);
     Logger.info("[DEV MODE] Performance debugging enabled");

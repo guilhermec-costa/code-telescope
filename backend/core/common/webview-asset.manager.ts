@@ -1,3 +1,4 @@
+import path from "path";
 import * as vscode from "vscode";
 import { Globals } from "../../globals";
 import { joinPath } from "../../utils/files";
@@ -37,19 +38,26 @@ export class WebviewAssetManager {
   ): string {
     const layoutStyleName = adapterPlaceholders.layoutCssFilename ?? `${ExtensionConfigManager.layoutCfg.mode}.css`;
 
+    const isDev = Globals.ENV === vscode.ExtensionMode.Development;
+
+    const basePath = isDev
+      ? path.join(Globals.EXTENSION_URI.fsPath, "ui") // original ui folder
+      : path.join(Globals.EXTENSION_URI.fsPath, "ui", "dist"); // VSIX bundle
+
     const allPlaceholders = {
       ...adapterPlaceholders,
-      "{{highlight-styles}}": "ui/style/highlight.css",
-      "{{style}}": `ui/style/${layoutStyleName}`,
-      "{{branch-styles}}": `ui/style/branch-preview.css`,
-      "{{script}}": "ui/dist/index.js",
+      "{{highlight-styles}}": path.join(basePath, "style/highlight.css"),
+      "{{style}}": path.join(basePath, `style/${layoutStyleName}`),
+      "{{branch-styles}}": path.join(basePath, "style/branch-preview.css"),
+      "{{script}}": isDev ? path.join(basePath, "dist/index.js") : path.join(basePath, "index.js"),
     };
 
     let processed = html;
-    for (const [placeholder, distPath] of Object.entries(allPlaceholders)) {
-      const uri = wv.asWebviewUri(joinPath(Globals.EXTENSION_URI, distPath));
+    for (const [placeholder, filePath] of Object.entries(allPlaceholders)) {
+      const uri = wv.asWebviewUri(vscode.Uri.file(filePath));
       processed = processed.split(placeholder).join(uri.toString());
     }
+
     return processed;
   }
 

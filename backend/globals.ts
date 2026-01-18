@@ -10,6 +10,8 @@ export namespace Globals {
   /** Prefix for extension configuration keys */
   export const EXTENSION_CONFIGURATION_PREFIX = "codeTelescope";
 
+  export let ENV: vscode.ExtensionMode;
+
   /** Prefix used to identify custom providers */
   export const CUSTOM_PROVIDER_PREFIX = "custom.";
 

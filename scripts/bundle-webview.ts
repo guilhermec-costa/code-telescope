@@ -29,6 +29,27 @@ function findEntryPoints() {
   return result;
 }
 
+function copyDir(src: string, dest: string) {
+  if (!fs.existsSync(src)) return;
+
+  if (!fs.existsSync(dest)) {
+    fs.mkdirSync(dest, { recursive: true });
+  }
+
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+
+    if (entry.isDirectory()) {
+      copyDir(srcPath, destPath);
+    } else if (entry.isFile()) {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
 async function run() {
   const entryPoints = findEntryPoints();
   console.log("Entrypoints:", entryPoints);
@@ -65,6 +86,17 @@ async function run() {
         const ctx = await esbuild.context(opts);
         await ctx.watch();
         console.log(`Watching ${entry}`);
+      }
+
+      const assets = ["views", "style", "vendor"];
+      const uiRoot = path.resolve(process.cwd(), "ui");
+      const distRoot = path.resolve(process.cwd(), "ui/dist");
+
+      for (const dir of assets) {
+        const src = path.join(uiRoot, dir);
+        const dest = path.join(distRoot, dir);
+        copyDir(src, dest);
+        console.log(`Copied ${dir} to dist`);
       }
     }),
   );
