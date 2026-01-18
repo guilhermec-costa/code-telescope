@@ -1,11 +1,79 @@
-.vscode/**
-.vscode-test/**
-src/**
+############################
+# Package managers
+############################
+node_modules
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+.pnpm-store
+.yarn
+.yarnrc*
+npm-debug.log*
+pnpm-debug.log*
+
+############################
+# Git / CI / Repo metadata
+############################
+.git
 .gitignore
-.yarnrc
-vsc-extension-quickstart.md
-**/tsconfig.json
-**/eslint.config.mjs
+.github
+.husky
+
+############################
+# VS Code / Test
+############################
+.vscode
+.vscode-test.mjs
+.vscode-test.js
+.vscode-test.ts
+
+############################
+# Tests / Coverage / Examples
+############################
+coverage
+**/__tests__/**
+**/*.test.*
+**/*.spec.*
+examples
+scripts
+
+############################
+# Tooling / Config
+############################
+biome.json
+eslint.config.*
+.prettierrc*
+.editorconfig
+tsconfig.json
+tsconfig.*.json
+*.map
 **/*.map
+
+############################
+# TypeScript source (runtime usa JS)
+############################
 **/*.ts
-**/.vscode-test.*
+**/*.tsx
+
+############################
+# Backend
+############################
+backend/src
+backend/tsconfig.json
+
+############################
+# UI (mantém só o build final)
+############################
+ui/src
+ui/tsconfig.json
+ui/style
+ui/views
+ui/vendor
+
+############################
+# Misc
+############################
+.env
+.env.*
+.DS_Store
+Thumbs.db

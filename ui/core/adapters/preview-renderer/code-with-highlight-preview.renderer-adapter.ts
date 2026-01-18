@@ -128,7 +128,7 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
     const initialChunk = Math.floor(highlightLine / CHUNK_SIZE);
 
     const [langLoadResult, themeLoadResult] = await Promise.all([
-      HighlighterManager.loadLanguageIfNedeed(language),
+      HighlighterManager.loadLanguageIfNeeded(language),
       HighlighterManager.loadThemeIfNeeded(renderTheme),
     ]);
 

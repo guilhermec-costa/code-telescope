@@ -1,6 +1,10 @@
 {
     "name": "code-telescope",
     "displayName": "code-telescope",
+    "repository": {
+      "type": "git", 
+      "url": "https://github.com/guilhermec-costa/code-telescope"
+    },
     "publisher": "guichina",
     "description": "",
     "version": "0.0.1",
@@ -300,11 +304,11 @@
         }
     },
     "scripts": {
-        "vscode:prepublish": "pnpm run compile",
+        "vscode:prepublish": "pnpm run backend:compile",
         "backend:build": "tsc -b ./backend",
         "backend:watch": "tsc -b -w ./backend",
         "backend:compile": "tsc -b ./backend",
-        "pretest": "pnpm run compile && pnpm run lint",
+        "pretest": "pnpm run backend:compile && pnpm run lint",
         "lint": "biome lint",
         "check": "biome check",
         "check:write": "biome check --write",

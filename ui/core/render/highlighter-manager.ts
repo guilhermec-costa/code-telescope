@@ -1,52 +1,29 @@
-import type { HighlighterCore } from "shiki/core";
+import { bundledLanguages, bundledThemes, createHighlighter, type Highlighter } from "shiki/bundle/web";
 import { AsyncResult } from "../../../shared/result";
 
 /**
- * Centralized manager for Highlighter lifecycle.
+ * Centralized manager for Highlighter lifecycle (Webview / Browser).
  */
 export class HighlighterManager {
-  private static highlighter: HighlighterCore | null = null;
+  private static highlighter: Highlighter | null = null;
   private static loadedThemes = new Set<string>();
   private static loadedLanguages = new Set<string>(["text"]);
-  private static bundlePromise: Promise<any> | null = null;
 
-  static async initHighlighterCore(): Promise<HighlighterCore> {
+  /**
+   * Initializes the Shiki highlighter if not already initialized.
+   */
+  static async init(): Promise<Highlighter> {
     if (this.highlighter) return this.highlighter;
 
-    console.log("[ShikiManager] Initializing Shiki...");
+    console.log("[ShikiManager] Initializing Shiki (bundle/web)...");
 
-    const shikiBundle = await import(`${__SHIKI_URI__}/shiki-bundle.js`);
-
-    const { createHighlighterCore, createOnigurumaEngine, wasm } = shikiBundle;
-
-    this.highlighter = await createHighlighterCore({
-      engine: createOnigurumaEngine(wasm),
+    this.highlighter = await createHighlighter({
+      themes: [],
+      langs: [],
     });
 
     console.log("[ShikiManager] Highlighter ready.");
     return this.highlighter;
-  }
-
-  /**
-   * Loads the Shiki bundle dynamically. Ensures the bundle is imported only once, even when multiple
-   * concurrent requests are made.
-   */
-  private static loadBundle() {
-    if (!this.bundlePromise) {
-      this.bundlePromise = import(`${__SHIKI_URI__}/shiki-bundle.js`);
-    }
-    return this.bundlePromise;
-  }
-
-  /**
-   * Loads a language definition if it has not been loaded yet.
-   * This method is idempotent and safe to call repeatedly.
-   */
-  static async loadLanguageIfNedeed(language: string): AsyncResult<string> {
-    if (this.loadedLanguages.has(language)) {
-      return { ok: true, value: language };
-    }
-    return await this.loadLanguageFromBundle(language);
   }
 
   /**
@@ -57,64 +34,81 @@ export class HighlighterManager {
     if (this.loadedThemes.has(theme)) {
       return { ok: true, value: theme };
     }
+
     return await this.loadThemeFromBundle(theme);
   }
 
   /**
-   * Loads a theme from the bundled Shiki themes.
-   *
-   * @throws Error if the theme is not found in the bundle
+   * Loads a language definition if it has not been loaded yet.
+   * This method is idempotent and safe to call repeatedly.
    */
-  static async loadThemeFromBundle(theme: string): AsyncResult<string> {
-    if (this.loadedThemes.has(theme)) {
-      return { ok: true, value: theme };
+  static async loadLanguageIfNeeded(lang: string): AsyncResult<string> {
+    if (this.loadedLanguages.has(lang)) {
+      return { ok: true, value: lang };
     }
 
-    const { themes } = await this.loadBundle();
-    const bundledTheme = themes?.bundledThemes?.[theme];
-
-    if (!bundledTheme) {
-      return {
-        ok: false,
-        error: `[ShikiManager] Theme not found: ${theme}`,
-      };
-    }
-
-    await this.highlighter.loadTheme(bundledTheme);
-    this.loadedThemes.add(theme);
-
-    console.log(`[ShikiManager] Theme loaded from bundle: ${theme}`);
-
-    return {
-      ok: true,
-      value: theme,
-    };
+    return await this.loadLanguageFromBundle(lang);
   }
 
   /**
-   * Loads a language grammar from the bundled Shiki languages.
-   *
-   * @throws Error if the language is not found in the bundle
+   * Loads a theme from Shiki bundled themes.
    */
-  static async loadLanguageFromBundle(lang: string): AsyncResult<string> {
-    if (this.loadedLanguages.has(lang)) return { ok: true, value: lang };
+  private static async loadThemeFromBundle(theme: string): AsyncResult<string> {
+    const def = bundledThemes[theme];
 
-    const { langs } = await this.loadBundle();
-    const bundledLang = langs?.bundledLanguages?.[lang];
-    if (!bundledLang) {
+    if (!def) {
       return {
         ok: false,
-        error: `[ShikiManager] Language not found: ${lang}`,
+        error: `[ShikiManager] Theme not found in bundle/web: ${theme}`,
       };
     }
 
-    await this.highlighter.loadLanguage(bundledLang);
-    this.loadedLanguages.add(lang);
-    console.log(`[ShikiManager] Language loaded from bundle: ${lang}`);
+    try {
+      await this.highlighter!.loadTheme(def);
+      this.loadedThemes.add(theme);
 
-    return {
-      ok: true,
-      value: lang,
-    };
+      console.log(`[ShikiManager] Theme loaded: ${theme}`);
+
+      return {
+        ok: true,
+        value: theme,
+      };
+    } catch (err) {
+      return {
+        ok: false,
+        error: `[ShikiManager] Failed to load theme '${theme}': ${err instanceof Error ? err.message : String(err)}`,
+      };
+    }
+  }
+
+  /**
+   * Loads a language grammar from Shiki bundled languages.
+   */
+  private static async loadLanguageFromBundle(lang: string): AsyncResult<string> {
+    const def = bundledLanguages[lang];
+
+    if (!def) {
+      return {
+        ok: false,
+        error: `[ShikiManager] Language not found in bundle/web: ${lang}`,
+      };
+    }
+
+    try {
+      await this.highlighter!.loadLanguage(def);
+      this.loadedLanguages.add(lang);
+
+      console.log(`[ShikiManager] Language loaded: ${lang}`);
+
+      return {
+        ok: true,
+        value: lang,
+      };
+    } catch (err) {
+      return {
+        ok: false,
+        error: `[ShikiManager] Failed to load language '${lang}': ${err instanceof Error ? err.message : String(err)}`,
+      };
+    }
   }
 }

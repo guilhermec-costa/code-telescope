@@ -56,7 +56,7 @@ export class PreviewRendererAdapterRegistry {
     console.log("[PreviewAdapterRegistry] Loading syntax highlighter in background...");
 
     try {
-      this.syntaxHighlighter = await HighlighterManager.initHighlighterCore();
+      this.syntaxHighlighter = await HighlighterManager.init();
       for (const adapter of this.adapters.values()) {
         if ("setHighlighter" in adapter && typeof adapter.setHighlighter === "function") {
           adapter.setHighlighter(this.syntaxHighlighter);
