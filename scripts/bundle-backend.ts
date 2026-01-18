@@ -21,7 +21,7 @@ function findEntryPoint() {
   const entry = path.join(ROOT, "extension.ts");
 
   if (!fs.existsSync(entry)) {
-    throw new Error(`❌ Backend entry not found: ${entry}`);
+    throw new Error(`Backend entry not found: ${entry}`);
   }
 
   return entry;
