@@ -7,7 +7,7 @@
     },
     "publisher": "guichina",
     "description": "",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "engines": {
         "vscode": "^1.106.0"
     },
@@ -15,8 +15,17 @@
         "Other"
     ],
     "activationEvents": [
-        "onLanguage:*",
-        "onStartupFinished"
+        "onCommand:code-telescope.fuzzy.file",
+        "onCommand:code-telescope.fuzzy.branch",
+        "onCommand:code-telescope.fuzzy.wsText",
+        "onCommand:code-telescope.fuzzy.keybindings",
+        "onCommand:code-telescope.fuzzy.custom",
+        "onCommand:code-telescope.fuzzy.wsSymbols",
+        "onCommand:code-telescope.fuzzy.recentFiles",
+        "onCommand:code-telescope.fuzzy.colorschemes",
+        "onCommand:code-telescope.fuzzy.diagnostics",
+        "onCommand:code-telescope.fuzzy.callHierarchy",
+        "onCommand:code-telescope.fuzzy.tasks"
     ],
     "main": "./backend/dist/extension.js",
     "extensionDependencies": [
