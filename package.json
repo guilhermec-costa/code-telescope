@@ -15,17 +15,7 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:code-telescope.fuzzy.file",
-        "onCommand:code-telescope.fuzzy.branch",
-        "onCommand:code-telescope.fuzzy.wsText",
-        "onCommand:code-telescope.fuzzy.keybindings",
-        "onCommand:code-telescope.fuzzy.custom",
-        "onCommand:code-telescope.fuzzy.wsSymbols",
-        "onCommand:code-telescope.fuzzy.recentFiles",
-        "onCommand:code-telescope.fuzzy.colorschemes",
-        "onCommand:code-telescope.fuzzy.diagnostics",
-        "onCommand:code-telescope.fuzzy.callHierarchy",
-        "onCommand:code-telescope.fuzzy.tasks"
+        "onStartupFinished"
     ],
     "main": "./backend/dist/extension.js",
     "extensionDependencies": [
@@ -313,11 +303,12 @@
         }
     },
     "scripts": {
-        "vscode:prepublish": "pnpm run backend:compile",
-        "backend:build": "tsc -b ./backend",
-        "backend:watch": "tsc -b -w ./backend",
+        "vscode:prepublish": "pnpm run backend:bundle:prod",
+        "backend:bundle:prod": "tsx scripts/bundle-backend.ts --env=prod",
         "backend:compile": "tsc -b ./backend",
-        "pretest": "pnpm run backend:compile && pnpm run lint",
+        "backend:watch": "tsc -b -w ./backend",
+        "backend:build": "tsx scripts/bundle-backend.ts",
+        "pretest": "pnpm run backend:bundle:prod && pnpm run lint",
         "lint": "biome lint",
         "check": "biome check",
         "check:write": "biome check --write",
@@ -330,8 +321,7 @@
         "webview:dev": "tsx scripts/bundle-webview.ts --env=dev",
         "webview:dev:watch": "tsx scripts/bundle-webview.ts --env=dev --watch=true",
         "webview:prod": "tsx scripts/bundle-webview.ts --env=prod",
-        "webview:prod:watch": "tsx scripts/bundle-webview.ts --env=prod --watch=true",
-        "bundle:shiki": "tsx scripts/bundle-shiki.ts"
+        "webview:prod:watch": "tsx scripts/bundle-webview.ts --env=prod --watch=true"
     },
     "devDependencies": {
         "@biomejs/biome": "2.3.11",

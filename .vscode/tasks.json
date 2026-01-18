@@ -46,10 +46,24 @@
       "group": "build"
     },
     {
-      "label": "tsc build",
+      "label": "backend build dev",
       "type": "npm",
-      "script": "backend:compile",
-      "group": "build"
+      "script": "backend:build",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "backend bundle prod",
+      "type": "npm",
+      "script": "backend:bundle:prod",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
     },
     {
       "label": "tsc watch",
@@ -58,22 +72,10 @@
       "isBackground": true,
       "problemMatcher": "$tsc-watch"
     },
-     {
-      "label": "bundle shiki",
-      "type": "npm",
-      "script": "bundle:shiki",
-      "isBackground": true,
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "silent",
-      }
-    },
     {
       "label": "build all",
       "dependsOn": [
         "tsc watch",
-        "bundle shiki"
       ],
       "dependsOrder": "parallel"
     }

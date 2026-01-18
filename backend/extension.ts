@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
+import "./core/decorators/loader";
 import { CustomFuzzyProviderType } from "../shared/adapters-namespace";
 import { CustomProviderLoader } from "./core/common/custom/custom-provider.loader";
 import { CustomProviderStorage } from "./core/common/custom/custom-provider.storage";
-import { loadDecorators } from "./core/decorators/loader";
 import { CallHierarchyFinder } from "./core/finders/call-hierarchy.finder";
 import { Logger } from "./core/log";
 import { FuzzyFinderPanelController } from "./core/presentation/fuzzy-panel.controller";
@@ -25,11 +25,6 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
   Globals.EXTENSION_URI = ctx.extensionUri;
   Globals.USER_THEME = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
-
-  const distRoot = ctx.extensionPath + "/backend/dist";
-
-  await loadDecorators("**/*.finder.js", distRoot);
-  await loadDecorators("**/*.handler.js", distRoot);
 
   customProviderLoader = new CustomProviderLoader(ctx);
   await customProviderLoader.initialize();
