@@ -26,8 +26,10 @@ export async function activate(ctx: vscode.ExtensionContext) {
   Globals.EXTENSION_URI = ctx.extensionUri;
   Globals.USER_THEME = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
 
-  await loadDecorators("**/*.finder.js", __dirname);
-  await loadDecorators("**/*.handler.js", __dirname);
+  const distRoot = ctx.extensionPath + "/backend/dist";
+
+  await loadDecorators("**/*.finder.js", distRoot);
+  await loadDecorators("**/*.handler.js", distRoot);
 
   customProviderLoader = new CustomProviderLoader(ctx);
   await customProviderLoader.initialize();
