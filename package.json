@@ -1,6 +1,6 @@
 {
     "name": "code-telescope",
-    "displayName": "code-telescope",
+    "displayName": "Code Telescope",
     "repository": {
         "type": "git",
         "url": "https://github.com/guilhermec-costa/code-telescope"
