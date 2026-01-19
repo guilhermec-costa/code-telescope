@@ -33,11 +33,11 @@ export class RegexFinder {
             if (matches.length >= MAX_RESULTS) return;
 
             try {
-              const stat = await fs.stat(uri.fsPath);
+              const stat = await fs.stat(uri);
               // files > 300kb
               if (stat.size > 300 * 1024) return;
 
-              const content = await fs.readFile(uri.fsPath, "utf-8");
+              const content = await fs.readFile(uri, "utf-8");
               queryRegex.lastIndex = 0;
 
               const match = queryRegex.exec(content);
@@ -59,9 +59,9 @@ export class RegexFinder {
                 }
 
                 matches.push({
-                  file: uri.fsPath,
+                  file: uri,
                   line: lineNumber,
-                  svgIconUrl: getSvgIconUrl(uri.fsPath),
+                  svgIconUrl: getSvgIconUrl(uri),
                   column: matchIndex - lineStart + 1,
                   text: lineContent.trim(),
                   preview: lineContent.trim(),

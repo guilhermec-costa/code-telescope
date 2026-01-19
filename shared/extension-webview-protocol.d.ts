@@ -57,6 +57,7 @@ export interface OptionListMessage {
   type: "optionList";
   data: any[];
   fuzzyProviderType: FuzzyProviderType;
+  isChunk: boolean;
 }
 
 /**

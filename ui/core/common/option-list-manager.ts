@@ -68,27 +68,60 @@ export class OptionListManager {
     return 50;
   }
 
+  public appendOptions(options: any[]): void {
+    this.allOptions.push(...options);
+    this.updateItemsCount();
+  }
+
   /**
    * Initializes the option list with a new dataset.
    * Resets state, renders items and requests preview for the first option.
    */
   public setOptions(options: any[], updateItemsCount: boolean = true): void {
+    const perfStart = performance.now();
+
     if (!this.dataAdapter) {
       console.error("[OptionListManager] No adapter set");
       return;
     }
 
+    const afterGuard = performance.now();
+
     this.allOptions = options;
     this.filteredOptions = options;
+
+    const afterAssign = performance.now();
+
     StateManager.selectedIndex = this.restoreSelectedIndex();
     StateManager.prompt = "";
+
+    const afterStateReset = performance.now();
+
     if (updateItemsCount) {
       this.updateItemsCount();
     }
+
+    const afterCount = performance.now();
+
     this.render();
+
+    const afterRender = performance.now();
 
     const first = this.getRelativeFirstItem();
     if (first) this.requestPreview(first);
+
+    const afterPreview = performance.now();
+
+    console.info(
+      `[Code Telescope][SetOptions] ` +
+        `items=${options.length} ` +
+        `assign=${(afterAssign - afterGuard).toFixed(2)}ms ` +
+        `stateReset=${(afterStateReset - afterAssign).toFixed(2)}ms ` +
+        `count=${(afterCount - afterStateReset).toFixed(2)}ms ` +
+        `render=${(afterRender - afterCount).toFixed(2)}ms ` +
+        `preview=${(afterPreview - afterRender).toFixed(2)}ms ` +
+        `total=${(afterPreview - perfStart).toFixed(2)}ms`,
+    );
   }
 
   /**
@@ -245,15 +278,35 @@ export class OptionListManager {
   /**
    * Renders the option list using virtualization.
    */
+  /**
+   * Renders the option list using virtualization.
+   */
   private render(): void {
+    const perfStart = performance.now();
+
     this.applySortOnFiltered();
+    const afterSort = performance.now();
+
     if (!this.dataAdapter) return;
+
+    const itemsCount = this.filteredOptions.length;
 
     this.virtualizer.renderVirtualized(this.filteredOptions, StateManager.prompt, (item, idx, q) =>
       this.createListItem(item, idx, q),
     );
 
+    const afterRender = performance.now();
+
     this.scrollToSelected();
+    const afterScroll = performance.now();
+
+    console.log(
+      `[Code Telescope][Render] items=${itemsCount} ` +
+        `sort=${(afterSort - perfStart).toFixed(2)}ms ` +
+        `virtualize=${(afterRender - afterSort).toFixed(2)}ms ` +
+        `scroll=${(afterScroll - afterRender).toFixed(2)}ms ` +
+        `total=${(afterScroll - perfStart).toFixed(2)}ms`,
+    );
   }
 
   /**

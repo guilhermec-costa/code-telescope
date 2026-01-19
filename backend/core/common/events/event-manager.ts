@@ -1,9 +1,6 @@
-import path from "path";
 import * as vscode from "vscode";
-import extToLangMap from "../../../config/highlight-langs.json";
 import { Globals } from "../../../globals";
 import { getShikiTheme } from "../../../utils/shiki";
-import { WorkspaceFileFinder } from "../../finders/ws-files.finder";
 import { FuzzyFinderPanelController } from "../../presentation/fuzzy-panel.controller";
 import { FileContentCache } from "../cache/file-content.cache";
 import { CONFIG_CHANGE_HANDLERS } from ".";
@@ -40,20 +37,9 @@ export class EventManager {
   }
 
   static async emitInitialEvents() {
-    const finder = new WorkspaceFileFinder();
-    const files = await finder.getWorkspaceFiles();
-
-    const langs = new Set<string>();
-
-    for (const f of files) {
-      const ext = path.extname(f.fsPath).slice(1).toLowerCase();
-      const language = (extToLangMap as any)[ext];
-      if (language) langs.add(language);
-    }
-
     if (FuzzyFinderPanelController.instance) {
       await FuzzyFinderPanelController.instance.emitInitShikiEvent({
-        languages: [...langs, "diff", "md"],
+        languages: [],
         theme: getShikiTheme(Globals.USER_THEME),
       });
     }

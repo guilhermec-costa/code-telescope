@@ -1,7 +1,8 @@
+import * as fg from "fast-glob";
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { FileFinderData } from "../../../shared/exchange/file-search";
-import { HighlightedCodePreviewData, PostQueryHandlerResult } from "../../../shared/extension-webview-protocol";
+import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { getSvgIconUrl, resolvePathExt } from "../../utils/files";
@@ -9,13 +10,9 @@ import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileContentCache } from "../common/cache/file-content.cache";
 import { ExtensionConfigManager } from "../common/config-manager";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyFinderPanelController } from "../presentation/fuzzy-panel.controller";
+import { WebviewController } from "../presentation/webview.controller";
 
-/**
- * Fuzzy provider that retrieves files from the current workspace.
- *
- * This provider allows filtering files using include/exclude patterns,
- * hiding dotfiles, and limiting the maximum number of results.
- */
 @FuzzyFinderAdapter({
   fuzzy: "workspace.files",
   previewRenderer: "preview.codeHighlighted",
@@ -24,18 +21,48 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
 
-  async querySelectableOptions() {
-    const files = await this.getWorkspaceFiles();
+  async querySelectableOptions(): Promise<FileFinderData> {
+    const allFiles = await this.getWorkspaceFiles();
+    const CHUNK_SIZE = 1500;
 
+    const firstChunk = this.processFileChunk(allFiles.slice(0, CHUNK_SIZE));
+
+    if (allFiles.length > CHUNK_SIZE) {
+      this.streamChunks(allFiles, CHUNK_SIZE);
+    }
+
+    return firstChunk;
+  }
+
+  private processFileChunk(files: string[]): FileFinderData {
     return files.reduce<FileFinderData>(
-      (result, file) => {
-        result.abs.push(file.path);
-        result.relative.push(vscode.workspace.asRelativePath(file.path));
-        result.svgIconUrl.push(getSvgIconUrl(file.fsPath));
+      (result, fileEntry) => {
+        result.abs.push(fileEntry);
+        result.relative.push(vscode.workspace.asRelativePath(fileEntry));
+        result.svgIconUrl.push(getSvgIconUrl(fileEntry));
         return result;
       },
       { abs: [], relative: [], svgIconUrl: [] },
     );
+  }
+
+  private async streamChunks(allFiles: string[], size: number) {
+    for (let i = size; i < allFiles.length; i += size) {
+      await new Promise((resolve) => setTimeout(resolve, 16));
+
+      const chunk = allFiles.slice(i, i + size);
+      const chunkData = this.processFileChunk(chunk);
+
+      const panel = FuzzyFinderPanelController.instance?.webview;
+      if (!panel) break;
+
+      await WebviewController.sendMessage(panel, {
+        type: "optionList",
+        data: chunkData as any,
+        isChunk: true,
+        fuzzyProviderType: this.fuzzyAdapterType,
+      });
+    }
   }
 
   async onSelect(filePath: string) {
@@ -43,25 +70,50 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
     await execCmd(Globals.cmds.openFile, uri);
   }
 
-  /**
-   * Executes the search for workspace files based on configured patterns.
-   * Merges exclude patterns and optionally filters out hidden files.
-   */
-  public async getWorkspaceFiles() {
-    const { excludePatterns, excludeHidden, includePatterns, maxResults } = ExtensionConfigManager.wsFileFinderCfg;
+  public async getWorkspaceFiles(): Promise<string[]> {
+    const { excludePatterns, excludeHidden, includePatterns, maxResults, maxFileSize } =
+      ExtensionConfigManager.wsFileFinderCfg;
 
-    const excludes = [...excludePatterns];
-    if (excludeHidden) excludes.push("**/.*");
+    const folders = vscode.workspace.workspaceFolders;
+    if (!folders || folders.length === 0) return [];
 
-    const include = includePatterns.length === 1 ? includePatterns[0] : `{${includePatterns.join(",")}}`;
+    const ignore = [...excludePatterns];
+    if (excludeHidden) ignore.push("**/.*");
 
-    return await vscode.workspace.findFiles(include, `{${excludes.join(",")}}`, maxResults);
+    const entries = includePatterns.length > 0 ? includePatterns : ["**/*"];
+    const maxBytes = 1024 * maxFileSize;
+
+    try {
+      const searchPromises = folders.map((folder) => {
+        const rootPath = folder.uri.fsPath;
+
+        return fg.default(entries, {
+          cwd: rootPath,
+          ignore: ignore,
+          absolute: true,
+          // stats: true, //
+          dot: !excludeHidden,
+          onlyFiles: true,
+          suppressErrors: true,
+          followSymbolicLinks: false,
+        });
+      });
+
+      const resultsPerFolder = await Promise.all(searchPromises);
+      const allEntries = resultsPerFolder.flat();
+
+      // const filtered = allEntries.filter((entry) => (entry.stats?.size || 0) <= maxBytes).map((entry) => entry.path);
+
+      return maxResults ? allEntries.slice(0, maxResults) : allEntries;
+    } catch (e) {
+      console.error("Erro na busca de arquivos multi-root:", e);
+      return [];
+    }
   }
 
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
     const ext = resolvePathExt(identifier);
     const isImg = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext);
-
     const content = await FileContentCache.instance.get(identifier);
 
     if (isImg) {
@@ -85,33 +137,6 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
       },
       language: ext,
       overridePreviewer: this.previewAdapterType,
-    };
-  }
-
-  async postQueryHandler(): Promise<PostQueryHandlerResult> {
-    const wsFiles = await this.querySelectableOptions();
-    const { maxFileSize } = ExtensionConfigManager.wsFileFinderCfg;
-
-    const filesToHide = (
-      await Promise.all(
-        wsFiles.abs.map(async (fsPath) => {
-          try {
-            const uri = vscode.Uri.file(fsPath);
-            const stat = await vscode.workspace.fs.stat(uri);
-
-            if (stat.size > 1024 * maxFileSize) {
-              return fsPath;
-            }
-          } catch {}
-
-          return null;
-        }),
-      )
-    ).filter((fsPath): fsPath is string => fsPath !== null);
-
-    return {
-      data: filesToHide,
-      action: "filterLargeFiles",
     };
   }
 }

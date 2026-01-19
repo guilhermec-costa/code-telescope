@@ -74,15 +74,6 @@ export class WebviewController {
 
       case "highlighterInit": {
         console.time("shiki-init");
-
-        msg.data.languages.forEach((language) => {
-          HighlighterManager.loadLanguageIfNeeded(language);
-        });
-
-        HighlighterManager.loadThemeIfNeeded(msg.data.theme);
-
-        console.timeEnd("shiki-init");
-
         this.previewManager.setUserTheme(msg.data.theme);
         WebviewToExtensionMessenger.instance.onHighlighterDone();
         break;
@@ -96,7 +87,9 @@ export class WebviewController {
       }
 
       case "optionList": {
-        await this.handleOptionListMessage(msg);
+        const isChunk = (msg as any).isChunk === true;
+        this.handleOptionListMessage(msg, isChunk);
+        break;
         break;
       }
 
@@ -128,26 +121,27 @@ export class WebviewController {
   /**
    * Processes a list of options received from the extension.
    */
-  private async handleOptionListMessage(msg: OptionListMessage) {
+  private handleOptionListMessage(msg: OptionListMessage, isChunk: boolean = false) {
     const { fuzzyProviderType, data } = msg;
-
     const adapter = FuzzyFinderDataAdapterRegistry.instance.getAdapter(fuzzyProviderType);
 
-    if (!adapter) {
-      console.error(`No adapter found for finder type: ${fuzzyProviderType}`);
-      console.log("Available adapters:", FuzzyFinderDataAdapterRegistry.instance.getRegisteredTypes());
-      return;
-    }
+    if (!adapter) return;
 
     this.optionListManager.setAdapter(adapter);
-
     const options = adapter.parseOptions(data);
-    this.optionListManager.setOptions(options);
+
+    if (isChunk) {
+      // Adiciona à lista existente
+      this.optionListManager.appendOptions(options);
+    } else {
+      // Substitui (comportamento original para o primeiro lote)
+      this.optionListManager.setOptions(options);
+    }
+
+    // Só filtra se já houver texto no input
     if (this.searchElement.value) {
       this.optionListManager.filter(this.searchElement.value);
     }
-
-    this.focusSearchInput();
   }
 
   /**

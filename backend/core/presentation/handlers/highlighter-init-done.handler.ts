@@ -23,17 +23,7 @@ export class HighlighterInitDoneHandler implements IWebviewMessageHandler<"highl
       type: "optionList",
       data: items,
       fuzzyProviderType: provider.fuzzyAdapterType,
+      isChunk: false,
     });
-
-    if (provider.postQueryHandler) {
-      setImmediate(() => {
-        setTimeout(() => {
-          provider.postQueryHandler!().catch((error) => {
-            console.error("[FuzzyPanel] Error in postHandleListMessage:", error);
-          });
-        }, 2500);
-      });
-      return;
-    }
   }
 }
