@@ -5,6 +5,7 @@ import { Globals } from "../../globals";
 import { joinPath } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { EventManager } from "../common/events/event-manager";
+import { PreContextManager } from "../common/pre-context";
 import { FuzzyFinderAdapterRegistry } from "../registry/fuzzy-provider.registry";
 import { WebviewMessageHandlerRegistry } from "../registry/webview-handler.registry";
 import { WebviewController } from "./webview.controller";
@@ -80,6 +81,7 @@ export class FuzzyFinderPanelController {
   }
 
   public static async setupProvider(providerType: FuzzyProviderType) {
+    PreContextManager.instance.captureFromActiveEditor();
     const instance = FuzzyFinderPanelController.createOrShow();
     await instance.startProvider(providerType);
   }
@@ -160,7 +162,7 @@ export class FuzzyFinderPanelController {
   /**
    * Disposes (closes) the current panel.
    */
-  public dispose() {
+  public async dispose() {
     console.log("[FuzzyPanel] Closing panel");
     this.wvPanel.dispose();
   }

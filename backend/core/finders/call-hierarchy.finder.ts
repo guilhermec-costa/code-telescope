@@ -6,6 +6,7 @@ import { resolvePathExt } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileContentCache } from "../common/cache/file-content.cache";
+import { PreContextManager } from "../common/pre-context";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**
@@ -20,21 +21,6 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
 export class CallHierarchyFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
-
-  // Store the editor context when the finder is opened
-  private capturedDocument?: vscode.TextDocument;
-  private capturedPosition?: vscode.Position;
-
-  /**
-   * Captures the current editor context before opening the webview
-   */
-  captureEditorContext(): void {
-    const editor = vscode.window.activeTextEditor;
-    if (editor) {
-      this.capturedDocument = editor.document;
-      this.capturedPosition = editor.selection.active;
-    }
-  }
 
   async querySelectableOptions(): Promise<CallHierarchyFinderData> {
     const calls = await this.getCallHierarchy();
@@ -124,14 +110,12 @@ export class CallHierarchyFinder implements IFuzzyFinderProvider {
    * Gets call hierarchy for the symbol at the current cursor position
    */
   private async getCallHierarchy(): Promise<CallHierarchyData[]> {
-    // Use captured context instead of activeTextEditor
-    if (!this.capturedDocument || !this.capturedPosition) {
+    const ctx = PreContextManager.instance.getContext();
+    if (!ctx) {
       vscode.window.showWarningMessage("No editor context captured. Please open a file first.");
       return [];
     }
-
-    const document = this.capturedDocument;
-    const position = this.capturedPosition;
+    const { document, position } = ctx;
 
     try {
       // Prepare call hierarchy

@@ -131,14 +131,11 @@ export class WebviewController {
     const options = adapter.parseOptions(data);
 
     if (isChunk) {
-      // Adiciona à lista existente
       this.optionListManager.appendOptions(options);
     } else {
-      // Substitui (comportamento original para o primeiro lote)
       this.optionListManager.setOptions(options);
     }
 
-    // Só filtra se já houver texto no input
     if (this.searchElement.value) {
       this.optionListManager.filter(this.searchElement.value);
     }
