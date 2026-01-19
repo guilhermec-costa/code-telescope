@@ -194,16 +194,187 @@ Adding a new finder requires:
 
 The system automatically wires everything together through the type system.
 
-## Built-in Finders
+# Built-in Finders
 
-- **Workspace Files**: Find files in the current workspace
-- **Workspace Text Search**: Search text across files using ripgrep
-- **Git Commits**: Browse git history with diff previews
-- **Git Branches**: Quickly switch and inspect git branches
-- **Keybindings**: Browse and execute registered VS Code keybindings
-- **Custom**: Quick picker for user-defined custom finders
+Code Telescope provides a comprehensive set of built-in finders to navigate and explore your workspace efficiently.
 
-*(More coming soon...)*
+## Available Finders
+
+### 📄 Workspace Files
+**Command:** `code-telescope.fuzzy.file`
+
+Find and open files in your workspace with fuzzy matching.
+
+**Usage:**
+```
+Ctrl+Shift+P → "Code Telescope: File Fuzzy Finder"
+```
+
+---
+
+### 🔍 Workspace Text Search
+**Command:** `code-telescope.fuzzy.wsText`
+
+Search for text across all files in your workspace using ripgrep.
+
+**Usage:**
+```
+Ctrl+Shift+P → "Code Telescope: Workspace Text Finder"
+```
+
+---
+
+### 🔑 Keybindings
+**Command:** `code-telescope.fuzzy.keybindings`
+
+Browse and navigate through your VS Code keybindings.
+
+**Usage:**
+```
+Ctrl+Shift+P → "Code Telescope: Keybindings"
+```
+
+---
+
+### 🌿 Git Branches
+**Command:** `code-telescope.fuzzy.branch`
+
+Quick branch switching and management.
+
+**Usage:**
+```
+Ctrl+Shift+P → "Code Telescope: Branch Fuzzy Finder"
+```
+
+---
+
+### 🔤 Workspace Symbols
+**Command:** `code-telescope.fuzzy.wsSymbols`
+
+Find symbols (functions, classes, variables) across your entire workspace.
+
+**Usage:**
+```
+Ctrl+Shift+P → "Code Telescope: Workspace Symbols"
+```
+
+---
+
+### 🕒 Recent Files
+**Command:** `code-telescope.fuzzy.recentFiles`
+
+Quick access to recently opened files.
+
+**Usage:**
+```
+Ctrl+Shift+P → "Code Telescope: Recent Files"
+```
+
+---
+
+### 🎨 Color Schemes
+**Command:** `code-telescope.fuzzy.colorschemes`
+
+Browse and switch between installed color themes.
+
+**Usage:**
+```
+Ctrl+Shift+P → "Code Telescope: Colorschemes"
+```
+
+---
+
+### ⚠️ Diagnostics
+**Command:** `code-telescope.fuzzy.diagnostics`
+
+Navigate through all workspace problems (errors, warnings, hints).
+
+**Usage:**
+```
+Ctrl+Shift+P → "Code Telescope: Diagnostics"
+```
+
+---
+
+### ⚙️ Tasks
+**Command:** `code-telescope.fuzzy.tasks`
+
+Execute workspace tasks from all providers (npm, gulp, tasks.json, etc.).
+
+**Usage:**
+```
+Ctrl+Shift+P → "Code Telescope: Tasks"
+```
+
+---
+
+### 📞 Call Hierarchy
+**Command:** `code-telescope.fuzzy.callHierarchy`
+
+Explore function call relationships (incoming and outgoing calls).
+
+**Usage:**
+```
+1. Place cursor on a function/method
+2. Ctrl+Shift+P → "Code Telescope: Call hierarchy"
+```
+
+---
+
+### 🔧 Custom Finders
+**Command:** `code-telescope.fuzzy.custom`
+
+Quick picker to select and execute custom user-defined finders.
+
+**Usage:**
+```
+Ctrl+Shift+P → "Code Telescope: Pick Custom Finder"
+```
+
+---
+
+### Keybindings Guide
+
+```json
+[
+  {
+    "key": "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.file",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.wsText"
+  },
+  {
+    "key": "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.wsSymbols"
+  },
+  {
+    "key":  "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.recentFiles"
+  },
+  {
+    "key":  "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.diagnostics"
+  },
+  {
+    "key":  "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.tasks"
+  },
+  {
+    "key":  "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.branch"
+  },
+  {
+    "key":  "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.callHierarchy",
+    "when": "editorTextFocus"
+  }
+]
+```
+
+---
 
 # Extending Code Telescope
 

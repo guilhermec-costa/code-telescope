@@ -106,7 +106,7 @@ describe("WebviewAssetManager", () => {
       expect.objectContaining({ fsPath: expect.stringContaining("special.view.html") }),
     );
     expect(mockWebview.asWebviewUri).toHaveBeenCalledWith(
-      expect.objectContaining({ fsPath: expect.stringContaining("ui/style/special.css") }),
+      expect.objectContaining({ fsPath: expect.stringContaining("ui/dist/style/special.css") }),
     );
   });
 

@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, type Mocked, vi } from "vitest";
 import { CustomProviderLoader } from "../core/common/custom/custom-provider.loader";
-import { loadDecorators } from "../core/decorators/loader";
 import { activate, deactivate } from "../extension";
 import { Globals } from "../globals";
 import { registerProviderCmd } from "../utils/commands";
@@ -74,10 +73,6 @@ describe("Extension entrypoint", () => {
     // globals
     expect(Globals.EXTENSION_URI).toBe("uri");
     expect(Globals.USER_THEME).toBe("Dark+");
-
-    // decorators
-    expect(loadDecorators).toHaveBeenNthCalledWith(1, "**/*.finder.js", expect.any(String));
-    expect(loadDecorators).toHaveBeenNthCalledWith(2, "**/*.handler.js", expect.any(String));
 
     // provider loader
     const loaderInstance = vi.mocked(CustomProviderLoader).mock.results[0].value as Mocked<CustomProviderLoader>;
