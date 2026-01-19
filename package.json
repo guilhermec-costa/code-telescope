@@ -8,7 +8,7 @@
     "publisher": "guichina",
     "description": "",
     "version": "0.2.2",
-    "icon": "images/logo.jpg",
+    "icon": "images/logo.png",
     "engines": {
         "vscode": "^1.106.0"
     },
