@@ -76,10 +76,10 @@ export class WebviewController {
         console.time("shiki-init");
 
         msg.data.languages.forEach((language) => {
-          HighlighterManager.loadLanguageFromBundle(language);
+          HighlighterManager.loadLanguageIfNeeded(language);
         });
 
-        HighlighterManager.loadThemeFromBundle(msg.data.theme);
+        HighlighterManager.loadThemeIfNeeded(msg.data.theme);
 
         console.timeEnd("shiki-init");
 
@@ -90,7 +90,7 @@ export class WebviewController {
 
       case "themeUpdate": {
         console.log("Theme updated on webview");
-        await HighlighterManager.loadThemeFromBundle(msg.data.theme);
+        await HighlighterManager.loadThemeIfNeeded(msg.data.theme);
         await this.previewManager.rerenderWithTheme(msg.data.theme);
         break;
       }
@@ -148,7 +148,6 @@ export class WebviewController {
     }
 
     this.focusSearchInput();
-    WebviewToExtensionMessenger.instance.onPostHandleListMessage();
   }
 
   /**

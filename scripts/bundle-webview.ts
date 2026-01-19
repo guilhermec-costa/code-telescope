@@ -50,6 +50,21 @@ function copyDir(src: string, dest: string) {
   }
 }
 
+function copyMaterialIcons() {
+  const src = path.resolve("node_modules/material-icon-theme/icons");
+  const dest = path.resolve("ui/dist/vendor/material-icons");
+
+  fs.mkdirSync(dest, { recursive: true });
+
+  for (const file of fs.readdirSync(src)) {
+    const srcFile = path.join(src, file);
+    const destFile = path.join(dest, file);
+    fs.copyFileSync(srcFile, destFile);
+  }
+
+  console.log(`[Build] Copied ${fs.readdirSync(src).length} material icons to dist/vendor/material-icons`);
+}
+
 async function run() {
   const entryPoints = findEntryPoints();
   console.log("Entrypoints:", entryPoints);
@@ -98,6 +113,8 @@ async function run() {
         copyDir(src, dest);
         console.log(`Copied ${dir} to dist`);
       }
+
+      copyMaterialIcons();
     }),
   );
 

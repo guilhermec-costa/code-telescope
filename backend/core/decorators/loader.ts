@@ -17,7 +17,6 @@ import "../presentation/handlers/close-panel.handler";
 import "../presentation/handlers/dynamic-search.handler";
 import "../presentation/handlers/highlighter-init-done.handler";
 import "../presentation/handlers/option-selected.handler";
-import "../presentation/handlers/post-list-message.handler";
 import "../presentation/handlers/preview-request.handler";
 import "../presentation/handlers/update-layout-prop.handler";
 import "../presentation/handlers/webview-dom-ready.handler";

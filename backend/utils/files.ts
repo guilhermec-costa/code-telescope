@@ -224,7 +224,7 @@ export function guessLanguageIdFromPath(path: string): string {
 
 export function getSvgIconUrl(path: string) {
   const language = guessLanguageIdFromPath(path);
-  const svgPath = joinPath(Globals.EXTENSION_URI, "node_modules", "material-icon-theme", "icons", `${language}.svg`);
+  const svgPath = joinPath(Globals.EXTENSION_URI, "ui", "dist", "vendor", "material-icons", `${language}.svg`);
   const wv = FuzzyFinderPanelController.instance?.webview!;
   return wv.asWebviewUri(svgPath).toString();
 }

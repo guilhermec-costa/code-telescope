@@ -15,7 +15,7 @@ import { WebviewController } from "../webview.controller";
 export class HighlighterInitDoneHandler implements IWebviewMessageHandler<"highlighterInitDone"> {
   readonly type = "highlighterInitDone";
 
-  async handle(msg: Extract<FromWebviewKindMessage, { type: "highlighterInitDone" }>, wv: vscode.Webview) {
+  async handle(_msg: Extract<FromWebviewKindMessage, { type: "highlighterInitDone" }>, wv: vscode.Webview) {
     const provider = FuzzyFinderPanelController.instance!.provider;
     const items = await provider.querySelectableOptions();
 
@@ -24,5 +24,16 @@ export class HighlighterInitDoneHandler implements IWebviewMessageHandler<"highl
       data: items,
       fuzzyProviderType: provider.fuzzyAdapterType,
     });
+
+    if (provider.postQueryHandler) {
+      setImmediate(() => {
+        setTimeout(() => {
+          provider.postQueryHandler!().catch((error) => {
+            console.error("[FuzzyPanel] Error in postHandleListMessage:", error);
+          });
+        }, 2500);
+      });
+      return;
+    }
   }
 }
