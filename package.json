@@ -356,6 +356,7 @@
         "@vscode/codicons": "^0.0.44",
         "fast-glob": "^3.3.3",
         "glob": "^13.0.0",
-        "material-icon-theme": "^5.30.0"
+        "material-icon-theme": "^5.30.0",
+        "p-limit": "^7.2.0"
     }
 }

@@ -14,6 +14,7 @@ import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
 export class WebviewController {
   /** Search input HTML element used for filtering options. */
   private searchElement: HTMLInputElement;
+  private pendingHeavyFiles = new Set<string>();
 
   constructor(
     private readonly previewManager: PreviewManager,
@@ -90,6 +91,15 @@ export class WebviewController {
         const isChunk = (msg as any).isChunk === true;
         this.handleOptionListMessage(msg, isChunk);
         break;
+      }
+
+      case "removeHeavyOptions": {
+        for (const p of msg.data) {
+          this.pendingHeavyFiles.add(p);
+        }
+
+        this.optionListManager.removeHeavyFiles(Array.from(this.pendingHeavyFiles));
+        this.pendingHeavyFiles.clear();
         break;
       }
 
@@ -98,13 +108,6 @@ export class WebviewController {
         const { previewAdapterType, data } = msg;
         await this.previewManager.updatePreview(data, previewAdapterType);
         break;
-      }
-
-      case "postQueryHandler": {
-        const { data, action } = msg;
-        if (action === "filterLargeFiles") {
-          StateManager.pathsToExclude = data;
-        }
       }
     }
   }

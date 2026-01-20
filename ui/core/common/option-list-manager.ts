@@ -83,7 +83,6 @@ export class OptionListManager {
     }
 
     this.updateItemsCount();
-    console.log("New index: ", this.getRelativeFirstIndex());
     this.debouncedRender();
   }
 
@@ -177,6 +176,20 @@ export class OptionListManager {
       this.clearOptions();
       this.previewManager.clearPreview();
     }
+  }
+
+  public removeHeavyFiles(paths: string[]) {
+    if (!this.dataAdapter || paths.length === 0) return;
+
+    const heavySet = new Set(paths);
+
+    const getValue = (opt: any) => this.dataAdapter!.getSelectionValue(opt);
+
+    this.allOptions = this.allOptions.filter((opt) => !heavySet.has(getValue(opt)));
+    this.filteredOptions = this.filteredOptions.filter((opt) => !heavySet.has(getValue(opt)));
+
+    this.updateItemsCount();
+    this.debouncedRender();
   }
 
   /**

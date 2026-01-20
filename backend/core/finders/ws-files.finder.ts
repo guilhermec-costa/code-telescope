@@ -1,3 +1,4 @@
+import { stat } from "node:fs/promises";
 import * as fg from "fast-glob";
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
@@ -22,8 +23,8 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   previewAdapterType!: PreviewRendererType;
 
   async querySelectableOptions(): Promise<FileFinderData> {
-    const allFiles = await this.getWorkspaceFilesWSize();
-    const CHUNK_SIZE = 2000;
+    const allFiles = await this.getWorkspaceFiles();
+    const CHUNK_SIZE = 1500;
 
     const firstChunk = this.processFileChunk(allFiles.slice(0, CHUNK_SIZE));
 
@@ -46,6 +47,37 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
     );
   }
 
+  private async detectAndNotifyLargeFiles(files: string[], maxBytes: number) {
+    const panel = FuzzyFinderPanelController.instance?.webview;
+    if (!panel) return;
+
+    const { default: pLimit } = await import("p-limit");
+    const limit = pLimit(32);
+
+    const heavyFiles: string[] = [];
+
+    await Promise.all(
+      files.map((file) =>
+        limit(async () => {
+          try {
+            const s = await stat(file);
+            if (s.size > maxBytes) {
+              heavyFiles.push(file);
+            }
+          } catch {}
+        }),
+      ),
+    );
+
+    if (heavyFiles.length === 0) return;
+
+    await WebviewController.sendMessage(panel, {
+      type: "removeHeavyOptions",
+      data: heavyFiles,
+      fuzzyProviderType: this.fuzzyAdapterType,
+    });
+  }
+
   private async streamChunks(allFiles: string[], size: number) {
     for (let i = size; i < allFiles.length; i += size) {
       await new Promise((resolve) => setTimeout(resolve, 16));
@@ -56,12 +88,20 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
       const panel = FuzzyFinderPanelController.instance?.webview;
       if (!panel) break;
 
+      const isLastChunk = i + size >= allFiles.length;
       await WebviewController.sendMessage(panel, {
         type: "optionList",
         data: chunkData as any,
         isChunk: true,
         fuzzyProviderType: this.fuzzyAdapterType,
+        isLastChunk,
       });
+
+      if (isLastChunk) {
+        const { maxFileSize } = ExtensionConfigManager.wsFileFinderCfg;
+        const maxBytes = maxFileSize * 1024;
+        this.detectAndNotifyLargeFiles(allFiles, maxBytes);
+      }
     }
   }
 
@@ -71,8 +111,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   }
 
   public async getWorkspaceFilesWSize(): Promise<string[]> {
-    const { excludePatterns, excludeHidden, includePatterns, maxResults, maxFileSize } =
-      ExtensionConfigManager.wsFileFinderCfg;
+    const { excludePatterns, excludeHidden, includePatterns, maxResults } = ExtensionConfigManager.wsFileFinderCfg;
 
     const folders = vscode.workspace.workspaceFolders;
     if (!folders || folders.length === 0) return [];
@@ -81,7 +120,6 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
     if (excludeHidden) ignore.push("**/.*");
 
     const entries = includePatterns.length > 0 ? includePatterns : ["**/*"];
-    const maxBytes = 1024 * maxFileSize;
 
     try {
       const searchPromises = folders.map((folder) => {
@@ -91,7 +129,6 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
           cwd: rootPath,
           ignore: ignore,
           absolute: true,
-          stats: true,
           dot: !excludeHidden,
           onlyFiles: true,
           suppressErrors: true,
@@ -102,9 +139,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
       const resultsPerFolder = await Promise.all(searchPromises);
       const allEntries = resultsPerFolder.flat();
 
-      const filtered = allEntries.filter((entry) => (entry.stats?.size || 0) <= maxBytes).map((entry) => entry.path);
-
-      return maxResults ? filtered.slice(0, maxResults) : filtered;
+      return maxResults ? allEntries.slice(0, maxResults) : allEntries;
     } catch (e) {
       console.error("Erro na busca de arquivos multi-root:", e);
       return [];

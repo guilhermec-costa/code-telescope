@@ -58,6 +58,7 @@ export interface OptionListMessage {
   data: any[];
   fuzzyProviderType: FuzzyProviderType;
   isChunk: boolean;
+  isLastChunk?: boolean;
 }
 
 /**
@@ -72,6 +73,12 @@ export interface PreviewUpdateMessage {
 
 export interface ResetFuzzyPanel {
   type: "resetWebview";
+}
+
+export interface RemoveHeavyOptions {
+  type: "removeHeavyOptions";
+  data: string[];
+  fuzzyProviderType: FuzzyProviderType;
 }
 
 export interface PostHandleListMessage {
@@ -171,7 +178,8 @@ export type ToWebviewKindMessage =
   | ThemeUpdateMessage
   | InitHighlighter
   | PostQueryhandlerResultMessage
-  | ResetFuzzyPanel;
+  | ResetFuzzyPanel
+  | RemoveHeavyOptions;
 
 /**
  * Represents all messages that **the webview sends to the backend**.
