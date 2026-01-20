@@ -15,7 +15,7 @@ export class PreviewRequestHandler implements IWebviewMessageHandler<"previewReq
     const { selectedId } = msg.data;
 
     const previewData = await provider.getPreviewData(selectedId);
-    const themeData = await getCurThemeMetadata();
+    const themeData = provider.fuzzyAdapterType === "workspace.colorschemes" ? {} : await getCurThemeMetadata();
     previewData.metadata = {
       ...previewData.metadata,
       ...themeData,

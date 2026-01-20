@@ -14,7 +14,7 @@ export function getShikiTheme(vscodeTheme: string) {
 }
 
 export async function getCurThemeMetadata() {
-  const themeData = await ThemeLoader.getCurrentThemeData();
+  const themeData = await ThemeLoader.getThemeData();
   return {
     themeType: themeData.type,
     themeJson: themeData.jsonData,

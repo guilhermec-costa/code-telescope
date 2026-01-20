@@ -3,9 +3,9 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters
 import { ColorSchemesFinderData, ColorThemeData } from "../../../shared/exchange/colorschemes";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
-import { getShikiTheme } from "../../utils/theme";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { ThemeLoader } from "../theme-loader";
 
 /**
  * Fuzzy provider that retrieves available color schemes.
@@ -50,6 +50,7 @@ export class ColorSchemesFinder implements IFuzzyFinderProvider {
 
   async getPreviewData(themeData: ColorThemeData): Promise<HighlightedCodePreviewData> {
     await this.onSelect(themeData);
+    const themeDetails = await ThemeLoader.getThemeData(themeData.label);
     return {
       content: {
         kind: "text",
@@ -57,7 +58,10 @@ export class ColorSchemesFinder implements IFuzzyFinderProvider {
         text: this.generatePreviewContent(themeData),
       },
       language: "typescript",
-      overrideTheme: getShikiTheme(themeData.id),
+      metadata: {
+        themeJson: themeDetails.jsonData,
+        themeType: themeDetails.type,
+      },
     };
   }
 

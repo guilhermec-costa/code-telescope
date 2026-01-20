@@ -12,8 +12,8 @@ export interface ThemeInfo {
 export class ThemeLoader {
   private static cache: Map<string, any> = new Map();
 
-  static async getCurrentThemeData(): Promise<ThemeInfo> {
-    const themeName = vscode.workspace.getConfiguration("workbench").get<string>("colorTheme");
+  static async getThemeData(targetTheme?: string): Promise<ThemeInfo> {
+    const themeName = targetTheme || vscode.workspace.getConfiguration("workbench").get<string>("colorTheme");
     const activeTheme = vscode.window.activeColorTheme;
     const type =
       activeTheme.kind === vscode.ColorThemeKind.Dark || activeTheme.kind === vscode.ColorThemeKind.HighContrast

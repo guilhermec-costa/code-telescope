@@ -198,9 +198,6 @@ export class OptionListManager {
    * Returns the first index for virtualized mode.
    */
   private restoreSelectedIndex(): number {
-    if (StateManager.selectedIndex != 0) {
-      return StateManager.selectedIndex;
-    }
     return this.getRelativeFirstIndex();
   }
 
