@@ -22,7 +22,6 @@ export class OptionListManager {
 
   private listElement: HTMLUListElement;
   private itemsCountElement: HTMLElement | null;
-  private oversizedOptionsExcluded = false;
 
   /** Prefix used to generate DOM ids for option items */
   private readonly OPTION_ITEM_ID_PREFIX = "option-item-id-";
@@ -68,9 +67,24 @@ export class OptionListManager {
     return 50;
   }
 
+  private debouncedRender = debounce(() => {
+    this.render();
+    StateManager.selectedIndex = this.getRelativeFirstIndex();
+  }, 50);
+
   public appendOptions(options: any[]): void {
     this.allOptions.push(...options);
+
+    if (StateManager.prompt === "") {
+      this.filteredOptions = this.allOptions;
+    } else {
+      const newFiltered = options.filter((opt) => this.dataAdapter!.filterOption(opt, StateManager.prompt));
+      this.filteredOptions.push(...newFiltered);
+    }
+
     this.updateItemsCount();
+    console.log("New index: ", this.getRelativeFirstIndex());
+    this.debouncedRender();
   }
 
   /**
@@ -78,50 +92,24 @@ export class OptionListManager {
    * Resets state, renders items and requests preview for the first option.
    */
   public setOptions(options: any[], updateItemsCount: boolean = true): void {
-    const perfStart = performance.now();
-
     if (!this.dataAdapter) {
       console.error("[OptionListManager] No adapter set");
       return;
     }
 
-    const afterGuard = performance.now();
-
     this.allOptions = options;
     this.filteredOptions = options;
 
-    const afterAssign = performance.now();
-
     StateManager.selectedIndex = this.restoreSelectedIndex();
     StateManager.prompt = "";
-
-    const afterStateReset = performance.now();
 
     if (updateItemsCount) {
       this.updateItemsCount();
     }
 
-    const afterCount = performance.now();
-
     this.render();
-
-    const afterRender = performance.now();
-
     const first = this.getRelativeFirstItem();
     if (first) this.requestPreview(first);
-
-    const afterPreview = performance.now();
-
-    console.info(
-      `[Code Telescope][SetOptions] ` +
-        `items=${options.length} ` +
-        `assign=${(afterAssign - afterGuard).toFixed(2)}ms ` +
-        `stateReset=${(afterStateReset - afterAssign).toFixed(2)}ms ` +
-        `count=${(afterCount - afterStateReset).toFixed(2)}ms ` +
-        `render=${(afterRender - afterCount).toFixed(2)}ms ` +
-        `preview=${(afterPreview - afterRender).toFixed(2)}ms ` +
-        `total=${(afterPreview - perfStart).toFixed(2)}ms`,
-    );
   }
 
   /**
@@ -130,10 +118,6 @@ export class OptionListManager {
    */
   public filter(query: string): void {
     if (!this.dataAdapter) return;
-
-    if (!this.oversizedOptionsExcluded && StateManager.prompt === "") {
-      this.excludeOptionsByPaths(StateManager.pathsToExclude ?? []);
-    }
 
     StateManager.prompt = query.toLowerCase();
 
@@ -409,17 +393,5 @@ export class OptionListManager {
     if (this.itemsCountElement) {
       this.itemsCountElement.textContent = `${this.filteredOptions.length} / ${this.allOptions.length}`;
     }
-  }
-
-  private excludeOptionsByPaths(pathList: string[]) {
-    if (this.oversizedOptionsExcluded) return;
-
-    const set = new Set(pathList);
-
-    this.allOptions = this.allOptions.filter((option) => !set.has(option.absolute));
-
-    this.filteredOptions = this.filteredOptions.filter((option) => !set.has(option.absolute));
-
-    this.oversizedOptionsExcluded = true;
   }
 }

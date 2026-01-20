@@ -22,8 +22,8 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   previewAdapterType!: PreviewRendererType;
 
   async querySelectableOptions(): Promise<FileFinderData> {
-    const allFiles = await this.getWorkspaceFiles();
-    const CHUNK_SIZE = 1500;
+    const allFiles = await this.getWorkspaceFilesWSize();
+    const CHUNK_SIZE = 2000;
 
     const firstChunk = this.processFileChunk(allFiles.slice(0, CHUNK_SIZE));
 
@@ -70,7 +70,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
     await execCmd(Globals.cmds.openFile, uri);
   }
 
-  public async getWorkspaceFiles(): Promise<string[]> {
+  public async getWorkspaceFilesWSize(): Promise<string[]> {
     const { excludePatterns, excludeHidden, includePatterns, maxResults, maxFileSize } =
       ExtensionConfigManager.wsFileFinderCfg;
 
@@ -91,7 +91,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
           cwd: rootPath,
           ignore: ignore,
           absolute: true,
-          // stats: true, //
+          stats: true,
           dot: !excludeHidden,
           onlyFiles: true,
           suppressErrors: true,
@@ -102,13 +102,35 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
       const resultsPerFolder = await Promise.all(searchPromises);
       const allEntries = resultsPerFolder.flat();
 
-      // const filtered = allEntries.filter((entry) => (entry.stats?.size || 0) <= maxBytes).map((entry) => entry.path);
+      const filtered = allEntries.filter((entry) => (entry.stats?.size || 0) <= maxBytes).map((entry) => entry.path);
 
-      return maxResults ? allEntries.slice(0, maxResults) : allEntries;
+      return maxResults ? filtered.slice(0, maxResults) : filtered;
     } catch (e) {
       console.error("Erro na busca de arquivos multi-root:", e);
       return [];
     }
+  }
+
+  public async getWorkspaceFiles(): Promise<string[]> {
+    const { excludePatterns, excludeHidden, includePatterns, maxResults } = ExtensionConfigManager.wsFileFinderCfg;
+
+    const folders = vscode.workspace.workspaceFolders;
+    if (!folders || folders.length === 0) return [];
+
+    const includes = includePatterns.length > 0 ? includePatterns : ["**/*"];
+    const excludes = [...excludePatterns];
+
+    if (excludeHidden) {
+      excludes.push("**/.*");
+    }
+
+    const includeGlob = includes.length === 1 ? includes[0] : `{${includes.join(",")}}`;
+
+    const excludeGlob = excludes.length > 0 ? `{${excludes.join(",")}}` : undefined;
+
+    const uris = await vscode.workspace.findFiles(includeGlob, excludeGlob, maxResults);
+
+    return uris.map((uri) => uri.fsPath);
   }
 
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
