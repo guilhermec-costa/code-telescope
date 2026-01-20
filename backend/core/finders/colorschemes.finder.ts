@@ -3,7 +3,7 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters
 import { ColorSchemesFinderData, ColorThemeData } from "../../../shared/exchange/colorschemes";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
-import { getShikiTheme } from "../../utils/shiki";
+import { getShikiTheme } from "../../utils/theme";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
 

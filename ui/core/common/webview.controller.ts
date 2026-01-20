@@ -1,7 +1,6 @@
 import { OptionListMessage, ToWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { debounce } from "../../utils/debounce";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
-import { HighlighterManager } from "../render/highlighter-manager";
 import { PreviewManager } from "../render/preview-manager";
 import { StateManager } from "./code/state-manager";
 import { KeyboardHandler } from "./kbd-handler";
@@ -74,22 +73,13 @@ export class WebviewController {
       }
 
       case "highlighterInit": {
-        console.time("shiki-init");
         this.previewManager.setUserTheme(msg.data.theme);
         WebviewToExtensionMessenger.instance.onHighlighterDone();
         break;
       }
 
-      case "themeUpdate": {
-        console.log("Theme updated on webview");
-        await HighlighterManager.loadThemeIfNeeded(msg.data.theme);
-        await this.previewManager.rerenderWithTheme(msg.data.theme);
-        break;
-      }
-
       case "optionList": {
-        const isChunk = (msg as any).isChunk === true;
-        this.handleOptionListMessage(msg, isChunk);
+        this.handleOptionListMessage(msg);
         break;
       }
 
@@ -124,8 +114,8 @@ export class WebviewController {
   /**
    * Processes a list of options received from the extension.
    */
-  private handleOptionListMessage(msg: OptionListMessage, isChunk: boolean = false) {
-    const { fuzzyProviderType, data } = msg;
+  private handleOptionListMessage(msg: OptionListMessage) {
+    const { fuzzyProviderType, data, isChunk } = msg;
     const adapter = FuzzyFinderDataAdapterRegistry.instance.getAdapter(fuzzyProviderType);
 
     if (!adapter) return;

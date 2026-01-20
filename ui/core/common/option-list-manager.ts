@@ -70,6 +70,8 @@ export class OptionListManager {
   private debouncedRender = debounce(() => {
     this.render();
     StateManager.selectedIndex = this.getRelativeFirstIndex();
+    const first = this.getRelativeFirstItem();
+    this.requestPreview(first);
   }, 50);
 
   public appendOptions(options: any[]): void {

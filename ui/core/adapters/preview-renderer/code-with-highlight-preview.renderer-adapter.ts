@@ -96,7 +96,7 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
     } = data;
 
     language = language === "txt" ? "text" : language;
-    const renderTheme = overrideTheme ?? theme;
+    const initialThemeName = overrideTheme ?? theme;
 
     if (!this.highlighter) {
       previewElement.innerHTML = `<pre style="padding:1rem;">${toInnerHTML(text)}</pre>`;
@@ -127,27 +127,51 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
     const highlightLine = metadata?.highlightLine ?? 0;
     const initialChunk = Math.floor(highlightLine / CHUNK_SIZE);
 
-    const [langLoadResult, themeLoadResult] = await Promise.all([
-      HighlighterManager.loadLanguageIfNeeded(language),
-      HighlighterManager.loadThemeIfNeeded(renderTheme),
-    ]);
+    const langLoadResult = await HighlighterManager.loadLanguageIfNeeded(language);
+
+    let shikiActiveTheme = initialThemeName;
+    let themeLoadError = false;
+
+    if (metadata && metadata.themeJson) {
+      try {
+        const themeJson = metadata.themeJson;
+
+        const customThemeName = themeJson.name || "vscode-custom-theme";
+        themeJson.name = customThemeName;
+
+        await this.highlighter.loadTheme(themeJson);
+
+        shikiActiveTheme = customThemeName;
+      } catch (e) {
+        console.error("[Highlighter] Failed to load custom VS Code theme JSON. Falling back.", e);
+        const type = metadata.themeType;
+        shikiActiveTheme = type === "light" ? "min-light" : "min-dark";
+
+        await HighlighterManager.loadThemeIfNeeded(shikiActiveTheme);
+      }
+    } else {
+      const themeResult = await HighlighterManager.loadThemeIfNeeded(initialThemeName);
+      if (!themeResult.ok) {
+        themeLoadError = true;
+      }
+    }
 
     if (!langLoadResult.ok) {
       console.log(`[Highlighter] Failed to load language "${language}". Falling back to plain text.`);
       language = "text";
     }
 
-    if (!themeLoadResult.ok) {
+    if (themeLoadError) {
       const failedAdapter = PreviewRendererAdapterRegistry.instance.getAdapter("preview.failed");
       await failedAdapter.render(
         previewElement,
         {
           content: {
             title: "Preview error",
-            message: "An error occurred while rendering this preview.",
+            message: "An error occurred while rendering this preview (Theme Load Error).",
           },
         },
-        renderTheme,
+        initialThemeName,
       );
       return;
     }
@@ -174,8 +198,9 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
 
       const html = this.highlighter.codeToHtml(chunkText, {
         lang: language,
-        theme: renderTheme,
-      });
+        theme: shikiActiveTheme,
+        bg: "transparent",
+      } as any);
 
       const chunkContainer = document.createElement("div");
       chunkContainer.innerHTML = html;

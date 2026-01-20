@@ -1,10 +1,9 @@
 import * as vscode from "vscode";
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
-import { FromWebviewKindMessage, InitHighlighter } from "../../../shared/extension-webview-protocol";
+import { FromWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { joinPath } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { EventManager } from "../common/events/event-manager";
 import { PreContextManager } from "../common/pre-context";
 import { FuzzyFinderAdapterRegistry } from "../registry/fuzzy-provider.registry";
 import { WebviewMessageHandlerRegistry } from "../registry/webview-handler.registry";
@@ -53,7 +52,6 @@ export class FuzzyFinderPanelController {
         localResourceRoots: [
           joinPath(Globals.EXTENSION_URI, "ui"),
           joinPath(Globals.EXTENSION_URI, "ui/dist"),
-          joinPath(Globals.EXTENSION_URI, "ui/dist/shiki"),
           joinPath(Globals.EXTENSION_URI, "node_modules/material-icon-theme/icons"),
         ],
       },
@@ -75,7 +73,6 @@ export class FuzzyFinderPanelController {
 
     const panel = this.createPanel();
     FuzzyFinderPanelController._instance = new FuzzyFinderPanelController(panel);
-    EventManager.init();
     FuzzyFinderPanelController._instance.listenWebview();
     return FuzzyFinderPanelController._instance;
   }
@@ -121,24 +118,6 @@ export class FuzzyFinderPanelController {
     console.log(`[FuzzyPanel] Sending ClearPreview event`);
     await WebviewController.sendMessage(this.webview, {
       type: "resetWebview",
-    });
-  }
-
-  /**
-   * Sends a theme change/update event to the Webview.
-   * @param theme Shiki-compatible theme name (e.g., "dark-plus").
-   */
-  public async emitThemeUpdateEvent(theme: string) {
-    await WebviewController.sendMessage(this.webview, {
-      type: "themeUpdate",
-      data: { theme },
-    });
-  }
-
-  public async emitInitShikiEvent(data: InitHighlighter["data"]) {
-    await WebviewController.sendMessage(this.webview, {
-      type: "highlighterInit",
-      data,
     });
   }
 

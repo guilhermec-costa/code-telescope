@@ -83,6 +83,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
           text: "Error loading file",
         },
         language: "text",
+        metadata: {},
       };
     }
   }

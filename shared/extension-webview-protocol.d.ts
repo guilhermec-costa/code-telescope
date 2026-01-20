@@ -41,16 +41,6 @@ export type HighlightedCodePreviewContent = TextPreviewContent | ImagePreviewCon
 export interface HighlightedCodePreviewData extends PreviewData<HighlightedCodePreviewContent> {}
 
 /**
- * Message sent from the backend to update the theme applied in the webview.
- */
-export interface ThemeUpdateMessage {
-  type: "themeUpdate";
-  data: {
-    theme: string;
-  };
-}
-
-/**
  * Message sent from the backend containing an updated list of options.
  */
 export interface OptionListMessage {
@@ -175,7 +165,6 @@ export interface PostQueryhandlerResultMessage {
 export type ToWebviewKindMessage =
   | PreviewUpdateMessage
   | OptionListMessage
-  | ThemeUpdateMessage
   | InitHighlighter
   | PostQueryhandlerResultMessage
   | ResetFuzzyPanel

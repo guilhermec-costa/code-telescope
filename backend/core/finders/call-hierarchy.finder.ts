@@ -92,7 +92,6 @@ export class CallHierarchyFinder implements IFuzzyFinderProvider {
     const highlightLine = selected.line - 1;
 
     const content = await FileContentCache.instance.get(filePath);
-
     return {
       content: {
         path: filePath,
@@ -118,7 +117,6 @@ export class CallHierarchyFinder implements IFuzzyFinderProvider {
     const { document, position } = ctx;
 
     try {
-      // Prepare call hierarchy
       const items = await vscode.commands.executeCommand<vscode.CallHierarchyItem[]>(
         "vscode.prepareCallHierarchy",
         document.uri,
