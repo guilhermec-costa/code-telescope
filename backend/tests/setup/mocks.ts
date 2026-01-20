@@ -1,5 +1,8 @@
 import { vi } from "vitest";
 
+vi.mock("html-encoding-sniffer", () => ({}));
+vi.mock("@exodus/bytes", () => ({}));
+
 vi.mock("vscode", () => ({
   Uri: {
     file: (path: string) => ({ fsPath: path }),

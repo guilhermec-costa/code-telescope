@@ -37,6 +37,7 @@ describe("HighlighterInitDoneHandler", () => {
       type: "optionList",
       data: [{ label: "file1" }, { label: "file2" }],
       fuzzyProviderType: "workspace.files",
+      isChunk: false,
     });
   });
 });

@@ -334,7 +334,7 @@
         "@vscode/test-electron": "^2.5.2",
         "esbuild": "^0.27.0",
         "husky": "^9.1.7",
-        "jsdom": "^27.3.0",
+        "jsdom": "^26.1.0",
         "lint-staged": "^16.2.7",
         "shiki": "^3.17.0",
         "ts-node": "^10.9.2",
@@ -355,7 +355,6 @@
     "dependencies": {
         "@vscode/codicons": "^0.0.44",
         "fast-glob": "^3.3.3",
-        "glob": "^13.0.0",
         "material-icon-theme": "^5.30.0"
     }
 }

@@ -41,7 +41,6 @@ suite("Integration Tests", () => {
         "webviewDOMReady",
         "updateLayoutProp",
         "previewRequest",
-        "postHandleListMessage",
         "optionSelected",
         "highlighterInitDone",
         "dynamicSearch",
