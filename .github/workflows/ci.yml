@@ -11,23 +11,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm ci
 
       - name: Build Extension
-        run: pnpm backend:compile
+        run: npm run backend:compile
 
       - name: Run Unit Tests
-        run: pnpm test:unit
+        run: npm run test:unit
 
       - name: Run Integration Tests
-        run: xvfb-run -a pnpm test:integration
+        run: xvfb-run -a npm run test:integration
