@@ -42,7 +42,6 @@ suite("Integration Tests", () => {
         "updateLayoutProp",
         "previewRequest",
         "optionSelected",
-        "highlighterInitDone",
         "dynamicSearch",
         "closePanel",
       ];
