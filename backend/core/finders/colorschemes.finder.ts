@@ -50,7 +50,7 @@ export class ColorSchemesFinder implements IFuzzyFinderProvider {
 
   async getPreviewData(themeData: ColorThemeData): Promise<HighlightedCodePreviewData> {
     await this.onSelect(themeData);
-    const themeDetails = await ThemeLoader.getThemeData(themeData.label);
+    const themeDetails = await ThemeLoader.getCurrentThemeData(themeData.label);
     return {
       content: {
         kind: "text",

@@ -40,7 +40,7 @@ async function run() {
     target: ["node18"],
     sourcemap: !isProd,
     minify: isProd,
-    external: ["vscode", "jsonc-parser"],
+    external: ["vscode"],
     logLevel: "info",
   };
 
