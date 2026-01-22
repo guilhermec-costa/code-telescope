@@ -6,8 +6,10 @@ A Telescope-inspired fuzzy finder for VS Code, bringing the power and flexibilit
 
 Telescope.nvim revolutionized navigation in Neovim with its extensible fuzzy finder architecture. This project brings that same philosophy to VS Code: a single, powerful interface for finding files, searching text, browsing git commits...;
 
+![Code Telescope demo](images/code-telescope.gif)
+<!-- 
 <video src="https://github.com/user-attachments/assets/c1ac4d69-4d39-47ea-afff-212270cd5894" muted="muted" autoplay="autoplay" loop="loop" style="max-width: 100%;">
-</video>
+</video> -->
 
 ## Architecture Overview
 
