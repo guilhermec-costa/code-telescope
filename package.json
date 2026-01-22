@@ -6,8 +6,24 @@
         "url": "https://github.com/guilhermec-costa/code-telescope"
     },
     "publisher": "guichina",
-    "description": "",
+    "description": "A keyboard-first fuzzy finder for navigating files, symbols, text and more in VS Code, inspired by Neovim Telescope.",
     "version": "0.4.3",
+    "keywords": [
+        "fuzzy",
+        "fuzzy finder",
+        "search",
+        "code navigation",
+        "navigation",
+        "telescope",
+        "neovim",
+        "keyboard",
+        "keyboard-driven",
+        "productivity",
+        "quick open",
+        "symbols",
+        "files",
+        "ripgrep"
+    ],
     "icon": "images/logo.png",
     "engines": {
         "vscode": "^1.106.0"
