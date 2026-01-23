@@ -8,8 +8,6 @@ Telescope.nvim revolutionized navigation in Neovim with its extensible fuzzy fin
 
 ![Code Telescope demo](images/code-telescope.gif)
 <!-- 
-<video src="https://github.com/user-attachments/assets/c1ac4d69-4d39-47ea-afff-212270cd5894" muted="muted" autoplay="autoplay" loop="loop" style="max-width: 100%;">
-</video> -->
 
 ## Architecture Overview
 

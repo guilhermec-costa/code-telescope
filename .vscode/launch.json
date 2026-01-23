@@ -6,7 +6,19 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run Extension",
+      "name": "Debug Extension Production",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/backend/dist/**/*.js"
+      ],
+      "preLaunchTask": "backend bundle prod"
+    },
+    {
+      "name": "Debug Extension Dev",
       "type": "extensionHost",
       "request": "launch",
       "args": [

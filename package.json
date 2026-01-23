@@ -326,6 +326,7 @@
         "backend:watch": "tsc -b -w ./backend",
         "backend:build": "tsx scripts/bundle-backend.ts",
         "pretest": "pnpm run backend:bundle:prod && pnpm run lint",
+        "bundle:shiki": "tsx scripts/shiki/plugin.ts",
         "lint": "biome lint",
         "check": "biome check",
         "check:write": "biome check --write",
@@ -338,7 +339,13 @@
         "webview:dev": "tsx scripts/bundle-webview.ts --env=dev",
         "webview:dev:watch": "tsx scripts/bundle-webview.ts --env=dev --watch=true",
         "webview:prod": "tsx scripts/bundle-webview.ts --env=prod",
-        "webview:prod:watch": "tsx scripts/bundle-webview.ts --env=prod --watch=true"
+        "webview:prod:watch": "tsx scripts/bundle-webview.ts --env=prod --watch=true",
+        "clean": "rm -rf ui/dist && rm -rf backend/dist",
+        "build": "pnpm webview:prod && pnpm backend:bundle:prod",
+        "make:package": "pnpm clean && pnpm build && vsce package",
+        "deploy:patch": "pnpm make:package && vsce publish patch",
+        "deploy:minor": "pnpm make:package && vsce publish minor",
+        "deploy:major": "pnpm make:package && vsce publish major"
     },
     "devDependencies": {
         "@biomejs/biome": "2.3.11",

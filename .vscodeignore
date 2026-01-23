@@ -77,3 +77,5 @@ ui/vendor
 .env.*
 .DS_Store
 Thumbs.db
+
+images/*.gif

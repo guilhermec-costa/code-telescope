@@ -77,7 +77,7 @@
       "dependsOn": [
         "tsc watch",
       ],
-      "dependsOrder": "parallel"
+      "dependsOrder": "sequence"
     }
   ]
 }
