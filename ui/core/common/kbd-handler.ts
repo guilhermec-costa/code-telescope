@@ -30,6 +30,14 @@ export class KeyboardHandler {
     this.setupListeners();
   }
 
+  private isArrow(event: KeyboardEvent, key: string): boolean {
+    return event.key === key;
+  }
+
+  private isCtrlArrow(event: KeyboardEvent, key: string): boolean {
+    return event.ctrlKey && event.key === key;
+  }
+
   private match(event: KeyboardEvent, binding: string): boolean {
     if (!binding) return false;
 
@@ -52,6 +60,47 @@ export class KeyboardHandler {
 
   private setupListeners(): void {
     document.addEventListener("keydown", (event) => {
+      if (this.isCtrlArrow(event, "ArrowDown")) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.onScrollDown?.();
+        return;
+      }
+
+      if (this.isCtrlArrow(event, "ArrowUp")) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.onScrollUp?.();
+        return;
+      }
+
+      if (this.isArrow(event, "ArrowDown")) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.onMoveDown?.();
+        return;
+      }
+
+      if (this.isArrow(event, "ArrowUp")) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.onMoveUp?.();
+        return;
+      }
+
+      if (this.isCtrlArrow(event, "ArrowRight")) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.onScrollRight?.();
+        return;
+      }
+
+      if (this.isCtrlArrow(event, "ArrowLeft")) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.onScrollLeft?.();
+        return;
+      }
       const actions = [
         { key: this.cfg.moveDown, handler: () => this.onMoveDown?.() },
         { key: this.cfg.moveUp, handler: () => this.onMoveUp?.() },
