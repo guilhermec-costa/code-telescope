@@ -67,6 +67,7 @@ export class WebviewController {
     switch (msg.type) {
       case "resetWebview": {
         this.handleResetWebview();
+        this.searchElement.value = "";
         WebviewToExtensionMessenger.instance.onDOMReady();
         break;
       }
@@ -124,9 +125,6 @@ export class WebviewController {
     if (isChunk) {
       this.optionListManager.appendOptions(options);
     } else {
-      if (fuzzyProviderType !== "workspace.text") {
-        this.searchElement.value = "";
-      }
       this.optionListManager.setOptions(options);
     }
 

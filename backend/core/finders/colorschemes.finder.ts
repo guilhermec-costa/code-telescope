@@ -4,6 +4,7 @@ import { ColorSchemesFinderData, ColorThemeData } from "../../../shared/exchange
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
+import { PreContextManager } from "../common/pre-context";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
 import { ThemeLoader } from "../theme-loader";
 
@@ -38,6 +39,12 @@ export class ColorSchemesFinder implements IFuzzyFinderProvider {
   }
 
   async onSelect(themeData: ColorThemeData) {
+    this.updateTheme(themeData).then(async () => {
+      await PreContextManager.instance.focusOnCapture();
+    });
+  }
+
+  private async updateTheme(themeData: ColorThemeData) {
     try {
       vscode.workspace
         .getConfiguration()
@@ -49,7 +56,7 @@ export class ColorSchemesFinder implements IFuzzyFinderProvider {
   }
 
   async getPreviewData(themeData: ColorThemeData): Promise<HighlightedCodePreviewData> {
-    await this.onSelect(themeData);
+    await this.updateTheme(themeData);
     const themeDetails = await ThemeLoader.getCurrentThemeData(themeData.label);
     return {
       content: {
