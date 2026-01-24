@@ -29,6 +29,17 @@ export class PreContextManager {
     };
   }
 
+  async focusOnCapture() {
+    const ctx = PreContextManager.instance.getContext();
+    if (ctx) {
+      const { document, position } = ctx;
+      await vscode.workspace.openTextDocument(document.uri);
+      const editor = await vscode.window.showTextDocument(document);
+
+      editor.selection = new vscode.Selection(position, position);
+    }
+  }
+
   clear(): void {
     this.document = undefined;
     this.position = undefined;

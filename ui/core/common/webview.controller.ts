@@ -69,6 +69,7 @@ export class WebviewController {
     switch (msg.type) {
       case "resetWebview": {
         this.handleResetWebview();
+        WebviewToExtensionMessenger.instance.onDOMReady();
         break;
       }
 

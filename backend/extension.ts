@@ -3,6 +3,7 @@ import "./core/decorators/loader";
 import { CustomFuzzyProviderType } from "../shared/adapters-namespace";
 import { CustomProviderLoader } from "./core/common/custom/custom-provider.loader";
 import { CustomProviderStorage } from "./core/common/custom/custom-provider.storage";
+import { PreContextManager } from "./core/common/pre-context";
 import { Logger } from "./core/log";
 import { FuzzyFinderPanelController } from "./core/presentation/fuzzy-panel.controller";
 import { Globals } from "./globals";
@@ -27,6 +28,10 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
   customProviderLoader = new CustomProviderLoader(ctx);
   await customProviderLoader.initialize();
+
+  vscode.window.onDidChangeActiveTextEditor((ed) => {
+    PreContextManager.instance.captureFromActiveEditor();
+  });
 
   registerProviderCmd("file", () => FuzzyFinderPanelController.setupProvider("workspace.files"), ctx);
   registerProviderCmd("keybindings", () => FuzzyFinderPanelController.setupProvider("workspace.keybindings"), ctx);

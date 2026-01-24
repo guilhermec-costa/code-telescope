@@ -45,9 +45,10 @@ export class FuzzyFinderPanelController {
       "Code Telescope - Fuzzy Finder",
       {
         viewColumn: this.panelRevealPosition,
-        preserveFocus: true,
+        preserveFocus: false,
       },
       {
+        retainContextWhenHidden: true,
         enableScripts: true,
         localResourceRoots: [
           joinPath(Globals.EXTENSION_URI, "ui"),
@@ -144,5 +145,10 @@ export class FuzzyFinderPanelController {
   public async dispose() {
     console.log("[FuzzyPanel] Closing panel");
     this.wvPanel.dispose();
+  }
+
+  public hide() {
+    console.log("[FuzzyPanel] Hiding panel");
+    this.wvPanel.reveal(vscode.ViewColumn.Active, true); // mantém foco em outro lugar
   }
 }

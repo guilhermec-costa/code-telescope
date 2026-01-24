@@ -158,6 +158,8 @@ export class OptionListManager {
     this.allOptions = [];
     this.filteredOptions = [];
     StateManager.selectedIndex = 0;
+    this.updateItemsCount();
+    this.render();
   }
 
   /**
@@ -277,7 +279,7 @@ export class OptionListManager {
   /**
    * Renders the option list using virtualization.
    */
-  private render(): void {
+  render(): void {
     const perfStart = performance.now();
 
     this.applySortOnFiltered();
