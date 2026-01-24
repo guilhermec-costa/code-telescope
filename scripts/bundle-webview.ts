@@ -113,11 +113,10 @@ async function run() {
         copyDir(src, dest);
         console.log(`Copied ${dir} to dist`);
       }
-
-      copyMaterialIcons();
     }),
   );
 
+  copyMaterialIcons();
   console.log(isProd ? `Production bundle done. Watching: ${WATCH}` : `Dev bundle done. Watching: ${WATCH}`);
 }
 

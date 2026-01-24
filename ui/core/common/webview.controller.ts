@@ -1,3 +1,4 @@
+import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { OptionListMessage, ToWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { debounce } from "../../utils/debounce";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
@@ -13,6 +14,7 @@ export class WebviewController {
   /** Search input HTML element used for filtering options. */
   private searchElement: HTMLInputElement;
   private pendingHeavyFiles = new Set<string>();
+  private activeProvider: FuzzyProviderType | undefined;
 
   constructor(
     private readonly previewManager: PreviewManager,
@@ -67,7 +69,9 @@ export class WebviewController {
     switch (msg.type) {
       case "resetWebview": {
         this.handleResetWebview();
-        this.searchElement.value = "";
+        if (this.activeProvider !== msg.currentProvider) {
+          this.searchElement.value = "";
+        }
         WebviewToExtensionMessenger.instance.onDOMReady();
         break;
       }
@@ -119,6 +123,7 @@ export class WebviewController {
 
     if (!adapter) return;
 
+    this.activeProvider = fuzzyProviderType;
     this.optionListManager.setAdapter(adapter);
     const options = adapter.parseOptions(data);
 

@@ -92,6 +92,11 @@ export class FuzzyFinderPanelController {
       return;
     }
 
+    // if the user is trying to reopen the same provider and it supports dynamic search, it can't reset the webview,
+    // so the search state is mantained when the webview is remounted
+    if (this._provider && this._provider.supportsDynamicSearch && this._provider.fuzzyAdapterType === providerType)
+      return;
+
     this.setFuzzyProvider(provider);
     this.wvPanel.webview.html = await WebviewController.resolveProviderWebviewHtml(this.webview, this._provider);
 
@@ -118,6 +123,7 @@ export class FuzzyFinderPanelController {
     console.log(`[FuzzyPanel] Sending ClearPreview event`);
     await WebviewController.sendMessage(this.webview, {
       type: "resetWebview",
+      currentProvider: this.provider.fuzzyAdapterType,
     });
   }
 

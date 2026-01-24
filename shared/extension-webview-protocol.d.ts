@@ -61,8 +61,9 @@ export interface PreviewUpdateMessage {
   previewAdapterType: PreviewRendererType;
 }
 
-export interface ResetFuzzyPanel {
+export interface ResetWebviewMessage {
   type: "resetWebview";
+  currentProvider: FuzzyProviderType;
 }
 
 export interface RemoveHeavyOptions {
@@ -167,7 +168,7 @@ export type ToWebviewKindMessage =
   | OptionListMessage
   | InitHighlighter
   | PostQueryhandlerResultMessage
-  | ResetFuzzyPanel
+  | ResetWebviewMessage
   | RemoveHeavyOptions;
 
 /**

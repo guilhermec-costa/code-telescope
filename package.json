@@ -109,6 +109,7 @@
                     "type": "array",
                     "default": [
                         "**/node_modules/**",
+                        "**/.venv/**",
                         "**/dist/**",
                         "**/build/**",
                         "**/out/**",
