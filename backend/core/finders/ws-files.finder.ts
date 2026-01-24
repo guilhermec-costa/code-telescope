@@ -24,7 +24,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
 
   async querySelectableOptions(): Promise<FileFinderData> {
     const allFiles = await this.getWorkspaceFiles();
-    const CHUNK_SIZE = 2000;
+    const CHUNK_SIZE = 2500;
 
     const firstChunk = this.processFileChunk(allFiles.slice(0, CHUNK_SIZE));
 

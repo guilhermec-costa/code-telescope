@@ -91,7 +91,6 @@ export class FuzzyFinderPanelController {
       await vscode.window.showErrorMessage("Failed to start provider: ", providerType);
       return;
     }
-    if (this._provider && this._provider.fuzzyAdapterType === providerType) return;
 
     this.setFuzzyProvider(provider);
     this.wvPanel.webview.html = await WebviewController.resolveProviderWebviewHtml(this.webview, this._provider);
@@ -145,10 +144,5 @@ export class FuzzyFinderPanelController {
   public async dispose() {
     console.log("[FuzzyPanel] Closing panel");
     this.wvPanel.dispose();
-  }
-
-  public hide() {
-    console.log("[FuzzyPanel] Hiding panel");
-    this.wvPanel.reveal(vscode.ViewColumn.Active, true); // mantém foco em outro lugar
   }
 }

@@ -8,12 +8,6 @@ import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
 
 /**
  * Manages the option list lifecycle inside the webview.
- *
- * Responsibilities:
- * - Hold all options and filtered options
- * - Apply filtering, sorting and selection logic
- * - Use virtualized rendering
- * - Synchronize selection with preview requests
  */
 export class OptionListManager {
   private allOptions: any[] = [];
@@ -28,7 +22,10 @@ export class OptionListManager {
   private readonly OPTION_ITEM_ID_PREFIX = "option-item-id-";
 
   private readonly virtualizer: Virtualizer;
-  private debouncedRequestPreview: (value: string) => void;
+
+  private debouncedRequestPreview = debounce((value: string) => {
+    this.previewManager.requestPreview(value);
+  }, 0);
 
   constructor(
     private readonly previewManager: PreviewManager,
@@ -41,10 +38,6 @@ export class OptionListManager {
       itemHeight: 22,
       bufferSize: 10,
     });
-
-    this.debouncedRequestPreview = debounce((value: string) => {
-      this.previewManager.requestPreview(value);
-    }, 0);
 
     this.setupScrollListener();
   }
@@ -71,15 +64,9 @@ export class OptionListManager {
     return 50;
   }
 
-  private debouncedRender = debounce(() => {
-    this.render();
-    this.selectedIndex = this.getRelativeFirstIndex();
-    const first = this.getRelativeFirstItem();
-    this.requestPreview(first);
-  }, 50);
-
   public appendOptions(options: any[]): void {
     this.allOptions.push(...options);
+    console.log("All options length: ", this.allOptions.length);
 
     if (this.searchElement.value === "") {
       this.filteredOptions = this.allOptions;
@@ -89,14 +76,13 @@ export class OptionListManager {
     }
 
     this.updateItemsCount();
-    this.debouncedRender();
   }
 
   /**
    * Initializes the option list with a new dataset.
    * Resets state, renders items and requests preview for the first option.
    */
-  public setOptions(options: any[], updateItemsCount: boolean = true): void {
+  public setOptions(options: any[]): void {
     if (!this.dataAdapter) {
       console.error("[OptionListManager] No adapter set");
       return;
@@ -106,10 +92,7 @@ export class OptionListManager {
     this.filteredOptions = options;
 
     this.selectedIndex = this.restoreSelectedIndex();
-
-    if (updateItemsCount) {
-      this.updateItemsCount();
-    }
+    this.updateItemsCount();
 
     this.render();
     const first = this.getRelativeFirstItem();
@@ -194,7 +177,8 @@ export class OptionListManager {
     this.filteredOptions = this.filteredOptions.filter((opt) => !heavySet.has(getValue(opt)));
 
     this.updateItemsCount();
-    this.debouncedRender();
+    this.render();
+    this.selectedIndex = this.getRelativeFirstIndex();
   }
 
   /**
@@ -254,11 +238,11 @@ export class OptionListManager {
     });
   }
 
-  private applySortOnFiltered() {
+  private applySortOnOptions(options: any[]) {
     const isIvy = this.isIvyLayout();
     const customSort = this.dataAdapter.sortFn;
 
-    this.filteredOptions.sort((opt1, opt2) => {
+    options.sort((opt1, opt2) => {
       let result: number;
 
       if (customSort) {
@@ -282,7 +266,7 @@ export class OptionListManager {
   render(): void {
     const perfStart = performance.now();
 
-    this.applySortOnFiltered();
+    this.applySortOnOptions(this.filteredOptions);
     const afterSort = performance.now();
 
     if (!this.dataAdapter) return;

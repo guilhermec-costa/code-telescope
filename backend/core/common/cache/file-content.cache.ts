@@ -5,7 +5,6 @@ export class FileContentCache {
   private static _instance: FileContentCache | undefined;
 
   private cache = new Map<string, string | Uint8Array>();
-  private maxEntries = 50;
 
   private constructor() {}
 
@@ -21,27 +20,13 @@ export class FileContentCache {
   }
 
   async get(absPath: string): Promise<string | Uint8Array> {
-    if (this.cache.has(absPath)) {
-      return this.cache.get(absPath)!;
-    }
-
     const ext = resolvePathExt(absPath);
     const isImg = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext);
 
     const content = isImg
-      ? new Uint8Array(await fs.readFile(absPath)) // binário
-      : await fs.readFile(absPath, "utf-8"); // texto
-
-    this.cache.set(absPath, content);
-    this.evictIfNeeded();
+      ? new Uint8Array(await fs.readFile(absPath)) // binary
+      : await fs.readFile(absPath, "utf-8"); // text
 
     return content;
-  }
-
-  private evictIfNeeded() {
-    if (this.cache.size <= this.maxEntries) return;
-
-    const firstKey = this.cache.keys().next().value;
-    if (firstKey) this.cache.delete(firstKey);
   }
 }

@@ -12,7 +12,6 @@ export class ClosePanelHandler implements IWebviewMessageHandler<"closePanel"> {
 
   async handle(msg: Extract<FromWebviewKindMessage, { type: "closePanel" }>, wv: vscode.Webview) {
     PreContextManager.instance.focusOnCapture();
-    // FuzzyFinderPanelController.instance!.dispose();
     await execCmd(Globals.cmds.focusActiveFile);
   }
 }
