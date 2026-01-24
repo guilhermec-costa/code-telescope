@@ -30,6 +30,10 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
 
     if (allFiles.length > CHUNK_SIZE) {
       this.streamChunks(allFiles, CHUNK_SIZE);
+    } else {
+      const { maxFileSize } = ExtensionConfigManager.wsFileFinderCfg;
+      const maxBytes = maxFileSize * 1024;
+      this.detectAndNotifyLargeFiles(allFiles, maxBytes);
     }
 
     return firstChunk;

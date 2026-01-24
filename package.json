@@ -119,6 +119,7 @@
                         "**/.next/**",
                         "**/.turbo/**",
                         "**/.cache/**",
+                        "**/.vscode-test/**",
                         "**/.parcel-cache/**",
                         "**/.vite/**",
                         "**/.nuxt/**",
