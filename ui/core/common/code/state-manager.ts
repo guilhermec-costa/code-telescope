@@ -1,7 +1,6 @@
 import { VSCodeApi } from "./code-api";
 
 export type WebviewState = {
-  prompt: string;
   selectedIndex: number;
   scrollTop: number;
   previewContent: string | null;
@@ -15,7 +14,6 @@ export type WebviewState = {
 export class StateManager {
   public static pathsToExclude: string[] = [];
   private static readonly DEFAULT_STATE: WebviewState = {
-    prompt: "",
     selectedIndex: 0,
     scrollTop: 0,
     previewContent: "",
@@ -35,14 +33,6 @@ export class StateManager {
       ...prev,
       ...patch,
     });
-  }
-
-  static get prompt(): string {
-    return this.read().prompt;
-  }
-
-  static set prompt(value: string) {
-    this.update({ prompt: value });
   }
 
   static get selectedIndex(): number {

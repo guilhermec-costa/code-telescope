@@ -2,7 +2,6 @@ import { OptionListMessage, ToWebviewKindMessage } from "../../../shared/extensi
 import { debounce } from "../../utils/debounce";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { PreviewManager } from "../render/preview-manager";
-import { StateManager } from "./code/state-manager";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
@@ -22,7 +21,6 @@ export class WebviewController {
   ) {
     console.log("[WebviewController] Initializing controller");
     this.searchElement = document.getElementById("search") as HTMLInputElement;
-    this.searchElement.value = StateManager.prompt;
 
     this.setupEventListeners();
     this.setupKeyboardHandlers();
@@ -109,7 +107,6 @@ export class WebviewController {
   private handleResetWebview() {
     this.previewManager.clearPreview();
     this.optionListManager.clearOptions();
-    this.searchElement.value = StateManager.prompt;
   }
 
   /**
@@ -127,6 +124,9 @@ export class WebviewController {
     if (isChunk) {
       this.optionListManager.appendOptions(options);
     } else {
+      if (fuzzyProviderType !== "workspace.text") {
+        this.searchElement.value = "";
+      }
       this.optionListManager.setOptions(options);
     }
 
@@ -145,8 +145,7 @@ export class WebviewController {
     }, this.optionListManager.getAdapterSearchDebounceTime());
 
     this.searchElement.addEventListener("input", async () => {
-      StateManager.prompt = this.searchElement.value;
-      debouncedFilter(StateManager.prompt);
+      debouncedFilter(this.searchElement.value);
       this.optionListManager.resetIfNeeded();
     });
   }

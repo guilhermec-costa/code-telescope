@@ -30,7 +30,8 @@ export class DIContainer {
       this.previewManager = new PreviewManager();
 
       console.log("[DIContainer] Initializing OptionListManager");
-      this.optionListManager = new OptionListManager(this.previewManager);
+      const searchEl = document.getElementById("search") as HTMLInputElement;
+      this.optionListManager = new OptionListManager(this.previewManager, searchEl);
 
       console.log("[DIContainer] Initializing KeyboardHandler");
       this.keyboardHandler = new KeyboardHandler();

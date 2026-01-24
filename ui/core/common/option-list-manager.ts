@@ -22,6 +22,7 @@ export class OptionListManager {
 
   private listElement: HTMLUListElement;
   private itemsCountElement: HTMLElement | null;
+  private selectedIndex: number = 0;
 
   /** Prefix used to generate DOM ids for option items */
   private readonly OPTION_ITEM_ID_PREFIX = "option-item-id-";
@@ -29,7 +30,10 @@ export class OptionListManager {
   private readonly virtualizer: Virtualizer;
   private debouncedRequestPreview: (value: string) => void;
 
-  constructor(private readonly previewManager: PreviewManager) {
+  constructor(
+    private readonly previewManager: PreviewManager,
+    private readonly searchElement: HTMLInputElement,
+  ) {
     this.listElement = document.getElementById("option-list") as HTMLUListElement;
     this.itemsCountElement = document.getElementById("items-count");
 
@@ -69,7 +73,7 @@ export class OptionListManager {
 
   private debouncedRender = debounce(() => {
     this.render();
-    StateManager.selectedIndex = this.getRelativeFirstIndex();
+    this.selectedIndex = this.getRelativeFirstIndex();
     const first = this.getRelativeFirstItem();
     this.requestPreview(first);
   }, 50);
@@ -77,10 +81,10 @@ export class OptionListManager {
   public appendOptions(options: any[]): void {
     this.allOptions.push(...options);
 
-    if (StateManager.prompt === "") {
+    if (this.searchElement.value === "") {
       this.filteredOptions = this.allOptions;
     } else {
-      const newFiltered = options.filter((opt) => this.dataAdapter!.filterOption(opt, StateManager.prompt));
+      const newFiltered = options.filter((opt) => this.dataAdapter!.filterOption(opt, this.searchElement.value));
       this.filteredOptions.push(...newFiltered);
     }
 
@@ -101,8 +105,7 @@ export class OptionListManager {
     this.allOptions = options;
     this.filteredOptions = options;
 
-    StateManager.selectedIndex = this.restoreSelectedIndex();
-    StateManager.prompt = "";
+    this.selectedIndex = this.restoreSelectedIndex();
 
     if (updateItemsCount) {
       this.updateItemsCount();
@@ -120,11 +123,9 @@ export class OptionListManager {
   public filter(query: string): void {
     if (!this.dataAdapter) return;
 
-    StateManager.prompt = query.toLowerCase();
+    this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter.filterOption(opt, query));
 
-    this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter.filterOption(opt, StateManager.prompt));
-
-    StateManager.selectedIndex = this.getRelativeFirstIndex();
+    this.selectedIndex = this.getRelativeFirstIndex();
     this.updateItemsCount();
     this.render();
 
@@ -150,14 +151,14 @@ export class OptionListManager {
   public getSelectedValue(): any | undefined {
     if (!this.dataAdapter || this.filteredOptions.length === 0) return undefined;
 
-    const option = this.filteredOptions.at(StateManager.selectedIndex);
+    const option = this.filteredOptions.at(this.selectedIndex);
     return this.dataAdapter.getSelectionValue(option);
   }
 
   public clearOptions(): void {
     this.allOptions = [];
     this.filteredOptions = [];
-    StateManager.selectedIndex = 0;
+    this.selectedIndex = 0;
     this.updateItemsCount();
     this.render();
   }
@@ -176,7 +177,7 @@ export class OptionListManager {
    * Clears options and preview when required by specific adapters.
    */
   public resetIfNeeded() {
-    if (StateManager.prompt === "" && this.dataAdapter.fuzzyAdapterType === "workspace.text") {
+    if (this.searchElement.value === "" && this.dataAdapter.fuzzyAdapterType === "workspace.text") {
       this.clearOptions();
       this.previewManager.clearPreview();
     }
@@ -217,7 +218,7 @@ export class OptionListManager {
 
   private setupScrollListener(): void {
     this.listElement.addEventListener("scroll", () => {
-      this.virtualizer.renderVirtualized(this.filteredOptions, StateManager.prompt, (item, idx, q) =>
+      this.virtualizer.renderVirtualized(this.filteredOptions, this.searchElement.value, (item, idx, q) =>
         this.createListItem(item, idx, q),
       );
     });
@@ -226,22 +227,21 @@ export class OptionListManager {
   private moveSelection(direction: number): void {
     if (this.filteredOptions.length === 0) return;
 
-    const previousIndex = StateManager.selectedIndex;
-    StateManager.selectedIndex =
-      (StateManager.selectedIndex + direction + this.filteredOptions.length) % this.filteredOptions.length;
+    const previousIndex = this.selectedIndex;
+    this.selectedIndex = (this.selectedIndex + direction + this.filteredOptions.length) % this.filteredOptions.length;
 
     const prevLi = document.getElementById(`${this.OPTION_ITEM_ID_PREFIX}${previousIndex}`);
     if (prevLi) {
       prevLi.classList.remove("selected");
     }
 
-    const curLi = document.getElementById(`${this.OPTION_ITEM_ID_PREFIX}${StateManager.selectedIndex}`);
+    const curLi = document.getElementById(`${this.OPTION_ITEM_ID_PREFIX}${this.selectedIndex}`);
     if (curLi) {
       curLi.classList.add("selected");
     }
 
     this.scrollToSelected();
-    const selectedOption = this.filteredOptions.at(StateManager.selectedIndex);
+    const selectedOption = this.filteredOptions.at(this.selectedIndex);
     this.requestPreview(selectedOption);
   }
 
@@ -250,7 +250,7 @@ export class OptionListManager {
    */
   private scrollToSelected() {
     requestAnimationFrame(() => {
-      this.virtualizer.scrollToSelectedVirtualized(StateManager.selectedIndex);
+      this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
     });
   }
 
@@ -289,7 +289,7 @@ export class OptionListManager {
 
     const itemsCount = this.filteredOptions.length;
 
-    this.virtualizer.renderVirtualized(this.filteredOptions, StateManager.prompt, (item, idx, q) =>
+    this.virtualizer.renderVirtualized(this.filteredOptions, this.searchElement.value, (item, idx, q) =>
       this.createListItem(item, idx, q),
     );
 
@@ -315,7 +315,7 @@ export class OptionListManager {
     li.className = "option-item";
     li.id = `${this.OPTION_ITEM_ID_PREFIX}${idx}`;
 
-    if (idx === StateManager.selectedIndex) {
+    if (idx === this.selectedIndex) {
       li.classList.add("selected");
     }
 
@@ -323,7 +323,7 @@ export class OptionListManager {
     li.innerHTML = this.highlightMatch(displayText, query);
 
     li.onclick = () => {
-      StateManager.selectedIndex = idx;
+      this.selectedIndex = idx;
       this.onSelectionConfirmed();
     };
 
