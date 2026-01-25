@@ -148,67 +148,84 @@
         "keybindings": [
             {
                 "command": "code-telescope.fuzzy.file",
-                "key": "space f f"
+                "key": "ctrl+shift+t f",
+                "mac": "cmd+shift+t f"
             },
             {
                 "command": "code-telescope.fuzzy.wsText",
-                "key": "space f g"
+                "key": "ctrl+shift+t g",
+                "mac": "cmd+shift+t g"
             },
             {
                 "command": "code-telescope.fuzzy.recentFiles",
-                "key": "space f r"
+                "key": "ctrl+shift+t r",
+                "mac": "cmd+shift+t r"
             },
             {
                 "command": "code-telescope.fuzzy.branch",
-                "key": "space b b"
+                "key": "ctrl+shift+t b",
+                "mac": "cmd+shift+t b"
             },
             {
                 "command": "code-telescope.fuzzy.wsSymbols",
-                "key": "space s s"
+                "key": "ctrl+shift+t s",
+                "mac": "cmd+shift+t s"
             },
             {
                 "command": "code-telescope.fuzzy.callHierarchy",
-                "key": "space s h"
+                "key": "ctrl+shift+t h",
+                "mac": "cmd+shift+t h"
             },
             {
                 "command": "code-telescope.fuzzy.diagnostics",
-                "key": "space s d"
+                "key": "ctrl+shift+t d",
+                "mac": "cmd+shift+t d"
             },
             {
                 "command": "code-telescope.fuzzy.keybindings",
-                "key": "space f k"
+                "key": "ctrl+shift+t k",
+                "mac": "cmd+shift+t k"
             },
             {
                 "command": "code-telescope.fuzzy.colorschemes",
-                "key": "space c s"
+                "key": "ctrl+shift+t c",
+                "mac": "cmd+shift+t c"
             },
             {
                 "command": "code-telescope.fuzzy.tasks",
-                "key": "space T"
+                "key": "ctrl+shift+t t",
+                "mac": "cmd+shift+t t"
             },
             {
                 "command": "code-telescope.fuzzy.custom",
-                "key": "space C"
+                "key": "ctrl+shift+t x",
+                "mac": "cmd+shift+t x"
             },
+
             {
                 "command": "code-telescope.harpoon.addFile",
-                "key": "space h a"
+                "key": "ctrl+shift+h",
+                "mac": "cmd+shift+h"
             },
             {
                 "command": "code-telescope.harpoon.toggle",
-                "key": "space h h"
+                "key": "ctrl+h",
+                "mac": "cmd+h"
             },
             {
                 "command": "code-telescope.harpoon.removeCurrentFile",
-                "key": "space h d"
+                "key": "ctrl+shift+d",
+                "mac": "cmd+shift+d"
             },
             {
                 "command": "code-telescope.harpoon.editMark",
-                "key": "space h e"
+                "key": "ctrl+shift+h e",
+                "mac": "cmd+shift+h e"
             },
             {
                 "command": "code-telescope.harpoon.reorderMarks",
-                "key": "space h r"
+                "key": "ctrl+shift+h r",
+                "mac": "cmd+shift+h r"
             },
 
             {
