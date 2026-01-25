@@ -46,7 +46,6 @@ export class WorkspaceSymbolsFinderDataAdapter
     const lowerQuery = query.toLowerCase();
     const symbol = option.symbol;
 
-    // Search in multiple fields
     return (
       symbol.name.toLowerCase().includes(lowerQuery) ||
       (symbol.containerName?.toLowerCase().includes(lowerQuery) ?? false) ||
