@@ -11,6 +11,7 @@ import "../finders/diagnostics.finder";
 import "../finders/git/git-branch.finder";
 import "../finders/ws-text-finder/index.finder";
 import "../finders/ws-files.finder";
+import "../finders/harpoon.finder";
 
 // PRESENTATION HANDLERS
 import "../presentation/handlers/close-panel.handler";

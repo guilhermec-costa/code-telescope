@@ -77,12 +77,184 @@
                 "title": "Code Telescope: Diagnostics"
             },
             {
+                "command": "code-telescope.fuzzy.harpoon",
+                "title": "Code Telescope: Harpoon Marks"
+            },
+            {
                 "command": "code-telescope.fuzzy.callHierarchy",
                 "title": "Code Telescope: Call hierarchy"
             },
             {
                 "command": "code-telescope.fuzzy.tasks",
                 "title": "Code Telescope: Tasks"
+            },
+            {
+                "command": "code-telescope.harpoon.addFile",
+                "title": "Code Telescope: Harpoon - Add File"
+            },
+            {
+                "command": "code-telescope.harpoon.removeCurrentFile",
+                "title": "Code Telescope: Harpoon - Remove Current File"
+            },
+            {
+                "command": "code-telescope.harpoon.clear",
+                "title": "Code Telescope: Harpoon - Clear All Marks"
+            },
+            {
+                "command": "code-telescope.harpoon.editMark",
+                "title": "Code Telescope: Harpoon - Edit Marks"
+            },
+            {
+                "command": "code-telescope.harpoon.reorderMarks",
+                "title": "Code Telescope: Harpoon - Reorder Marks"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile1",
+                "title": "Code Telescope: Harpoon - Go to File 1"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile2",
+                "title": "Code Telescope: Harpoon - Go to File 2"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile3",
+                "title": "Code Telescope: Harpoon - Go to File 3"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile4",
+                "title": "Code Telescope: Harpoon - Go to File 4"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile5",
+                "title": "Code Telescope: Harpoon - Go to File 5"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile6",
+                "title": "Code Telescope: Harpoon - Go to File 6"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile7",
+                "title": "Code Telescope: Harpoon - Go to File 7"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile8",
+                "title": "Code Telescope: Harpoon - Go to File 8"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile9",
+                "title": "Code Telescope: Harpoon - Go to File 9"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "code-telescope.fuzzy.file",
+                "key": "space f f"
+            },
+            {
+                "command": "code-telescope.fuzzy.wsText",
+                "key": "space f g"
+            },
+            {
+                "command": "code-telescope.fuzzy.recentFiles",
+                "key": "space f r"
+            },
+            {
+                "command": "code-telescope.fuzzy.branch",
+                "key": "space b b"
+            },
+            {
+                "command": "code-telescope.fuzzy.wsSymbols",
+                "key": "space s s"
+            },
+            {
+                "command": "code-telescope.fuzzy.callHierarchy",
+                "key": "space s h"
+            },
+            {
+                "command": "code-telescope.fuzzy.diagnostics",
+                "key": "space s d"
+            },
+            {
+                "command": "code-telescope.fuzzy.keybindings",
+                "key": "space f k"
+            },
+            {
+                "command": "code-telescope.fuzzy.colorschemes",
+                "key": "space c s"
+            },
+            {
+                "command": "code-telescope.fuzzy.tasks",
+                "key": "space T"
+            },
+            {
+                "command": "code-telescope.fuzzy.custom",
+                "key": "space C"
+            },
+            {
+                "command": "code-telescope.harpoon.addFile",
+                "key": "space h a"
+            },
+            {
+                "command": "code-telescope.harpoon.toggle",
+                "key": "space h h"
+            },
+            {
+                "command": "code-telescope.harpoon.removeCurrentFile",
+                "key": "space h d"
+            },
+            {
+                "command": "code-telescope.harpoon.editMark",
+                "key": "space h e"
+            },
+            {
+                "command": "code-telescope.harpoon.reorderMarks",
+                "key": "space h r"
+            },
+
+            {
+                "command": "code-telescope.harpoon.gotoFile1",
+                "key": "ctrl+1",
+                "mac": "cmd+1"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile2",
+                "key": "ctrl+2",
+                "mac": "cmd+2"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile3",
+                "key": "ctrl+3",
+                "mac": "cmd+3"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile4",
+                "key": "ctrl+4",
+                "mac": "cmd+4"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile5",
+                "key": "ctrl+5",
+                "mac": "cmd+5"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile6",
+                "key": "ctrl+6",
+                "mac": "cmd+6"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile7",
+                "key": "ctrl+7",
+                "mac": "cmd+7"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile8",
+                "key": "ctrl+8",
+                "mac": "cmd+8"
+            },
+            {
+                "command": "code-telescope.harpoon.gotoFile9",
+                "key": "ctrl+9",
+                "mac": "cmd+9"
             }
         ],
         "configuration": {
@@ -187,7 +359,7 @@
                 },
                 "codeTelescope.wsTextFinder.maxResults": {
                     "type": "number",
-                    "default": 2000,
+                    "default": 10000,
                     "description": "Maximum number of search results to return"
                 },
                 "codeTelescope.preview.scrollBehavior": {

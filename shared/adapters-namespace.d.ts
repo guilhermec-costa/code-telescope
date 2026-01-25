@@ -11,6 +11,7 @@ export type BuiltinFuzzyProviderType =
   | "workspace.colorschemes"
   | "workspace.callHierarchy"
   | "workspace.diagnostics"
+  | "harpoon.marks"
   | "git.branches"
   | "workspace.symbols"
   | "code.documentSymbols";
