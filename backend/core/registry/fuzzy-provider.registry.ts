@@ -28,8 +28,8 @@ export class FuzzyFinderAdapterRegistry {
     Logger.debug(`Registered fuzzy finder adapter: ${adapter.fuzzyAdapterType} (${adapter.constructor?.name})`);
   }
 
-  getAdapter(finderType: FuzzyProviderType): IFuzzyFinderProvider | undefined {
-    return this.adapters.get(finderType);
+  getAdapter<T extends IFuzzyFinderProvider>(finderType: FuzzyProviderType): T | undefined {
+    return this.adapters.get(finderType) as T;
   }
 
   deleteAdapter(finderType: string): void {

@@ -1,12 +1,15 @@
 import * as vscode from "vscode";
-import "./core/decorators/loader";
 import { CustomFuzzyProviderType } from "../shared/adapters-namespace";
 import { CustomProviderLoader } from "./core/common/custom/custom-provider.loader";
 import { CustomProviderStorage } from "./core/common/custom/custom-provider.storage";
 import { PreContextManager } from "./core/common/pre-context";
+import "./core/decorators/loader";
+import { HarpoonProvider } from "./core/finders/harpoon.finder";
 import { Logger } from "./core/log";
 import { FuzzyFinderPanelController } from "./core/presentation/fuzzy-panel.controller";
 import { Globals } from "./globals";
+import { registerHarpoonCmds } from "./harpoon/commands";
+import { HarpoonOrchestrator } from "./harpoon/orchestrator";
 import { PerformanceDevModule } from "./perf/perf-dev.module";
 import { registerProviderCmd } from "./utils/commands";
 import { getConfigurationSection } from "./utils/configuration";
@@ -42,6 +45,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerProviderCmd("colorschemes", () => FuzzyFinderPanelController.setupProvider("workspace.colorschemes"), ctx);
   registerProviderCmd("diagnostics", () => FuzzyFinderPanelController.setupProvider("workspace.diagnostics"), ctx);
   registerProviderCmd("tasks", () => FuzzyFinderPanelController.setupProvider("workspace.tasks"), ctx);
+  registerProviderCmd("harpoon", () => FuzzyFinderPanelController.setupProvider("harpoon.marks"), ctx);
   registerProviderCmd("callHierarchy", () => FuzzyFinderPanelController.setupProvider("workspace.callHierarchy"), ctx);
   registerProviderCmd(
     "custom",
@@ -56,6 +60,10 @@ export async function activate(ctx: vscode.ExtensionContext) {
     },
     ctx,
   );
+
+  HarpoonProvider.initialize(ctx);
+  const manager = HarpoonOrchestrator.getInstance(ctx);
+  registerHarpoonCmds(manager, ctx);
 
   Logger.info(`${Globals.EXTENSION_NAME} activated!`);
 }
