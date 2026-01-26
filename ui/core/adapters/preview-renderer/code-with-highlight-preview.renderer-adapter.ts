@@ -204,6 +204,7 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
 
       const chunkContainer = document.createElement("div");
       chunkContainer.innerHTML = html;
+      chunkContainer.dataset.chunkIndex = String(chunkIndex);
 
       const showLineNumbers = (__PREVIEW_CFG__ as PreviewManagerConfig).showLineNumbers;
       const highlightLineNum = metadata?.highlightLine;
@@ -223,10 +224,14 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
       }
 
       if (position === "prepend") {
-        const prevHeight = previewElement.scrollHeight;
+        const oldScrollTop = previewElement.scrollTop;
+        const oldScrollHeight = previewElement.scrollHeight;
+
         previewElement.prepend(chunkContainer);
-        const nextHeight = previewElement.scrollHeight;
-        previewElement.scrollTop += nextHeight - prevHeight;
+
+        const newScrollHeight = previewElement.scrollHeight;
+        const heightDiff = newScrollHeight - oldScrollHeight;
+        previewElement.scrollTop = oldScrollTop + heightDiff;
       } else {
         previewElement.appendChild(chunkContainer);
       }
@@ -259,9 +264,12 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
         this.isRendering = true;
 
         try {
+          // Load more content at bottom
           if (scrollTop + clientHeight >= scrollHeight - SCROLL_THRESHOLD) {
             await renderChunk(this.maxLoadedChunk + 1, "append");
           }
+
+          // Load more content at top
           if (scrollTop <= SCROLL_THRESHOLD) {
             await renderChunk(this.minLoadedChunk - 1, "prepend");
           }
