@@ -148,86 +148,75 @@
         "keybindings": [
             {
                 "command": "code-telescope.fuzzy.file",
-                "key": "ctrl+shift+t f",
-                "mac": "cmd+shift+t f"
+                "key": "ctrl+alt+f",
+                "mac": "cmd+alt+f"
             },
             {
                 "command": "code-telescope.fuzzy.wsText",
-                "key": "ctrl+shift+t g",
-                "mac": "cmd+shift+t g"
+                "key": "ctrl+alt+g",
+                "mac": "cmd+alt+g"
             },
             {
                 "command": "code-telescope.fuzzy.recentFiles",
-                "key": "ctrl+shift+t r",
-                "mac": "cmd+shift+t r"
+                "key": "ctrl+alt+r",
+                "mac": "cmd+alt+r"
             },
             {
                 "command": "code-telescope.fuzzy.branch",
-                "key": "ctrl+shift+t b",
-                "mac": "cmd+shift+t b"
+                "key": "ctrl+alt+b",
+                "mac": "cmd+alt+b"
             },
             {
                 "command": "code-telescope.fuzzy.wsSymbols",
-                "key": "ctrl+shift+t s",
-                "mac": "cmd+shift+t s"
+                "key": "ctrl+alt+s",
+                "mac": "cmd+alt+s"
             },
             {
                 "command": "code-telescope.fuzzy.callHierarchy",
-                "key": "ctrl+shift+t h",
-                "mac": "cmd+shift+t h"
+                "key": "ctrl+alt+r",
+                "mac": "cmd+alt+r"
             },
             {
                 "command": "code-telescope.fuzzy.diagnostics",
-                "key": "ctrl+shift+t d",
-                "mac": "cmd+shift+t d"
+                "key": "ctrl+alt+d",
+                "mac": "cmd+alt+d"
             },
             {
                 "command": "code-telescope.fuzzy.keybindings",
-                "key": "ctrl+shift+t k",
-                "mac": "cmd+shift+t k"
+                "key": "ctrl+alt+k",
+                "mac": "cmd+alt+k"
             },
             {
                 "command": "code-telescope.fuzzy.colorschemes",
-                "key": "ctrl+shift+t c",
-                "mac": "cmd+shift+t c"
+                "key": "ctrl+alt+c",
+                "mac": "cmd+alt+c"
             },
             {
                 "command": "code-telescope.fuzzy.tasks",
-                "key": "ctrl+shift+t t",
-                "mac": "cmd+shift+t t"
+                "key": "ctrl+alt+t",
+                "mac": "cmd+alt+t"
+            },
+            {
+                "command": "code-telescope.fuzzy.harpoon",
+                "key": "ctrl+alt+h",
+                "mac": "cmd+alt+h"
             },
             {
                 "command": "code-telescope.fuzzy.custom",
-                "key": "ctrl+shift+t x",
-                "mac": "cmd+shift+t x"
+                "key": "ctrl+alt+x",
+                "mac": "cmd+alt+x"
             },
 
             {
                 "command": "code-telescope.harpoon.addFile",
-                "key": "ctrl+shift+h",
-                "mac": "cmd+shift+h"
-            },
-            {
-                "command": "code-telescope.harpoon.toggle",
-                "key": "ctrl+h",
-                "mac": "cmd+h"
+                "key": "ctrl+alt+m",
+                "mac": "cmd+alt+m"
             },
             {
                 "command": "code-telescope.harpoon.removeCurrentFile",
-                "key": "ctrl+shift+d",
-                "mac": "cmd+shift+d"
+                "key": "ctrl+alt+backspace",
+                "mac": "cmd+alt+backspace"
             },
-            {
-                "command": "code-telescope.harpoon.editMark",
-                "key": "ctrl+shift+h e",
-                "mac": "cmd+shift+h e"
-            },
-            {
-                "command": "code-telescope.harpoon.reorderMarks",
-                "key": "ctrl+shift+h r",
-                "mac": "cmd+shift+h r"
-            },
-
             {
                 "command": "code-telescope.harpoon.gotoFile1",
                 "key": "ctrl+1",
