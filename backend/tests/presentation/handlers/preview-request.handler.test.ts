@@ -5,6 +5,10 @@ import { FuzzyFinderPanelController } from "../../../core/presentation/fuzzy-pan
 import { PreviewRequestHandler } from "../../../core/presentation/handlers/preview-request.handler";
 import { WebviewController } from "../../../core/presentation/webview.controller";
 
+vi.mock("@backend/utils/theme", () => ({
+  getCurThemeMetadata: vi.fn().mockResolvedValue({}),
+}));
+
 vi.mock("@backend/core/presentation/fuzzy-panel.controller", () => ({
   FuzzyFinderPanelController: {
     instance: {
@@ -47,7 +51,7 @@ describe("PreviewRequestHandler", () => {
       webview,
       expect.objectContaining({
         type: "previewUpdate",
-        data: { mocked: true },
+        data: { mocked: true, metadata: {} },
       }),
     );
   });
