@@ -318,9 +318,7 @@ Explore function call relationships (incoming and outgoing calls).
 2. Ctrl+Shift+P → "Code Telescope: Call hierarchy"
 ```
 
----
-
-### 🔧 Custom Finders
+### 🔧 Code Telescope Custom Finders
 **Command:** `code-telescope.fuzzy.custom`
 
 Quick picker to select and execute custom user-defined finders.
@@ -329,6 +327,113 @@ Quick picker to select and execute custom user-defined finders.
 ```
 Ctrl+Shift+P → "Code Telescope: Pick Custom Finder"
 ```
+
+
+---
+# Harpoon Plugin
+
+Quick file bookmarking and navigation system inspired by ThePrimeagen's Harpoon for Neovim.
+
+## Overview
+
+Harpoon allows you to mark important files in a specific order and navigate between them instantly using keyboard shortcuts. Perfect for keeping your most-used files at your fingertips during development.
+
+## Features
+
+- **Quick File Marking** - Bookmark files in order with a single command
+- **Index-based Navigation** - Jump to any marked file using `Ctrl+1` through `Ctrl+9`
+- **Persistent Marks** - Your bookmarks are saved per workspace and persist across sessions
+- **Position Memory** - Harpoon remembers your cursor position in each file
+- **Visual Finder** - Browse and manage all marks in a fuzzy finder interface
+- **Mark Management** - Reorder, rename, and remove marks with ease
+
+## Quick Start
+
+### Marking Files
+
+1. Open a file you want to bookmark
+2. Press `Ctrl+Alt+M` (or run `Code Telescope: Harpoon - Add File`)
+3. The file is now marked and appears in your Harpoon list
+
+### Navigating Marks
+
+- `Ctrl+1` - Jump to first marked file
+- `Ctrl+2` - Jump to second marked file
+- `Ctrl+3` through `Ctrl+9` - Jump to respective marked files
+
+### Viewing All Marks
+
+Press `Ctrl+Alt+H` (or run `Code Telescope: Harpoon Marks`) to open the Harpoon finder:
+
+```
+[1] src/app.ts :42
+[2] src/components/Header.tsx :15
+[3] tests/app.test.ts :89
+```
+
+The finder shows:
+- Mark index `[1]`, `[2]`, etc.
+- Relative file path
+- Saved cursor position (line:column)
+
+## Commands
+
+| Command | Default Shortcut | Description |
+|---------|-----------------|-------------|
+| `Harpoon - Add File` | `Ctrl+Alt+M` | Mark current file |
+| `Harpoon Marks` | `Ctrl+Alt+H` | Open Harpoon finder |
+| `Harpoon - Go to File 1-9` | `Ctrl+1-9` | Navigate to mark by index |
+| `Harpoon - Remove Current File` | `Ctrl+Alt+Backspace` | Remove current file from marks |
+| `Harpoon - Edit Marks` | - | Edit/remove/reorder marks |
+| `Harpoon - Reorder Marks` | - | Move marks to specific positions |
+| `Harpoon - Clear All Marks` | - | Remove all marks (with confirmation) |
+
+## Managing Marks
+
+### Edit Mark Menu
+
+Run `Code Telescope: Harpoon - Edit Marks` to:
+
+1. **Remove** - Delete the mark
+2. **Move Up** - Shift mark earlier in the list
+3. **Move Down** - Shift mark later in the list
+4. **Rename** - Add/change a custom label
+
+### Reorder Marks
+
+Use `Code Telescope: Harpoon - Reorder Marks` for precise positioning:
+
+1. Select the mark you want to move
+2. Choose the target position
+3. The mark is instantly repositioned
+
+### Custom Labels
+
+Add descriptive labels to your marks:
+
+```
+[1] auth.ts          (Login Flow)
+[2] middleware.ts    (Auth Middleware)
+[3] auth.test.ts     (Integration Tests)
+```
+
+Labels appear in the finder and help identify files at a glance.
+
+### Multiple Workspaces
+
+Marks are workspace-specific. You can have different mark sets for different projects:
+
+```
+Project A Workspace:
+[1] frontend/app.tsx
+[2] backend/server.ts
+
+Project B Workspace:
+[1] core/engine.ts
+[2] utils/helpers.ts
+```
+
+---
 
 ---
 
