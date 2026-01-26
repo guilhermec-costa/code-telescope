@@ -66,6 +66,9 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerHarpoonCmds(manager, ctx);
 
   Logger.info(`${Globals.EXTENSION_NAME} activated!`);
+
+  // for integration tests
+  return ctx;
 }
 
 export function deactivate() {

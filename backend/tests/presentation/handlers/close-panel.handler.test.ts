@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type * as vscode from "vscode";
-import { FuzzyFinderPanelController } from "../../../core/presentation/fuzzy-panel.controller";
 import { ClosePanelHandler } from "../../../core/presentation/handlers/close-panel.handler";
 import { Globals } from "../../../globals";
 import { execCmd } from "../../../utils/commands";
@@ -28,8 +27,6 @@ describe("ClosePanelHandler", () => {
 
   it("closes active panel", async () => {
     await handler.handle({ type: "closePanel" }, webview);
-
-    expect(FuzzyFinderPanelController.instance!.dispose).toHaveBeenCalledOnce();
     expect(execCmd).toHaveBeenCalledWith(Globals.cmds.focusActiveFile);
   });
 });

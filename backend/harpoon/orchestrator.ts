@@ -25,16 +25,16 @@ export class HarpoonOrchestrator {
    * Adds current file to marks list
    * If file already exists, updates its position
    */
-  public async addFile(): Promise<boolean> {
+  public async addFile(uri?: vscode.Uri, position?: vscode.Position): Promise<boolean> {
     const activeEditor = vscode.window.activeTextEditor;
-    const targetUri = activeEditor?.document.uri;
+    const targetUri = uri || activeEditor?.document.uri;
     if (!targetUri) {
       vscode.window.showWarningMessage("No file to mark");
       return false;
     }
 
     const existingIndex = this.marks.findIndex((m) => m.uri.toString() === targetUri.toString());
-    const cursorPosition = activeEditor?.selection.active;
+    const cursorPosition = position || activeEditor?.selection.active;
 
     if (existingIndex !== -1) {
       if (cursorPosition) {
@@ -151,5 +151,17 @@ export class HarpoonOrchestrator {
       label ? `Updated label for ${fileName}: "${label}"` : `Removed label from ${fileName}`,
     );
     return true;
+  }
+
+  public getMarkCount() {
+    return this.marks.length;
+  }
+
+  public isMarked(uri: vscode.Uri): boolean {
+    return this.marks.some((m) => m.uri.toString() === uri.toString());
+  }
+
+  public getMarkIndex(uri: vscode.Uri): number {
+    return this.marks.findIndex((m) => m.uri.toString() === uri.toString());
   }
 }

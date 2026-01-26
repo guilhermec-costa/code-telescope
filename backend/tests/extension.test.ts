@@ -8,6 +8,10 @@ vi.mock("../core/decorators/loader", () => ({
   loadDecorators: vi.fn().mockResolvedValue(undefined),
 }));
 
+vi.mock("@backend/harpoon", () => ({
+  registerHarpoonCmds: vi.fn(),
+}));
+
 vi.mock("../core/common/custom/custom-provider.loader", () => {
   return {
     CustomProviderLoader: vi.fn(
@@ -21,6 +25,7 @@ vi.mock("../core/common/custom/custom-provider.loader", () => {
 
 vi.mock("../utils/commands", () => ({
   registerProviderCmd: vi.fn(),
+  registerHarpoonCmd: vi.fn(),
 }));
 
 vi.mock("../utils/configuration", () => ({
@@ -91,6 +96,7 @@ describe("Extension entrypoint", () => {
       "callHierarchy",
       "tasks",
       "custom",
+      "harpoon",
     ];
 
     expectedCommands.forEach((cmd) => {

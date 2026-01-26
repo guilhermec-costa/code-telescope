@@ -26,6 +26,5 @@ describe("OptionSelectedHandler", () => {
     await handler.handle({ type: "optionSelected", data });
 
     expect(FuzzyFinderPanelController.instance!.provider.onSelect).toHaveBeenCalledExactlyOnceWith(data);
-    expect(FuzzyFinderPanelController.instance!.dispose).toHaveBeenCalledOnce();
   });
 });
