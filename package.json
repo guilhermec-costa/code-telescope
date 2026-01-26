@@ -22,7 +22,10 @@
         "quick open",
         "symbols",
         "files",
-        "ripgrep"
+        "ripgrep",
+        "bookmark",
+        "harpoon",
+        "jump"
     ],
     "icon": "images/logo.png",
     "engines": {
