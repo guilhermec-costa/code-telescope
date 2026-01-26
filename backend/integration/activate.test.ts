@@ -31,6 +31,7 @@ suite("Integration Tests", () => {
         "workspace.diagnostics",
         "workspace.tasks",
         "workspace.callHierarchy",
+        "harpoon.marks",
       ];
 
       IntegrationTestHelper.assertAllProvidersRegistered(expectedProviders);

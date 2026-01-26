@@ -7,6 +7,7 @@ vi.mock("vscode", () => ({
   Uri: {
     file: (path: string) => ({ fsPath: path }),
     joinPath: vi.fn((uri, ...parts) => ({ fsPath: parts.join("/") })),
+    parse: vi.fn((str) => ({ toString: () => str, fsPath: str })),
   },
   Position: vi.fn(
     class {
@@ -36,6 +37,10 @@ vi.mock("vscode", () => ({
       revealRange: vi.fn(),
     }),
     showErrorMessage: vi.fn(),
+    showInformationMessage: vi.fn(),
+    showWarningMessage: vi.fn(),
+    activeTextEditor: undefined,
+    onDidChangeActiveTextEditor: vi.fn(),
   },
   env: {
     appRoot: "/app",
@@ -58,6 +63,7 @@ vi.mock("vscode", () => ({
     getConfiguration: vi.fn().mockReturnValue({
       get: vi.fn(),
     }),
+    openTextDocument: vi.fn(),
   },
   ExtensionContext: class {},
   ExtensionMode: {
