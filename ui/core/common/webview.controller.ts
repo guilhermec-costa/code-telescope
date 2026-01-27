@@ -65,7 +65,7 @@ export class WebviewController {
    * @param msg - The message payload sent from the extension.
    */
   private async handleMessage(msg: ToWebviewKindMessage): Promise<void> {
-    console.log(`[WebviewController] Handling message: ${msg}`);
+    console.log(`[WebviewController] ${new Date().toISOString()} Handling message: ${msg}`);
     switch (msg.type) {
       case "resetWebview": {
         this.handleResetWebview();

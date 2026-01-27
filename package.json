@@ -527,7 +527,8 @@
         "make:package": "pnpm clean && pnpm build && vsce package",
         "deploy:patch": "pnpm make:package && vsce publish patch",
         "deploy:minor": "pnpm make:package && vsce publish minor",
-        "deploy:major": "pnpm make:package && vsce publish major"
+        "deploy:major": "pnpm make:package && vsce publish major",
+        "deploy:openvsx": "ovsx publish"
     },
     "devDependencies": {
         "@biomejs/biome": "2.3.11",

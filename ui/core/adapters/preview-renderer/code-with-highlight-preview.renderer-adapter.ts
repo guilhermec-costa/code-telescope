@@ -7,9 +7,9 @@ import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapte
 import { PreviewRendererAdapterRegistry, SyntaxHighlighter } from "../../registry/preview-adapter.registry";
 import { HighlighterManager } from "../../render/highlighter-manager";
 
-const CHUNK_SIZE = 150;
+const CHUNK_SIZE = 50;
 const SCROLL_THRESHOLD = 300;
-const INITIAL_CHUNKS_TO_LOAD = 2;
+const INITIAL_CHUNKS_TO_LOAD = 1;
 const MAX_CACHE_SIZE = 5000;
 
 class LazyLineParser {
@@ -23,14 +23,14 @@ class LazyLineParser {
 
   private indexLines(): void {
     this.lineOffsets = [0];
+    let pos = 0;
 
-    for (let i = 0; i < this.text.length; i++) {
-      if (this.text[i] === "\n") {
-        this.lineOffsets.push(i + 1);
-      }
+    while ((pos = this.text.indexOf("\n", pos)) !== -1) {
+      pos++;
+      this.lineOffsets.push(pos);
     }
 
-    if (this.text[this.text.length - 1] !== "\n") {
+    if (this.lineOffsets[this.lineOffsets.length - 1] !== this.text.length) {
       this.lineOffsets.push(this.text.length);
     }
 
@@ -177,11 +177,15 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
     }
 
     const renderChunk = async (chunkIndex: number, position: "append" | "prepend" = "append"): Promise<void> => {
+      // check if chunk can be rendered
       if (this.abortController?.signal.aborted) return;
       if (this.loadedChunks.has(chunkIndex)) return;
       if (chunkIndex < 0 || chunkIndex * CHUNK_SIZE >= totalLines) return;
 
+      // to prevent rerender the same chunk
       this.loadedChunks.add(chunkIndex);
+
+      // to control scroll request
       this.minLoadedChunk = Math.min(this.minLoadedChunk, chunkIndex);
       this.maxLoadedChunk = Math.max(this.maxLoadedChunk, chunkIndex);
 
@@ -199,8 +203,7 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
       const html = this.highlighter.codeToHtml(chunkText, {
         lang: language,
         theme: shikiActiveTheme,
-        bg: "transparent",
-      } as any);
+      });
 
       const chunkContainer = document.createElement("div");
       chunkContainer.innerHTML = html;
@@ -264,13 +267,13 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
         this.isRendering = true;
 
         try {
-          // Load more content at bottom
-          if (scrollTop + clientHeight >= scrollHeight - SCROLL_THRESHOLD) {
+          const atTheBottom = scrollTop + clientHeight >= scrollHeight - SCROLL_THRESHOLD;
+          if (atTheBottom) {
             await renderChunk(this.maxLoadedChunk + 1, "append");
           }
 
-          // Load more content at top
-          if (scrollTop <= SCROLL_THRESHOLD) {
+          const atTheTop = scrollTop <= SCROLL_THRESHOLD;
+          if (atTheTop) {
             await renderChunk(this.minLoadedChunk - 1, "prepend");
           }
         } finally {
