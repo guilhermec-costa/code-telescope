@@ -8,7 +8,7 @@ import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { getSvgIconUrl, resolvePathExt } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { FileContentCache } from "../common/cache/file-content.cache";
+import { FileReader } from "../common/cache/file-reader";
 import { ExtensionConfigManager } from "../common/config-manager";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
 import { FuzzyFinderPanelController } from "../presentation/fuzzy-panel.controller";
@@ -175,7 +175,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
     const ext = resolvePathExt(identifier);
     const isImg = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext);
-    const content = await FileContentCache.instance.get(identifier);
+    const content = await FileReader.read(identifier);
 
     if (isImg) {
       return {
