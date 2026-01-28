@@ -97,6 +97,7 @@ describe("Extension entrypoint", () => {
       "tasks",
       "custom",
       "harpoon",
+      "breakpoints",
     ];
 
     expectedCommands.forEach((cmd) => {

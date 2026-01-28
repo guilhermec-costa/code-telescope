@@ -45,39 +45,43 @@
         "commands": [
             {
                 "command": "code-telescope.fuzzy.file",
-                "title": "Code Telescope: File Fuzzy Finder"
+                "title": "Code Telescope: Smart File Search"
             },
             {
                 "command": "code-telescope.fuzzy.branch",
-                "title": "Code Telescope: Branch Fuzzy Finder"
+                "title": "Code Telescope: Smart Branch Search"
             },
             {
                 "command": "code-telescope.fuzzy.wsText",
-                "title": "Code Telescope: Workspace Text Finder"
+                "title": "Code Telescope: Workspace Text Search"
             },
             {
                 "command": "code-telescope.fuzzy.keybindings",
-                "title": "Code Telescope: Keybindings"
+                "title": "Code Telescope: Keyboard Shortcuts"
             },
             {
                 "command": "code-telescope.fuzzy.custom",
-                "title": "Code Telescope: Pick Custom Finder"
+                "title": "Code Telescope: Select Search Tool"
             },
             {
                 "command": "code-telescope.fuzzy.wsSymbols",
-                "title": "Code Telescope: Workspace Symbols"
+                "title": "Code Telescope: Workspace Symbol Search"
             },
             {
                 "command": "code-telescope.fuzzy.recentFiles",
-                "title": "Code Telescope: Recent Files"
+                "title": "Code Telescope: Recent File History"
             },
             {
                 "command": "code-telescope.fuzzy.colorschemes",
-                "title": "Code Telescope: Colorschemes"
+                "title": "Code Telescope: Color Themes"
             },
             {
                 "command": "code-telescope.fuzzy.diagnostics",
-                "title": "Code Telescope: Diagnostics"
+                "title": "Code Telescope: Workspace Diagnostics"
+            },
+            {
+                "command": "code-telescope.fuzzy.breakpoints",
+                "title": "Code Telescope: Workspace Breakpoints"
             },
             {
                 "command": "code-telescope.fuzzy.harpoon",
@@ -85,11 +89,11 @@
             },
             {
                 "command": "code-telescope.fuzzy.callHierarchy",
-                "title": "Code Telescope: Call hierarchy"
+                "title": "Code Telescope: Explore Call Hierarchy"
             },
             {
                 "command": "code-telescope.fuzzy.tasks",
-                "title": "Code Telescope: Tasks"
+                "title": "Code Telescope: Workspace Tasks"
             },
             {
                 "command": "code-telescope.harpoon.addFile",
