@@ -34,7 +34,7 @@ export class DIContainer {
       this.optionListManager = new OptionListManager(this.previewManager, searchEl);
 
       console.log("[DIContainer] Initializing KeyboardHandler");
-      this.keyboardHandler = new KeyboardHandler();
+      this.keyboardHandler = new KeyboardHandler(__KEYBINDINGS_CFG__);
 
       const serializedCustomAdapter = readJson<SerializedUiConfig>("__CUSTOM_DATA_ADAPTER__");
 

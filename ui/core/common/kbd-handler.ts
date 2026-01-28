@@ -3,19 +3,23 @@ import { KeybindingConfig } from "../../../shared/exchange/extension-config";
 type KeydownHandler = () => void;
 
 export class KeyboardHandler {
-  private cfg: KeybindingConfig =
-    typeof __KEYBINDINGS_CFG__ !== "undefined"
-      ? __KEYBINDINGS_CFG__
-      : {
-          moveDown: "ctrl+j",
-          moveUp: "ctrl+k",
-          confirm: "enter",
-          close: "escape",
-          scrollUp: "ctrl+u",
-          scrollDown: "ctrl+d",
-          scrollLeft: "ctrl+h",
-          scrollRight: "ctrl+l",
-        };
+  private defaultConfig: KeybindingConfig = {
+    moveDown: "ctrl+j",
+    moveUp: "ctrl+k",
+    confirm: "enter",
+    close: "escape",
+    scrollUp: "ctrl+u",
+    scrollDown: "ctrl+d",
+    scrollLeft: "ctrl+h",
+    scrollRight: "ctrl+l",
+    promptDelete: "backspace",
+  };
+
+  private _cfg: KeybindingConfig;
+
+  get cfg() {
+    return this._cfg;
+  }
 
   private onMoveUp?: KeydownHandler;
   private onMoveDown?: KeydownHandler;
@@ -25,9 +29,15 @@ export class KeyboardHandler {
   private onScrollLeft?: KeydownHandler;
   private onConfirm?: KeydownHandler;
   private onClose?: KeydownHandler;
+  private onPromptDelete?: KeydownHandler;
 
-  constructor() {
+  constructor(customConfig?: Partial<KeybindingConfig>) {
+    this._cfg = this.mergeConfig(customConfig);
     this.setupListeners();
+  }
+
+  private mergeConfig(customConfig?: Partial<KeybindingConfig>): KeybindingConfig {
+    return { ...this.defaultConfig, ...customConfig };
   }
 
   private isArrow(event: KeyboardEvent, key: string): boolean {
@@ -102,14 +112,15 @@ export class KeyboardHandler {
         return;
       }
       const actions = [
-        { key: this.cfg.moveDown, handler: () => this.onMoveDown?.() },
-        { key: this.cfg.moveUp, handler: () => this.onMoveUp?.() },
-        { key: this.cfg.confirm, handler: () => this.onConfirm?.() },
-        { key: this.cfg.close, handler: () => this.onClose?.() },
-        { key: this.cfg.scrollUp, handler: () => this.onScrollUp?.() },
-        { key: this.cfg.scrollDown, handler: () => this.onScrollDown?.() },
-        { key: this.cfg.scrollLeft, handler: () => this.onScrollLeft?.() },
-        { key: this.cfg.scrollRight, handler: () => this.onScrollRight?.() },
+        { key: this._cfg.moveDown, handler: () => this.onMoveDown?.() },
+        { key: this._cfg.moveUp, handler: () => this.onMoveUp?.() },
+        { key: this._cfg.confirm, handler: () => this.onConfirm?.() },
+        { key: this._cfg.close, handler: () => this.onClose?.() },
+        { key: this._cfg.scrollUp, handler: () => this.onScrollUp?.() },
+        { key: this._cfg.scrollDown, handler: () => this.onScrollDown?.() },
+        { key: this._cfg.scrollLeft, handler: () => this.onScrollLeft?.() },
+        { key: this._cfg.scrollRight, handler: () => this.onScrollRight?.() },
+        { key: this._cfg.promptDelete, handler: () => this.onPromptDelete?.() },
       ];
 
       for (const action of actions) {
@@ -146,5 +157,8 @@ export class KeyboardHandler {
   }
   setCloseHandler(handler: KeydownHandler): void {
     this.onClose = handler;
+  }
+  setPromptDeleteHandler(handler: KeydownHandler): void {
+    this.onPromptDelete = handler;
   }
 }

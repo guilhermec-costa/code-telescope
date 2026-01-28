@@ -46,6 +46,7 @@ export interface KeybindingConfig {
   scrollDown: string;
   scrollLeft: string;
   scrollRight: string;
+  promptDelete: string;
 }
 
 export interface WindowConfig {

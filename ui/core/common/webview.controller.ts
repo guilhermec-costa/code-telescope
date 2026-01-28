@@ -164,6 +164,13 @@ export class WebviewController {
     this.keyboardHandler.setCloseHandler(
       WebviewToExtensionMessenger.instance.requestClosePanel.bind(WebviewToExtensionMessenger.instance),
     );
+    this.keyboardHandler.setPromptDeleteHandler(() => {
+      const input = this.searchElement;
+      input.value = input.value.slice(0, -1);
+
+      // propagate the changes, so current filter reacts
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
   }
 
   /**

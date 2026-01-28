@@ -308,7 +308,8 @@
                         "scrollUp": "ctrl+u",
                         "scrollDown": "ctrl+d",
                         "scrollLeft": "ctrl+h",
-                        "scrollRight": "ctrl+l"
+                        "scrollRight": "ctrl+l",
+                        "promptDelete": "backspace"
                     },
                     "properties": {
                         "moveDown": {
