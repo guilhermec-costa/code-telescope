@@ -47,3 +47,8 @@ export interface KeybindingConfig {
   scrollLeft: string;
   scrollRight: string;
 }
+
+export interface WindowConfig {
+  closeBehaviorOnSelection: "minimize" | "dispose";
+  closeBehaviorOnClose: "minimize" | "dispose";
+}

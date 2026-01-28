@@ -3,6 +3,7 @@ import {
   type KeybindingConfig,
   type LayoutSetupConfig,
   type PreviewManagerConfig,
+  WindowConfig,
   type WsFileFinderConfig,
   type WsTextFinderConfig,
 } from "../../../shared/exchange/extension-config";
@@ -16,6 +17,7 @@ enum ExtensionCfgSection {
   PREVIEW = "preview",
   LAYOUT = "layout",
   KEYBINDINGS = "keybindings",
+  WINDOW = "window",
 }
 
 export class ExtensionConfigManager {
@@ -59,5 +61,9 @@ export class ExtensionConfigManager {
 
   static get keybindings(): KeybindingConfig {
     return this.root.get<KeybindingConfig>(ExtensionCfgSection.KEYBINDINGS)!;
+  }
+
+  static get window(): WindowConfig {
+    return this.root.get<WindowConfig>(ExtensionCfgSection.WINDOW)!;
   }
 }

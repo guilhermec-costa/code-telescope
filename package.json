@@ -268,197 +268,36 @@
         "configuration": {
             "title": "Code Telescope – Search & Panel Settings",
             "properties": {
-                "codeTelescope.wsFileFinder.excludeHidden": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Exclude hidden files and folders (dotfiles) from file search results."
-                },
-                "codeTelescope.wsFileFinder.includePatterns": {
-                    "type": "array",
-                    "default": [
-                        "**/*"
-                    ],
-                    "description": "Glob patterns to include"
-                },
-                "codeTelescope.wsFileFinder.maxFileSize": {
-                    "type": "number",
-                    "default": 150,
-                    "description": "Maximum file size ripgrep will search (e.g. 200k, 1M)"
-                },
-                "codeTelescope.wsFileFinder.excludePatterns": {
-                    "type": "array",
-                    "default": [
-                        "**/node_modules/**",
-                        "**/.venv/**",
-                        "**/dist/**",
-                        "**/build/**",
-                        "**/out/**",
-                        "**/.git/**",
-                        "**/.svn/**",
-                        "**/.hg/**",
-                        "**/.next/**",
-                        "**/.turbo/**",
-                        "**/.cache/**",
-                        "**/.vscode-test/**",
-                        "**/.parcel-cache/**",
-                        "**/.vite/**",
-                        "**/.nuxt/**",
-                        "**/coverage/**",
-                        "**/*.jar",
-                        "**/*.jar*",
-                        "**/*.zip"
-                    ],
-                    "description": "Glob patterns to exclude from file search"
-                },
-                "codeTelescope.wsFileFinder.maxResults": {
-                    "type": "number",
-                    "default": 2000,
-                    "description": "Max number of results to list"
-                },
-                "codeTelescope.wsFileFinder.textDisplay": {
+                "codeTelescope.window.closeBehaviorOnSelection": {
                     "type": "string",
                     "enum": [
-                        "relative",
-                        "absolute",
-                        "filename-only"
+                        "minimize",
+                        "dispose"
                     ],
-                    "default": "relative",
-                    "description": "How to display file path"
-                },
-                "codeTelescope.wsTextFinder.excludePatterns": {
-                    "type": "array",
-                    "default": [
-                        "**/node_modules/**",
-                        "**/dist/**",
-                        "**/build/**",
-                        "**/out/**",
-                        "**/.git/**",
-                        "**/.svn/**",
-                        "**/.hg/**",
-                        "**/.next/**",
-                        "**/.turbo/**",
-                        "**/.cache/**",
-                        "**/.parcel-cache/**",
-                        "**/.vite/**",
-                        "**/.nuxt/**",
-                        "**/coverage/**"
+                    "description": "Defines the window behavior when an option is selected",
+                    "enumDescriptions": [
+                        "Minimize: Keeps the state, making subsequent openings faster.",
+                        "Dispose: Closes the window and reloads everything next time."
                     ],
-                    "description": "Glob patterns to exclude from file search"
+                    "default": "minimize",
+                    "order": 1
                 },
-                "codeTelescope.wsTextFinder.maxColumns": {
-                    "type": "number",
-                    "default": 500,
-                    "description": "Maximum number of columns per line before ripgrep stops reading the line"
-                },
-                "codeTelescope.wsTextFinder.maxFileSize": {
-                    "type": "string",
-                    "default": "200K",
-                    "description": "Maximum file size ripgrep will search (e.g. 200k, 1M)"
-                },
-                "codeTelescope.wsTextFinder.ignoreCase": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Perform case-insensitive search"
-                },
-                "codeTelescope.wsTextFinder.fixedString": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Treat the search query as a literal string instead of a regular expression"
-                },
-                "codeTelescope.wsTextFinder.maxResults": {
-                    "type": "number",
-                    "default": 10000,
-                    "description": "Maximum number of search results to return"
-                },
-                "codeTelescope.preview.scrollBehavior": {
+                "codeTelescope.window.closeBehaviorOnClose": {
                     "type": "string",
                     "enum": [
-                        "auto",
-                        "instant",
-                        "smooth"
+                        "minimize",
+                        "dispose"
                     ],
-                    "default": "instant"
-                },
-                "codeTelescope.preview.verticalScrollFraction": {
-                    "type": "string",
-                    "enum": [
-                        "1/2",
-                        "1/3",
-                        "1/4"
+                    "description": "Defines the window behavior when the user closes the window",
+                    "enumDescriptions": [
+                        "Minimize: Keeps the state for faster reopening.",
+                        "Dispose: Closes and disposes the window, clearing its state."
                     ],
-                    "default": "1/2",
-                    "description": "Controls how the preview scrolls vertically to reveal the target line"
-                },
-                "codeTelescope.preview.horizontalScrollFraction": {
-                    "type": "string",
-                    "enum": [
-                        "1/2",
-                        "1/3",
-                        "1/4"
-                    ],
-                    "default": "1/2",
-                    "description": "Controls how the preview scrolls horizontally to reveal the target column"
-                },
-                "codeTelescope.preview.showLineNumbers": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "If line numbers should be displayed in the preview"
-                },
-                "codeTelescope.layout.mode": {
-                    "type": "string",
-                    "enum": [
-                        "classic",
-                        "ivy"
-                    ],
-                    "default": "classic",
-                    "description": "Layout mode"
-                },
-                "codeTelescope.layout.ivyHeightPct": {
-                    "type": "number",
-                    "default": 75,
-                    "description": "Height in percentage of the ivy layout container"
-                },
-                "codeTelescope.layout.rightSideWidthPct": {
-                    "type": "number",
-                    "default": 50,
-                    "description": "Width in percentage of the right side of the panel"
-                },
-                "codeTelescope.layout.leftSideWidthPct": {
-                    "type": "number",
-                    "default": 50,
-                    "description": "Width in percentage of the left side of the panel"
-                },
-                "codeTelescope.layout.panelContainerPct": {
-                    "type": "number",
-                    "default": 90,
-                    "description": "Width in percentage of the panel container"
-                },
-                "codeTelescope.layout.promptFontSize": {
-                    "type": "number",
-                    "default": 16,
-                    "description": "Font size (px) of the input prompt"
-                },
-                "codeTelescope.layout.resultsFontSize": {
-                    "type": "number",
-                    "default": 16,
-                    "description": "Font size (px) of the results list items"
-                },
-                "codeTelescope.layout.previewFontSize": {
-                    "type": "number",
-                    "default": 18,
-                    "description": "Font size (px) of the preview panel"
-                },
-                "codeTelescope.layout.borderSizeInPx": {
-                    "type": "number",
-                    "default": 1,
-                    "description": "Border size (px)"
-                },
-                "codeTelescope.layout.borderRadiusInPx": {
-                    "type": "number",
-                    "default": 5,
-                    "description": "Border radius (px)"
+                    "default": "minimize",
+                    "order": 2
                 },
                 "codeTelescope.keybindings": {
+                    "order": 3,
                     "type": "object",
                     "description": "Custom keybindings for the Telescope panel",
                     "default": {
@@ -497,6 +336,210 @@
                             "type": "string"
                         }
                     }
+                },
+                "codeTelescope.wsFileFinder.excludeHidden": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Exclude hidden files and folders (dotfiles) from file search results.",
+                    "order": 4
+                },
+                "codeTelescope.wsFileFinder.includePatterns": {
+                    "type": "array",
+                    "default": [
+                        "**/*"
+                    ],
+                    "description": "Glob patterns to include",
+                    "order": 5
+                },
+                "codeTelescope.wsFileFinder.excludePatterns": {
+                    "type": "array",
+                    "default": [
+                        "**/node_modules/**",
+                        "**/.venv/**",
+                        "**/dist/**",
+                        "**/build/**",
+                        "**/out/**",
+                        "**/.git/**",
+                        "**/.svn/**",
+                        "**/.hg/**",
+                        "**/.next/**",
+                        "**/.turbo/**",
+                        "**/.cache/**",
+                        "**/.vscode-test/**",
+                        "**/.parcel-cache/**",
+                        "**/.vite/**",
+                        "**/.nuxt/**",
+                        "**/coverage/**",
+                        "**/*.jar",
+                        "**/*.zip"
+                    ],
+                    "description": "Glob patterns to exclude from file search",
+                    "order": 6
+                },
+                "codeTelescope.wsFileFinder.maxFileSize": {
+                    "type": "number",
+                    "default": 150,
+                    "description": "Maximum file size ripgrep will search (e.g. 200k, 1M)",
+                    "order": 7
+                },
+                "codeTelescope.wsFileFinder.maxResults": {
+                    "type": "number",
+                    "default": 2000,
+                    "description": "Max number of results to list",
+                    "order": 8
+                },
+                "codeTelescope.wsFileFinder.textDisplay": {
+                    "type": "string",
+                    "enum": [
+                        "relative",
+                        "absolute",
+                        "filename-only"
+                    ],
+                    "default": "relative",
+                    "description": "How to display file path",
+                    "order": 9
+                },
+                "codeTelescope.wsTextFinder.excludePatterns": {
+                    "displayName": "Workspace Text Finder",
+                    "type": "array",
+                    "default": [
+                        "**/node_modules/**",
+                        "**/dist/**",
+                        "**/build/**",
+                        "**/out/**",
+                        "**/.git/**",
+                        "**/.svn/**",
+                        "**/.hg/**",
+                        "**/.next/**",
+                        "**/.turbo/**",
+                        "**/.cache/**",
+                        "**/.parcel-cache/**",
+                        "**/.vite/**",
+                        "**/.nuxt/**",
+                        "**/coverage/**"
+                    ],
+                    "description": "Glob patterns to exclude from file search",
+                    "order": 10
+                },
+                "codeTelescope.wsTextFinder.maxColumns": {
+                    "type": "number",
+                    "default": 500,
+                    "description": "Maximum number of columns per line before ripgrep stops reading the line",
+                    "order": 11
+                },
+                "codeTelescope.wsTextFinder.maxFileSize": {
+                    "type": "string",
+                    "default": "200K",
+                    "description": "Maximum file size ripgrep will search (e.g. 200k, 1M)",
+                    "order": 12
+                },
+                "codeTelescope.wsTextFinder.maxResults": {
+                    "type": "number",
+                    "default": 10000,
+                    "description": "Maximum number of search results to return",
+                    "order": 15
+                },
+                "codeTelescope.preview.scrollBehavior": {
+                    "type": "string",
+                    "enum": [
+                        "auto",
+                        "instant",
+                        "smooth"
+                    ],
+                    "default": "instant",
+                    "order": 16
+                },
+                "codeTelescope.preview.verticalScrollFraction": {
+                    "type": "string",
+                    "enum": [
+                        "1/2",
+                        "1/3",
+                        "1/4"
+                    ],
+                    "default": "1/2",
+                    "description": "Controls how the preview scrolls vertically to reveal the target line",
+                    "order": 17
+                },
+                "codeTelescope.preview.horizontalScrollFraction": {
+                    "type": "string",
+                    "enum": [
+                        "1/2",
+                        "1/3",
+                        "1/4"
+                    ],
+                    "default": "1/2",
+                    "description": "Controls how the preview scrolls horizontally to reveal the target column",
+                    "order": 18
+                },
+                "codeTelescope.preview.showLineNumbers": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If line numbers should be displayed in the preview",
+                    "order": 19
+                },
+                "codeTelescope.layout.mode": {
+                    "type": "string",
+                    "enum": [
+                        "classic",
+                        "ivy"
+                    ],
+                    "default": "classic",
+                    "description": "Layout mode",
+                    "order": 20
+                },
+                "codeTelescope.layout.ivyHeightPct": {
+                    "type": "number",
+                    "default": 75,
+                    "description": "Height in percentage of the ivy layout container",
+                    "order": 21
+                },
+                "codeTelescope.layout.rightSideWidthPct": {
+                    "type": "number",
+                    "default": 50,
+                    "description": "Width in percentage of the right side of the panel",
+                    "order": 22
+                },
+                "codeTelescope.layout.leftSideWidthPct": {
+                    "type": "number",
+                    "default": 50,
+                    "description": "Width in percentage of the left side of the panel",
+                    "order": 23
+                },
+                "codeTelescope.layout.panelContainerPct": {
+                    "type": "number",
+                    "default": 90,
+                    "description": "Width in percentage of the panel container",
+                    "order": 24
+                },
+                "codeTelescope.layout.promptFontSize": {
+                    "type": "number",
+                    "default": 16,
+                    "description": "Font size (px) of the input prompt",
+                    "order": 25
+                },
+                "codeTelescope.layout.resultsFontSize": {
+                    "type": "number",
+                    "default": 16,
+                    "description": "Font size (px) of the results list items",
+                    "order": 26
+                },
+                "codeTelescope.layout.previewFontSize": {
+                    "type": "number",
+                    "default": 18,
+                    "description": "Font size (px) of the preview panel",
+                    "order": 27
+                },
+                "codeTelescope.layout.borderSizeInPx": {
+                    "type": "number",
+                    "default": 1,
+                    "description": "Border size (px)",
+                    "order": 28
+                },
+                "codeTelescope.layout.borderRadiusInPx": {
+                    "type": "number",
+                    "default": 5,
+                    "description": "Border radius (px)",
+                    "order": 29
                 }
             }
         }
