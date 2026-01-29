@@ -1,4 +1,4 @@
-import { bundledLanguages, bundledThemes, createHighlighter, type Highlighter } from "shiki/bundle/web";
+import { bundledLanguages, createHighlighter, type Highlighter } from "shiki/bundle/web";
 import { AsyncResult } from "../../../shared/result";
 
 /**
@@ -53,18 +53,9 @@ export class HighlighterManager {
   /**
    * Loads a theme from Shiki bundled themes.
    */
-  private static async loadThemeFromBundle(theme: string): AsyncResult<string> {
-    const def = bundledThemes[theme];
-
-    if (!def) {
-      return {
-        ok: false,
-        error: `[ShikiManager] Theme not found in bundle/web: ${theme}`,
-      };
-    }
-
+  private static async loadThemeFromBundle(theme: any): AsyncResult<string> {
     try {
-      await this.highlighter!.loadTheme(def);
+      await this.highlighter!.loadTheme(theme);
       this.loadedThemes.add(theme);
 
       console.log(`[ShikiManager] Theme loaded: ${theme}`);
