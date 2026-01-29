@@ -14,6 +14,7 @@ export type BuiltinFuzzyProviderType =
   | "harpoon.marks"
   | "git.branches"
   | "workspace.symbols"
+  | "debug.breakpoints"
   | "code.documentSymbols";
 
 export type CustomFuzzyProviderType = `custom.${string}`;

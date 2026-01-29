@@ -3,7 +3,7 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapt
 import { HighlightedCodePreviewData } from "../../../../shared/extension-webview-protocol";
 import { resolvePathExt } from "../../../utils/files";
 import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
-import { FileContentCache } from "../../common/cache/file-content.cache";
+import { FileReader } from "../../common/cache/file-reader";
 import { FuzzyFinderAdapter } from "../../decorators/fuzzy-finder-provider.decorator";
 import { RegexFinder } from "./regex-finder";
 import { RipgrepFinder } from "./ripgrep-finder";
@@ -59,7 +59,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
     let ext = resolvePathExt(filePath);
 
     try {
-      const content = await FileContentCache.instance.get(filePath);
+      const content = await FileReader.read(filePath);
       const lines = (content as string).split("\n");
 
       return {

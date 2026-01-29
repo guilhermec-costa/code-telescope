@@ -9,6 +9,8 @@ const RIPGREP_BASE_FLAGS = [
   "--line-number",
   "--column",
   "--no-heading",
+  "--text",
+  "--hidden",
   "--color",
   "never",
   "--ignore-case",

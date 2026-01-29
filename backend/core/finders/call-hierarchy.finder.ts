@@ -5,7 +5,7 @@ import { HighlightedCodePreviewData } from "../../../shared/extension-webview-pr
 import { resolvePathExt } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { FileContentCache } from "../common/cache/file-content.cache";
+import { FileReader } from "../common/cache/file-reader";
 import { PreContextManager } from "../common/pre-context";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
 
@@ -91,7 +91,7 @@ export class CallHierarchyFinder implements IFuzzyFinderProvider {
     const language = resolvePathExt(filePath);
     const highlightLine = selected.line - 1;
 
-    const content = await FileContentCache.instance.get(filePath);
+    const content = await FileReader.read(filePath);
     return {
       content: {
         path: filePath,

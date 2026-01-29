@@ -1,8 +1,8 @@
 import * as fs from "fs/promises";
 import { resolvePathExt } from "../../../utils/files";
 
-export class FileContentCache {
-  private static _instance: FileContentCache | undefined;
+export class FileReader {
+  private static _instance: FileReader | undefined;
 
   private cache = new Map<string, string | Uint8Array>();
 
@@ -10,7 +10,7 @@ export class FileContentCache {
 
   static get instance() {
     if (!this._instance) {
-      this._instance = new FileContentCache();
+      this._instance = new FileReader();
     }
     return this._instance;
   }
@@ -19,7 +19,7 @@ export class FileContentCache {
     this.cache.delete(absPath);
   }
 
-  async get(absPath: string): Promise<string | Uint8Array> {
+  static async read(absPath: string): Promise<string | Uint8Array> {
     const ext = resolvePathExt(absPath);
     const isImg = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext);
 

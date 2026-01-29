@@ -1,6 +1,7 @@
 import esbuild from "esbuild";
 import fs from "fs";
 import path from "path";
+import extToLang from "../backend/config/ext-to-langs.json";
 import { decoratorsPlugin } from "./decorators-plugin";
 
 const args = process.argv.slice(2);
@@ -56,13 +57,29 @@ function copyMaterialIcons() {
 
   fs.mkdirSync(dest, { recursive: true });
 
-  for (const file of fs.readdirSync(src)) {
-    const srcFile = path.join(src, file);
-    const destFile = path.join(dest, file);
-    fs.copyFileSync(srcFile, destFile);
+  const languages = new Set<string>(["file"]);
+  Object.values(extToLang).forEach((lang) => languages.add(lang));
+
+  const wanted = Array.from(languages).sort().slice(0, 200);
+
+  for (const file of fs.readdirSync(dest)) {
+    const full = path.join(dest, file);
+    try {
+      if (fs.statSync(full).isFile()) fs.unlinkSync(full);
+    } catch {}
   }
 
-  console.log(`[Build] Copied ${fs.readdirSync(src).length} material icons to dist/vendor/material-icons`);
+  let copied = 0;
+  for (const iconName of wanted) {
+    const file = `${iconName}.svg`;
+    const srcFile = path.join(src, file);
+    const destFile = path.join(dest, file);
+    if (!fs.existsSync(srcFile)) continue;
+    fs.copyFileSync(srcFile, destFile);
+    copied++;
+  }
+
+  console.log(`[Build] Copied ${copied}/${wanted.length} material icons to dist/vendor/material-icons`);
 }
 
 async function run() {

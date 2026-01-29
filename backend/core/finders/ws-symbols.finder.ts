@@ -5,7 +5,7 @@ import { execCmd } from "../../utils/commands";
 import { resolvePathExt } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { FileContentCache } from "../common/cache/file-content.cache";
+import { FileReader } from "../common/cache/file-reader";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
 
 interface WorkspaceSymbolData {
@@ -84,7 +84,7 @@ export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
 
     const highlightLine = selected.location.range.start.line;
 
-    const content = await FileContentCache.instance.get(filePath);
+    const content = await FileReader.read(filePath);
 
     return {
       content: {
