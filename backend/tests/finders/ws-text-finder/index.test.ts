@@ -1,15 +1,13 @@
 import { beforeEach, describe, expect, it, type Mocked, vi } from "vitest";
 import * as vscode from "vscode";
-import { FileContentCache } from "../../../core/common/cache/file-content.cache";
+import { FileReader } from "../../../core/common/cache/file-reader";
 import { WorkspaceTextSearchProvider } from "../../../core/finders/ws-text-finder/index.finder";
 import { RegexFinder } from "../../../core/finders/ws-text-finder/regex-finder";
 import { RipgrepFinder } from "../../../core/finders/ws-text-finder/ripgrep-finder";
 
-vi.mock("@backend/core/common/cache/file-content.cache", () => ({
-  FileContentCache: {
-    instance: {
-      get: vi.fn(),
-    },
+vi.mock("@backend/core/common/cache/file-reader", () => ({
+  FileReader: {
+    read: vi.fn(),
   },
 }));
 
@@ -62,7 +60,7 @@ describe("WorkspaceTextSearchProvider", () => {
 
     const result = await provider.searchOnDynamicMode("test");
 
-    expect(rgInstance.search).toHaveBeenCalledWith("test");
+    expect(rgInstance.search).toHaveBeenCalledWith("test", undefined);
     expect(result.results).toEqual(["match"]);
   });
 
@@ -80,7 +78,7 @@ describe("WorkspaceTextSearchProvider", () => {
   });
 
   it("returns error preview when file loading fails", async () => {
-    vi.mocked(FileContentCache.instance.get).mockRejectedValueOnce(new Error("fail"));
+    vi.mocked(FileReader.read).mockRejectedValueOnce(new Error("fail"));
 
     const preview: any = await provider.getPreviewData("/tmp/file.ts");
 

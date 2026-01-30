@@ -5,6 +5,7 @@
 export type BuiltinFuzzyProviderType =
   | "workspace.files"
   | "workspace.text"
+  | "currentFile.text"
   | "workspace.recentFiles"
   | "workspace.keybindings"
   | "workspace.tasks"

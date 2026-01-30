@@ -89,6 +89,7 @@ describe("Extension entrypoint", () => {
       "keybindings",
       "branch",
       "wsText",
+      "fileText",
       "wsSymbols",
       "recentFiles",
       "colorschemes",

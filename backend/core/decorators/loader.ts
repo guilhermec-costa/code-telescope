@@ -13,6 +13,7 @@ import "../finders/ws-text-finder/index.finder";
 import "../finders/ws-files.finder";
 import "../finders/harpoon.finder";
 import "../finders/breakpoint.finder";
+import "../finders/current-file-text.finder";
 
 // PRESENTATION HANDLERS
 import "../presentation/handlers/close-panel.handler";
