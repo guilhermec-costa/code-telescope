@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
-import { resolvePathExt } from "../../utils/files";
+import { getLanguageIdForFile } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
 import { PreContextManager } from "../common/pre-context";
@@ -41,7 +41,6 @@ export class CurrentFileTextSearchProvider implements IFuzzyFinderProvider {
 
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
     const [filePath, line] = identifier.split(":");
-    let ext = resolvePathExt(filePath);
 
     try {
       const content = await FileReader.read(filePath);
@@ -53,7 +52,7 @@ export class CurrentFileTextSearchProvider implements IFuzzyFinderProvider {
           path: filePath,
           text: content as string,
         },
-        language: ext,
+        language: await getLanguageIdForFile(filePath),
         metadata: {
           filePath,
           highlightLine: line ? parseInt(line, 10) - 1 : undefined,

@@ -5,7 +5,7 @@ import { RecentFileData, RecentFilesFinderData } from "../../../shared/exchange/
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
-import { getSvgIconUrl, resolvePathExt } from "../../utils/files";
+import { getLanguageIdForFile, getSvgIconUrl } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
@@ -48,7 +48,6 @@ export class RecentFilesFinder implements IFuzzyFinderProvider {
   }
 
   async getPreviewData(path: string): Promise<HighlightedCodePreviewData> {
-    const language = resolvePathExt(path);
     const content = await FileReader.read(path);
 
     return {
@@ -57,7 +56,7 @@ export class RecentFilesFinder implements IFuzzyFinderProvider {
         text: content as string,
         kind: "text",
       },
-      language,
+      language: await getLanguageIdForFile(path),
     };
   }
 

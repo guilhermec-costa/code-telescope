@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { DiagnosticData, DiagnosticsFinderData } from "../../../shared/exchange/diagnostics";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
-import { resolvePathExt } from "../../utils/files";
+import { getLanguageIdForFile } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
@@ -74,7 +74,6 @@ export class DiagnosticsFinder implements IFuzzyFinderProvider {
     }
 
     const filePath = selected.uri.fsPath;
-    const language = resolvePathExt(filePath);
     const highlightLine = selected.line - 1;
 
     const content = await FileReader.read(filePath);
@@ -85,7 +84,7 @@ export class DiagnosticsFinder implements IFuzzyFinderProvider {
         kind: "text",
         text: content as string,
       },
-      language,
+      language: await getLanguageIdForFile(filePath),
       metadata: {
         highlightLine,
       },
