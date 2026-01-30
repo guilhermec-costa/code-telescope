@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import { FromWebviewKindMessage } from "../../../../shared/extension-webview-protocol";
-import { getCurThemeMetadata } from "../../../utils/theme";
 import { IWebviewMessageHandler } from "../../abstractions/webview-message-handler";
 import { WebviewMessageHandler } from "../../decorators/webview-message-handler.decorator";
+import { HighlighterAssetLoader } from "../../highlighter-asset-loader";
 import { FuzzyFinderPanelController } from "../fuzzy-panel.controller";
 import { WebviewController } from "../webview.controller";
 
@@ -15,11 +15,13 @@ export class PreviewRequestHandler implements IWebviewMessageHandler<"previewReq
     const { selectedId } = msg.data;
 
     const previewData = await provider.getPreviewData(selectedId);
-    const themeData = provider.fuzzyAdapterType === "workspace.colorschemes" ? {} : await getCurThemeMetadata();
-    previewData.metadata = {
-      ...previewData.metadata,
-      ...themeData,
-    };
+
+    previewData.languageGrammar = (await HighlighterAssetLoader.getLanguageGrammar(previewData.language!)) as any;
+
+    // colorscheme finder provides its own theme grammar
+    if (provider.fuzzyAdapterType !== "workspace.colorschemes") {
+      previewData.themeGrammar = await HighlighterAssetLoader.getThemeGrammar();
+    }
 
     await WebviewController.sendMessage(wv, {
       type: "previewUpdate",

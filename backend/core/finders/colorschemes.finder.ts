@@ -6,7 +6,7 @@ import { Globals } from "../../globals";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { PreContextManager } from "../common/pre-context";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
-import { ThemeLoader } from "../theme-loader";
+import { HighlighterAssetLoader } from "../highlighter-asset-loader";
 
 /**
  * Fuzzy provider that retrieves available color schemes.
@@ -57,7 +57,7 @@ export class ColorSchemesFinder implements IFuzzyFinderProvider {
 
   async getPreviewData(themeData: ColorThemeData): Promise<HighlightedCodePreviewData> {
     await this.updateTheme(themeData);
-    const themeDetails = await ThemeLoader.getCurrentThemeData(themeData.label);
+    const themeGrammar = await HighlighterAssetLoader.getThemeGrammar(themeData.label);
     return {
       content: {
         kind: "text",
@@ -65,10 +65,7 @@ export class ColorSchemesFinder implements IFuzzyFinderProvider {
         text: this.generatePreviewContent(themeData),
       },
       language: "typescript",
-      metadata: {
-        themeJson: themeDetails.jsonData,
-        themeType: themeDetails.type,
-      },
+      themeGrammar,
     };
   }
 
