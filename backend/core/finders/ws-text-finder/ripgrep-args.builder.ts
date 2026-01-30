@@ -64,6 +64,11 @@ export class RipgrepArgsBuilder {
     return this;
   }
 
+  withFixedStrings() {
+    this.args.push("--fixed-strings");
+    return this;
+  }
+
   /** Builds the final argument list. */
   build() {
     if (!this._query) {

@@ -15,6 +15,7 @@ export interface WsTextFinderConfig {
   maxResults: number;
   maxFileSize: string;
   maxColumns: number;
+  fixedStrings: boolean;
 }
 
 export interface LayoutSetupConfig {

@@ -56,6 +56,10 @@
                 "title": "Code Telescope: Workspace Text Search"
             },
             {
+                "command": "code-telescope.fuzzy.fileText",
+                "title": "Code Telescope: Current File Text Search"
+            },
+            {
                 "command": "code-telescope.fuzzy.keybindings",
                 "title": "Code Telescope: Keyboard Shortcuts"
             },
@@ -355,6 +359,12 @@
                     ],
                     "description": "Glob patterns to include",
                     "order": 5
+                },
+                "codeTelescope.wsFileFinder.fixedStrings": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Search using literal text instead of regex.",
+                    "order": 4
                 },
                 "codeTelescope.wsFileFinder.excludePatterns": {
                     "type": "array",

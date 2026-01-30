@@ -69,32 +69,36 @@ export class RipgrepFinder {
     }
   }
 
-  public async search(query: string): Promise<any> {
+  public async search(query: string, customPaths?: string[]): Promise<any> {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders || workspaceFolders.length === 0) {
       return { results: [], query, message: "No workspace open" };
     }
 
     const matches: TextSearchMatch[] = [];
-    const roots = workspaceFolders.map((f) => f.uri.fsPath);
+    const roots = customPaths ?? workspaceFolders.map((f) => f.uri.fsPath);
+    const cwd = vscode.workspace.workspaceFolders?.[0].uri.fsPath || process.cwd();
 
     console.log("Starting ripgrep search:", { query, roots, rgPath: this._rgPath });
     const searchCfg = ExtensionConfigManager.wsTextFinderCfg;
-    const args = new RipgrepArgsBuilder()
+    const _args = new RipgrepArgsBuilder()
       .query(query)
       .maxColumns(searchCfg.maxColumns)
       .maxFileSize(searchCfg.maxFileSize)
-      .exclude(searchCfg.excludePatterns)
-      .withPaths(roots)
-      .build();
+      .exclude(searchCfg.excludePatterns);
+
+    const { fixedStrings } = ExtensionConfigManager.wsTextFinderCfg;
+    if (fixedStrings) _args.withFixedStrings();
+
+    const builtArgs = _args.withPaths(roots).build();
 
     await new Promise<void>((resolve, reject) => {
-      console.log("Spawning ripgrep with args:", args);
+      console.log("Spawning ripgrep with args:", builtArgs);
 
       let rg;
       try {
-        rg = spawn(this._rgPath, args, {
-          cwd: roots[0],
+        rg = spawn(this._rgPath, builtArgs, {
+          cwd,
           shell: false,
           stdio: ["ignore", "pipe", "pipe"], // ignore stdin, pipe stdout and stderr
         });
@@ -145,12 +149,13 @@ export class RipgrepFinder {
               if (result.type === "match") {
                 const data = result.data;
                 const lineText = data.lines.text.trim();
-                const resolvedPath = path.isAbsolute(data.path.text) ? data.path.text : path.resolve(data.path.text);
+                const rawPath = data.path.text;
+                const resolvedPath = path.isAbsolute(rawPath) ? path.normalize(rawPath) : path.resolve(cwd, rawPath);
 
                 matches.push({
                   file: resolvedPath,
                   line: data.line_number,
-                  svgIconUrl: getSvgIconUrl(data.path.text),
+                  svgIconUrl: getSvgIconUrl(resolvedPath),
                   column: data.submatches[0]?.start || 1,
                   text: lineText,
                   preview: lineText,
