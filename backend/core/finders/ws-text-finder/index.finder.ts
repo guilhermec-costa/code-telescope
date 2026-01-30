@@ -3,6 +3,7 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapt
 import { HighlightedCodePreviewData } from "../../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../../utils/files";
 import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
+import { ChunkStreamer } from "../../chunk-streamer";
 import { FileReader } from "../../common/cache/file-reader";
 import { FuzzyFinderAdapter } from "../../decorators/fuzzy-finder-provider.decorator";
 import { RegexFinder } from "./regex-finder";
@@ -42,16 +43,42 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
       return { results: [], query };
     }
 
+    let searchResult;
     if (this.ripgrepFinder.ripgrepAvailable) {
       try {
-        return await this.ripgrepFinder.search(query, customPaths);
+        searchResult = await this.ripgrepFinder.search(query, customPaths);
       } catch (error) {
         console.error("ripgrep search failed, falling back:", error);
-        return await this.regexFinder.search(query);
+        searchResult = await this.regexFinder.search(query);
       }
     } else {
-      return await this.regexFinder.search(query);
+      searchResult = await this.regexFinder.search(query);
     }
+
+    const allMatches = searchResult.results;
+    const CHUNK_SIZE = 2000;
+
+    const firstChunk = allMatches.slice(0, CHUNK_SIZE);
+
+    if (allMatches.length > CHUNK_SIZE) {
+      const streamer = new ChunkStreamer(allMatches.slice(CHUNK_SIZE), {
+        messageType: "optionList",
+        fuzzyProviderType: "workspace.text",
+        chunkSize: CHUNK_SIZE,
+        mapChunk: (chunk) => ({
+          results: chunk,
+          query,
+        }),
+      });
+
+      streamer.stream();
+    }
+
+    return {
+      results: firstChunk,
+      query,
+      isChunked: allMatches.length > CHUNK_SIZE,
+    };
   }
 
   destructureIdentifier(identifier: string) {

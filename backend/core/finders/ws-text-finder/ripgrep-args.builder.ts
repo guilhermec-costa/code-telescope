@@ -4,8 +4,6 @@
  */
 const RIPGREP_BASE_FLAGS = [
   "--json",
-  "--max-count",
-  "1",
   "--line-number",
   "--column",
   "--no-heading",
