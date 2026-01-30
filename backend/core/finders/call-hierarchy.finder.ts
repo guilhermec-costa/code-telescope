@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { CallHierarchyData, CallHierarchyFinderData } from "../../../shared/exchange/call-hierarchy";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
-import { resolvePathExt } from "../../utils/files";
+import { getLanguageIdForFile } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
@@ -88,7 +88,6 @@ export class CallHierarchyFinder implements IFuzzyFinderProvider {
     }
 
     const filePath = selected.uri.fsPath;
-    const language = resolvePathExt(filePath);
     const highlightLine = selected.line - 1;
 
     const content = await FileReader.read(filePath);
@@ -98,7 +97,7 @@ export class CallHierarchyFinder implements IFuzzyFinderProvider {
         text: content as string,
         kind: "text",
       },
-      language,
+      language: await getLanguageIdForFile(filePath),
       metadata: {
         highlightLine,
       },

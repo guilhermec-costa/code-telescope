@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { HighlightedCodePreviewData } from "../../../../shared/extension-webview-protocol";
-import { guessLanguageIdFromPath } from "../../../utils/files";
+import { getLanguageIdForFile } from "../../../utils/files";
 import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../../common/cache/file-reader";
 import { FuzzyFinderAdapter } from "../../decorators/fuzzy-finder-provider.decorator";
@@ -81,7 +81,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
           path: filePath,
           text: content as string,
         },
-        language: guessLanguageIdFromPath(filePath),
+        language: await getLanguageIdForFile(filePath),
         metadata: {
           filePath,
           highlightLine: lineStr ? parseInt(lineStr, 10) - 1 : undefined,

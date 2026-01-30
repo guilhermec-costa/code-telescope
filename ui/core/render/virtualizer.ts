@@ -66,19 +66,16 @@ export class Virtualizer {
     const scrollTop = this.container.scrollTop;
     const effectiveScrollTop = !isIvy && totalHeight < viewportHeight ? 0 : scrollTop;
 
-    // Calcula a janela de renderização baseada APENAS no scroll
     const startIndex = Math.max(0, Math.floor(effectiveScrollTop / this.itemHeight) - this.bufferSize);
     const endIndex = Math.min(
       items.length,
       Math.ceil((effectiveScrollTop + viewportHeight) / this.itemHeight) + this.bufferSize,
     );
 
-    // Limpa apenas o conteúdo do spacer
     this.spacer.innerHTML = "";
 
     const fragment = document.createDocumentFragment();
 
-    // Calcula o offset para posicionar os itens baseado no layout
     let topOffset = 0;
     if (!isIvy && totalHeight < viewportHeight) {
       topOffset = viewportHeight - totalHeight;
