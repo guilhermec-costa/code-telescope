@@ -1,3 +1,4 @@
+import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { debounce } from "../../utils/debounce";
 import { escapeHtml } from "../../utils/html";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
@@ -160,7 +161,8 @@ export class OptionListManager {
    * Clears options and preview when required by specific adapters.
    */
   public resetIfNeeded() {
-    if (this.searchElement.value === "" && this.dataAdapter.fuzzyAdapterType === "workspace.text") {
+    const needReset: FuzzyProviderType[] = ["workspace.text", "currentFile.text"];
+    if (this.searchElement.value === "" && needReset.includes(this.dataAdapter.fuzzyAdapterType)) {
       this.clearOptions();
       this.previewManager.clearPreview();
     }
