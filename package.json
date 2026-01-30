@@ -287,7 +287,7 @@
                         "Minimize: Keeps the state, making subsequent openings faster.",
                         "Dispose: Closes the window and reloads everything next time."
                     ],
-                    "default": "minimize",
+                    "default": "dispose",
                     "order": 1
                 },
                 "codeTelescope.window.closeBehaviorOnClose": {
@@ -301,7 +301,7 @@
                         "Minimize: Keeps the state for faster reopening.",
                         "Dispose: Closes and disposes the window, clearing its state."
                     ],
-                    "default": "minimize",
+                    "default": "dispose",
                     "order": 2
                 },
                 "codeTelescope.keybindings": {

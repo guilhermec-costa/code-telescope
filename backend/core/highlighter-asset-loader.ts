@@ -1,17 +1,13 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 import * as vscode from "vscode";
+import { LanguageGrammar, ThemeGrammar } from "../../shared/extension-webview-protocol";
 
-export interface ThemeInfo {
-  name: string;
-  type: "dark" | "light";
-  jsonData: any;
-}
+export class HighlighterAssetLoader {
+  private static themeCache: Map<string, ThemeGrammar> = new Map();
+  private static langCache: Map<string, LanguageGrammar> = new Map();
 
-export class ThemeLoader {
-  private static cache: Map<string, any> = new Map();
-
-  static async getCurrentThemeData(targetTheme?: string): Promise<ThemeInfo> {
+  static async getThemeGrammar(targetTheme?: string): Promise<ThemeGrammar | null> {
     const themeName = targetTheme || vscode.workspace.getConfiguration("workbench").get<string>("colorTheme");
     const activeTheme = vscode.window.activeColorTheme;
     const type =
@@ -19,8 +15,8 @@ export class ThemeLoader {
         ? "dark"
         : "light";
 
-    if (themeName && this.cache.has(themeName)) {
-      return { name: themeName, type, jsonData: this.cache.get(themeName) };
+    if (themeName && this.themeCache.has(themeName)) {
+      return { name: themeName, type, jsonData: this.themeCache.get(themeName) };
     }
 
     const extensions = vscode.extensions.all;
@@ -41,7 +37,7 @@ export class ThemeLoader {
           themeJson.name = themeName;
           themeJson.type = type;
 
-          if (themeName) this.cache.set(themeName, themeJson);
+          if (themeName) this.langCache.set(themeName, themeJson);
 
           return { name: themeName || "custom", type, jsonData: themeJson };
         } catch (e) {
@@ -50,8 +46,45 @@ export class ThemeLoader {
       }
     }
 
-    // 3. Fallback para temas nativos
-    return { name: "fallback", type, jsonData: null };
+    return null;
+  }
+
+  static async getLanguageGrammar(langId: string): Promise<LanguageGrammar | null> {
+    if (this.langCache.has(langId)) {
+      return this.langCache.get(langId)!;
+    }
+
+    const extensions = vscode.extensions.all;
+
+    for (const ext of extensions) {
+      const grammars = ext.packageJSON.contributes?.grammars;
+      if (!grammars) continue;
+
+      const matchedGrammar = grammars.find((g: any) => g.language === langId);
+
+      if (matchedGrammar) {
+        try {
+          const grammarPath = path.join(ext.extensionPath, matchedGrammar.path);
+          const content = await fs.readFile(grammarPath, "utf-8");
+
+          const grammarJson = this.parseJsonc(content);
+
+          const langInfo: LanguageGrammar = {
+            id: langId,
+            scopeName: matchedGrammar.scopeName || grammarJson.scopeName,
+            grammar: grammarJson,
+            embeddedLangs: matchedGrammar.embeddedLanguages,
+          };
+
+          this.langCache.set(langId, langInfo);
+          return langInfo;
+        } catch (e) {
+          console.error(`[LanguageLoader] Error loading grammar for ${langId}:`, e);
+        }
+      }
+    }
+
+    return null;
   }
 
   /**

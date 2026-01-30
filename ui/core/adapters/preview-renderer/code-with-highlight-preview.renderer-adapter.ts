@@ -90,12 +90,12 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
   async render(previewElement: HTMLElement, data: PreviewData<TextPreviewContent>, theme: string): Promise<void> {
     let {
       content: { text },
-      language = "text",
+      themeGrammar,
+      languageGrammar,
       metadata,
       overrideTheme,
     } = data;
 
-    language = language === "txt" ? "text" : language;
     const initialThemeName = overrideTheme ?? theme;
 
     if (!this.highlighter) {
@@ -127,38 +127,34 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
     const highlightLine = metadata?.highlightLine ?? 0;
     const initialChunk = Math.floor(highlightLine / CHUNK_SIZE);
 
-    const langLoadResult = await HighlighterManager.loadLanguageIfNeeded(language);
+    let finalLanguageId = "text";
+    if (languageGrammar) {
+      console.log("[Renderer] Loading language grammar:", languageGrammar.id);
+      const langLoadResult = await HighlighterManager.loadLanguageIfNeeded(languageGrammar);
+      console.log("[Renderer] Language load result:", langLoadResult);
 
-    let shikiActiveTheme = initialThemeName;
-    let themeLoadError = false;
-
-    if (metadata && metadata.themeJson) {
-      try {
-        const themeJson = metadata.themeJson;
-
-        const customThemeName = themeJson.name || "vscode-custom-theme";
-        themeJson.name = customThemeName;
-
-        await this.highlighter.loadTheme(themeJson);
-
-        shikiActiveTheme = customThemeName;
-      } catch (e) {
-        console.error("[Highlighter] Failed to load custom VS Code theme JSON. Falling back.", e);
-        const type = metadata.themeType;
-        shikiActiveTheme = type === "light" ? "min-light" : "min-dark";
-
-        await HighlighterManager.loadThemeIfNeeded(shikiActiveTheme);
-      }
-    } else {
-      const themeResult = await HighlighterManager.loadThemeIfNeeded(initialThemeName);
-      if (!themeResult.ok) {
-        themeLoadError = true;
+      if (langLoadResult.ok) {
+        finalLanguageId = languageGrammar.grammar.name; // shiki uses grammar.name for custom loaded langugaes
+        console.log("[Renderer] Using language:", finalLanguageId, "(from grammar.name)");
+      } else {
+        console.log(`[Renderer] Failed to load language grammar:`, (langLoadResult as any).error);
       }
     }
 
-    if (!langLoadResult.ok) {
-      console.log(`[Highlighter] Failed to load language "${language}". Falling back to plain text.`);
-      language = "text";
+    let finalThemeName = initialThemeName;
+    let themeLoadError = false;
+    if (themeGrammar) {
+      console.log("[Renderer] Loading theme grammar:", themeGrammar.name);
+      const themeResult = await HighlighterManager.loadThemeIfNeeded(themeGrammar);
+      console.log("[Renderer] Theme load result:", themeResult);
+
+      if (themeResult.ok) {
+        finalThemeName = themeGrammar.jsonData?.name || themeGrammar.name;
+        console.log("[Renderer] Using theme:", finalThemeName);
+      } else {
+        console.log("[Renderer] Failed to load theme grammar:", (themeResult as any).error);
+        themeLoadError = true;
+      }
     }
 
     if (themeLoadError) {
@@ -201,8 +197,8 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
       }
 
       const html = this.highlighter.codeToHtml(chunkText, {
-        lang: language,
-        theme: shikiActiveTheme,
+        lang: finalLanguageId,
+        theme: finalThemeName,
       });
 
       const chunkContainer = document.createElement("div");

@@ -6,7 +6,7 @@ import { FileFinderData } from "../../../shared/exchange/file-search";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
-import { getSvgIconUrl, resolvePathExt } from "../../utils/files";
+import { getSvgIconUrl, guessLanguageIdFromPath, resolvePathExt } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
 import { ExtensionConfigManager } from "../common/config-manager";
@@ -185,7 +185,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
           buffer: content as Uint8Array,
           mimeType: `image/${ext === "jpg" ? "jpeg" : ext}`,
         },
-        language: ext,
+        language: guessLanguageIdFromPath(identifier),
         overridePreviewer: "preview.image",
       };
     }
@@ -196,7 +196,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
         path: identifier,
         text: content as string,
       },
-      language: ext,
+      language: guessLanguageIdFromPath(identifier),
       overridePreviewer: this.previewAdapterType,
     };
   }

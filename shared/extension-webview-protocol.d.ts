@@ -7,9 +7,24 @@ import { FuzzyProviderType, PreviewRendererType } from "./adapters-namespace";
 export interface PreviewData<C = any> {
   content: C;
   language?: string;
+  themeGrammar?: ThemeGrammar | null;
+  languageGrammar?: LanguageGrammar | null;
   metadata?: Record<string, any>;
   overridePreviewer?: PreviewRendererType;
   overrideTheme?: string;
+}
+
+export interface ThemeGrammar {
+  name: string;
+  type: "dark" | "light";
+  jsonData: any;
+}
+
+export interface LanguageGrammar {
+  id: string;
+  scopeName: string;
+  grammar: any;
+  embeddedLangs?: string[];
 }
 
 export interface PostQueryHandlerResult {
