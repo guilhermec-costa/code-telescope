@@ -5,6 +5,7 @@
 export type BuiltinFuzzyProviderType =
   | "workspace.files"
   | "workspace.text"
+  | "currentFile.text"
   | "workspace.recentFiles"
   | "workspace.keybindings"
   | "workspace.tasks"
@@ -14,6 +15,7 @@ export type BuiltinFuzzyProviderType =
   | "harpoon.marks"
   | "git.branches"
   | "workspace.symbols"
+  | "debug.breakpoints"
   | "code.documentSymbols";
 
 export type CustomFuzzyProviderType = `custom.${string}`;

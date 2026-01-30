@@ -33,7 +33,7 @@ describe("WorkspaceTextFinderDataAdapter", () => {
     expect(options).toHaveLength(2);
 
     expect(options[0]).toEqual({
-      identifier: "/home/user/project/src/index.ts:10:5",
+      identifier: "/home/user/project/src/index.ts||10||5",
       file: "/home/user/project/src/index.ts",
       line: 10,
       svgIconUrl: "file-icon",
@@ -46,7 +46,7 @@ describe("WorkspaceTextFinderDataAdapter", () => {
 
     const value = adapter.getSelectionValue(option);
 
-    expect(value).toBe("/home/user/project/src/utils/math.ts:3:1");
+    expect(value).toBe("/home/user/project/src/utils/math.ts||3||1");
   });
 
   it("filters by file path", () => {

@@ -9,6 +9,8 @@ const RIPGREP_BASE_FLAGS = [
   "--line-number",
   "--column",
   "--no-heading",
+  "--text",
+  "--hidden",
   "--color",
   "never",
   "--ignore-case",
@@ -59,6 +61,11 @@ export class RipgrepArgsBuilder {
 
   withPaths(paths: string[]) {
     this.paths = paths;
+    return this;
+  }
+
+  withFixedStrings() {
+    this.args.push("--fixed-strings");
     return this;
   }
 

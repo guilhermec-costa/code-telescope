@@ -3,7 +3,7 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapt
 import { HighlightedCodePreviewData } from "../../../../shared/extension-webview-protocol";
 import { resolvePathExt } from "../../../utils/files";
 import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
-import { FileContentCache } from "../../common/cache/file-content.cache";
+import { FileReader } from "../../common/cache/file-reader";
 import { FuzzyFinderAdapter } from "../../decorators/fuzzy-finder-provider.decorator";
 import { RegexFinder } from "./regex-finder";
 import { RipgrepFinder } from "./ripgrep-finder";
@@ -37,14 +37,14 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
    * Performs a dynamic search as the user types.
    * Prefers ripgrep and falls back to regex search on failure.
    */
-  async searchOnDynamicMode(query: string): Promise<any> {
+  async searchOnDynamicMode(query: string, customPaths?: string[]): Promise<any> {
     if (!query || query.trim().length < 2) {
       return { results: [], query };
     }
 
     if (this.ripgrepFinder.ripgrepAvailable) {
       try {
-        return await this.ripgrepFinder.search(query);
+        return await this.ripgrepFinder.search(query, customPaths);
       } catch (error) {
         console.error("ripgrep search failed, falling back:", error);
         return await this.regexFinder.search(query);
@@ -54,12 +54,26 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
     }
   }
 
+  destructureIdentifier(identifier: string) {
+    const parts = identifier.split("||");
+
+    const filePath = parts[0];
+    const lineStr = parts[1];
+    const colStr = parts[2] || "1";
+
+    return {
+      filePath,
+      lineStr,
+      colStr,
+    };
+  }
+
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
-    const [filePath, line] = identifier.split(":");
+    const { filePath, lineStr } = this.destructureIdentifier(identifier);
     let ext = resolvePathExt(filePath);
 
     try {
-      const content = await FileContentCache.instance.get(filePath);
+      const content = await FileReader.read(filePath);
       const lines = (content as string).split("\n");
 
       return {
@@ -71,7 +85,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
         language: ext,
         metadata: {
           filePath,
-          highlightLine: line ? parseInt(line, 10) - 1 : undefined,
+          highlightLine: lineStr ? parseInt(lineStr, 10) - 1 : undefined,
           totalLines: lines.length,
         },
       };
@@ -89,14 +103,17 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
   }
 
   async onSelect(identifier: string) {
-    const parts = identifier.split(":");
-    const uri = vscode.Uri.file(parts[0]);
-    const pos = new vscode.Position(parseInt(parts[1]) - 1, parseInt(parts[2] || "1") - 1);
+    const { filePath, lineStr, colStr } = this.destructureIdentifier(identifier);
+    const uri = vscode.Uri.file(filePath);
+    const pos = new vscode.Position(parseInt(lineStr, 10) - 1, parseInt(colStr, 10) - 1);
 
-    const editor = await vscode.window.showTextDocument(uri, {
-      selection: new vscode.Range(pos, pos),
-    });
-
-    editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+    try {
+      const editor = await vscode.window.showTextDocument(uri, {
+        selection: new vscode.Range(pos, pos),
+      });
+      editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+    } catch (err) {
+      console.error("Erro ao abrir arquivo:", err);
+    }
   }
 }

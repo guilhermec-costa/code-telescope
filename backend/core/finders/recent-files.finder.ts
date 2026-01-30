@@ -7,7 +7,7 @@ import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { getSvgIconUrl, resolvePathExt } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { FileContentCache } from "../common/cache/file-content.cache";
+import { FileReader } from "../common/cache/file-reader";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**
@@ -49,7 +49,7 @@ export class RecentFilesFinder implements IFuzzyFinderProvider {
 
   async getPreviewData(path: string): Promise<HighlightedCodePreviewData> {
     const language = resolvePathExt(path);
-    const content = await FileContentCache.instance.get(path);
+    const content = await FileReader.read(path);
 
     return {
       content: {

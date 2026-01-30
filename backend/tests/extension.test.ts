@@ -89,6 +89,7 @@ describe("Extension entrypoint", () => {
       "keybindings",
       "branch",
       "wsText",
+      "fileText",
       "wsSymbols",
       "recentFiles",
       "colorschemes",
@@ -97,6 +98,7 @@ describe("Extension entrypoint", () => {
       "tasks",
       "custom",
       "harpoon",
+      "breakpoints",
     ];
 
     expectedCommands.forEach((cmd) => {

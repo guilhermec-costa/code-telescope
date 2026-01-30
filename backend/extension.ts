@@ -40,6 +40,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerProviderCmd("keybindings", () => FuzzyFinderPanelController.setupProvider("workspace.keybindings"), ctx);
   registerProviderCmd("branch", () => FuzzyFinderPanelController.setupProvider("git.branches"), ctx);
   registerProviderCmd("wsText", () => FuzzyFinderPanelController.setupProvider("workspace.text"), ctx);
+  registerProviderCmd("fileText", () => FuzzyFinderPanelController.setupProvider("currentFile.text"), ctx);
   registerProviderCmd("wsSymbols", () => FuzzyFinderPanelController.setupProvider("workspace.symbols"), ctx);
   registerProviderCmd("recentFiles", () => FuzzyFinderPanelController.setupProvider("workspace.recentFiles"), ctx);
   registerProviderCmd("colorschemes", () => FuzzyFinderPanelController.setupProvider("workspace.colorschemes"), ctx);
@@ -47,6 +48,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerProviderCmd("tasks", () => FuzzyFinderPanelController.setupProvider("workspace.tasks"), ctx);
   registerProviderCmd("harpoon", () => FuzzyFinderPanelController.setupProvider("harpoon.marks"), ctx);
   registerProviderCmd("callHierarchy", () => FuzzyFinderPanelController.setupProvider("workspace.callHierarchy"), ctx);
+  registerProviderCmd("breakpoints", () => FuzzyFinderPanelController.setupProvider("debug.breakpoints"), ctx);
   registerProviderCmd(
     "custom",
     async () => {
