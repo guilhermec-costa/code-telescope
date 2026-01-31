@@ -1,7 +1,7 @@
 import esbuild from "esbuild";
 import fs from "fs";
 import path from "path";
-import extToLang from "../backend/config/ext-to-langs.json";
+import extToLang from "../backend/config/ext-to-icon-name.json";
 import { decoratorsPlugin } from "./decorators-plugin";
 
 const args = process.argv.slice(2);
