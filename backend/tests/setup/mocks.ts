@@ -60,6 +60,7 @@ vi.mock("vscode", () => ({
       readFile: vi.fn(),
       readDirectory: vi.fn(),
     },
+    onDidChangeConfiguration: vi.fn(),
     getConfiguration: vi.fn().mockReturnValue({
       get: vi.fn(),
     }),
