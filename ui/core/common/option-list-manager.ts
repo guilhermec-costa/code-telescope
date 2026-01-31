@@ -110,8 +110,8 @@ export class OptionListManager {
     this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter.filterOption(opt, query));
 
     this.selectedIndex = this.getRelativeFirstIndex();
-    this.updateItemsCount();
     this.render();
+    this.updateItemsCount();
 
     const first = this.getRelativeFirstItem();
     if (first) {
@@ -268,7 +268,7 @@ export class OptionListManager {
   render(): void {
     const perfStart = performance.now();
 
-    this.applySortOnOptions(this.filteredOptions);
+    // this.applySortOnOptions(this.filteredOptions);
     const afterSort = performance.now();
 
     if (!this.dataAdapter) return;
