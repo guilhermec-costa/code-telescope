@@ -39,7 +39,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
    * Prefers ripgrep and falls back to regex search on failure.
    */
   async searchOnDynamicMode(query: string, customPaths?: string[]): Promise<any> {
-    if (!query || query.trim().length < 2) {
+    if (!query || query.length < 2) {
       return { results: [], query };
     }
 
@@ -71,7 +71,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
         }),
       });
 
-      streamer.stream();
+      streamer.streamConcurrently(8);
     }
 
     return {

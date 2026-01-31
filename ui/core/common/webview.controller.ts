@@ -145,7 +145,7 @@ export class WebviewController {
     const debouncedFilter = debounce((query: string) => {
       WebviewToExtensionMessenger.instance.requestDynamicSearch(query);
       this.optionListManager.filter(query);
-    }, this.optionListManager.getAdapterSearchDebounceTime());
+    }, 50);
 
     this.searchElement.addEventListener("input", async () => {
       debouncedFilter(this.searchElement.value);

@@ -122,7 +122,6 @@ export class RipgrepFinder {
       rg.stdout.on("data", (data) => {
         hasData = true;
         stdout += data.toString();
-        console.log("ripgrep stdout chunk:", data.toString().substring(0, 100));
       });
 
       rg.stderr.on("data", (data) => {
@@ -137,7 +136,6 @@ export class RipgrepFinder {
 
         if (code === 0 /** find */ || code === 1 /** not find */) {
           const lines = stdout.trim().split("\n");
-          console.log("Processing", lines.length, "lines");
 
           for (const line of lines) {
             if (matches.length >= searchCfg.maxResults) break;

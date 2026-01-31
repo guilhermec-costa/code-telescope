@@ -19,13 +19,34 @@ export class ChunkStreamer<T> {
     this.chunkSize = options.chunkSize ?? 2000;
   }
 
-  async stream() {
+  async streamAsync() {
+    const { messageType, fuzzyProviderType, mapChunk } = this.options;
+
+    for (let i = 0; i < this.items.length; i += this.chunkSize) {
+      await new Promise((r) => setTimeout(r, 16)); // 1 frame
+
+      const chunk = this.items.slice(i, i + this.chunkSize);
+      const isLastChunk = i + this.chunkSize >= this.items.length;
+
+      const webview = FuzzyFinderPanelController.instance?.webview;
+      if (!webview) return;
+      await WebviewController.sendMessage(webview, {
+        type: messageType as any,
+        data: mapChunk ? mapChunk(chunk) : chunk,
+        isChunk: true,
+        isLastChunk,
+        fuzzyProviderType,
+      });
+    }
+  }
+
+  async streamConcurrently(concurrency: number = 4) {
     const { messageType, fuzzyProviderType, mapChunk } = this.options;
     const webview = FuzzyFinderPanelController.instance?.webview;
     if (!webview) return;
 
     const { default: pLimit } = await import("p-limit");
-    const limit = pLimit(4);
+    const limit = pLimit(concurrency);
 
     const jobs = [];
 

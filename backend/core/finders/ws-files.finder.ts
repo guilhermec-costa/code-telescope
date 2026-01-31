@@ -8,6 +8,7 @@ import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { getLanguageIdForFile, getSvgIconUrl, resolvePathExt } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
+import { ChunkStreamer } from "../chunk-streamer";
 import { FileReader } from "../common/cache/file-reader";
 import { ExtensionConfigManager } from "../common/config-manager";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
@@ -26,10 +27,10 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
     const allFiles = await this.getWorkspaceFiles();
     const CHUNK_SIZE = 2000;
 
-    const firstChunk = this.processFileChunk(allFiles.slice(0, CHUNK_SIZE));
+    const firstChunk = this.mapChunk(allFiles.slice(0, CHUNK_SIZE));
 
     if (allFiles.length > CHUNK_SIZE) {
-      this.streamChunks(allFiles, CHUNK_SIZE);
+      this.streamRemainingChunks(allFiles, CHUNK_SIZE);
     } else {
       const { maxFileSize } = ExtensionConfigManager.wsFileFinderCfg;
       const maxBytes = maxFileSize * 1024;
@@ -39,7 +40,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
     return firstChunk;
   }
 
-  private processFileChunk(files: string[]): FileFinderData {
+  private mapChunk(files: string[]): FileFinderData {
     return files.reduce<FileFinderData>(
       (result, fileEntry) => {
         result.abs.push(fileEntry);
@@ -82,31 +83,19 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
     });
   }
 
-  private async streamChunks(allFiles: string[], size: number) {
-    for (let i = size; i < allFiles.length; i += size) {
-      await new Promise((resolve) => setTimeout(resolve, 16));
+  private async streamRemainingChunks(allFiles: string[], chunkSize: number) {
+    const streamer = new ChunkStreamer(allFiles.slice(chunkSize), {
+      messageType: "optionList",
+      fuzzyProviderType: this.fuzzyAdapterType,
+      chunkSize,
+      mapChunk: this.mapChunk,
+    });
 
-      const chunk = allFiles.slice(i, i + size);
-      const chunkData = this.processFileChunk(chunk);
-
-      const panel = FuzzyFinderPanelController.instance?.webview;
-      if (!panel) break;
-
-      const isLastChunk = i + size >= allFiles.length;
-      await WebviewController.sendMessage(panel, {
-        type: "optionList",
-        data: chunkData as any,
-        isChunk: true,
-        fuzzyProviderType: this.fuzzyAdapterType,
-        isLastChunk,
-      });
-
-      if (isLastChunk) {
-        const { maxFileSize } = ExtensionConfigManager.wsFileFinderCfg;
-        const maxBytes = maxFileSize * 1024;
-        this.detectAndNotifyLargeFiles(allFiles, maxBytes);
-      }
-    }
+    streamer.streamConcurrently().then(() => {
+      const { maxFileSize } = ExtensionConfigManager.wsFileFinderCfg;
+      const maxBytes = maxFileSize * 1024;
+      this.detectAndNotifyLargeFiles(allFiles, maxBytes);
+    });
   }
 
   async onSelect(filePath: string) {
