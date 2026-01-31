@@ -1,6 +1,6 @@
 import path from "path";
 import * as vscode from "vscode";
-import extToLang from "../config/ext-to-langs.json";
+import extToIcon from "../config/ext-to-langs.json";
 import { FuzzyFinderPanelController } from "../core/presentation/fuzzy-panel.controller";
 import { Globals } from "../globals";
 
@@ -47,21 +47,23 @@ export function resolvePathExt(_path: string) {
   if (ext === "h") {
     return "c";
   }
-  if (ext === "feature" || ext === "example") {
-    return "txt";
-  }
 
   return ext !== "" ? ext : "txt";
 }
 
-export function guessLanguageIdFromPath(path: string): string {
-  const ext = resolvePathExt(path);
-  return (extToLang as any)[ext] ?? "file";
+export function getIconNameFromPath(path: string): string {
+  const ext = resolvePathExt(path).toLowerCase();
+  return (extToIcon as any)[ext] ?? "file";
 }
 
 export function getSvgIconUrl(path: string) {
-  const language = guessLanguageIdFromPath(path);
+  const language = getIconNameFromPath(path);
   const svgPath = joinPath(Globals.EXTENSION_URI, "ui", "dist", "vendor", "material-icons", `${language}.svg`);
   const wv = FuzzyFinderPanelController.instance?.webview!;
   return wv.asWebviewUri(svgPath).toString();
+}
+
+export async function getLanguageIdForFile(path: string): Promise<string> {
+  const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(path));
+  return doc.languageId;
 }

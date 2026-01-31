@@ -3,7 +3,7 @@ import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters
 import { HarpoonFinderData } from "../../../shared/exchange/harpoon";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { HarpoonOrchestrator } from "../../harpoon/orchestrator";
-import { getSvgIconUrl, resolvePathExt } from "../../utils/files";
+import { getLanguageIdForFile, getSvgIconUrl } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
 import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
@@ -78,7 +78,6 @@ export class HarpoonProvider implements IFuzzyFinderProvider {
     }
 
     const filePath = selected.uri.fsPath;
-    const language = resolvePathExt(filePath);
     const highlightLine = selected.position?.line;
 
     try {
@@ -90,7 +89,7 @@ export class HarpoonProvider implements IFuzzyFinderProvider {
           path: filePath,
           text: content as string,
         },
-        language,
+        language: await getLanguageIdForFile(filePath),
         metadata: highlightLine !== undefined ? { highlightLine } : undefined,
       };
     } catch (error) {

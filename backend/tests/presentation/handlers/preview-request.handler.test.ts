@@ -1,13 +1,27 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as vscode from "vscode";
 import { PreviewRequestMessage } from "../../../../shared/extension-webview-protocol";
+import { HighlighterAssetLoader } from "../../../core/highlighter-asset-loader";
 import { FuzzyFinderPanelController } from "../../../core/presentation/fuzzy-panel.controller";
 import { PreviewRequestHandler } from "../../../core/presentation/handlers/preview-request.handler";
 import { WebviewController } from "../../../core/presentation/webview.controller";
 
+HighlighterAssetLoader;
+
 vi.mock("@backend/utils/theme", () => ({
   getCurThemeMetadata: vi.fn().mockResolvedValue({}),
 }));
+
+vi.mock("@backend/core/highlighter-asset-loader", () => {
+  return {
+    HighlighterAssetLoader: vi.fn(
+      class {
+        static getLanguageGrammar = vi.fn().mockResolvedValue({});
+        static getThemeGrammar = vi.fn().mockResolvedValue({});
+      },
+    ),
+  };
+});
 
 vi.mock("@backend/core/presentation/fuzzy-panel.controller", () => ({
   FuzzyFinderPanelController: {
@@ -51,7 +65,12 @@ describe("PreviewRequestHandler", () => {
       webview,
       expect.objectContaining({
         type: "previewUpdate",
-        data: { mocked: true, metadata: {} },
+        previewAdapterType: providerMock.fuzzyAdapterType,
+        data: {
+          mocked: true,
+          languageGrammar: {},
+          themeGrammar: {},
+        },
       }),
     );
   });

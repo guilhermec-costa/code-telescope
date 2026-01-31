@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { execCmd } from "../../utils/commands";
-import { resolvePathExt } from "../../utils/files";
+import { getLanguageIdForFile } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
@@ -80,8 +80,6 @@ export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
     }
 
     const filePath = selected.uri.fsPath;
-    let language = resolvePathExt(filePath);
-
     const highlightLine = selected.location.range.start.line;
 
     const content = await FileReader.read(filePath);
@@ -92,7 +90,7 @@ export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
         path: filePath,
         text: content as string,
       },
-      language,
+      language: await getLanguageIdForFile(filePath),
       metadata: {
         highlightLine,
       },

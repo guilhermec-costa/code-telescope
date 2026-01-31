@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { HighlightedCodePreviewData } from "../../../../shared/extension-webview-protocol";
-import { resolvePathExt } from "../../../utils/files";
+import { getLanguageIdForFile } from "../../../utils/files";
 import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
+import { ChunkStreamer } from "../../chunk-streamer";
 import { FileReader } from "../../common/cache/file-reader";
 import { FuzzyFinderAdapter } from "../../decorators/fuzzy-finder-provider.decorator";
 import { RegexFinder } from "./regex-finder";
@@ -38,20 +39,46 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
    * Prefers ripgrep and falls back to regex search on failure.
    */
   async searchOnDynamicMode(query: string, customPaths?: string[]): Promise<any> {
-    if (!query || query.trim().length < 2) {
+    if (!query || query.length < 2) {
       return { results: [], query };
     }
 
+    let searchResult;
     if (this.ripgrepFinder.ripgrepAvailable) {
       try {
-        return await this.ripgrepFinder.search(query, customPaths);
+        searchResult = await this.ripgrepFinder.search(query, customPaths);
       } catch (error) {
         console.error("ripgrep search failed, falling back:", error);
-        return await this.regexFinder.search(query);
+        searchResult = await this.regexFinder.search(query);
       }
     } else {
-      return await this.regexFinder.search(query);
+      searchResult = await this.regexFinder.search(query);
     }
+
+    const allMatches = searchResult.results;
+    const CHUNK_SIZE = 2000;
+
+    const firstChunk = allMatches.slice(0, CHUNK_SIZE);
+
+    if (allMatches.length > CHUNK_SIZE) {
+      const streamer = new ChunkStreamer(allMatches.slice(CHUNK_SIZE), {
+        messageType: "optionList",
+        fuzzyProviderType: "workspace.text",
+        chunkSize: CHUNK_SIZE,
+        mapChunk: (chunk) => ({
+          results: chunk,
+          query,
+        }),
+      });
+
+      streamer.streamConcurrently(8);
+    }
+
+    return {
+      results: firstChunk,
+      query,
+      isChunked: allMatches.length > CHUNK_SIZE,
+    };
   }
 
   destructureIdentifier(identifier: string) {
@@ -70,7 +97,6 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
 
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
     const { filePath, lineStr } = this.destructureIdentifier(identifier);
-    let ext = resolvePathExt(filePath);
 
     try {
       const content = await FileReader.read(filePath);
@@ -82,7 +108,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
           path: filePath,
           text: content as string,
         },
-        language: ext,
+        language: await getLanguageIdForFile(filePath),
         metadata: {
           filePath,
           highlightLine: lineStr ? parseInt(lineStr, 10) - 1 : undefined,
