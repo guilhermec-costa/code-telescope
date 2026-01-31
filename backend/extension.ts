@@ -26,8 +26,16 @@ export async function activate(ctx: vscode.ExtensionContext) {
     Logger.info("[DEV MODE] Performance debugging enabled");
   }
 
-  Globals.EXTENSION_URI = ctx.extensionUri;
   Globals.USER_THEME = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
+
+  vscode.workspace.onDidChangeConfiguration((e) => {
+    if (e.affectsConfiguration(Globals.cfgSections.colorTheme)) {
+      const newTheme = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
+      Globals.USER_THEME = newTheme;
+    }
+  });
+
+  Globals.EXTENSION_URI = ctx.extensionUri;
 
   customProviderLoader = new CustomProviderLoader(ctx);
   await customProviderLoader.initialize();

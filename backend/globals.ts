@@ -18,7 +18,6 @@ export namespace Globals {
   /** Extension root URI (resolved at activation) */
   export let EXTENSION_URI: vscode.Uri;
 
-  /** Current user color theme */
   export let USER_THEME: string;
 
   /** Common VS Code command identifiers */

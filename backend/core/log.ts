@@ -39,7 +39,6 @@ export class Logger {
     const msg = this.format("ERROR", message, error);
     console.error(msg);
     this.outputChannel.appendLine(msg);
-    this.outputChannel.show(true);
   }
 
   static warn(message: string) {

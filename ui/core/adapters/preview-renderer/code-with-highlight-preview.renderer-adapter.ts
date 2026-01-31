@@ -90,13 +90,9 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
   async render(previewElement: HTMLElement, data: PreviewData<TextPreviewContent>, theme: string): Promise<void> {
     let {
       content: { text },
-      themeGrammar,
-      languageGrammar,
+      language,
       metadata,
-      overrideTheme,
     } = data;
-
-    const initialThemeName = overrideTheme ?? theme;
 
     if (!this.highlighter) {
       previewElement.innerHTML = `<pre style="padding:1rem;">${toInnerHTML(text)}</pre>`;
@@ -127,29 +123,29 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
     const highlightLine = metadata?.highlightLine ?? 0;
     const initialChunk = Math.floor(highlightLine / CHUNK_SIZE);
 
-    let finalLanguageId = "text";
-    if (languageGrammar) {
-      console.log("[Renderer] Loading language grammar:", languageGrammar.id);
-      const langLoadResult = await HighlighterManager.loadLanguageIfNeeded(languageGrammar);
+    let finalLanguageId = "plaintext";
+    if (language) {
+      console.log("[Renderer] Loading language grammar:", language);
+      const langLoadResult = await HighlighterManager.loadLanguageIfNeeded(language);
       console.log("[Renderer] Language load result:", langLoadResult);
 
       if (langLoadResult.ok) {
-        finalLanguageId = languageGrammar.grammar.name; // shiki uses grammar.name for custom loaded langugaes
+        finalLanguageId = langLoadResult.value.grammar.name; // shiki uses grammar.name for custom loaded langugaes
         console.log("[Renderer] Using language:", finalLanguageId, "(from grammar.name)");
       } else {
         console.log(`[Renderer] Failed to load language grammar:`, (langLoadResult as any).error);
       }
     }
 
-    let finalThemeName = initialThemeName;
+    let finalThemeName = theme;
     let themeLoadError = false;
-    if (themeGrammar) {
-      console.log("[Renderer] Loading theme grammar:", themeGrammar.name);
-      const themeResult = await HighlighterManager.loadThemeIfNeeded(themeGrammar);
+    if (theme) {
+      console.log("[Renderer] Loading theme grammar:", theme);
+      const themeResult = await HighlighterManager.loadThemeIfNeeded(theme);
       console.log("[Renderer] Theme load result:", themeResult);
 
       if (themeResult.ok) {
-        finalThemeName = themeGrammar.jsonData?.name || themeGrammar.name;
+        finalThemeName = themeResult.value.jsonData?.name || themeResult.value.name;
         console.log("[Renderer] Using theme:", finalThemeName);
       } else {
         console.log("[Renderer] Failed to load theme grammar:", (themeResult as any).error);
@@ -167,7 +163,7 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
             message: "An error occurred while rendering this preview (Theme Load Error).",
           },
         },
-        initialThemeName,
+        theme,
       );
       return;
     }

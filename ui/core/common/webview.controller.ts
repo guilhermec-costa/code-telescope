@@ -1,6 +1,7 @@
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { OptionListMessage, ToWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { debounce } from "../../utils/debounce";
+import { MessageBridge } from "../message-bridge";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { PreviewManager } from "../render/preview-manager";
 import { KeyboardHandler } from "./kbd-handler";
@@ -66,7 +67,12 @@ export class WebviewController {
    */
   private async handleMessage(msg: ToWebviewKindMessage): Promise<void> {
     console.log(`[WebviewController] ${new Date().toISOString()} Handling message: ${msg}`);
+
     switch (msg.type) {
+      case "promiseBridgeResponse": {
+        MessageBridge.handleResponse(msg);
+        break;
+      }
       case "resetWebview": {
         this.handleResetWebview();
         if (this.activeProvider !== msg.currentProvider) {

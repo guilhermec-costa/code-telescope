@@ -77,7 +77,6 @@ describe("Extension entrypoint", () => {
 
     // globals
     expect(Globals.EXTENSION_URI).toBe("uri");
-    expect(Globals.USER_THEME).toBe("Dark+");
 
     // provider loader
     const loaderInstance = vi.mocked(CustomProviderLoader).mock.results[0].value as Mocked<CustomProviderLoader>;

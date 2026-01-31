@@ -92,13 +92,13 @@ export class HighlighterAssetLoader {
    * Removes single-line (//) and multi-line (/* *\/) comments
    */
   private static parseJsonc(text: string): any {
-    // Remove single-line comments
+    // remove single-line comments
     let cleaned = text.replace(/\/\/.*$/gm, "");
 
-    // Remove multi-line comments
+    // remove multi-line comments
     cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, "");
 
-    // Remove trailing commas
+    // remove trailing commas
     cleaned = cleaned.replace(/,(\s*[}\]])/g, "$1");
 
     try {
@@ -111,7 +111,6 @@ export class HighlighterAssetLoader {
   private static parseJsoncAggressive(text: string): any {
     let result = text;
 
-    // State machine for proper comment removal
     let inString = false;
     let inSingleLineComment = false;
     let inMultiLineComment = false;
@@ -122,7 +121,7 @@ export class HighlighterAssetLoader {
       const char = result[i];
       const nextChar = result[i + 1];
 
-      // Handle escape sequences
+      // handle escape sequences
       if (escapeNext) {
         if (inString) output += char;
         escapeNext = false;
@@ -152,13 +151,13 @@ export class HighlighterAssetLoader {
       if (!inSingleLineComment && !inMultiLineComment) {
         if (char === "/" && nextChar === "/") {
           inSingleLineComment = true;
-          i++; // Skip next char
+          i++; // skip next char
           continue;
         }
 
         if (char === "/" && nextChar === "*") {
           inMultiLineComment = true;
-          i++; // Skip next char
+          i++; // skip next char
           continue;
         }
       }
@@ -183,7 +182,7 @@ export class HighlighterAssetLoader {
       }
     }
 
-    // Remove trailing commas
+    // remove trailing commas
     output = output.replace(/,(\s*[}\]])/g, "$1");
 
     return JSON.parse(output);

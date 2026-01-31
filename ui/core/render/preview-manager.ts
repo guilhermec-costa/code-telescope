@@ -40,6 +40,9 @@ export class PreviewManager {
   }
 
   async updatePreview(data: PreviewData, finderType: PreviewRendererType): Promise<void> {
+    if (data.theme) {
+      this.setUserTheme(data.theme);
+    }
     let adapter = data.overridePreviewer
       ? PreviewRendererAdapterRegistry.instance.getAdapter(data.overridePreviewer)
       : PreviewRendererAdapterRegistry.instance.getAdapter(finderType);

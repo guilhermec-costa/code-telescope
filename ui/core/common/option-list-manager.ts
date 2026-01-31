@@ -268,7 +268,7 @@ export class OptionListManager {
   render(): void {
     const perfStart = performance.now();
 
-    // this.applySortOnOptions(this.filteredOptions);
+    this.applySortOnOptions(this.filteredOptions);
     const afterSort = performance.now();
 
     if (!this.dataAdapter) return;

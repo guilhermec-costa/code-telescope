@@ -68,8 +68,6 @@ describe("PreviewRequestHandler", () => {
         previewAdapterType: providerMock.fuzzyAdapterType,
         data: {
           mocked: true,
-          languageGrammar: {},
-          themeGrammar: {},
         },
       }),
     );

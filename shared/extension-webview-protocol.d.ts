@@ -7,11 +7,9 @@ import { FuzzyProviderType, PreviewRendererType } from "./adapters-namespace";
 export interface PreviewData<C = any> {
   content: C;
   language?: string;
-  themeGrammar?: ThemeGrammar | null;
-  languageGrammar?: LanguageGrammar | null;
+  theme?: string;
   metadata?: Record<string, any>;
   overridePreviewer?: PreviewRendererType;
-  overrideTheme?: string;
 }
 
 export interface ThemeGrammar {
@@ -85,6 +83,22 @@ export interface RemoveHeavyOptions {
   type: "removeHeavyOptions";
   data: string[];
   fuzzyProviderType: FuzzyProviderType;
+}
+
+export interface PromiseBridgeResponse {
+  data: {
+    requestId: string;
+    payload: any;
+    error?: string;
+  };
+  type: "promiseBridgeResponse";
+}
+
+export interface PromiseBridgeRequest {
+  type: "promiseBridgeRequest";
+  requestId: string;
+  data: any;
+  kind: "themeGrammar" | "langGrammar";
 }
 
 export interface PostHandleListMessage {
@@ -184,7 +198,8 @@ export type ToWebviewKindMessage =
   | InitHighlighter
   | PostQueryhandlerResultMessage
   | ResetWebviewMessage
-  | RemoveHeavyOptions;
+  | RemoveHeavyOptions
+  | PromiseBridgeResponse;
 
 /**
  * Represents all messages that **the webview sends to the backend**.
@@ -200,4 +215,5 @@ export type FromWebviewKindMessage =
   | OptionSelectedMessage
   | HighlighterInitDone
   | PostHandleListMessage
+  | PromiseBridgeRequest
   | UpdateLayoutPropMessage;

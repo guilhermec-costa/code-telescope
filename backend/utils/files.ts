@@ -1,6 +1,7 @@
 import path from "path";
 import * as vscode from "vscode";
-import extToIcon from "../config/ext-to-langs.json";
+import extToIcon from "../config/ext-to-icon-name.json";
+import extTolangId from "../config/ext-to-langid.json";
 import { FuzzyFinderPanelController } from "../core/presentation/fuzzy-panel.controller";
 import { Globals } from "../globals";
 
@@ -13,7 +14,7 @@ export function resolvePathExt(_path: string) {
 
   const basename = path.basename(_path).toLowerCase();
 
-  // Special files
+  // special files
   if (basename === "dockerfile" || basename.startsWith("dockerfile.")) {
     return "docker";
   }
@@ -63,7 +64,7 @@ export function getSvgIconUrl(path: string) {
   return wv.asWebviewUri(svgPath).toString();
 }
 
-export async function getLanguageIdForFile(path: string): Promise<string> {
-  const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(path));
-  return doc.languageId;
+export function getLanguageIdForFile(filePath: string): string {
+  const ext = path.extname(filePath).toLowerCase();
+  return (extTolangId as Record<string, string>)[ext] || "plaintext";
 }

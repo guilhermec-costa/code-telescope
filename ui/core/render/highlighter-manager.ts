@@ -1,26 +1,31 @@
 import type { HighlighterCore } from "shiki/core";
 import { LanguageGrammar, ThemeGrammar } from "../../../shared/extension-webview-protocol";
 import { AsyncResult } from "../../../shared/result";
+import { MessageBridge } from "../message-bridge";
 
 /**
  * Centralized manager for Highlighter lifecycle (Webview / Browser).
+ * Handles on-demand loading of themes and languages via MessageBridge.
  */
 export class HighlighterManager {
   private static highlighter: HighlighterCore | null = null;
-  private static loadedThemes = new Set<string>();
-  private static loadedLanguages = new Set<string>(["text"]);
   private static initPromise: Promise<HighlighterCore> | null = null;
 
+  private static themeMap = new Map<string, ThemeGrammar>();
+  private static langMap = new Map<string, LanguageGrammar>();
+
+  private static loadedThemes = new Set<string>();
+  private static loadedLanguages = new Set<string>(["text"]);
+
   /**
-   * Initializes the Shiki highlighter if not already initialized.
+   * Initializes the Shiki highlighter core with Oniguruma WASM.
    */
   static async initHighlighterCore(): Promise<HighlighterCore> {
     if (this.highlighter) return this.highlighter;
-    if (this.initPromise) {
-      return this.initPromise;
-    }
+    if (this.initPromise) return this.initPromise;
 
-    console.log("[ShikiManager] Initializing Shiki Core");
+    const t0 = performance.now();
+    console.log("[HighlighterManager] Initializing Shiki Core...");
 
     this.initPromise = (async () => {
       const { createHighlighterCore } = await import("shiki/core");
@@ -33,90 +38,109 @@ export class HighlighterManager {
         langs: [],
       });
 
-      console.log("[HighlighterManager] Highlighter ready.");
+      const t1 = performance.now();
+      console.log(`[HighlighterManager] Shiki Core ready in ${(t1 - t0).toFixed(2)}ms`);
       return this.highlighter;
     })();
 
     return this.initPromise;
   }
 
-  /**
-   * Loads a theme definition if it has not been loaded yet.
-   * This method is idempotent and safe to call repeatedly.
-   */
-  static async loadThemeIfNeeded(theme: ThemeGrammar): AsyncResult<ThemeGrammar> {
-    if (this.loadedThemes.has(theme.name)) {
-      return { ok: true, value: theme };
+  static async loadThemeIfNeeded(themeName: string): AsyncResult<ThemeGrammar> {
+    if (this.loadedThemes.has(themeName) && this.themeMap.has(themeName)) {
+      return { ok: true, value: this.themeMap.get(themeName)! };
     }
 
+    const t0 = performance.now();
     await this.initHighlighterCore();
-    return await this.loadThemeFromGrammar(theme);
-  }
 
-  /**
-   * Loads a language definition if it has not been loaded yet.
-   * This method is idempotent and safe to call repeatedly.
-   */
-  static async loadLanguageIfNeeded(lang: LanguageGrammar): AsyncResult<LanguageGrammar> {
-    console.log(`[HighlighterManager] loadLanguageIfNeeded called for: ${lang.id}`);
-
-    if (this.loadedLanguages.has(lang.id)) {
-      console.log(`[HighlighterManager] Language ${lang.id} already loaded, returning cached`);
-      return { ok: true, value: lang };
-    }
-
-    console.log(`[HighlighterManager] Language ${lang.id} not loaded, initializing highlighter...`);
-    await this.initHighlighterCore();
-    console.log(`[HighlighterManager] Highlighter initialized, loading language from grammar...`);
-    return await this.loadLangFromGrammar(lang);
-  }
-
-  /**
-   * Loads a theme from grammar definition.
-   */
-  private static async loadThemeFromGrammar(grammar: ThemeGrammar): AsyncResult<ThemeGrammar> {
     try {
-      await this.highlighter.loadTheme(grammar.jsonData);
-      this.loadedThemes.add(grammar.name);
-      console.log(`[ShikiManager] Theme loaded: ${grammar.name}`);
-      return {
-        ok: true,
-        value: grammar,
-      };
+      console.log(`[HighlighterManager] Requesting theme: ${themeName}`);
+
+      const bridgeStart = performance.now();
+      const themeGrammar = await MessageBridge.request<ThemeGrammar>("themeGrammar", themeName);
+      const bridgeEnd = performance.now();
+
+      const result = await this.registerTheme(themeGrammar);
+
+      if (result.ok) {
+        this.themeMap.set(themeName, themeGrammar);
+        console.log(
+          `[Performance] Theme "${themeName}" total load: ${(performance.now() - t0).toFixed(2)}ms (Bridge: ${(bridgeEnd - bridgeStart).toFixed(2)}ms)`,
+        );
+      }
+      return result;
+    } catch (err) {
+      return { ok: false, error: `Bridge request failed: ${String(err)}` };
+    }
+  }
+
+  static async loadLanguageIfNeeded(langId: string): AsyncResult<LanguageGrammar> {
+    if (this.loadedLanguages.has(langId) && this.langMap.has(langId)) {
+      return { ok: true, value: this.langMap.get(langId) };
+    }
+
+    const t0 = performance.now();
+    await this.initHighlighterCore();
+
+    try {
+      console.log(`[HighlighterManager] Requesting language: ${langId}`);
+
+      const bridgeStart = performance.now();
+      const langGrammar = await MessageBridge.request<LanguageGrammar>("langGrammar", langId);
+      const bridgeEnd = performance.now();
+
+      const result = await this.registerLanguage(langGrammar);
+
+      if (result.ok) {
+        this.langMap.set(langId, langGrammar);
+        console.log(
+          `[Performance] Lang "${langId}" total load: ${(performance.now() - t0).toFixed(2)}ms (Bridge: ${(bridgeEnd - bridgeStart).toFixed(2)}ms)`,
+        );
+      }
+      return result;
+    } catch (err) {
+      return { ok: false, error: `Bridge request failed: ${String(err)}` };
+    }
+  }
+
+  private static async registerTheme(theme: ThemeGrammar): AsyncResult<ThemeGrammar> {
+    const t0 = performance.now();
+    try {
+      await this.highlighter.loadTheme(theme.jsonData);
+      this.loadedThemes.add(theme.name);
+      console.log(`[HighlighterManager] Theme registered in ${(performance.now() - t0).toFixed(2)}ms`);
+      return { ok: true, value: theme };
     } catch (err) {
       return {
         ok: false,
-        error: `[ShikiManager] Failed to load theme '${grammar.name}': ${err instanceof Error ? err.message : String(err)}`,
+        error: `[HighlighterManager] Shiki loadTheme error: ${err instanceof Error ? err.message : String(err)}`,
       };
     }
   }
 
-  /**
-   * Loads a language grammar from grammar definition.
-   */
-  private static async loadLangFromGrammar(lang: LanguageGrammar): AsyncResult<LanguageGrammar> {
+  private static async registerLanguage(lang: LanguageGrammar): AsyncResult<LanguageGrammar> {
+    const t0 = performance.now();
     try {
-      console.log(`[HighlighterManager] Loading language ${lang.id} with scopeName: ${lang.scopeName}`);
-
       await this.highlighter.loadLanguage({
+        ...lang.grammar,
         name: lang.grammar.name,
         scopeName: lang.scopeName,
-        ...lang.grammar,
       });
 
       this.loadedLanguages.add(lang.id);
-      console.log(`[HighlighterManager] Language loaded successfully: ${lang.id} (registered as ${lang.grammar.name})`);
-
-      return {
-        ok: true,
-        value: lang,
-      };
+      console.log(`[HighlighterManager] Language registered in ${(performance.now() - t0).toFixed(2)}ms`);
+      return { ok: true, value: lang };
     } catch (err) {
-      console.error(`[HighlighterManager] Error loading language ${lang.id}:`, err);
       return {
         ok: false,
-        error: `[ShikiManager] Failed to load language '${lang.id}': ${err instanceof Error ? err.message : String(err)}`,
+        error: `[HighlighterManager] Shiki loadLanguage error: ${err instanceof Error ? err.message : String(err)}`,
       };
     }
+  }
+
+  static getHighlighter(): HighlighterCore {
+    if (!this.highlighter) throw new Error("Highlighter not initialized");
+    return this.highlighter;
   }
 }
