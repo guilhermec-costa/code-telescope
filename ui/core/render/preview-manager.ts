@@ -13,6 +13,7 @@ export class PreviewManager {
   private userTheme: string;
   private adapter: IPreviewRendererAdapter | null = null;
   private cfg: PreviewManagerConfig = __PREVIEW_CFG__;
+  private static _instance: PreviewManager | undefined = undefined;
 
   private lastPreviewedData: PreviewData = {
     content: "",
@@ -20,9 +21,16 @@ export class PreviewManager {
     metadata: {},
   };
 
-  constructor() {
+  private constructor() {
     console.log("[PreviewManager] Initializing");
     this.previewElement = document.getElementById("preview")!;
+  }
+
+  static get instance() {
+    if (!this._instance) {
+      this._instance = new PreviewManager();
+    }
+    return this._instance;
   }
 
   /** Horizontal scroll step divisor (e.g. "1/4" → 4) */
@@ -47,6 +55,7 @@ export class PreviewManager {
       ? PreviewRendererAdapterRegistry.instance.getAdapter(data.overridePreviewer)
       : PreviewRendererAdapterRegistry.instance.getAdapter(finderType);
 
+    this.clearPreview();
     if (!adapter) {
       console.error(`No adapter found for finder type: ${finderType}`);
       console.log("Available adapters:", PreviewRendererAdapterRegistry.instance.getRegisteredTypes());
@@ -55,7 +64,6 @@ export class PreviewManager {
 
     this.setAdapter(adapter);
 
-    this.clearPreview();
     await this.adapter.render(this.previewElement, data, this.userTheme);
 
     // Scroll after DOM is painted
@@ -66,7 +74,10 @@ export class PreviewManager {
   }
 
   clearPreview() {
+    this.lastPreviewedData = { content: "", language: "", metadata: {} };
+    console.log("Before cleaning", this.previewElement);
     this.previewElement.innerHTML = "";
+    console.log("After cleaning", this.previewElement);
   }
 
   async setUserTheme(theme: string) {

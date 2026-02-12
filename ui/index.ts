@@ -14,11 +14,7 @@ async function bootstrap() {
   await container.init();
   console.log("[Index] Container initialized");
 
-  const controller = new WebviewController(
-    container.previewManager,
-    container.optionListManager,
-    container.keyboardHandler,
-  );
+  const controller = new WebviewController(container.keyboardHandler);
   console.log("[Index] Controller created");
 
   resizerInitializers[StateManager.layoutMode]?.();

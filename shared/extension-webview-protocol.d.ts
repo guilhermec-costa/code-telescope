@@ -58,7 +58,7 @@ export interface HighlightedCodePreviewData extends PreviewData<HighlightedCodeP
  */
 export interface OptionListMessage {
   type: "optionList";
-  data: any[];
+  data: any;
   fuzzyProviderType: FuzzyProviderType;
   isChunk: boolean;
   isLastChunk?: boolean;

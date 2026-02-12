@@ -17,11 +17,7 @@ export class WebviewController {
   private pendingHeavyFiles = new Set<string>();
   private activeProvider: FuzzyProviderType | undefined;
 
-  constructor(
-    private readonly previewManager: PreviewManager,
-    private readonly optionListManager: OptionListManager,
-    private readonly keyboardHandler: KeyboardHandler,
-  ) {
+  constructor(private readonly keyboardHandler: KeyboardHandler) {
     console.log("[WebviewController] Initializing controller");
     this.searchElement = document.getElementById("search") as HTMLInputElement;
 
@@ -83,7 +79,7 @@ export class WebviewController {
       }
 
       case "highlighterInit": {
-        this.previewManager.setUserTheme(msg.data.theme);
+        PreviewManager.instance.setUserTheme(msg.data.theme);
         WebviewToExtensionMessenger.instance.onHighlighterDone();
         break;
       }
@@ -98,7 +94,7 @@ export class WebviewController {
           this.pendingHeavyFiles.add(p);
         }
 
-        this.optionListManager.removeHeavyFiles(Array.from(this.pendingHeavyFiles));
+        OptionListManager.instance.removeHeavyFiles(Array.from(this.pendingHeavyFiles));
         this.pendingHeavyFiles.clear();
         break;
       }
@@ -106,7 +102,7 @@ export class WebviewController {
       case "previewUpdate": {
         console.log("[WebviewController] Processing previewUpdate message", msg.data);
         const { previewAdapterType, data } = msg;
-        await this.previewManager.updatePreview(data, previewAdapterType);
+        await PreviewManager.instance.updatePreview(data, previewAdapterType);
         break;
       }
     }
@@ -116,8 +112,8 @@ export class WebviewController {
    * Clears the search input and the preview section.
    */
   private handleResetWebview() {
-    this.previewManager.clearPreview();
-    this.optionListManager.clearOptions();
+    PreviewManager.instance.clearPreview();
+    OptionListManager.instance.clearOptions();
   }
 
   /**
@@ -130,17 +126,17 @@ export class WebviewController {
     if (!adapter) return;
 
     this.activeProvider = fuzzyProviderType;
-    this.optionListManager.setAdapter(adapter);
+    OptionListManager.instance.setAdapter(adapter);
     const options = adapter.parseOptions(data);
 
     if (isChunk) {
-      this.optionListManager.appendOptions(options);
+      OptionListManager.instance.appendOptions(options);
     } else {
-      this.optionListManager.setOptions(options);
+      OptionListManager.instance.setOptions(options);
     }
 
     if (this.searchElement.value) {
-      this.optionListManager.filter(this.searchElement.value);
+      OptionListManager.instance.filter(this.searchElement.value);
     }
   }
 
@@ -149,23 +145,27 @@ export class WebviewController {
    */
   private setupEventListeners(): void {
     const debouncedFilter = debounce((query: string) => {
-      WebviewToExtensionMessenger.instance.requestDynamicSearch(query);
-      this.optionListManager.filter(query);
-    }, 50);
+      if (query) {
+        WebviewToExtensionMessenger.instance.requestDynamicSearch(query);
+      }
+      OptionListManager.instance.filter(query);
+      OptionListManager.instance.resetIfNeeded();
+    }, 20);
 
     this.searchElement.addEventListener("input", async () => {
       debouncedFilter(this.searchElement.value);
-      this.optionListManager.resetIfNeeded();
     });
   }
 
   private setupKeyboardHandlers(): void {
-    this.keyboardHandler.setMoveUpHandler(this.optionListManager.moveSelectionUp.bind(this.optionListManager));
-    this.keyboardHandler.setMoveDownHandler(this.optionListManager.moveSelectionDown.bind(this.optionListManager));
-    this.keyboardHandler.setScrollUpHandler(this.previewManager.scrollUp.bind(this.previewManager));
-    this.keyboardHandler.setScrollDownHandler(this.previewManager.scrollDown.bind(this.previewManager));
-    this.keyboardHandler.setScrollRight(this.previewManager.scrollRight.bind(this.previewManager));
-    this.keyboardHandler.setScrollLeft(this.previewManager.scrollLeft.bind(this.previewManager));
+    this.keyboardHandler.setMoveUpHandler(OptionListManager.instance.moveSelectionUp.bind(OptionListManager.instance));
+    this.keyboardHandler.setMoveDownHandler(
+      OptionListManager.instance.moveSelectionDown.bind(OptionListManager.instance),
+    );
+    this.keyboardHandler.setScrollUpHandler(PreviewManager.instance.scrollUp.bind(PreviewManager.instance));
+    this.keyboardHandler.setScrollDownHandler(PreviewManager.instance.scrollDown.bind(PreviewManager.instance));
+    this.keyboardHandler.setScrollRight(PreviewManager.instance.scrollRight.bind(PreviewManager.instance));
+    this.keyboardHandler.setScrollLeft(PreviewManager.instance.scrollLeft.bind(PreviewManager.instance));
     this.keyboardHandler.setConfirmHandler(this.confirmSelection.bind(this));
     this.keyboardHandler.setCloseHandler(
       WebviewToExtensionMessenger.instance.requestClosePanel.bind(WebviewToExtensionMessenger.instance),
@@ -183,7 +183,7 @@ export class WebviewController {
    * Confirms the currently selected option and notifies the extension.
    */
   private confirmSelection(): void {
-    const selectedValue = this.optionListManager.getSelectedValue();
+    const selectedValue = OptionListManager.instance.getSelectedValue();
     if (selectedValue) {
       WebviewToExtensionMessenger.instance.onOptionSelected(selectedValue);
     }

@@ -33,6 +33,6 @@ export function formatFileOptionHtml(svgIconUrl: string, text: string): string {
     height="16"
   />
 </i>
-<span class="file-path">${text}</span>
+<span class="file-path">${toInnerHTML(text)}</span>
 `.trim();
 }

@@ -3,6 +3,7 @@ import { PreviewManagerConfig } from "../../../../shared/exchange/extension-conf
 import { PreviewData, TextPreviewContent } from "../../../../shared/extension-webview-protocol";
 import { toInnerHTML } from "../../../utils/html";
 import { IPreviewRendererAdapter } from "../../abstractions/preview-renderer-adapter";
+import { OptionListManager } from "../../common/option-list-manager";
 import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapter.decorator";
 import { PreviewRendererAdapterRegistry, SyntaxHighlighter } from "../../registry/preview-adapter.registry";
 import { HighlighterManager } from "../../render/highlighter-manager";
@@ -169,6 +170,10 @@ export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRenderer
     }
 
     const renderChunk = async (chunkIndex: number, position: "append" | "prepend" = "append"): Promise<void> => {
+      if (OptionListManager.instance.isEmpty()) {
+        this.abortController.abort();
+        return;
+      }
       // check if chunk can be rendered
       if (this.abortController?.signal.aborted) return;
       if (this.loadedChunks.has(chunkIndex)) return;

@@ -14,6 +14,8 @@ export class OptionListManager {
   private allOptions: any[] = [];
   private filteredOptions: any[] = [];
   private dataAdapter: IFuzzyFinderDataAdapter | undefined;
+  private readonly searchElement: HTMLInputElement | undefined;
+  private static _instance: OptionListManager | undefined;
 
   private listElement: HTMLUListElement;
   private itemsCountElement: HTMLElement | null;
@@ -25,15 +27,13 @@ export class OptionListManager {
   private readonly virtualizer: Virtualizer;
 
   private debouncedRequestPreview = debounce((value: string) => {
-    this.previewManager.requestPreview(value);
+    PreviewManager.instance.requestPreview(value);
   }, 0);
 
-  constructor(
-    private readonly previewManager: PreviewManager,
-    private readonly searchElement: HTMLInputElement,
-  ) {
+  private constructor() {
     this.listElement = document.getElementById("option-list") as HTMLUListElement;
     this.itemsCountElement = document.getElementById("items-count");
+    this.searchElement = document.getElementById("search") as HTMLInputElement;
 
     this.virtualizer = new Virtualizer(this.listElement, {
       itemHeight: 22,
@@ -41,6 +41,13 @@ export class OptionListManager {
     });
 
     this.setupScrollListener();
+  }
+
+  static get instance() {
+    if (!this._instance) {
+      this._instance = new OptionListManager();
+    }
+    return this._instance;
   }
 
   /**
@@ -67,7 +74,6 @@ export class OptionListManager {
 
   public appendOptions(options: any[]): void {
     this.allOptions.push(...options);
-    console.log("All options length: ", this.allOptions.length);
 
     if (this.searchElement.value === "") {
       this.filteredOptions = this.allOptions;
@@ -108,6 +114,11 @@ export class OptionListManager {
     if (!this.dataAdapter) return;
 
     this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter.filterOption(opt, query));
+    if (this.filteredOptions.length === 0) {
+      console.log("Here cleaning");
+      PreviewManager.instance.clearPreview();
+      return;
+    }
 
     this.selectedIndex = this.getRelativeFirstIndex();
     this.render();
@@ -116,8 +127,6 @@ export class OptionListManager {
     const first = this.getRelativeFirstItem();
     if (first) {
       this.requestPreview(first);
-    } else {
-      this.previewManager.clearPreview();
     }
   }
 
@@ -164,7 +173,7 @@ export class OptionListManager {
     const needReset: FuzzyProviderType[] = ["workspace.text", "currentFile.text"];
     if (this.searchElement.value === "" && needReset.includes(this.dataAdapter.fuzzyAdapterType)) {
       this.clearOptions();
-      this.previewManager.clearPreview();
+      PreviewManager.instance.clearPreview();
     }
   }
 
@@ -181,6 +190,10 @@ export class OptionListManager {
     this.updateItemsCount();
     this.render();
     this.selectedIndex = this.getRelativeFirstIndex();
+  }
+
+  public isEmpty() {
+    return this.filteredOptions.length === 0 || this.allOptions.length === 0;
   }
 
   /**
