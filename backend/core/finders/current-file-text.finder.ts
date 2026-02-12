@@ -40,7 +40,7 @@ export class CurrentFileTextSearchProvider implements IFuzzyFinderProvider {
   }
 
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
-    const [filePath, line] = identifier.split(":");
+    const { filePath, lineStr } = WorkspaceTextSearchProvider.destructureIdentifier(identifier);
 
     try {
       const content = await FileReader.read(filePath);
@@ -52,10 +52,10 @@ export class CurrentFileTextSearchProvider implements IFuzzyFinderProvider {
           path: filePath,
           text: content as string,
         },
-        language: await getLanguageIdForFile(filePath),
+        language: getLanguageIdForFile(filePath),
         metadata: {
           filePath,
-          highlightLine: line ? parseInt(line, 10) - 1 : undefined,
+          highlightLine: lineStr ? parseInt(lineStr, 10) - 1 : undefined,
           totalLines: lines.length,
         },
       };

@@ -28,6 +28,7 @@ export function decoratorsPlugin(pattern: string, cwd: string, moduleName: strin
         // inject static imports
         const contents = files.map((file) => `import "${file.replace(/\\/g, "/")}";`).join("\n");
         console.log(contents);
+        console.log(`Update at ${moduleName} at `, new Date().toISOString());
 
         return {
           contents,

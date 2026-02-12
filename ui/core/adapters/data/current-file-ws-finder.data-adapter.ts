@@ -23,7 +23,7 @@ export class WorkspaceTextFinderDataAdapter implements IFuzzyFinderDataAdapter<T
 
   parseOptions(data: TextSearchData): SearchOption[] {
     return data.results.map((match) => ({
-      identifier: `${match.file}:${match.line}:${match.column}`,
+      identifier: `${match.file}||${match.line}||${match.column}`,
       svgIconUrl: match.svgIconUrl,
       file: match.file,
       line: match.line,

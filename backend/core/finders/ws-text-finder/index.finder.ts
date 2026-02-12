@@ -81,7 +81,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
     };
   }
 
-  destructureIdentifier(identifier: string) {
+  static destructureIdentifier(identifier: string) {
     const parts = identifier.split("||");
 
     const filePath = parts[0];
@@ -96,7 +96,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
   }
 
   async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
-    const { filePath, lineStr } = this.destructureIdentifier(identifier);
+    const { filePath, lineStr } = WorkspaceTextSearchProvider.destructureIdentifier(identifier);
 
     try {
       const content = await FileReader.read(filePath);
@@ -108,7 +108,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
           path: filePath,
           text: content as string,
         },
-        language: await getLanguageIdForFile(filePath),
+        language: getLanguageIdForFile(filePath),
         metadata: {
           filePath,
           highlightLine: lineStr ? parseInt(lineStr, 10) - 1 : undefined,
@@ -129,7 +129,7 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
   }
 
   async onSelect(identifier: string) {
-    const { filePath, lineStr, colStr } = this.destructureIdentifier(identifier);
+    const { filePath, lineStr, colStr } = WorkspaceTextSearchProvider.destructureIdentifier(identifier);
     const uri = vscode.Uri.file(filePath);
     const pos = new vscode.Position(parseInt(lineStr, 10) - 1, parseInt(colStr, 10) - 1);
 
