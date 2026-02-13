@@ -16,6 +16,7 @@ export class WebviewController {
   private searchElement: HTMLInputElement;
   private pendingHeavyFiles = new Set<string>();
   private activeProvider: FuzzyProviderType | undefined;
+  private previewQueue: Promise<void> = Promise.resolve();
 
   constructor(private readonly keyboardHandler: KeyboardHandler) {
     console.log("[WebviewController] Initializing controller");
@@ -100,9 +101,14 @@ export class WebviewController {
       }
 
       case "previewUpdate": {
-        console.log("[WebviewController] Processing previewUpdate message", msg.data);
-        const { previewAdapterType, data } = msg;
-        await PreviewManager.instance.updatePreview(data, previewAdapterType);
+        this.previewQueue = this.previewQueue.then(async () => {
+          try {
+            const { previewAdapterType, data } = msg;
+            await PreviewManager.instance.updatePreview(data, previewAdapterType);
+          } catch (error) {
+            console.error("[WebviewController] Error processing preview chunk:", error);
+          }
+        });
         break;
       }
     }

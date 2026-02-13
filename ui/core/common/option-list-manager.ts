@@ -114,11 +114,6 @@ export class OptionListManager {
     if (!this.dataAdapter) return;
 
     this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter.filterOption(opt, query));
-    if (this.filteredOptions.length === 0) {
-      console.log("Here cleaning");
-      PreviewManager.instance.clearPreview();
-      return;
-    }
 
     this.selectedIndex = this.getRelativeFirstIndex();
     this.render();
@@ -127,6 +122,11 @@ export class OptionListManager {
     const first = this.getRelativeFirstItem();
     if (first) {
       this.requestPreview(first);
+    }
+
+    if (this.filteredOptions.length === 0) {
+      PreviewManager.instance.clearPreview();
+      return;
     }
   }
 
