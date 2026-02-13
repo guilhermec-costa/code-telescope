@@ -27,7 +27,7 @@
         "harpoon",
         "jump"
     ],
-    "icon": "images/logo.png",
+    "icon": "images/logov2.png",
     "engines": {
         "vscode": "^1.105.0"
     },
