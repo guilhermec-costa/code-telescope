@@ -146,6 +146,12 @@ export class WebviewController {
     }
   }
 
+  private getPromptDebounceTime(): number {
+    const provider = __PROVIDER__ as FuzzyProviderType;
+    if (provider === "workspace.text" || provider === "currentFile.text") return 50;
+    return 0;
+  }
+
   /**
    * Registers DOM events
    */
@@ -156,7 +162,7 @@ export class WebviewController {
       }
       OptionListManager.instance.filter(query);
       OptionListManager.instance.resetIfNeeded();
-    }, 20);
+    }, this.getPromptDebounceTime());
 
     this.searchElement.addEventListener("input", async () => {
       debouncedFilter(this.searchElement.value);

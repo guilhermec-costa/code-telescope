@@ -14,6 +14,7 @@ import "../finders/ws-files.finder";
 import "../finders/harpoon.finder";
 import "../finders/breakpoint.finder";
 import "../finders/current-file-text.finder";
+import "../finders/document-symbols.finder";
 
 // PRESENTATION HANDLERS
 import "../presentation/handlers/close-panel.handler";

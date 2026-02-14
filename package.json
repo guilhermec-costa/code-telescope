@@ -56,6 +56,10 @@
                 "title": "Code Telescope: Workspace Text Search"
             },
             {
+                "command": "code-telescope.fuzzy.documentSymbols",
+                "title": "Code Telescope: Document Symbols"
+            },
+            {
                 "command": "code-telescope.fuzzy.fileText",
                 "title": "Code Telescope: Current File Text Search"
             },

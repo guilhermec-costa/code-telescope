@@ -57,6 +57,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerProviderCmd("harpoon", () => FuzzyFinderPanelController.setupProvider("harpoon.marks"), ctx);
   registerProviderCmd("callHierarchy", () => FuzzyFinderPanelController.setupProvider("workspace.callHierarchy"), ctx);
   registerProviderCmd("breakpoints", () => FuzzyFinderPanelController.setupProvider("debug.breakpoints"), ctx);
+  registerProviderCmd("documentSymbols", () => FuzzyFinderPanelController.setupProvider("document.symbols"), ctx);
   registerProviderCmd(
     "custom",
     async () => {

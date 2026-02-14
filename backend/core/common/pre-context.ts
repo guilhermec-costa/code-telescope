@@ -37,6 +37,7 @@ export class PreContextManager {
       const editor = await vscode.window.showTextDocument(document);
 
       editor.selection = new vscode.Selection(position, position);
+      return editor;
     }
   }
 

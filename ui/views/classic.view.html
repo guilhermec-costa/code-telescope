@@ -11,13 +11,13 @@
   <link rel="stylesheet" href="{{highlight-styles}}">
   <link rel="stylesheet" href="{{branch-styles}}">
   <script>
-    const __SHIKI_URI__ = '{{__SHIKI_URI__}}';
     const __PREVIEW_CFG__ = JSON.parse('{{__PREVIEW_CFG__}}');
     const __KEYBINDINGS_CFG__ = JSON.parse('{{__KEYBINDINGS_CFG__}}');
     const __CUSTOM_RENDER_ADAPTERS__ = JSON.parse('{{__CUSTOM_RENDER_ADAPTERS__}}');
     const __FILE_PATH_DISPLAY__ = '{{__WS_PATH_DISPLAY__}}';
+    const __PROVIDER__ = '{{__PROVIDER__}}'
   </script>
-  <script id="__CUSTOM_DATA_ADAPTER__" type="application/json">
+  <script id="__CUSTOM_DATA_ADAPTER__" type="text/plain">
     {{__CUSTOM_DATA_ADAPTER__}}
   </script>
   <script defer src="{{script}}"></script>
@@ -28,7 +28,7 @@
     <div id="split">
       <div id="results-container">
         <div id="search-results">
-          <div id="results-label">Files</div>
+          <div id="results-label">{{__OPTIONS_SIDE_TITLE__}}</div>
           <ul id="option-list"></ul>
         </div>
         <div id="input-container">
@@ -39,7 +39,7 @@
       </div>
       <div id="vertical-resizer"></div>
       <div id="preview-side">
-        <div id="preview-label">Preview</div>
+        <div id="preview-label">{{__PREVIEW_SIDE_TITLE__}}</div>
         <div id="preview"></div>
       </div>
     </div>

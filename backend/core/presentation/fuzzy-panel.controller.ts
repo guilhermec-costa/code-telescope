@@ -1,7 +1,9 @@
+import path from "node:path";
 import * as vscode from "vscode";
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { FromWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
+import { getProviderTabTitle } from "../../utils/configuration";
 import { joinPath } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { PreContextManager } from "../common/pre-context";
@@ -74,6 +76,9 @@ export class FuzzyFinderPanelController {
 
     const panel = this.createPanel();
     FuzzyFinderPanelController._instance = new FuzzyFinderPanelController(panel);
+    const basePath = path.join(Globals.EXTENSION_URI.fsPath, "images");
+    const logoPath = path.normalize(`${basePath}/logov2.png`);
+    this._instance!.wvPanel.iconPath = vscode.Uri.file(logoPath);
     FuzzyFinderPanelController._instance.listenWebview();
     return FuzzyFinderPanelController._instance;
   }
@@ -81,6 +86,7 @@ export class FuzzyFinderPanelController {
   public static async setupProvider(providerType: FuzzyProviderType) {
     PreContextManager.instance.captureFromActiveEditor();
     const instance = FuzzyFinderPanelController.createOrShow();
+    this.instance!.wvPanel.title = `Code Telescope - ${getProviderTabTitle(providerType)}`;
     await instance.startProvider(providerType);
   }
 

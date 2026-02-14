@@ -239,7 +239,6 @@ body {
   font-family: var(--font-family), "Fira Code", Consolas, monospace;
   top: -12px;
   left: 50%;
-  width: 14%;
   transform: translateX(-50%);
   padding: 2px 8px;
   background: var(--bg);

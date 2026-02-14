@@ -1,6 +1,7 @@
 import path from "path";
 import * as vscode from "vscode";
 import { Globals } from "../../globals";
+import { getProviderListTitle, getProviderPreviewTitle } from "../../utils/configuration";
 import { joinPath } from "../../utils/files";
 import { IFuzzyFinderProvider, LayoutCustomPlaceholders } from "../abstractions/fuzzy-finder.provider";
 import { ExtensionConfigManager } from "../common/config-manager";
@@ -84,6 +85,9 @@ export class WebviewAssetManager {
       "{{__KEYBINDINGS_CFG__}}": JSON.stringify(ExtensionConfigManager.keybindings),
       "{{__CUSTOM_DATA_ADAPTER__}}": JSON.stringify(customUiPayload, null, 2),
       "{{__CUSTOM_RENDER_ADAPTERS__}}": JSON.stringify([]),
+      "{{__OPTIONS_SIDE_TITLE__}}": getProviderListTitle(provider.fuzzyAdapterType),
+      "{{__PREVIEW_SIDE_TITLE__}}": getProviderPreviewTitle(provider.fuzzyAdapterType),
+      "{{__PROVIDER__}}": provider.fuzzyAdapterType,
     };
 
     let processed = html;

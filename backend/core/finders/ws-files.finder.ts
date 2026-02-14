@@ -174,7 +174,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
           buffer: content as Uint8Array,
           mimeType: `image/${ext === "jpg" ? "jpeg" : ext}`,
         },
-        language: await getLanguageIdForFile(identifier),
+        language: getLanguageIdForFile(identifier),
         overridePreviewer: "preview.image",
       };
     }
@@ -185,7 +185,7 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
         path: identifier,
         text: content as string,
       },
-      language: await getLanguageIdForFile(identifier),
+      language: getLanguageIdForFile(identifier),
       overridePreviewer: this.previewAdapterType,
     };
   }
