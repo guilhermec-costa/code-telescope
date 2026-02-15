@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as vscode from "vscode";
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
 import { PreviewData } from "../../../../shared/extension-webview-protocol";
 import { Result } from "../../../../shared/result";
@@ -20,6 +20,7 @@ import { WorkspaceFileFinder } from "../ws-files.finder";
 export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
+  dataAdapterType!: DataAdapterType;
 
   /**
    * Creates a backend proxy from a validated custom finder definition.
@@ -28,6 +29,7 @@ export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
    */
   private constructor(def: CustomFinderDefinition) {
     this.fuzzyAdapterType = def.fuzzyAdapterType as any;
+    this.dataAdapterType = def.fuzzyAdapterType as any;
     this.previewAdapterType = "preview.codeHighlighted";
 
     this.querySelectableOptions = def.backend.querySelectableOptions;

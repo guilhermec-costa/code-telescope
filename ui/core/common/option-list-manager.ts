@@ -171,7 +171,7 @@ export class OptionListManager {
    */
   public resetIfNeeded() {
     const needReset: FuzzyProviderType[] = ["workspace.text", "currentFile.text"];
-    if (this.searchElement.value === "" && needReset.includes(this.dataAdapter.fuzzyAdapterType)) {
+    if (this.searchElement.value === "" && needReset.includes(__PROVIDER__ as FuzzyProviderType)) {
       this.clearOptions();
       PreviewManager.instance.clearPreview();
     }

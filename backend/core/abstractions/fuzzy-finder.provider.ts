@@ -1,4 +1,4 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PostQueryHandlerResult, PreviewData } from "../../../shared/extension-webview-protocol";
 
 /**
@@ -16,6 +16,11 @@ export interface IFuzzyFinderProvider {
    * area for items handled by this provider.
    */
   previewAdapterType: PreviewRendererType;
+
+  /**
+   * Specifies which data adapter should process the data on the UI side
+   */
+  dataAdapterType: DataAdapterType;
   /**
    * Returns the list of items to be displayed in the fuzzy finder.
    * Example: files, branches, symbols, commands

@@ -1,20 +1,14 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { DataAdapterType } from "../../../shared/adapters-namespace";
 
 /**
  * Defines how a specific finder mode should transform, display and filter data.
  */
 export interface IFuzzyFinderDataAdapter<TData = any, TOption = string> {
   /**
-   * Type of the preview renderer that should be used for this adapter.
-   * Determines how the preview area will interpret and display the selected option.
-   */
-  previewAdapterType: PreviewRendererType;
-
-  /**
    * Defines which fuzzy search provider this adapter uses.
    * This allows different finder modes to use different matching strategies.
    */
-  fuzzyAdapterType: FuzzyProviderType;
+  typeName: DataAdapterType;
 
   /**
    * Converts the raw data received from the extension into a list of displayable options.

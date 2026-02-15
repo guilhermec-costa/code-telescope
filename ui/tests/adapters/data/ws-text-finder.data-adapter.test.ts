@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { TextSearchData } from "../../../../shared/exchange/workspace-text-search";
-import { WorkspaceTextFinderDataAdapter } from "../../../core/adapters/data/ws-text-finder.data-adapter";
+import { TextFinderDataAdapter } from "../../../core/adapters/data/text-finder.data-adapter";
 
 describe("WorkspaceTextFinderDataAdapter", () => {
-  const adapter = new WorkspaceTextFinderDataAdapter();
+  const adapter = new TextFinderDataAdapter();
 
   const data: TextSearchData = {
     results: [

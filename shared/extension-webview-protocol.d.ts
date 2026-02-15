@@ -1,4 +1,4 @@
-import { FuzzyProviderType, PreviewRendererType } from "./adapters-namespace";
+import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "./adapters-namespace";
 
 /**
  * Data that can be previewed by a {@link PreviewRendererType}.
@@ -60,6 +60,7 @@ export interface OptionListMessage {
   type: "optionList";
   data: any;
   fuzzyProviderType: FuzzyProviderType;
+  dataAdapterType: DataAdapterType;
   isChunk: boolean;
   isLastChunk?: boolean;
 }

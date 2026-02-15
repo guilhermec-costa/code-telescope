@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { DiagnosticData, DiagnosticsFinderData } from "../../../shared/exchange/diagnostics";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../utils/files";
@@ -15,10 +15,12 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
 @FuzzyFinderAdapter({
   fuzzy: "workspace.diagnostics",
   previewRenderer: "preview.codeHighlighted",
+  dataAdapter: "workspaceDiagnosticsAdapter",
 })
 export class DiagnosticsFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
+  dataAdapterType!: DataAdapterType;
 
   async querySelectableOptions(): Promise<DiagnosticsFinderData> {
     const diagnostics = await this.getAllDiagnostics();

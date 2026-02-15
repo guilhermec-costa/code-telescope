@@ -1,4 +1,4 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { HarpoonFinderData, HarpoonMark } from "../../../../shared/exchange/harpoon";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
@@ -11,12 +11,10 @@ export interface HarpoonOption {
 }
 
 @FuzzyFinderDataAdapter({
-  fuzzy: "harpoon.marks",
-  preview: "preview.codeHighlighted",
+  type: "harpoonMarksAdapter",
 })
 export class HarpoonFinderDataAdapter implements IFuzzyFinderDataAdapter<HarpoonFinderData, HarpoonOption> {
-  previewAdapterType!: PreviewRendererType;
-  fuzzyAdapterType!: FuzzyProviderType;
+  typeName!: DataAdapterType;
 
   parseOptions(data: HarpoonFinderData): HarpoonOption[] {
     const options: HarpoonOption[] = [];

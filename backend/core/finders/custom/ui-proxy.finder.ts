@@ -9,7 +9,6 @@ import { Result } from "../../../../shared/result";
 export class CustomFinderUiProxy {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
-
   dataAdapter!: CustomFinderDefinition["ui"]["dataAdapter"];
 
   private constructor(def: CustomFinderDefinition) {
@@ -82,6 +81,7 @@ export class CustomFinderUiProxy {
     return {
       fuzzyAdapterType: this.fuzzyAdapterType,
       previewAdapterType: this.previewAdapterType,
+      dataAdapterType: this.fuzzyAdapterType,
       dataAdapter: {
         parseOptions: this.normalizeFn(this.dataAdapter.parseOptions),
         getDisplayText: this.normalizeFn(this.dataAdapter.getDisplayText),

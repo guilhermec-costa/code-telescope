@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { ColorSchemesFinderData, ColorThemeData } from "../../../shared/exchange/colorschemes";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
@@ -15,10 +15,12 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
 @FuzzyFinderAdapter({
   fuzzy: "workspace.colorschemes",
   previewRenderer: "preview.codeHighlighted",
+  dataAdapter: "workspaceColorschemesAdapter",
 })
 export class ColorSchemesFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
+  dataAdapterType!: DataAdapterType;
 
   async querySelectableOptions(): Promise<ColorSchemesFinderData> {
     const themes = await this.getColorThemes();

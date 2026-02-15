@@ -1,6 +1,6 @@
 import { BreakpointData, BreakpointsFinderData } from "@shared/exchange/breakpoint";
 import * as vscode from "vscode";
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../utils/files";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
@@ -16,10 +16,12 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
 @FuzzyFinderAdapter({
   fuzzy: "debug.breakpoints",
   previewRenderer: "preview.codeHighlighted",
+  dataAdapter: "debugBreakpointsAdapter",
 })
 export class BreakpointsFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
+  dataAdapterType!: DataAdapterType;
 
   async querySelectableOptions(): Promise<BreakpointsFinderData> {
     const breakpoints = this.getAllBreakpoints();

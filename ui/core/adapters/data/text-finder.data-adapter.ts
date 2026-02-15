@@ -1,4 +1,4 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { TextSearchData } from "../../../../shared/exchange/workspace-text-search";
 import { formatFileOptionHtml } from "../../../utils/html";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
@@ -13,12 +13,10 @@ interface SearchOption {
 }
 
 @FuzzyFinderDataAdapter({
-  fuzzy: "currentFile.text",
-  preview: "preview.codeHighlighted",
+  type: "textSearchAdapter",
 })
-export class WorkspaceTextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearchData, SearchOption> {
-  previewAdapterType: PreviewRendererType;
-  fuzzyAdapterType: FuzzyProviderType;
+export class TextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearchData, SearchOption> {
+  typeName: DataAdapterType;
   debounceSearchTime = 100;
 
   parseOptions(data: TextSearchData): SearchOption[] {

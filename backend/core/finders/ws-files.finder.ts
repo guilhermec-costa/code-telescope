@@ -1,7 +1,7 @@
 import { stat } from "node:fs/promises";
 import * as fg from "fast-glob";
 import * as vscode from "vscode";
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { FileFinderData } from "../../../shared/exchange/file-search";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
@@ -18,10 +18,12 @@ import { WebviewController } from "../presentation/webview.controller";
 @FuzzyFinderAdapter({
   fuzzy: "workspace.files",
   previewRenderer: "preview.codeHighlighted",
+  dataAdapter: "workspaceFilesAdapter",
 })
 export class WorkspaceFileFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
+  dataAdapterType!: DataAdapterType;
 
   async querySelectableOptions(): Promise<FileFinderData> {
     const allFiles = await this.getWorkspaceFiles();

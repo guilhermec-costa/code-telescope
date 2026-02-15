@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { HighlightedCodePreviewData } from "../../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../../utils/files";
 import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
@@ -16,10 +16,12 @@ import { RipgrepFinder } from "./ripgrep-finder";
 @FuzzyFinderAdapter({
   fuzzy: "workspace.text",
   previewRenderer: "preview.codeHighlighted",
+  dataAdapter: "textSearchAdapter",
 })
 export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
+  dataAdapterType!: DataAdapterType;
 
   public readonly supportsDynamicSearch = true;
   private readonly regexFinder: RegexFinder;

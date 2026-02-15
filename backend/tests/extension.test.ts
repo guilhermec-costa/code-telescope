@@ -98,6 +98,7 @@ describe("Extension entrypoint", () => {
       "custom",
       "harpoon",
       "breakpoints",
+      "documentSymbols",
     ];
 
     expectedCommands.forEach((cmd) => {

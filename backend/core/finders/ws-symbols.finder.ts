@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { execCmd } from "../../utils/commands";
 import { getLanguageIdForFile } from "../../utils/files";
@@ -30,10 +30,12 @@ interface WorkspaceSymbolFinderData {
 @FuzzyFinderAdapter({
   fuzzy: "workspace.symbols",
   previewRenderer: "preview.codeHighlighted",
+  dataAdapter: "symbolsAdapter",
 })
 export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
+  dataAdapterType!: DataAdapterType;
 
   async querySelectableOptions(): Promise<WorkspaceSymbolFinderData> {
     const symbols = await this.getWorkspaceSymbols();

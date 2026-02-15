@@ -1,4 +1,4 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { ColorSchemesFinderData, ColorThemeData } from "../../../../shared/exchange/colorschemes";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
@@ -10,14 +10,12 @@ export interface ColorSchemeOption {
 }
 
 @FuzzyFinderDataAdapter({
-  fuzzy: "workspace.colorschemes",
-  preview: "preview.codeHighlighted",
+  type: "workspaceColorschemesAdapter",
 })
 export class ColorSchemesFinderDataAdapter
   implements IFuzzyFinderDataAdapter<ColorSchemesFinderData, ColorSchemeOption>
 {
-  previewAdapterType: PreviewRendererType;
-  fuzzyAdapterType: FuzzyProviderType;
+  typeName: DataAdapterType;
 
   parseOptions(data: ColorSchemesFinderData): ColorSchemeOption[] {
     const options: ColorSchemeOption[] = [];

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-function findJsonFiles(dir, fileList = []) {
+function findFiles(dir, fileList = []) {
   try {
     const files = fs.readdirSync(dir);
 
@@ -13,7 +13,7 @@ function findJsonFiles(dir, fileList = []) {
         if (file === 'node_modules' || file.startsWith('.')) {
           continue;
         }
-        findJsonFiles(filePath, fileList);
+        findFiles(filePath, fileList);
       } else if (file.endsWith('.ts')) {
         fileList.push(filePath);
       }
@@ -33,7 +33,7 @@ function getRelativePath(filePath, workspaceRoot) {
  * @type {import('../shared/custom-provider').CustomFinderDefinition}
  */
 module.exports = {
-  fuzzyAdapterType: "custom.json.files",
+  fuzzyAdapterType: "custom.ts.files",
 
   backend: {
     async querySelectableOptions() {
@@ -41,18 +41,15 @@ module.exports = {
       const workspaceRoot = process.cwd();
 
       // Find all SQL files
-      const sqlFiles = findJsonFiles(workspaceRoot);
+      const tsFiles = findFiles(workspaceRoot);
 
       // Read and parse each file
       const queries = [];
 
-      for (const filePath of sqlFiles) {
+      for (const filePath of tsFiles) {
         try {
           const content = fs.readFileSync(filePath, 'utf-8');
           const relativePath = getRelativePath(filePath, workspaceRoot);
-
-          // Extract filename without extension as fallback name
-          const filename = path.basename(filePath, '.sql');
 
           queries.push({
             id: filePath,
@@ -86,7 +83,7 @@ module.exports = {
 
       return {
         content: selectedQuery.content,
-        language: "sql"
+        language: "typescript"
       };
     }
   },

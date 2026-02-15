@@ -126,8 +126,8 @@ export class WebviewController {
    * Processes a list of options received from the extension.
    */
   private handleOptionListMessage(msg: OptionListMessage) {
-    const { fuzzyProviderType, data, isChunk } = msg;
-    const adapter = FuzzyFinderDataAdapterRegistry.instance.getAdapter(fuzzyProviderType);
+    const { fuzzyProviderType, dataAdapterType, data, isChunk } = msg;
+    const adapter = FuzzyFinderDataAdapterRegistry.instance.getAdapter(dataAdapterType);
 
     if (!adapter) return;
 

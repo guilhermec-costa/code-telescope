@@ -1,4 +1,4 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 
 /**
@@ -7,6 +7,7 @@ import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 interface FuzzyFinderAdapterConfig {
   fuzzy: FuzzyProviderType;
   previewRenderer: PreviewRendererType;
+  dataAdapter: DataAdapterType;
 }
 
 const GlobalFuzzyFinderAdapterRegistry: IFuzzyFinderProvider[] = [];
@@ -22,7 +23,7 @@ export function FuzzyFinderAdapter(config: FuzzyFinderAdapterConfig) {
     const instance = new constructor();
     instance.fuzzyAdapterType = config.fuzzy;
     instance.previewAdapterType = config.previewRenderer;
-
+    instance.dataAdapterType = config.dataAdapter;
     GlobalFuzzyFinderAdapterRegistry.push(instance);
   };
 }

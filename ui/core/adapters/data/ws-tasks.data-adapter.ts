@@ -1,17 +1,15 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { WorkspaceTaskOption, WorkspaceTasksFinderData } from "../../../../shared/exchange/ws-tasks";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
 
 @FuzzyFinderDataAdapter({
-  fuzzy: "workspace.tasks",
-  preview: "preview.codeHighlighted",
+  type: "workspaceTasksAdapter",
 })
 export class WorkspaceTasksFinderDataAdapter
   implements IFuzzyFinderDataAdapter<WorkspaceTasksFinderData, WorkspaceTaskOption>
 {
-  previewAdapterType: PreviewRendererType;
-  fuzzyAdapterType: FuzzyProviderType;
+  typeName: DataAdapterType;
 
   parseOptions(data: WorkspaceTasksFinderData): WorkspaceTaskOption[] {
     const options: WorkspaceTaskOption[] = [];

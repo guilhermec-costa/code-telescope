@@ -1,4 +1,4 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { KeybindingData, KeybindingFinderData } from "../../../../shared/exchange/keybindings";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
@@ -10,12 +10,10 @@ export interface KeybindingOption {
 }
 
 @FuzzyFinderDataAdapter({
-  fuzzy: "workspace.keybindings",
-  preview: "preview.codeHighlighted",
+  type: "workspaceKeybindingsAdapter",
 })
 export class KeybindingsFinderDataAdapter implements IFuzzyFinderDataAdapter<KeybindingFinderData, KeybindingOption> {
-  previewAdapterType: PreviewRendererType;
-  fuzzyAdapterType: FuzzyProviderType;
+  typeName: DataAdapterType;
 
   parseOptions(data: KeybindingFinderData): KeybindingOption[] {
     const options: KeybindingOption[] = [];

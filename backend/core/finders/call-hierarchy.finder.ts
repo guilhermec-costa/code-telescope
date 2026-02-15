@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
+import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { CallHierarchyData, CallHierarchyFinderData } from "../../../shared/exchange/call-hierarchy";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../utils/files";
@@ -17,10 +17,12 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
 @FuzzyFinderAdapter({
   fuzzy: "workspace.callHierarchy",
   previewRenderer: "preview.codeHighlighted",
+  dataAdapter: "workspaceCallHierarchyAdapter",
 })
 export class CallHierarchyFinder implements IFuzzyFinderProvider {
   fuzzyAdapterType!: FuzzyProviderType;
   previewAdapterType!: PreviewRendererType;
+  dataAdapterType!: DataAdapterType;
 
   async querySelectableOptions(): Promise<CallHierarchyFinderData> {
     const calls = await this.getCallHierarchy();

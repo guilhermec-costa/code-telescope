@@ -1,4 +1,4 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { WorkspaceSymbolData, WorkspaceSymbolFinderData } from "../../../../shared/exchange/ws-symbols";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
@@ -10,14 +10,12 @@ export interface WorkspaceSymbolOption {
 }
 
 @FuzzyFinderDataAdapter({
-  fuzzy: "workspace.symbols",
-  preview: "preview.codeHighlighted",
+  type: "symbolsAdapter",
 })
-export class WorkspaceSymbolsFinderDataAdapter
+export class SymbolsFinderDataAdapter
   implements IFuzzyFinderDataAdapter<WorkspaceSymbolFinderData, WorkspaceSymbolOption>
 {
-  previewAdapterType: PreviewRendererType;
-  fuzzyAdapterType: FuzzyProviderType;
+  typeName: DataAdapterType;
 
   parseOptions(data: WorkspaceSymbolFinderData): WorkspaceSymbolOption[] {
     const options: WorkspaceSymbolOption[] = [];

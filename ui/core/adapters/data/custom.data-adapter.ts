@@ -1,15 +1,15 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 
 export interface SerializedUiConfig {
   fuzzyAdapterType: CustomFinderDefinition["fuzzyAdapterType"];
+  dataAdapterType: DataAdapterType;
   dataAdapter: CustomFinderDefinition["ui"]["dataAdapter"];
 }
 
 export class CustomDataAdapterProxy implements IFuzzyFinderDataAdapter {
-  previewAdapterType: PreviewRendererType;
-  fuzzyAdapterType: FuzzyProviderType;
+  typeName: DataAdapterType;
 
   constructor(serializedConfig: SerializedUiConfig) {
     const adapter = serializedConfig.dataAdapter;
@@ -22,8 +22,7 @@ export class CustomDataAdapterProxy implements IFuzzyFinderDataAdapter {
       this.filterOption = indirectEval(`(${adapter.filterOption})`);
     }
 
-    this.fuzzyAdapterType = serializedConfig.fuzzyAdapterType as any;
-    this.previewAdapterType = "preview.codeHighlighted";
+    this.typeName = serializedConfig.dataAdapterType;
   }
 
   parseOptions!: (options: any) => string[];

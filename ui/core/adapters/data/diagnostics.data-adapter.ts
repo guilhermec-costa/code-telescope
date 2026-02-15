@@ -1,15 +1,13 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { DiagnosticOption, DiagnosticsFinderData } from "../../../../shared/exchange/diagnostics";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
 
 @FuzzyFinderDataAdapter({
-  fuzzy: "workspace.diagnostics",
-  preview: "preview.codeHighlighted",
+  type: "workspaceDiagnosticsAdapter",
 })
 export class DiagnosticsFinderDataAdapter implements IFuzzyFinderDataAdapter<DiagnosticsFinderData, DiagnosticOption> {
-  previewAdapterType: PreviewRendererType;
-  fuzzyAdapterType: FuzzyProviderType;
+  typeName: DataAdapterType;
 
   parseOptions(data: DiagnosticsFinderData): DiagnosticOption[] {
     const options: DiagnosticOption[] = [];

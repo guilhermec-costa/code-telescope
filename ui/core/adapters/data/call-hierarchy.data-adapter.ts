@@ -1,4 +1,4 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { CallHierarchyData, CallHierarchyFinderData } from "../../../../shared/exchange/call-hierarchy";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
@@ -11,14 +11,12 @@ export interface CallHierarchyOption {
 }
 
 @FuzzyFinderDataAdapter({
-  fuzzy: "workspace.callHierarchy",
-  preview: "preview.codeHighlighted",
+  type: "workspaceCallHierarchyAdapter",
 })
 export class CallHierarchyFinderDataAdapter
   implements IFuzzyFinderDataAdapter<CallHierarchyFinderData, CallHierarchyOption>
 {
-  previewAdapterType: PreviewRendererType;
-  fuzzyAdapterType: FuzzyProviderType;
+  typeName!: DataAdapterType;
 
   parseOptions(data: CallHierarchyFinderData): CallHierarchyOption[] {
     const options: CallHierarchyOption[] = [];

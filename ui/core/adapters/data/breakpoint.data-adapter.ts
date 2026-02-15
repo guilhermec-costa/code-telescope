@@ -1,4 +1,4 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { BreakpointData, BreakpointsFinderData } from "../../../../shared/exchange/breakpoint";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
@@ -10,12 +10,10 @@ export interface BreakpointOption {
 }
 
 @FuzzyFinderDataAdapter({
-  fuzzy: "debug.breakpoints",
-  preview: "preview.codeHighlighted",
+  type: "debugBreakpointsAdapter",
 })
 export class BreakpointsFinderDataAdapter implements IFuzzyFinderDataAdapter<BreakpointsFinderData, BreakpointOption> {
-  previewAdapterType!: PreviewRendererType;
-  fuzzyAdapterType!: FuzzyProviderType;
+  typeName!: DataAdapterType;
 
   parseOptions(data: BreakpointsFinderData): BreakpointOption[] {
     const options: BreakpointOption[] = [];

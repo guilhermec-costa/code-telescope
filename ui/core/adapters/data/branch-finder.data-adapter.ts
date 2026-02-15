@@ -1,15 +1,13 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { BranchInfo } from "../../../../shared/exchange/branch-search";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
 
 @FuzzyFinderDataAdapter({
-  fuzzy: "git.branches",
-  preview: "preview.branch",
+  type: "gitBranchesAdapter",
 })
 export class BranchFinderDataAdapter implements IFuzzyFinderDataAdapter<BranchInfo[], BranchInfo> {
-  previewAdapterType: PreviewRendererType;
-  fuzzyAdapterType: FuzzyProviderType;
+  typeName: DataAdapterType;
   debounceSearchTime = 30;
 
   parseOptions(data: BranchInfo[]) {

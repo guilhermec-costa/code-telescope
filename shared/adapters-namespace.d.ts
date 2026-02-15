@@ -22,4 +22,19 @@ export type CustomFuzzyProviderType = `custom.${string}`;
 
 export type FuzzyProviderType = BuiltinFuzzyProviderType | CustomFuzzyProviderType;
 
+export type DataAdapterType =
+  | "workspaceFilesAdapter"
+  | "textSearchAdapter"
+  | "workspaceRecentFilesAdapter"
+  | "workspaceKeybindingsAdapter"
+  | "workspaceTasksAdapter"
+  | "workspaceColorschemesAdapter"
+  | "workspaceCallHierarchyAdapter"
+  | "workspaceDiagnosticsAdapter"
+  | "harpoonMarksAdapter"
+  | "gitBranchesAdapter"
+  | "symbolsAdapter"
+  | "debugBreakpointsAdapter"
+  | `custom${string}Adapter`;
+
 export type PreviewRendererType = "preview.codeHighlighted" | "preview.branch" | "preview.image" | "preview.failed";

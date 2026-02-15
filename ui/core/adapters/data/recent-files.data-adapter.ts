@@ -1,4 +1,4 @@
-import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
+import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { RecentFileData, RecentFilesFinderData } from "../../../../shared/exchange/recent-files";
 import { formatFileOptionHtml } from "../../../utils/html";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
@@ -12,12 +12,10 @@ export interface RecentFileOption {
 }
 
 @FuzzyFinderDataAdapter({
-  fuzzy: "workspace.recentFiles",
-  preview: "preview.codeHighlighted",
+  type: "workspaceRecentFilesAdapter",
 })
 export class RecentFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<RecentFilesFinderData, RecentFileOption> {
-  previewAdapterType: PreviewRendererType;
-  fuzzyAdapterType: FuzzyProviderType;
+  typeName: DataAdapterType;
 
   parseOptions(data: RecentFilesFinderData): RecentFileOption[] {
     const options: RecentFileOption[] = [];

@@ -17,6 +17,7 @@ export class WebviewDOMReadyHandler implements IWebviewMessageHandler<"webviewDO
       type: "optionList",
       data: items,
       fuzzyProviderType: provider.fuzzyAdapterType,
+      dataAdapterType: provider.dataAdapterType,
       isChunk: false,
     });
   }
