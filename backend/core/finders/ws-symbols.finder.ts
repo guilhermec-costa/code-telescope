@@ -1,12 +1,10 @@
 import * as vscode from "vscode";
-import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { execCmd } from "../../utils/commands";
 import { getLanguageIdForFile } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
-import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
 interface WorkspaceSymbolData {
   name: string;
@@ -32,11 +30,7 @@ interface WorkspaceSymbolFinderData {
   previewRenderer: "preview.codeHighlighted",
   dataAdapter: "symbolsAdapter",
 })
-export class WorkspaceSymbolsFinder implements IFuzzyFinderProvider {
-  fuzzyAdapterType!: FuzzyProviderType;
-  previewAdapterType!: PreviewRendererType;
-  dataAdapterType!: DataAdapterType;
-
+export class WorkspaceSymbolsFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<WorkspaceSymbolFinderData> {
     const symbols = await this.getWorkspaceSymbols();
 

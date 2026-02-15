@@ -1,12 +1,10 @@
 import * as vscode from "vscode";
-import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { HarpoonFinderData } from "../../../shared/exchange/harpoon";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { HarpoonOrchestrator } from "../../harpoon/orchestrator";
 import { getLanguageIdForFile, getSvgIconUrl } from "../../utils/files";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
-import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**
  * Fuzzy provider for Harpoon marked files
@@ -18,11 +16,7 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
   previewRenderer: "preview.codeHighlighted",
   dataAdapter: "harpoonMarksAdapter",
 })
-export class HarpoonProvider implements IFuzzyFinderProvider {
-  fuzzyAdapterType!: FuzzyProviderType;
-  previewAdapterType!: PreviewRendererType;
-  dataAdapterType!: DataAdapterType;
-
+export class HarpoonProvider implements FuzzyFinderProvider {
   private static context: vscode.ExtensionContext;
 
   public static initialize(context: vscode.ExtensionContext): void {

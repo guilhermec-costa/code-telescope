@@ -1,7 +1,6 @@
 import { stat } from "node:fs/promises";
 import * as fg from "fast-glob";
 import * as vscode from "vscode";
-import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { FileFinderData } from "../../../shared/exchange/file-search";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
@@ -11,7 +10,7 @@ import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { ChunkStreamer } from "../chunk-streamer";
 import { FileReader } from "../common/cache/file-reader";
 import { ExtensionConfigManager } from "../common/config-manager";
-import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 import { FuzzyFinderPanelController } from "../presentation/fuzzy-panel.controller";
 import { WebviewController } from "../presentation/webview.controller";
 
@@ -20,11 +19,7 @@ import { WebviewController } from "../presentation/webview.controller";
   previewRenderer: "preview.codeHighlighted",
   dataAdapter: "workspaceFilesAdapter",
 })
-export class WorkspaceFileFinder implements IFuzzyFinderProvider {
-  fuzzyAdapterType!: FuzzyProviderType;
-  previewAdapterType!: PreviewRendererType;
-  dataAdapterType!: DataAdapterType;
-
+export class WorkspaceFileFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<FileFinderData> {
     const allFiles = await this.getWorkspaceFiles();
     const CHUNK_SIZE = 2000;
@@ -81,14 +76,14 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
     await WebviewController.sendMessage(panel, {
       type: "removeHeavyOptions",
       data: heavyFiles,
-      fuzzyProviderType: this.fuzzyAdapterType,
+      fuzzyProviderType: this.casted.fuzzyAdapterType,
     });
   }
 
   private async streamRemainingChunks(allFiles: string[], chunkSize: number) {
     const streamer = new ChunkStreamer(allFiles.slice(chunkSize), {
       messageType: "optionList",
-      fuzzyProviderType: this.fuzzyAdapterType,
+      fuzzyProviderType: this.casted.fuzzyAdapterType,
       chunkSize,
       mapChunk: this.mapChunk,
     });
@@ -188,7 +183,11 @@ export class WorkspaceFileFinder implements IFuzzyFinderProvider {
         text: content as string,
       },
       language: getLanguageIdForFile(identifier),
-      overridePreviewer: this.previewAdapterType,
+      overridePreviewer: this.casted.previewAdapterType,
     };
+  }
+
+  private get casted() {
+    return this as unknown as IFuzzyFinderProvider;
   }
 }

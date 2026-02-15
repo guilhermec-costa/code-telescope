@@ -103,7 +103,7 @@ export class FuzzyFinderPanelController {
     if (this._provider && this._provider.supportsDynamicSearch && this._provider.fuzzyAdapterType === providerType)
       return;
 
-    this.setFuzzyProvider(provider);
+    this.setFuzzyProvider(provider as IFuzzyFinderProvider);
     this.wvPanel.webview.html = await WebviewController.resolveProviderWebviewHtml(this.webview, this._provider);
 
     await this.emitResetWebviewEvent();

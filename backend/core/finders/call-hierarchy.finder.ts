@@ -1,13 +1,11 @@
 import * as vscode from "vscode";
-import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { CallHierarchyData, CallHierarchyFinderData } from "../../../shared/exchange/call-hierarchy";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
 import { PreContextManager } from "../common/pre-context";
-import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**
  * Fuzzy provider that shows call hierarchy for the symbol at cursor.
@@ -19,11 +17,7 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
   previewRenderer: "preview.codeHighlighted",
   dataAdapter: "workspaceCallHierarchyAdapter",
 })
-export class CallHierarchyFinder implements IFuzzyFinderProvider {
-  fuzzyAdapterType!: FuzzyProviderType;
-  previewAdapterType!: PreviewRendererType;
-  dataAdapterType!: DataAdapterType;
-
+export class CallHierarchyFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<CallHierarchyFinderData> {
     const calls = await this.getCallHierarchy();
 

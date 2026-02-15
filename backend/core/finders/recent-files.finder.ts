@@ -1,14 +1,12 @@
 import * as fs from "fs";
 import * as vscode from "vscode";
-import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { RecentFileData, RecentFilesFinderData } from "../../../shared/exchange/recent-files";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { getLanguageIdForFile, getSvgIconUrl } from "../../utils/files";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
-import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**
  * Fuzzy provider that retrieves recently opened files.
@@ -20,11 +18,7 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
   previewRenderer: "preview.codeHighlighted",
   dataAdapter: "workspaceRecentFilesAdapter",
 })
-export class RecentFilesFinder implements IFuzzyFinderProvider {
-  fuzzyAdapterType!: FuzzyProviderType;
-  previewAdapterType!: PreviewRendererType;
-  dataAdapterType!: DataAdapterType;
-
+export class RecentFilesFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<RecentFilesFinderData> {
     const files = await this.getRecentFiles();
 

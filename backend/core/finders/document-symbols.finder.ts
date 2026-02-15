@@ -1,13 +1,11 @@
 import * as vscode from "vscode";
-import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { execCmd } from "../../utils/commands";
 import { getLanguageIdForFile } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
 import { PreContextManager } from "../common/pre-context";
-import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
 interface DocumentSymbolData {
   name: string;
@@ -35,11 +33,7 @@ interface DocumentSymbolFinderData {
   previewRenderer: "preview.codeHighlighted",
   dataAdapter: "symbolsAdapter",
 })
-export class DocumentSymbolsFinder implements IFuzzyFinderProvider {
-  fuzzyAdapterType!: FuzzyProviderType;
-  previewAdapterType!: PreviewRendererType;
-  dataAdapterType!: DataAdapterType;
-
+export class DocumentSymbolsFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<DocumentSymbolFinderData> {
     const symbols = await this.getDocumentSymbols();
     const displayTexts = symbols.map((symbol) => {

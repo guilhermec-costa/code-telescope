@@ -1,11 +1,9 @@
 import * as vscode from "vscode";
-import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../utils/files";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
 import { PreContextManager } from "../common/pre-context";
-import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 import { FuzzyFinderAdapterRegistry } from "../registry/fuzzy-provider.registry";
 import { WorkspaceTextSearchProvider } from "./ws-text-finder/index.finder";
 
@@ -18,11 +16,7 @@ import { WorkspaceTextSearchProvider } from "./ws-text-finder/index.finder";
   previewRenderer: "preview.codeHighlighted",
   dataAdapter: "textSearchAdapter",
 })
-export class CurrentFileTextSearchProvider implements IFuzzyFinderProvider {
-  fuzzyAdapterType!: FuzzyProviderType;
-  previewAdapterType!: PreviewRendererType;
-  dataAdapterType!: DataAdapterType;
-
+export class CurrentFileTextSearchProvider implements FuzzyFinderProvider {
   public readonly supportsDynamicSearch = true;
 
   async querySelectableOptions() {

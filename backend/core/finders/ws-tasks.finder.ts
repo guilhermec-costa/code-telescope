@@ -1,9 +1,7 @@
 import * as vscode from "vscode";
-import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { TaskData, WorkspaceTasksFinderData } from "../../../shared/exchange/ws-tasks";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**
  * Fuzzy provider that retrieves all available workspace tasks.
@@ -15,11 +13,7 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
   previewRenderer: "preview.codeHighlighted",
   dataAdapter: "workspaceTasksAdapter",
 })
-export class WorkspaceTasksFinder implements IFuzzyFinderProvider {
-  fuzzyAdapterType!: FuzzyProviderType;
-  previewAdapterType!: PreviewRendererType;
-  dataAdapterType!: DataAdapterType;
-
+export class WorkspaceTasksFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<WorkspaceTasksFinderData> {
     const tasks = await this.getAllTasks();
 

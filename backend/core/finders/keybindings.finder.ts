@@ -1,11 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { KeybindingData, KeybindingFinderData } from "../../../shared/exchange/keybindings";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**
  * Fuzzy provider that retrieves user keybindings.
@@ -17,11 +15,7 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
   previewRenderer: "preview.codeHighlighted",
   dataAdapter: "workspaceKeybindingsAdapter",
 })
-export class KeybindingsFinder implements IFuzzyFinderProvider {
-  fuzzyAdapterType!: FuzzyProviderType;
-  previewAdapterType!: PreviewRendererType;
-  dataAdapterType!: DataAdapterType;
-
+export class KeybindingsFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<KeybindingFinderData> {
     const keybindings = await this.getUserKeybindings();
 

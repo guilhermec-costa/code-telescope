@@ -10,6 +10,11 @@ interface FuzzyFinderAdapterConfig {
   dataAdapter: DataAdapterType;
 }
 
+export type FuzzyFinderProvider = Omit<
+  IFuzzyFinderProvider,
+  "fuzzyAdapterType" | "previewAdapterType" | "dataAdapterType"
+>;
+
 const GlobalFuzzyFinderAdapterRegistry: IFuzzyFinderProvider[] = [];
 
 /**
@@ -19,11 +24,13 @@ const GlobalFuzzyFinderAdapterRegistry: IFuzzyFinderProvider[] = [];
  * and registers it in the global registry.
  */
 export function FuzzyFinderAdapter(config: FuzzyFinderAdapterConfig) {
-  return function <T extends { new (...args: any[]): IFuzzyFinderProvider }>(constructor: T) {
-    const instance = new constructor();
-    instance.fuzzyAdapterType = config.fuzzy;
-    instance.previewAdapterType = config.previewRenderer;
-    instance.dataAdapterType = config.dataAdapter;
+  return function <T extends { new (...args: any[]): FuzzyFinderProvider }>(constructor: T) {
+    (constructor.prototype as IFuzzyFinderProvider).fuzzyAdapterType = config.fuzzy;
+    (constructor.prototype as IFuzzyFinderProvider).previewAdapterType = config.previewRenderer;
+    (constructor.prototype as IFuzzyFinderProvider).dataAdapterType = config.dataAdapter;
+
+    const instance = new constructor() as IFuzzyFinderProvider;
+
     GlobalFuzzyFinderAdapterRegistry.push(instance);
   };
 }

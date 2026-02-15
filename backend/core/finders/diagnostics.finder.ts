@@ -1,11 +1,9 @@
 import * as vscode from "vscode";
-import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { DiagnosticData, DiagnosticsFinderData } from "../../../shared/exchange/diagnostics";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../utils/files";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
-import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**
  * Fuzzy provider that retrieves all diagnostics (errors, warnings, etc.) in the workspace.
@@ -17,11 +15,7 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
   previewRenderer: "preview.codeHighlighted",
   dataAdapter: "workspaceDiagnosticsAdapter",
 })
-export class DiagnosticsFinder implements IFuzzyFinderProvider {
-  fuzzyAdapterType!: FuzzyProviderType;
-  previewAdapterType!: PreviewRendererType;
-  dataAdapterType!: DataAdapterType;
-
+export class DiagnosticsFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<DiagnosticsFinderData> {
     const diagnostics = await this.getAllDiagnostics();
 

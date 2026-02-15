@@ -1,11 +1,9 @@
 import { BreakpointData, BreakpointsFinderData } from "@shared/exchange/breakpoint";
 import * as vscode from "vscode";
-import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
 import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../utils/files";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FileReader } from "../common/cache/file-reader";
-import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorator";
+import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**
  * Fuzzy provider for debugging breakpoints
@@ -18,11 +16,7 @@ import { FuzzyFinderAdapter } from "../decorators/fuzzy-finder-provider.decorato
   previewRenderer: "preview.codeHighlighted",
   dataAdapter: "debugBreakpointsAdapter",
 })
-export class BreakpointsFinder implements IFuzzyFinderProvider {
-  fuzzyAdapterType!: FuzzyProviderType;
-  previewAdapterType!: PreviewRendererType;
-  dataAdapterType!: DataAdapterType;
-
+export class BreakpointsFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<BreakpointsFinderData> {
     const breakpoints = this.getAllBreakpoints();
 
@@ -96,7 +90,7 @@ export class BreakpointsFinder implements IFuzzyFinderProvider {
           path: filePath,
           text: content as string,
         },
-        language: await getLanguageIdForFile(filePath),
+        language: getLanguageIdForFile(filePath),
         metadata: {
           highlightLine,
         },
