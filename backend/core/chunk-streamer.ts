@@ -1,10 +1,11 @@
-import { FuzzyProviderType } from "../../shared/adapters-namespace";
+import { DataAdapterType, FuzzyProviderType } from "../../shared/adapters-namespace";
 import { FuzzyFinderPanelController } from "./presentation/fuzzy-panel.controller";
 import { WebviewController } from "./presentation/webview.controller";
 
 export interface ChunkStreamOptions<T> {
   messageType: string;
   fuzzyProviderType: FuzzyProviderType;
+  dataAdapterType: DataAdapterType;
   chunkSize?: number;
   mapChunk?: (chunk: T[]) => any;
 }
@@ -20,7 +21,7 @@ export class ChunkStreamer<T> {
   }
 
   async streamAsync() {
-    const { messageType, fuzzyProviderType, mapChunk } = this.options;
+    const { messageType, fuzzyProviderType, dataAdapterType, mapChunk } = this.options;
 
     for (let i = 0; i < this.items.length; i += this.chunkSize) {
       await new Promise((r) => setTimeout(r, 16)); // 1 frame
@@ -36,12 +37,13 @@ export class ChunkStreamer<T> {
         isChunk: true,
         isLastChunk,
         fuzzyProviderType,
+        dataAdapterType,
       });
     }
   }
 
   async streamConcurrently(concurrency: number = 4) {
-    const { messageType, fuzzyProviderType, mapChunk } = this.options;
+    const { messageType, fuzzyProviderType, dataAdapterType, mapChunk } = this.options;
     const webview = FuzzyFinderPanelController.instance?.webview;
     if (!webview) return;
 
@@ -62,6 +64,7 @@ export class ChunkStreamer<T> {
             isChunk: true,
             isLastChunk,
             fuzzyProviderType,
+            dataAdapterType,
           }),
         ),
       );

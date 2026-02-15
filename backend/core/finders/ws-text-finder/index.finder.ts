@@ -60,6 +60,7 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
       const streamer = new ChunkStreamer(allMatches.slice(CHUNK_SIZE), {
         messageType: "optionList",
         fuzzyProviderType: "workspace.text",
+        dataAdapterType: "textSearchAdapter",
         chunkSize: CHUNK_SIZE,
         mapChunk: (chunk) => ({
           results: chunk,

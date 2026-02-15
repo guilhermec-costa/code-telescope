@@ -84,6 +84,7 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider {
     const streamer = new ChunkStreamer(allFiles.slice(chunkSize), {
       messageType: "optionList",
       fuzzyProviderType: this.casted.fuzzyAdapterType,
+      dataAdapterType: this.casted.dataAdapterType,
       chunkSize,
       mapChunk: this.mapChunk,
     });
