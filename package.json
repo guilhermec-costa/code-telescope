@@ -172,6 +172,11 @@
                 "mac": "cmd+alt+g"
             },
             {
+                "command": "code-telescope.fuzzy.fileText",
+                "key": "ctrl+alt+l",
+                "mac": "cmd+alt+l"
+            },
+            {
                 "command": "code-telescope.fuzzy.recentFiles",
                 "key": "ctrl+alt+r",
                 "mac": "cmd+alt+r"
@@ -187,9 +192,14 @@
                 "mac": "cmd+alt+s"
             },
             {
+                "command": "code-telescope.fuzzy.documentSymbols",
+                "key": "ctrl+alt+u",
+                "mac": "cmd+alt+u"
+            },
+            {
                 "command": "code-telescope.fuzzy.callHierarchy",
-                "key": "ctrl+alt+r",
-                "mac": "cmd+alt+r"
+                "key": "ctrl+alt+y",
+                "mac": "cmd+alt+y"
             },
             {
                 "command": "code-telescope.fuzzy.diagnostics",
@@ -210,6 +220,11 @@
                 "command": "code-telescope.fuzzy.tasks",
                 "key": "ctrl+alt+t",
                 "mac": "cmd+alt+t"
+            },
+            {
+                "command": "code-telescope.fuzzy.breakpoints",
+                "key": "ctrl+alt+p",
+                "mac": "cmd+alt+p"
             },
             {
                 "command": "code-telescope.fuzzy.harpoon",

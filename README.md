@@ -9,7 +9,10 @@ A Telescope-inspired fuzzy finder for VS Code, bringing the power and flexibilit
 
 ## Motivation
 
-Telescope.nvim revolutionized navigation in Neovim with its extensible fuzzy finder architecture. This project brings that same philosophy to VS Code: a single, powerful interface for finding files, searching text, browsing git commits...;
+Telescope.nvim transformed navigation in Neovim with its extensible, keyboard-first fuzzy finder architecture.
+Code Telescope brings that same philosophy to VS Code — a single, powerful interface for navigating your entire project.
+
+Find files instantly, search across your workspace, explore symbols, browse git branches and commits — all from one unified, consistent experience.
 
 ![Code Telescope demo](images/code-telescope.gif)
 
@@ -22,58 +25,57 @@ The architecture is built on three core principles:
 3. **Type-safe communication** through shared interfaces
 
 ```
-+-------------------------------------------------------------------+
-|                    Extension Host (Backend)                       |
-|                                                                   |
-|  +--------------------+          +---------------------+          |
-|  |  Finder Providers  |          |  Preview Renderers  |          |
-|  |  @FuzzyFinder()    |          |  @PreviewRenderer() |          |
-|  +---------+----------+          +----------+----------+          |
-|            |                                |                     |
-|            +-------------+------------------+                     |
-|                          |                                        |
-|                  +-------v-------+                                |
-|                  | Presentation  |                                |
-|                  |     Layer     |                                |
-|                  | +------------+|                                |
-|                  | |  Message   ||  - WebviewController           |
-|                  | |  Handlers  ||  - Registry dispatching        |
-|                  | |  Registry  ||  - HTML resolution             |
-|                  | +------------+|                                |
-|                  +-------+-------+                                |
-|                          |                                        |
-+--------------------------+----------------------------------------+
-                           |
-                    Message Protocol
-                  (Type-safe interface)
-                           |
-+--------------------------+----------------------------------------+
-|                          |                                        |
-|                  +-------v-------+           Webview (UI)         |
-|                  | Presentation  |                                |
-|                  |     Layer     |                                |
-|                  | +------------+|                                |
-|                  | |  Webview   ||  - WebviewController           |
-|                  | | Controller ||  - Message routing             |
-|                  | |  Keyboard  ||  - Event handling              |
-|                  | |  Handlers  ||  - State management            |
-|                  | +------------+|                                |
-|                  +-------+-------+                                |
-|                          |                                        |
-|                    +-----v----+                                   |
-|                    |  Shared  |                                   |
-|                    |   Types  |                                   |
-|                    +-----+----+                                   |
-|                          |                                        |
-|       +------------------+-----------------+                      |
-|       |                                    |                      |
-|  +----v-------------+          +-----------v----------+           |
-|  |  Data Adapters    |          |  Renderer Adapters    |         |
-|  |  (parse & filter) |          |  (display previews)   |         |
-|  +-------------------+          +-----------------------+         |
-|                                                                   |
-+-------------------------------------------------------------------+
-
++---------------------------------------------------------------------------+
+|                         Extension Host (Backend)                          |
+|                                                                           |
+|                        +-------------------------+                        |
+|                        |     Finder Providers    |                        |
+|                        |      @FuzzyFinder()     |                        |
+|                        +------------+------------+                        |
+|                                     |                                     |
+|            +------------------------+-------------------------+           |
+|            |                        |                         |           |
+|            |              +---------+---------+               |           |
+|            |              |   Presentation    |               |           |
+|            |              |       Layer       |               |           |
+|            |              |  +-------------+  |   - WebviewController     |
+|            |              |  |   Message   |  |   - Registry dispatch     |
+|            |              |  |   Handlers  |  |   - HTML resolution       |
+|            |              |  |   Registry  |  |                           |
+|            |              |  +-------------+  |                           |
+|            |              +---------+---------+                           |
+|            |                        |                         |           |
++------------+------------------------+-------------------------+-----------+
+                                      |
+                               Message Protocol
+                            (Type-safe interface)
+                                      |
++-------------------------------------+-------------------------------------+
+|                                     |                                     |
+|                           +---------+---------+      Webview (UI)         |
+|                           |   Presentation    |                           |
+|                           |       Layer       |                           |
+|                           |  +-------------+  |                           |
+|                           |  |   Webview   |  |   - WebviewController     |
+|                           |  |  Controller |  |   - Message routing       |
+|                           |  |   Keyboard  |  |   - Event handling        |
+|                           |  |   Handlers  |  |   - State management      |
+|                           |  +-------------+  |                           |
+|                           +---------+---------+                           |
+|                                     |                                     |
+|                               +-----v-----+                               |
+|                               |  Shared   |                               |
+|                               |   Types   |                               |
+|                               +-----+-----+                               |
+|                                     |                                     |
+|             +-----------------------+-----------------------+             |
+|             |                                               |             |
+|     +-------v-----------+                       +-----------v---------+   |
+|     |   Data Adapters   |                       |  Renderer Adapters  |   |
+|     |  (parse & filter) |                       |  (display previews) |   |
+|     +-------------------+                       +---------------------+   |
+|                                                                           |
++---------------------------------------------------------------------------+
 ```
 
 ## Core Concepts
@@ -188,6 +190,31 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
 }
 ```
 
+### Text Search Implementation
+
+The workspace text search feature uses a smart fallback mechanism:
+
+1. **Ripgrep (Primary)** - When ripgrep is available (bundled with VS Code or in system PATH), it provides fast, indexed search with JSON output
+2. **Regex Fallback** - If ripgrep is unavailable, it falls back to JavaScript regex-based search across all workspace files
+
+The system automatically detects ripgrep availability and selects the appropriate backend. You can configure:
+- `codeTelescope.wsTextFinder.excludePatterns` - Files to exclude
+- `codeTelescope.wsTextFinder.maxFileSize` - Maximum file size to search
+- `codeTelescope.wsTextFinder.maxResults` - Maximum results to return
+- `codeTelescope.wsTextFinder.maxColumns` - Maximum columns per line
+
+### Performance Debugging (Development Mode)
+
+When running Code Telescope in development mode (`ExtensionMode.Development`), a performance debugging module is automatically enabled. Access it via the Command Palette:
+
+- **Show Performance Summary** - View overall performance metrics
+- **Show Slowest Operations** - See the slowest executed operations
+- **Show Highest Memory** - View operations with highest memory usage
+- **Clear Metrics** - Reset all performance metrics
+- **Toggle Logging** - Enable/disable detailed logging
+
+This feature is useful for debugging and optimizing custom finders.
+
 ### Extensibility
 
 Adding a new finder requires:
@@ -197,6 +224,79 @@ Adding a new finder requires:
 3. **Annotations**: Decorate with `@FuzzyFinderAdapter` and register types
 
 The system automatically wires everything together through the type system.
+
+---
+
+## Configuration
+
+Code Telescope offers extensive configuration options accessible via VS Code settings (`Ctrl+,` and search for "Code Telescope").
+
+### Window Behavior
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `codeTelescope.window.closeBehaviorOnSelection` | `dispose` | Behavior when selecting an item (`minimize` or `dispose`) |
+| `codeTelescope.window.closeBehaviorOnClose` | `dispose` | Behavior when closing the panel |
+
+### Layout
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `codeTelescope.layout.mode` | `classic` | Layout mode (`classic` or `ivy`) |
+| `codeTelescope.layout.ivyHeightPct` | `75` | Height percentage for ivy layout |
+| `codeTelescope.layout.leftSideWidthPct` | `50` | Left panel width percentage |
+| `codeTelescope.layout.rightSideWidthPct` | `50` | Right panel width percentage |
+| `codeTelescope.layout.panelContainerPct` | `90` | Container width percentage |
+| `codeTelescope.layout.promptFontSize` | `16` | Input prompt font size (px) |
+| `codeTelescope.layout.resultsFontSize` | `16` | Results list font size (px) |
+| `codeTelescope.layout.previewFontSize` | `18` | Preview panel font size (px) |
+| `codeTelescope.layout.borderSizeInPx` | `1` | Border size (px) |
+| `codeTelescope.layout.borderRadiusInPx` | `5` | Border radius (px) |
+
+### Preview Panel
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `codeTelescope.preview.scrollBehavior` | `instant` | Scroll behavior (`auto`, `instant`, or `smooth`) |
+| `codeTelescope.preview.verticalScrollFraction` | `1/2` | Vertical scroll position (`1/2`, `1/3`, `1/4`) |
+| `codeTelescope.preview.horizontalScrollFraction` | `1/2` | Horizontal scroll position |
+| `codeTelescope.preview.showLineNumbers` | `false` | Show line numbers in preview |
+
+### Workspace File Finder
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `codeTelescope.wsFileFinder.excludeHidden` | `true` | Exclude hidden files (dotfiles) |
+| `codeTelescope.wsFileFinder.includePatterns` | `["**/*"]` | Glob patterns to include |
+| `codeTelescope.wsFileFinder.excludePatterns` | `["**/node_modules/**", ...]` | Glob patterns to exclude |
+| `codeTelescope.wsFileFinder.maxFileSize` | `150` | Maximum file size in KB |
+| `codeTelescope.wsFileFinder.maxResults` | `2000` | Maximum number of results |
+| `codeTelescope.wsFileFinder.textDisplay` | `relative` | How to display file paths (`relative`, `absolute`, `filename-only`) |
+
+### Workspace Text Search
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `codeTelescope.wsTextFinder.excludePatterns` | `["**/node_modules/**", ...]` | Glob patterns to exclude |
+| `codeTelescope.wsTextFinder.maxColumns` | `500` | Maximum columns per line |
+| `codeTelescope.wsTextFinder.maxFileSize` | `200K` | Maximum file size (e.g., `200k`, `1M`) |
+| `codeTelescope.wsTextFinder.maxResults` | `10000` | Maximum search results |
+
+### Keyboard Shortcuts (Panel)
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `codeTelescope.keybindings.moveDown` | `ctrl+j` | Navigate down |
+| `codeTelescope.keybindings.moveUp` | `ctrl+k` | Navigate up |
+| `codeTelescope.keybindings.confirm` | `enter` | Select item |
+| `codeTelescope.keybindings.close` | `escape` | Close panel |
+| `codeTelescope.keybindings.scrollUp` | `ctrl+u` | Scroll preview up |
+| `codeTelescope.keybindings.scrollDown` | `ctrl+d` | Scroll preview down |
+| `codeTelescope.keybindings.scrollLeft` | `ctrl+h` | Scroll preview left |
+| `codeTelescope.keybindings.scrollRight` | `ctrl+l` | Scroll preview right |
+| `codeTelescope.keybindings.promptDelete` | `backspace` | Delete character in prompt |
+
+---
 
 # Built-in Finders
 
@@ -211,7 +311,7 @@ Find and open files in your workspace with fuzzy matching.
 
 **Usage:**
 ```
-Ctrl+Shift+P → "Code Telescope: File Fuzzy Finder"
+Ctrl+Alt+F
 ```
 
 ---
@@ -223,7 +323,7 @@ Search for text across all files in your workspace using ripgrep.
 
 **Usage:**
 ```
-Ctrl+Shift+P → "Code Telescope: Workspace Text Finder"
+Ctrl+Alt+G
 ```
 
 ---
@@ -235,7 +335,7 @@ Browse and navigate through your VS Code keybindings.
 
 **Usage:**
 ```
-Ctrl+Shift+P → "Code Telescope: Keybindings"
+Ctrl+Alt+K
 ```
 
 ---
@@ -247,7 +347,7 @@ Quick branch switching and management.
 
 **Usage:**
 ```
-Ctrl+Shift+P → "Code Telescope: Branch Fuzzy Finder"
+Ctrl+Alt+B
 ```
 
 ---
@@ -259,7 +359,7 @@ Find symbols (functions, classes, variables) across your entire workspace.
 
 **Usage:**
 ```
-Ctrl+Shift+P → "Code Telescope: Workspace Symbols"
+Ctrl+Alt+S
 ```
 
 ---
@@ -271,7 +371,7 @@ Quick access to recently opened files.
 
 **Usage:**
 ```
-Ctrl+Shift+P → "Code Telescope: Recent Files"
+Ctrl+Alt+R
 ```
 
 ---
@@ -283,7 +383,7 @@ Browse and switch between installed color themes.
 
 **Usage:**
 ```
-Ctrl+Shift+P → "Code Telescope: Colorschemes"
+Ctrl+Alt+C
 ```
 
 ---
@@ -295,7 +395,7 @@ Navigate through all workspace problems (errors, warnings, hints).
 
 **Usage:**
 ```
-Ctrl+Shift+P → "Code Telescope: Diagnostics"
+Ctrl+Alt+D
 ```
 
 ---
@@ -307,7 +407,7 @@ Execute workspace tasks from all providers (npm, gulp, tasks.json, etc.).
 
 **Usage:**
 ```
-Ctrl+Shift+P → "Code Telescope: Tasks"
+Ctrl+Alt+T
 ```
 
 ---
@@ -319,8 +419,7 @@ Explore function call relationships (incoming and outgoing calls).
 
 **Usage:**
 ```
-1. Place cursor on a function/method
-2. Ctrl+Shift+P → "Code Telescope: Call hierarchy"
+Ctrl+Alt+Y
 ```
 
 ### 🔧 Code Telescope Custom Finders
@@ -330,11 +429,47 @@ Quick picker to select and execute custom user-defined finders.
 
 **Usage:**
 ```
-Ctrl+Shift+P → "Code Telescope: Pick Custom Finder"
+Ctrl+Alt+X
 ```
 
+---
+
+### 📝 Current File Text Search
+**Command:** `code-telescope.fuzzy.fileText`
+
+Search for text within the currently open file using ripgrep with dynamic search.
+
+**Usage:**
+```
+Ctrl+Alt+L
+```
 
 ---
+
+### 📋 Document Symbols
+**Command:** `code-telescope.fuzzy.documentSymbols`
+
+Find symbols (functions, classes, variables, etc.) in the current document.
+
+**Usage:**
+```
+Ctrl+Alt+U (when editor is focused)
+```
+
+---
+
+### 🔴 Workspace Breakpoints
+**Command:** `code-telescope.fuzzy.breakpoints`
+
+Browse and navigate through all breakpoints in your workspace, including conditions, hit conditions, and log messages.
+
+**Usage:**
+```
+Ctrl+Alt+P
+```
+
+---
+
 # Harpoon Plugin
 
 Quick file bookmarking and navigation system inspired by ThePrimeagen's Harpoon for Neovim.
@@ -387,7 +522,15 @@ The finder shows:
 |---------|-----------------|-------------|
 | `Harpoon - Add File` | `Ctrl+Alt+M` | Mark current file |
 | `Harpoon Marks` | `Ctrl+Alt+H` | Open Harpoon finder |
-| `Harpoon - Go to File 1-9` | `Ctrl+1-9` | Navigate to mark by index |
+| `Harpoon - Go to File 1` | `Ctrl+1` | Navigate to first mark |
+| `Harpoon - Go to File 2` | `Ctrl+2` | Navigate to second mark |
+| `Harpoon - Go to File 3` | `Ctrl+3` | Navigate to third mark |
+| `Harpoon - Go to File 4` | `Ctrl+4` | Navigate to fourth mark |
+| `Harpoon - Go to File 5` | `Ctrl+5` | Navigate to fifth mark |
+| `Harpoon - Go to File 6` | `Ctrl+6` | Navigate to sixth mark |
+| `Harpoon - Go to File 7` | `Ctrl+7` | Navigate to seventh mark |
+| `Harpoon - Go to File 8` | `Ctrl+8` | Navigate to eighth mark |
+| `Harpoon - Go to File 9` | `Ctrl+9` | Navigate to ninth mark |
 | `Harpoon - Remove Current File` | `Ctrl+Alt+Backspace` | Remove current file from marks |
 | `Harpoon - Edit Marks` | - | Edit/remove/reorder marks |
 | `Harpoon - Reorder Marks` | - | Move marks to specific positions |
@@ -424,25 +567,45 @@ Add descriptive labels to your marks:
 
 Labels appear in the finder and help identify files at a glance.
 
-### Multiple Workspaces
-
-Marks are workspace-specific. You can have different mark sets for different projects:
-
-```
-Project A Workspace:
-[1] frontend/app.tsx
-[2] backend/server.ts
-
-Project B Workspace:
-[1] core/engine.ts
-[2] utils/helpers.ts
-```
-
 ---
 
----
+### Default Keyboard Shortcuts
 
-### Keybindings Guide
+| Action | Windows/Linux | macOS |
+|--------|---------------|-------|
+| Smart File Search | `Ctrl+Alt+F` | `Cmd+Alt+F` |
+| Workspace Text Search | `Ctrl+Alt+G` | `Cmd+Alt+G` |
+| Workspace Symbols | `Ctrl+Alt+S` | `Cmd+Alt+S` |
+| Document Symbols | `Ctrl+Alt+U` | `Cmd+Alt+U` |
+| Recent Files | `Ctrl+Alt+R` | `Cmd+Alt+R` |
+| Git Branches | `Ctrl+Alt+B` | `Cmd+Alt+B` |
+| Diagnostics | `Ctrl+Alt+D` | `Cmd+Alt+D` |
+| Color Themes | `Ctrl+Alt+C` | `Cmd+Alt+C` |
+| Tasks | `Ctrl+Alt+T` | `Cmd+Alt+T` |
+| Keybindings | `Ctrl+Alt+K` | `Cmd+Alt+K` |
+| Harpoon Marks | `Ctrl+Alt+H` | `Cmd+Alt+H` |
+| Custom Finders | `Ctrl+Alt+X` | `Cmd+Alt+X` |
+| Call Hierarchy | `Ctrl+Alt+Y` | `Cmd+Alt+Y` |
+| Current File Text Search | `Ctrl+Alt+L` | `Cmd+Alt+L` |
+| Workspace Breakpoints | `Ctrl+Alt+P` | `Cmd+Alt+P` |
+
+#### Harpoon Shortcuts
+
+| Action | Windows/Linux | macOS |
+|--------|---------------|-------|
+| Add File | `Ctrl+Alt+M` | `Cmd+Alt+M` |
+| Remove Current File | `Ctrl+Alt+Backspace` | `Cmd+Alt+Backspace` |
+| Go to File 1 | `Ctrl+1` | `Cmd+1` |
+| Go to File 2 | `Ctrl+2` | `Cmd+2` |
+| Go to File 3 | `Ctrl+3` | `Cmd+3` |
+| Go to File 4 | `Ctrl+4` | `Cmd+4` |
+| Go to File 5 | `Ctrl+5` | `Cmd+5` |
+| Go to File 6 | `Ctrl+6` | `Cmd+6` |
+| Go to File 7 | `Ctrl+7` | `Cmd+7` |
+| Go to File 8 | `Ctrl+8` | `Cmd+8` |
+| Go to File 9 | `Ctrl+9` | `Cmd+9` |
+
+#### Custom Keybindings
 
 ```json
 [
@@ -479,6 +642,20 @@ Project B Workspace:
     "key":  "{custom-keybinding}",
     "command": "code-telescope.fuzzy.callHierarchy",
     "when": "editorTextFocus"
+  },
+  {
+    "key":  "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.breakpoints"
+  },
+  {
+    "key":  "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.documentSymbols",
+    "when": "editorTextFocus"
+  },
+  {
+    "key":  "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.fileText",
+    "when": "editorTextFocus"
   }
 ]
 ```
@@ -509,67 +686,75 @@ Create your custom finder in:
 A custom finder must export a `CustomFinderDefinition` object that defines both backend logic and UI adapters:
 
 ```javascript
-// .vscode/code-telescope/example.finder.cjs
+// .vscode/code-telescope/custom-json.finder.cjs
+const fs = require('fs');
+const path = require('path');
 
-/** @type {import('code-telescope/shared/custom-provider').CustomFinderDefinition} */
+/**
+ * @type {import('../shared/custom-provider').CustomFinderDefinition}
+ */
 module.exports = {
   // Unique identifier (must start with "custom.")
-  fuzzyAdapterType: "custom.example",
-  
+  fuzzyAdapterType: "custom.ts.files",
+
   // Backend logic (runs in extension host)
   backend: {
     async querySelectableOptions() {
-      // Return data to be displayed
-      return {
-        items: ["Item 1", "Item 2", "Item 3"]
-      };
-    },
-    
-    async onSelect(item) {
-      // Handle selection
-      return {
-        data: item,
-        action: "showMessage" // Built-in action
-      };
-    },
-    
-    async getPreviewData(identifier) {
-      // Return preview data for syntax-highlighted code view
-      return {
-        content: {
-          path: "Preview Title",
-          content: `Content for: ${identifier}`,
-          kind: "text"
+      return [
+        {
+          id: "/project/src/index.ts",
+          path: "/project/src/index.ts",
+          name: "index.ts"
         },
-        language: "text"
+        {
+          id: "/project/src/app.ts",
+          path: "/project/src/app.ts",
+          name: "app.ts"
+        },
+        {
+          id: "/project/src/services/user.service.ts",
+          path: "/project/src/services/user.service.ts",
+          name: "user.service.ts"
+        },
+      ];
+    }
+
+    async onSelect(item) {
+      // item is the value from getSelectionValue
+      return {
+        path: item,
+        action: "openFile"
+      };
+    },
+
+    async getPreviewData(item) {
+      const content = fs.readFileSync(item, 'utf-8');
+      const ext = path.extname(item).slice(1);
+
+      return {
+        content: content,
+        language: ext || "text"
       };
     }
   },
-  
+
   // UI adapters (runs in webview)
   ui: {
     dataAdapter: {
       parseOptions(data) {
-        // Transform backend data into options
-        return data.items.map((item, index) => ({
-          id: index,
-          text: item
-        }));
+        return data;
       },
-      
+
       getDisplayText(option) {
-        // Format option for display
-        return option.text;
+        return option.name;
       },
-      
+
       getSelectionValue(option) {
-        // Return identifier for selection
-        return option.text;
+        return option.path;
       },
-      
+
       filterOption(option, query) {
-        // Custom filtering logic (optional)
-        return option.text.toLowerCase().includes(query.toLowerCase());
+        return option.name.toLowerCase().includes(query.toLowerCase());
       }
     }
   }
@@ -790,7 +975,7 @@ filterOption(option, query) {
 
 Complete working examples are available in the `examples/` directory:
 
-- **`custom-json.finder.cjs`** - Find json files 
+- **`custom-json.finder.cjs`** - Find TypeScript files in workspace
 
 ---
 
