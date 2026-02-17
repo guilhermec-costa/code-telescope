@@ -176,6 +176,29 @@ interface FromWebviewKindMessage {
 - `Esc`: Close finder
 - Type to filter results in real-time
 
+### Vim Motion
+
+The input panel supports Vim-style navigation:
+
+- `Ctrl+[` / `Esc`: Enter Normal mode
+- `i` / `a` / `A`: Enter Insert mode (insert/append/append at end)
+
+**Motions:**
+- `h/j/k/l`: Left/down/up/right
+- `w/b/e`: Word forward/backward/end
+- `W/B/E`: WORD forward/backward/end
+- `0/$/^`: Line start/end/first non-blank
+- `f/F/t/T`: Find char forward/backward/till
+- `;` / `,`: Repeat last find
+- `gg/G`: File start/end
+
+**Operators:**
+- `d/c/y`: Delete/change/yank (combine with motions: `dw`, `dd`, `yy`, etc.)
+- `x`: Delete char
+- `p/P`: Paste after/before
+- `u`: Undo
+- `Ctrl+r`: Redo
+
 ### Dynamic Search
 
 Finders can opt into dynamic search mode, where queries are sent to the backend for server-side filtering (useful for large datasets like workspace text search).
