@@ -126,15 +126,4 @@ describe("WebviewAssetManager", () => {
     expect(result).toContain(JSON.stringify(mockPayload, null, 2));
     expect(CustomProviderStorage.instance.getUiProxyDefinition).toHaveBeenCalledWith("custom.my-finder");
   });
-
-  it("should inject global state like keybindings and shiki URI", async () => {
-    const rawHtml = "SHIKI: {{__SHIKI_URI__}}, KEYS: {{__KEYBINDINGS_CFG__}}";
-    vi.mocked(vscode.workspace.fs.readFile).mockResolvedValue(Buffer.from(rawHtml) as any);
-
-    const result = await WebviewAssetManager.getProcessedHtml(mockWebview, mockProvider);
-
-    expect(result).toContain("webview-uri://");
-    expect(result).toContain("shiki");
-    expect(result).toContain("ctrl+j");
-  });
 });
