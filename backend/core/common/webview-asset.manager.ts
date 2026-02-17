@@ -46,6 +46,7 @@ export class WebviewAssetManager {
       "{{style}}": path.join(basePath, `style/${layoutStyleName}`),
       "{{branch-styles}}": path.join(basePath, "style/branch-preview.css"),
       "{{script}}": path.join(basePath, "index.js"),
+      "{{vim-styles}}": path.join(basePath, "style/vim.css"),
     };
 
     let processed = html;
@@ -79,7 +80,6 @@ export class WebviewAssetManager {
       }
     }
     const state: Record<string, string> = {
-      "{{__SHIKI_URI__}}": shikiUri.toString(),
       "{{__PREVIEW_CFG__}}": JSON.stringify(ExtensionConfigManager.previewManagerCfg),
       "{{__WS_PATH_DISPLAY__}}": ExtensionConfigManager.wsFileFinderCfg.textDisplay,
       "{{__KEYBINDINGS_CFG__}}": JSON.stringify(ExtensionConfigManager.keybindings),

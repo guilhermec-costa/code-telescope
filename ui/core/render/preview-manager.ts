@@ -75,9 +75,7 @@ export class PreviewManager {
 
   clearPreview() {
     this.lastPreviewedData = { content: "", language: "", metadata: {} };
-    console.log("Before cleaning", this.previewElement);
     this.previewElement.innerHTML = "";
-    console.log("After cleaning", this.previewElement);
   }
 
   async setUserTheme(theme: string) {

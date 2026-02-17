@@ -206,8 +206,8 @@ export class OptionListManager {
   private getRelativeFirstIndex(): number {
     const isIvy = this.isIvyLayout();
 
-    // No ivy, index 0 é o último item visualmente
-    // No default, index N-1 é o último item visualmente
+    // in ivy layout, index 0 is the last visually
+    // in default layout, index N-1 is the last visually
     return isIvy ? 0 : this.filteredOptions.length - 1;
   }
 

@@ -14,6 +14,8 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
   dataAdapter: "workspaceTasksAdapter",
 })
 export class WorkspaceTasksFinder implements FuzzyFinderProvider {
+  private cachedTasks: TaskData[] | null = null;
+
   async querySelectableOptions(): Promise<WorkspaceTasksFinderData> {
     const tasks = await this.getAllTasks();
 
@@ -88,10 +90,11 @@ export class WorkspaceTasksFinder implements FuzzyFinderProvider {
     };
   }
 
-  /**
-   * Gets all available tasks from all providers
-   */
   private async getAllTasks(): Promise<TaskData[]> {
+    if (this.cachedTasks) {
+      return this.cachedTasks;
+    }
+
     const allTasks = await vscode.tasks.fetchTasks();
     const taskDataList: TaskData[] = [];
 
@@ -109,6 +112,7 @@ export class WorkspaceTasksFinder implements FuzzyFinderProvider {
       });
     }
 
+    this.cachedTasks = taskDataList;
     return taskDataList;
   }
 

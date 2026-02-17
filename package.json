@@ -27,7 +27,7 @@
         "harpoon",
         "jump"
     ],
-    "icon": "images/logov2.png",
+    "icon": "images/logo.webp",
     "engines": {
         "vscode": "^1.105.0"
     },
@@ -615,6 +615,7 @@
         "@vitest/coverage-v8": "4.0.16",
         "@vscode/test-cli": "^0.0.12",
         "@vscode/test-electron": "^2.5.2",
+        "chokidar": "^5.0.0",
         "esbuild": "^0.27.0",
         "husky": "^9.1.7",
         "jsdom": "^26.1.0",

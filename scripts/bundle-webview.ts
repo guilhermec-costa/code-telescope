@@ -1,4 +1,5 @@
-import esbuild from "esbuild";
+import chokidar from "chokidar";
+import esbuild, { type Plugin } from "esbuild";
 import fs from "fs";
 import path from "path";
 import extToLang from "../backend/config/ext-to-icon-name.json";
@@ -82,6 +83,44 @@ function copyMaterialIcons() {
   console.log(`[Build] Copied ${copied}/${wanted.length} material icons to dist/vendor/material-icons`);
 }
 
+function watchAssets() {
+  const assets = ["views", "style", "vendor"];
+  const uiRoot = path.resolve(process.cwd(), "ui");
+  const distRoot = path.resolve(process.cwd(), "ui/dist");
+
+  for (const dir of assets) {
+    const src = path.join(uiRoot, dir);
+    const dest = path.join(distRoot, dir);
+
+    copyDir(src, dest);
+
+    const watcher = chokidar.watch(src, {
+      ignoreInitial: true,
+    });
+
+    watcher.on("all", (event, filePath) => {
+      const relative = path.relative(src, filePath);
+      const destPath = path.join(dest, relative);
+
+      if (event === "unlink") {
+        if (fs.existsSync(destPath)) {
+          fs.unlinkSync(destPath);
+          console.log(`[Assets] Removed: ${relative}`);
+        }
+        return;
+      }
+
+      if (fs.existsSync(filePath)) {
+        fs.mkdirSync(path.dirname(destPath), { recursive: true });
+        fs.copyFileSync(filePath, destPath);
+        console.log(`[Assets] Updated: ${relative}`);
+      }
+    });
+
+    console.log(`[Assets] Watching ${dir}`);
+  }
+}
+
 async function run() {
   const entryPoints = findEntryPoints();
   console.log("Entrypoints:", entryPoints);
@@ -90,6 +129,19 @@ async function run() {
     entryPoints.map(async (entry) => {
       const relDir = path.dirname(path.relative("ui", entry));
       const outdir = path.join("./ui/dist", relDir);
+
+      const metaPlugin: Plugin = {
+        name: "save-metafile",
+        setup(build) {
+          build.onEnd((result) => {
+            if (!result.metafile) return;
+
+            const metaPath = path.join(outdir, "meta.json");
+            fs.writeFileSync(metaPath, JSON.stringify(result.metafile, null, 2));
+            console.log(`[Meta] Updated: ${metaPath}`);
+          });
+        },
+      };
 
       const uiDirPath = path.resolve(process.cwd(), "ui");
       const opts: esbuild.BuildOptions = {
@@ -106,15 +158,18 @@ async function run() {
             "virtual:preview-renderers",
           ),
           decoratorsPlugin("core/adapters/data/*.data-adapter.ts", uiDirPath, "virtual:data-adapters"),
+          metaPlugin,
         ],
         minify: isProd,
         sourcemap: !isProd,
+        metafile: true,
       };
 
       if (!WATCH) {
         await esbuild.build(opts);
         console.log(`Built: ${entry}`);
       } else {
+        watchAssets();
         const ctx = await esbuild.context(opts);
         await ctx.watch();
         console.log(`Watching ${entry}`);

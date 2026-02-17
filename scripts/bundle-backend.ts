@@ -31,6 +31,19 @@ async function run() {
   const entryPoint = findEntryPoint();
   console.log("Entrypoint:", entryPoint);
 
+  const metaPlugin: esbuild.Plugin = {
+    name: "save-metafile",
+    setup(build) {
+      build.onEnd((result) => {
+        if (!result.metafile) return;
+
+        const metaPath = path.join(OUT_DIR, "meta.json");
+        fs.writeFileSync(metaPath, JSON.stringify(result.metafile, null, 2));
+        console.log(`[Meta] Updated: ${metaPath}`);
+      });
+    },
+  };
+
   const opts: esbuild.BuildOptions = {
     entryPoints: [entryPoint],
     outfile: path.join(OUT_DIR, "extension.js"),
@@ -39,9 +52,11 @@ async function run() {
     format: "cjs",
     target: ["node18"],
     sourcemap: !isProd,
+    plugins: [metaPlugin],
     minify: isProd,
     external: ["vscode"],
     logLevel: "info",
+    metafile: true,
   };
 
   if (!WATCH) {

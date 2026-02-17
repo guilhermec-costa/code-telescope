@@ -68,7 +68,7 @@ export class RegexFinder {
                 });
               }
             } catch (_e) {
-              // Ignorar erros de leitura de arquivo
+              // only ignore
             }
           }),
         );

@@ -4,6 +4,7 @@ import { debounce } from "../../utils/debounce";
 import { MessageBridge } from "../message-bridge";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { PreviewManager } from "../render/preview-manager";
+import { VimInputHandler } from "../vim";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
@@ -17,10 +18,12 @@ export class WebviewController {
   private pendingHeavyFiles = new Set<string>();
   private activeProvider: FuzzyProviderType | undefined;
   private previewQueue: Promise<void> = Promise.resolve();
+  private vimHandler: VimInputHandler;
 
   constructor(private readonly keyboardHandler: KeyboardHandler) {
     console.log("[WebviewController] Initializing controller");
     this.searchElement = document.getElementById("search") as HTMLInputElement;
+    this.vimHandler = new VimInputHandler(this.searchElement);
 
     this.setupEventListeners();
     this.setupKeyboardHandlers();

@@ -58,7 +58,6 @@ export class CallHierarchyFinder implements FuzzyFinderProvider {
 
     if (!selected) return;
 
-    // Open the file and navigate to the call location
     const document = await vscode.workspace.openTextDocument(selected.uri);
     const editor = await vscode.window.showTextDocument(document);
 

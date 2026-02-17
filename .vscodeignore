@@ -50,7 +50,7 @@ tsconfig.*.json
 **/*.map
 
 ############################
-# TypeScript source (runtime usa JS)
+# TypeScript source
 ############################
 **/*.ts
 **/*.tsx
@@ -59,13 +59,15 @@ tsconfig.*.json
 # Backend
 ############################
 backend/src
+backend/dist/meta.json
 backend/tsconfig.json
 
 ############################
-# UI (mantém só o build final)
+# UI 
 ############################
 ui/src
 ui/tsconfig.json
+ui/dist/meta.json
 ui/style
 ui/views
 ui/vendor
@@ -78,4 +80,8 @@ ui/vendor
 .DS_Store
 Thumbs.db
 
+############################
+# Static
+############################
 images/*.gif
+images/*.png
