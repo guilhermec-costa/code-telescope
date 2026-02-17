@@ -29,10 +29,11 @@ export class HighlighterManager {
 
     this.initPromise = (async () => {
       const { createHighlighterCore } = await import("shiki/core");
-      const { createJavaScriptRegexEngine } = await import("shiki/engine/javascript");
+      const { createOnigurumaEngine } = await import("shiki/engine-oniguruma.mjs");
+      const wasm = await import("shiki/wasm");
 
       this.highlighter = await createHighlighterCore({
-        engine: createJavaScriptRegexEngine(),
+        engine: createOnigurumaEngine(wasm.default),
         themes: [],
         langs: [],
       });
@@ -47,6 +48,7 @@ export class HighlighterManager {
 
   static async loadThemeIfNeeded(themeName: string): AsyncResult<ThemeGrammar> {
     if (this.loadedThemes.has(themeName) && this.themeMap.has(themeName)) {
+      console.log("Using cached theme: ", themeName);
       return { ok: true, value: this.themeMap.get(themeName)! };
     }
 
@@ -76,6 +78,7 @@ export class HighlighterManager {
 
   static async loadLanguageIfNeeded(langId: string): AsyncResult<LanguageGrammar> {
     if (this.loadedLanguages.has(langId) && this.langMap.has(langId)) {
+      console.log("Using cached language: ", langId);
       return { ok: true, value: this.langMap.get(langId) };
     }
 
