@@ -79,3 +79,5 @@ ui/vendor
 Thumbs.db
 
 images/*.gif
+images/*.png
+images/*.webp

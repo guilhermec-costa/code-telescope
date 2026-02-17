@@ -27,7 +27,7 @@
         "harpoon",
         "jump"
     ],
-    "icon": "images/logov2.png",
+    "icon": "images/logo.webp",
     "engines": {
         "vscode": "^1.105.0"
     },
@@ -331,7 +331,7 @@
                         "moveDown": "ctrl+j",
                         "moveUp": "ctrl+k",
                         "confirm": "enter",
-                        "close": "backspace",
+                        "close": "escape",
                         "scrollUp": "ctrl+u",
                         "scrollDown": "ctrl+d",
                         "scrollLeft": "ctrl+h",
