@@ -180,11 +180,6 @@ export class RipgrepFinder {
         console.error("ripgrep error event:", err);
         reject(err);
       });
-
-      console.log("Streams state:", {
-        stdoutReadable: rg.stdout?.readable,
-        stderrReadable: rg.stderr?.readable,
-      });
     });
 
     return {

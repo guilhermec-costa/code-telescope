@@ -1,0 +1,32 @@
+input.vim-normal-mode,
+input.vim-insert-mode {
+  caret-color: transparent !important;
+  outline: none;
+}
+
+.vim-block-cursor {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1000;
+  background-color: #fff !important;
+  mix-blend-mode: difference;
+  opacity: 1 !important;
+}
+
+body:has(.vim-normal-mode:focus) .vim-block-cursor {
+  animation: none;
+  opacity: 0.7;
+}
+
+.vim-yank-flash {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1001;
+  background-color: var(--highlight-bg);
+  opacity: 0;
+}
+
+.vim-yank-flash.flashing {
+  opacity: 0.5;
+  transition: none;
+}
