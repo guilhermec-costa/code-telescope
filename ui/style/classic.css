@@ -117,6 +117,7 @@ body {
 
 #search {
   width: 100%;
+  position: relative;;
   padding: 10px 56px 10px 10px;
   background: transparent;
   color: var(--input-fg);
@@ -204,9 +205,8 @@ body {
 .option-item.selected {
   background-color: var(--list-selected);
   color: var(--list-selected-fg);
-  /* border-left: 2px solid var(--focus-border);
-  border-radius: 3px; */
-  padding-left: 8px;
+  border-radius: 2px;
+  padding-left: 0px;
 }
 
 .option-item:not(.selected) {

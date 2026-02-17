@@ -14,17 +14,6 @@ export class BranchPreviewRendererAdapter implements IPreviewRendererAdapter {
   async render(previewElement: HTMLElement, data: PreviewData<CommitInfo[]>, theme: string): Promise<void> {
     const allCommits = data.content;
 
-    const searchContainer = document.createElement("div");
-    searchContainer.id = "preview-search_container";
-
-    const searchInput = document.createElement("input");
-    searchInput.type = "text";
-    searchInput.placeholder = "hash/message";
-    searchInput.id = "preview-branch_input";
-
-    searchContainer.appendChild(searchInput);
-    previewElement.appendChild(searchContainer);
-
     const listContainer = document.createElement("div");
     listContainer.id = "preview-list_container";
 
@@ -77,18 +66,5 @@ export class BranchPreviewRendererAdapter implements IPreviewRendererAdapter {
     };
 
     renderList(allCommits);
-
-    searchInput.addEventListener("input", (e) => {
-      const term = (e.target as HTMLInputElement).value.toLowerCase();
-
-      const filtered = allCommits.filter(
-        (c) =>
-          c.hash.toLowerCase().includes(term) ||
-          c.message.toLowerCase().includes(term) ||
-          c.author.toLowerCase().includes(term),
-      );
-
-      renderList(filtered);
-    });
   }
 }
