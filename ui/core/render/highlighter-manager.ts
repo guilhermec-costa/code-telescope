@@ -29,11 +29,10 @@ export class HighlighterManager {
 
     this.initPromise = (async () => {
       const { createHighlighterCore } = await import("shiki/core");
-      const { createOnigurumaEngine } = await import("shiki/engine-oniguruma.mjs");
-      const wasm = await import("shiki/wasm");
+      const { createJavaScriptRegexEngine } = await import("shiki/engine/javascript");
 
       this.highlighter = await createHighlighterCore({
-        engine: createOnigurumaEngine(wasm.default),
+        engine: createJavaScriptRegexEngine(),
         themes: [],
         langs: [],
       });
