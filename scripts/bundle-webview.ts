@@ -1,5 +1,5 @@
 import chokidar from "chokidar";
-import esbuild from "esbuild";
+import esbuild, { type Plugin } from "esbuild";
 import fs from "fs";
 import path from "path";
 import extToLang from "../backend/config/ext-to-icon-name.json";
@@ -130,6 +130,19 @@ async function run() {
       const relDir = path.dirname(path.relative("ui", entry));
       const outdir = path.join("./ui/dist", relDir);
 
+      const metaPlugin: Plugin = {
+        name: "save-metafile",
+        setup(build) {
+          build.onEnd((result) => {
+            if (!result.metafile) return;
+
+            const metaPath = path.join(outdir, "meta.json");
+            fs.writeFileSync(metaPath, JSON.stringify(result.metafile, null, 2));
+            console.log(`[Meta] Updated: ${metaPath}`);
+          });
+        },
+      };
+
       const uiDirPath = path.resolve(process.cwd(), "ui");
       const opts: esbuild.BuildOptions = {
         entryPoints: [entry],
@@ -145,9 +158,11 @@ async function run() {
             "virtual:preview-renderers",
           ),
           decoratorsPlugin("core/adapters/data/*.data-adapter.ts", uiDirPath, "virtual:data-adapters"),
+          metaPlugin,
         ],
         minify: isProd,
         sourcemap: !isProd,
+        metafile: true,
       };
 
       if (!WATCH) {
