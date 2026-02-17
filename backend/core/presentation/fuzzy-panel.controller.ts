@@ -77,7 +77,7 @@ export class FuzzyFinderPanelController {
     const panel = this.createPanel();
     FuzzyFinderPanelController._instance = new FuzzyFinderPanelController(panel);
     const basePath = path.join(Globals.EXTENSION_URI.fsPath, "images");
-    const logoPath = path.normalize(`${basePath}/logov2.png`);
+    const logoPath = path.normalize(`${basePath}/logo-transparent.webp`);
     this._instance!.wvPanel.iconPath = vscode.Uri.file(logoPath);
     FuzzyFinderPanelController._instance.listenWebview();
     return FuzzyFinderPanelController._instance;
