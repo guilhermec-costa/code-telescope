@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as vscode from "vscode";
 import { RecentFileData, RecentFilesFinderData } from "../../../shared/exchange/recent-files";
-import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
+import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { getLanguageIdForFile, getSvgIconUrl } from "../../utils/files";
@@ -43,16 +43,13 @@ export class RecentFilesFinder implements FuzzyFinderProvider {
     await execCmd(Globals.cmds.openFile, uri);
   }
 
-  async getPreviewData(path: string): Promise<HighlightedCodePreviewData> {
+  async getPreviewData(path: string): Promise<TextPreviewData> {
     const content = await FileReader.read(path);
 
     return {
-      content: {
-        path: path,
-        text: content as string,
-        kind: "text",
-      },
-      language: await getLanguageIdForFile(path),
+      content: content as string,
+      kind: "text",
+      language: getLanguageIdForFile(path),
     };
   }
 

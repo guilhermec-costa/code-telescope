@@ -17,7 +17,7 @@ interface SearchOption {
 })
 export class TextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearchData, SearchOption> {
   typeName: DataAdapterType;
-  debounceSearchTime = 100;
+  debounceSearchTime = 150;
 
   parseOptions(data: TextSearchData): SearchOption[] {
     return data.results.map((match) => ({

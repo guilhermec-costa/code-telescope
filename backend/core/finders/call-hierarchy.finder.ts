@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { CallHierarchyData, CallHierarchyFinderData } from "../../../shared/exchange/call-hierarchy";
-import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
+import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
 import { FileReader } from "../common/cache/file-reader";
@@ -66,18 +66,15 @@ export class CallHierarchyFinder implements FuzzyFinderProvider {
     editor.revealRange(selected.selectionRange, vscode.TextEditorRevealType.InCenter);
   }
 
-  async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
+  async getPreviewData(identifier: string): Promise<TextPreviewData> {
     const index = parseInt(identifier, 10);
     const calls = await this.getCallHierarchy();
     const selected = calls[index];
 
     if (!selected) {
       return {
-        content: {
-          path: "",
-          kind: "text",
-          text: "No call selected",
-        },
+        content: "No call selected",
+        kind: "text",
         language: "plaintext",
       };
     }
@@ -87,12 +84,9 @@ export class CallHierarchyFinder implements FuzzyFinderProvider {
 
     const content = await FileReader.read(filePath);
     return {
-      content: {
-        path: filePath,
-        text: content as string,
-        kind: "text",
-      },
-      language: await getLanguageIdForFile(filePath),
+      content: content as string,
+      kind: "text",
+      language: getLanguageIdForFile(filePath),
       metadata: {
         highlightLine,
       },

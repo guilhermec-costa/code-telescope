@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
+import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../utils/files";
 import { FileReader } from "../common/cache/file-reader";
 import { PreContextManager } from "../common/pre-context";
@@ -35,7 +35,7 @@ export class CurrentFileTextSearchProvider implements FuzzyFinderProvider {
     return result;
   }
 
-  async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
+  async getPreviewData(identifier: string): Promise<TextPreviewData> {
     const { filePath, lineStr } = WorkspaceTextSearchProvider.destructureIdentifier(identifier);
 
     try {
@@ -43,11 +43,8 @@ export class CurrentFileTextSearchProvider implements FuzzyFinderProvider {
       const lines = (content as string).split("\n");
 
       return {
-        content: {
-          kind: "text",
-          path: filePath,
-          text: content as string,
-        },
+        content: content as string,
+        kind: "text",
         language: getLanguageIdForFile(filePath),
         metadata: {
           filePath,
@@ -57,11 +54,8 @@ export class CurrentFileTextSearchProvider implements FuzzyFinderProvider {
       };
     } catch {
       return {
-        content: {
-          path: filePath,
-          kind: "text",
-          text: "Error loading file",
-        },
+        content: "Error loading file",
+        kind: "text",
         language: "text",
         metadata: {},
       };

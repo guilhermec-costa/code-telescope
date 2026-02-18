@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { KeybindingData, KeybindingFinderData } from "../../../shared/exchange/keybindings";
-import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
+import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**
@@ -67,12 +67,13 @@ export class KeybindingsFinder implements FuzzyFinderProvider {
     }
   }
 
-  async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
+  async getPreviewData(identifier: string): Promise<TextPreviewData> {
     const selected = await this.getKbFromIdx(identifier);
 
     if (!selected) {
       return {
-        content: { path: "", text: "No keybinding selected", kind: "text" },
+        content: "No keybinding selected",
+        kind: "text",
         language: "plaintext",
       };
     }
@@ -92,11 +93,8 @@ export class KeybindingsFinder implements FuzzyFinderProvider {
     previewLines.push(JSON.stringify(selected, null, 2));
 
     return {
-      content: {
-        path: "Keybinding Details",
-        text: previewLines.join("\n"),
-        kind: "text",
-      },
+      content: previewLines.join("\n"),
+      kind: "text",
       language: "json",
     };
   }

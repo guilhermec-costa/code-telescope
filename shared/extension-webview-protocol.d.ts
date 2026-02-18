@@ -1,17 +1,5 @@
 import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "./adapters-namespace";
 
-/**
- * Data that can be previewed by a {@link PreviewRendererType}.
- * Represents the content and optional metadata required to render a preview.
- */
-export interface PreviewData<C = any> {
-  content: C;
-  language?: string;
-  theme?: string;
-  metadata?: Record<string, any>;
-  overridePreviewer?: PreviewRendererType;
-}
-
 export interface ThemeGrammar {
   name: string;
   type: "dark" | "light";
@@ -30,28 +18,36 @@ export interface PostQueryHandlerResult {
   action: PostQueryHandlerAction;
 }
 
-type TextPreviewContent = {
+type BasePreviewData = {
+  language?: string;
+  theme?: string;
+  metadata?: Record<string, any>;
+  overridePreviewer?: PreviewRendererType;
+};
+
+type TextPreviewData = BasePreviewData & {
   kind: "text";
-  text: string;
-  path: string;
+  content: string;
 };
 
-type ImagePreviewContent = {
+type ImagePreviewData = BasePreviewData & {
   kind: "image";
-  buffer: Uint8Array;
-  mimeType: string;
-  path: string;
+  content: {
+    buffer: Uint8Array;
+    mimeType: string;
+  };
 };
 
-type PdfPreviewContent = {
-  kind: "pdf";
-  buffer: Uint8Array;
-  path: string;
+type GenericPreviewData<C> = BasePreviewData & {
+  kind?: undefined; // impede conflito com os discriminados
+  content: C;
 };
 
-export type HighlightedCodePreviewContent = TextPreviewContent | ImagePreviewContent | PdfPreviewContent;
-
-export interface HighlightedCodePreviewData extends PreviewData<HighlightedCodePreviewContent> {}
+/**
+ * Data that can be previewed by a {@link PreviewRendererType}.
+ * Represents the content and optional metadata required to render a preview.
+ */
+export type PreviewData<C = any> = TextPreviewData | ImagePreviewData | GenericPreviewData<C>;
 
 /**
  * Message sent from the backend containing an updated list of options.
@@ -70,9 +66,24 @@ export interface OptionListMessage {
  * Includes the raw preview content, theme, and the adapter type used to render it.
  */
 export interface PreviewUpdateMessage {
-  type: "previewUpdate";
+  type: "fullPreviewUpdate";
   data: PreviewData;
   previewAdapterType: PreviewRendererType;
+}
+
+export interface PreviewChunkMessage {
+  type: "previewChunk";
+  chunkIndex: number;
+  totalChunks: number;
+  content: string;
+}
+
+export interface PreviewCompleteMessage {
+  type: "previewComplete";
+  previewAdapterType: PreviewRendererType;
+  theme: string;
+  language: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface ResetWebviewMessage {
@@ -195,6 +206,8 @@ export interface PostQueryhandlerResultMessage {
  */
 export type ToWebviewKindMessage =
   | PreviewUpdateMessage
+  | PreviewChunkMessage
+  | PreviewCompleteMessage
   | OptionListMessage
   | InitHighlighter
   | PostQueryhandlerResultMessage

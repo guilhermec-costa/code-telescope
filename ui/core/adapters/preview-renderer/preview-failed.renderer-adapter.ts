@@ -31,10 +31,8 @@ export class FailedRendererAdapter implements IPreviewRendererAdapter {
     if (typeof data.content === "string") {
       message.textContent = data.content;
     } else {
-      title.textContent = data.content.title ?? "Preview unavailable";
-      message.textContent = data.content.message ?? "This item could not be rendered.";
-
-      detailsText = data.content.details;
+      title.textContent = "Preview unavailable";
+      message.textContent = "This item could not be rendered.";
     }
 
     container.appendChild(title);

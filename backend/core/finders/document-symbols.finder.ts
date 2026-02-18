@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
+import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { execCmd } from "../../utils/commands";
 import { getLanguageIdForFile } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
@@ -71,18 +71,15 @@ export class DocumentSymbolsFinder implements FuzzyFinderProvider {
     editor.revealRange(selected.range, vscode.TextEditorRevealType.InCenter);
   }
 
-  async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
+  async getPreviewData(identifier: string): Promise<TextPreviewData> {
     const index = parseInt(identifier, 10);
     const symbols = await this.getDocumentSymbols();
     const selected = symbols[index];
 
     if (!selected) {
       return {
-        content: {
-          path: "",
-          text: "No symbol selected",
-          kind: "text",
-        },
+        content: "No symbol selected",
+        kind: "text",
         language: "plaintext",
       };
     }
@@ -92,12 +89,9 @@ export class DocumentSymbolsFinder implements FuzzyFinderProvider {
     const content = await FileReader.read(filePath);
 
     return {
-      content: {
-        kind: "text",
-        path: filePath,
-        text: content as string,
-      },
-      language: await getLanguageIdForFile(filePath),
+      content: content as string,
+      kind: "text",
+      language: getLanguageIdForFile(filePath),
       metadata: {
         highlightLine,
       },

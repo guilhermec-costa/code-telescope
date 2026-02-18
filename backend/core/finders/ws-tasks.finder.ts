@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { TaskData, WorkspaceTasksFinderData } from "../../../shared/exchange/ws-tasks";
-import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
+import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**
@@ -62,31 +62,25 @@ export class WorkspaceTasksFinder implements FuzzyFinderProvider {
     }
   }
 
-  async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
+  async getPreviewData(identifier: string): Promise<TextPreviewData> {
     const index = parseInt(identifier, 10);
     const tasks = await this.getAllTasks();
     const selected = tasks[index];
 
     if (!selected) {
       return {
-        content: {
-          path: "",
-          text: "No task selected",
-          kind: "text",
-        },
+        content: "No task selected",
         language: "plaintext",
+        kind: "text",
       };
     }
 
     const previewContent = this.generateTaskPreview(selected);
 
     return {
-      content: {
-        path: `Task: ${selected.name}`,
-        text: previewContent,
-        kind: "text",
-      },
+      content: previewContent,
       language: "json",
+      kind: "text",
     };
   }
 

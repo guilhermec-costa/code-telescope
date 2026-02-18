@@ -1,5 +1,5 @@
 import { CommitSearchInfo } from "../../../../shared/exchange/commit-search";
-import { PreviewData } from "../../../../shared/extension-webview-protocol";
+import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
 import { getGitApi } from "./api-utils";
 
@@ -37,14 +37,14 @@ export class GitCommitFuzzyFinder implements FuzzyFinderProvider {
     return log;
   }
 
-  async getPreviewData(hash: string): Promise<PreviewData<any>> {
+  async getPreviewData(hash: string): Promise<TextPreviewData> {
     if (!this.gitApi) {
-      return { content: { hash, message: "", author: "", date: "", diff: "" } };
+      return { kind: "text", content: "" };
     }
 
     const repo = this.gitApi.repositories[0];
     if (!repo) {
-      return { content: { hash, message: "", author: "", date: "", diff: "" } };
+      return { kind: "text", content: "" };
     }
 
     let diff = "";
@@ -70,10 +70,8 @@ export class GitCommitFuzzyFinder implements FuzzyFinderProvider {
     }
 
     return {
-      content: {
-        kind: "text",
-        text: diff as string,
-      },
+      content: diff,
+      kind: "text",
       language: "diff",
     };
   }

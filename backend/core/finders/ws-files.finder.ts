@@ -2,7 +2,7 @@ import { stat } from "node:fs/promises";
 import * as fg from "fast-glob";
 import * as vscode from "vscode";
 import { FileFinderData } from "../../../shared/exchange/file-search";
-import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
+import { ImagePreviewData, TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { getLanguageIdForFile, getSvgIconUrl, resolvePathExt } from "../../utils/files";
@@ -28,12 +28,7 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider {
 
     if (allFiles.length > CHUNK_SIZE) {
       this.streamRemainingChunks(allFiles, CHUNK_SIZE);
-    } else {
-      const { maxFileSize } = ExtensionConfigManager.wsFileFinderCfg;
-      const maxBytes = maxFileSize * 1024;
-      this.detectAndNotifyLargeFiles(allFiles, maxBytes);
     }
-
     return firstChunk;
   }
 
@@ -89,11 +84,7 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider {
       mapChunk: this.mapChunk,
     });
 
-    streamer.streamConcurrently().then(() => {
-      const { maxFileSize } = ExtensionConfigManager.wsFileFinderCfg;
-      const maxBytes = maxFileSize * 1024;
-      this.detectAndNotifyLargeFiles(allFiles, maxBytes);
-    });
+    streamer.streamConcurrently().then(() => {});
   }
 
   async onSelect(filePath: string) {
@@ -159,7 +150,7 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider {
     return uris.map((uri) => uri.fsPath);
   }
 
-  async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
+  async getPreviewData(identifier: string): Promise<TextPreviewData | ImagePreviewData> {
     const ext = resolvePathExt(identifier);
     const isImg = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext);
     const content = await FileReader.read(identifier);
@@ -167,22 +158,18 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider {
     if (isImg) {
       return {
         content: {
-          kind: "image",
-          path: identifier,
           buffer: content as Uint8Array,
           mimeType: `image/${ext === "jpg" ? "jpeg" : ext}`,
         },
+        kind: "image",
         language: getLanguageIdForFile(identifier),
         overridePreviewer: "preview.image",
       };
     }
 
     return {
-      content: {
-        kind: "text",
-        path: identifier,
-        text: content as string,
-      },
+      kind: "text",
+      content: content as string,
       language: getLanguageIdForFile(identifier),
       overridePreviewer: this.casted.previewAdapterType,
     };

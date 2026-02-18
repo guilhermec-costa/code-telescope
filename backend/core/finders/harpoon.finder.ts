@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { HarpoonFinderData } from "../../../shared/exchange/harpoon";
-import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
+import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { HarpoonOrchestrator } from "../../harpoon/orchestrator";
 import { getLanguageIdForFile, getSvgIconUrl } from "../../utils/files";
 import { FileReader } from "../common/cache/file-reader";
@@ -61,14 +61,15 @@ export class HarpoonProvider implements FuzzyFinderProvider {
     await this.getManager().navigateTo(index);
   }
 
-  async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
+  async getPreviewData(identifier: string): Promise<TextPreviewData> {
     const index = parseInt(identifier, 10);
     const marks = this.getManager().getMarks();
     const selected = marks[index];
 
     if (!selected) {
       return {
-        content: { path: "", text: "No mark selected", kind: "text" },
+        content: "No mark selected",
+        kind: "text",
         language: "plaintext",
       };
     }
@@ -80,21 +81,15 @@ export class HarpoonProvider implements FuzzyFinderProvider {
       const content = await FileReader.read(filePath);
 
       return {
-        content: {
-          kind: "text",
-          path: filePath,
-          text: content as string,
-        },
-        language: await getLanguageIdForFile(filePath),
+        content: content as string,
+        kind: "text",
+        language: getLanguageIdForFile(filePath),
         metadata: highlightLine !== undefined ? { highlightLine } : undefined,
       };
     } catch (error) {
       return {
-        content: {
-          kind: "text",
-          path: filePath,
-          text: `Error loading file: ${error}`,
-        },
+        content: `Error loading file: ${error}`,
+        kind: "text",
         language: "plaintext",
       };
     }

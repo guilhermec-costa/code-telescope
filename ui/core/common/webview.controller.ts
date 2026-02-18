@@ -82,34 +82,40 @@ export class WebviewController {
         break;
       }
 
-      case "highlighterInit": {
-        PreviewManager.instance.setUserTheme(msg.data.theme);
-        WebviewToExtensionMessenger.instance.onHighlighterDone();
-        break;
-      }
-
       case "optionList": {
         this.handleOptionListMessage(msg);
         break;
       }
 
-      case "removeHeavyOptions": {
-        for (const p of msg.data) {
-          this.pendingHeavyFiles.add(p);
-        }
-
-        OptionListManager.instance.removeHeavyFiles(Array.from(this.pendingHeavyFiles));
-        this.pendingHeavyFiles.clear();
-        break;
-      }
-
-      case "previewUpdate": {
+      case "fullPreviewUpdate": {
         this.previewQueue = this.previewQueue.then(async () => {
           try {
             const { previewAdapterType, data } = msg;
             await PreviewManager.instance.updatePreview(data, previewAdapterType);
           } catch (error) {
             console.error("[WebviewController] Error processing preview chunk:", error);
+          }
+        });
+        break;
+      }
+
+      case "previewChunk": {
+        this.previewQueue = this.previewQueue.then(async () => {
+          try {
+            await PreviewManager.instance.handlePreviewChunk(msg);
+          } catch (error) {
+            console.error("[WebviewController] Error processing preview chunk:", error);
+          }
+        });
+        break;
+      }
+
+      case "previewComplete": {
+        this.previewQueue = this.previewQueue.then(async () => {
+          try {
+            await PreviewManager.instance.handlePreviewComplete(msg);
+          } catch (error) {
+            console.error("[WebviewController] Error processing preview complete:", error);
           }
         });
         break;
@@ -151,7 +157,7 @@ export class WebviewController {
 
   private getPromptDebounceTime(): number {
     const provider = __PROVIDER__ as FuzzyProviderType;
-    if (provider === "workspace.text" || provider === "currentFile.text") return 50;
+    if (provider === "workspace.text" || provider === "currentFile.text") return 250;
     return 0;
   }
 

@@ -1,6 +1,6 @@
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PreviewManagerConfig } from "../../../shared/exchange/extension-config";
-import { PreviewData } from "../../../shared/extension-webview-protocol";
+import { PreviewChunkMessage, PreviewCompleteMessage, PreviewData } from "../../../shared/extension-webview-protocol";
 import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
 import { WebviewToExtensionMessenger } from "../common/wv-to-extension-messenger";
 import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.registry";
@@ -10,7 +10,6 @@ import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.regi
  */
 export class PreviewManager {
   private previewElement: HTMLElement;
-  private userTheme: string;
   private adapter: IPreviewRendererAdapter | null = null;
   private cfg: PreviewManagerConfig = __PREVIEW_CFG__;
   private static _instance: PreviewManager | undefined = undefined;
@@ -19,6 +18,15 @@ export class PreviewManager {
     content: "",
     language: "",
     metadata: {},
+  };
+
+  private chunkStore = {
+    chunks: [],
+    total: 0,
+    reset() {
+      this.chunks = [];
+      this.total = 0;
+    },
   };
 
   private constructor() {
@@ -48,9 +56,6 @@ export class PreviewManager {
   }
 
   async updatePreview(data: PreviewData, finderType: PreviewRendererType): Promise<void> {
-    if (data.theme) {
-      this.setUserTheme(data.theme);
-    }
     let adapter = data.overridePreviewer
       ? PreviewRendererAdapterRegistry.instance.getAdapter(data.overridePreviewer)
       : PreviewRendererAdapterRegistry.instance.getAdapter(finderType);
@@ -64,7 +69,7 @@ export class PreviewManager {
 
     this.setAdapter(adapter);
 
-    await this.adapter.render(this.previewElement, data, this.userTheme);
+    await this.adapter.render(this.previewElement, data);
 
     // Scroll after DOM is painted
     requestAnimationFrame(() => {
@@ -76,17 +81,6 @@ export class PreviewManager {
   clearPreview() {
     this.lastPreviewedData = { content: "", language: "", metadata: {} };
     this.previewElement.innerHTML = "";
-  }
-
-  async setUserTheme(theme: string) {
-    this.userTheme = theme;
-  }
-
-  async rerenderWithTheme(theme: string): Promise<void> {
-    this.userTheme = theme;
-    if (!this.adapter) return;
-    console.log(`[PreviewManager] Updating user theme to ${theme}`);
-    await this.adapter.render(this.previewElement, this.lastPreviewedData, this.userTheme);
   }
 
   requestPreview(selection: string): void {
@@ -132,5 +126,53 @@ export class PreviewManager {
 
   scrollRight(): void {
     this.previewElement.scrollLeft += this.getPreviewWidth() / this.horizontalScrollFraction;
+  }
+
+  async handlePreviewChunk({ chunkIndex, totalChunks, content }: PreviewChunkMessage): Promise<void> {
+    this.chunkStore.chunks[chunkIndex] = content;
+    this.chunkStore.total = totalChunks;
+  }
+
+  async handlePreviewComplete({
+    previewAdapterType,
+    language,
+    theme,
+    metadata,
+  }: PreviewCompleteMessage): Promise<void> {
+    const isComplete = this.chunkStore.chunks.every((chunk) => chunk !== undefined);
+
+    if (!isComplete) {
+      const missingChunks = this.chunkStore.chunks
+        .map((chunk, index) => (chunk === undefined ? index : -1))
+        .filter((index) => index !== -1);
+      console.error(`[PreviewManager] Missing chunks: ${missingChunks.join(", ")}`);
+      return;
+    }
+
+    const previewData: PreviewData = {
+      content: this.chunkStore.chunks.join(""),
+      language,
+      theme,
+      metadata,
+    };
+
+    let adapter = PreviewRendererAdapterRegistry.instance.getAdapter(previewAdapterType);
+
+    this.clearPreview();
+    if (!adapter) {
+      console.error(`[PreviewManager] No adapter found for finder type: ${previewAdapterType}`);
+      return;
+    }
+
+    this.setAdapter(adapter);
+    await this.adapter.render(this.previewElement, previewData);
+
+    requestAnimationFrame(() => {
+      this.scrollToHighlighted();
+    });
+
+    this.lastPreviewedData = previewData;
+    this.chunkStore.chunks = [];
+    this.chunkStore.reset();
   }
 }

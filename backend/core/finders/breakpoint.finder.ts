@@ -1,6 +1,6 @@
 import { BreakpointData, BreakpointsFinderData } from "@shared/exchange/breakpoint";
 import * as vscode from "vscode";
-import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
+import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../utils/files";
 import { FileReader } from "../common/cache/file-reader";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
@@ -66,14 +66,15 @@ export class BreakpointsFinder implements FuzzyFinderProvider {
     }
   }
 
-  async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
+  async getPreviewData(identifier: string): Promise<TextPreviewData> {
     const index = parseInt(identifier, 10);
     const breakpoints = this.getAllBreakpoints();
     const selected = breakpoints[index];
 
     if (!selected) {
       return {
-        content: { path: "", text: "No breakpoint selected", kind: "text" },
+        content: "No breakpoint selected",
+        kind: "text",
         language: "plaintext",
       };
     }
@@ -85,11 +86,8 @@ export class BreakpointsFinder implements FuzzyFinderProvider {
       const content = await FileReader.read(filePath);
 
       return {
-        content: {
-          kind: "text",
-          path: filePath,
-          text: content as string,
-        },
+        content: content as string,
+        kind: "text",
         language: getLanguageIdForFile(filePath),
         metadata: {
           highlightLine,
@@ -97,11 +95,8 @@ export class BreakpointsFinder implements FuzzyFinderProvider {
       };
     } catch (error) {
       return {
-        content: {
-          kind: "text",
-          path: filePath,
-          text: `Error loading file: ${error}`,
-        },
+        content: `Error loading file: ${error}`,
+        kind: "text",
         language: "plaintext",
       };
     }

@@ -11,8 +11,8 @@ import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapte
 export class BranchPreviewRendererAdapter implements IPreviewRendererAdapter {
   type: PreviewRendererType;
 
-  async render(previewElement: HTMLElement, data: PreviewData<CommitInfo[]>, theme: string): Promise<void> {
-    const allCommits = data.content;
+  async render(previewElement: HTMLElement, data: PreviewData<CommitInfo[]>): Promise<void> {
+    const allCommits = data.content as CommitInfo[];
 
     const listContainer = document.createElement("div");
     listContainer.id = "preview-list_container";

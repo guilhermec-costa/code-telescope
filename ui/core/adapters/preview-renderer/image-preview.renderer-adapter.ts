@@ -1,16 +1,7 @@
 import { PreviewRendererType } from "../../../../shared/adapters-namespace";
-import { PreviewData } from "../../../../shared/extension-webview-protocol";
+import { ImagePreviewData } from "../../../../shared/extension-webview-protocol";
 import { IPreviewRendererAdapter } from "../../abstractions/preview-renderer-adapter";
 import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapter.decorator";
-
-type ImagePreviewContent = {
-  buffer: Uint8Array;
-  mimeType?: string;
-  alt?: string;
-  title?: string;
-  width?: number | string;
-  height?: number | string;
-};
 
 @PreviewRendererAdapter({
   adapter: "preview.image",
@@ -18,7 +9,7 @@ type ImagePreviewContent = {
 export class ImageRendererAdapter implements IPreviewRendererAdapter {
   type: PreviewRendererType;
 
-  async render(previewElement: HTMLElement, data: PreviewData<ImagePreviewContent>): Promise<void> {
+  async render(previewElement: HTMLElement, data: ImagePreviewData): Promise<void> {
     previewElement.innerHTML = "";
 
     const container = document.createElement("div");
@@ -34,16 +25,6 @@ export class ImageRendererAdapter implements IPreviewRendererAdapter {
     const objectUrl = URL.createObjectURL(blob);
 
     img.src = objectUrl;
-    img.alt = data.content.alt ?? "";
-    img.title = data.content.title ?? "";
-
-    if (data.content.width) {
-      img.style.width = typeof data.content.width === "number" ? `${data.content.width}px` : data.content.width;
-    }
-
-    if (data.content.height) {
-      img.style.height = typeof data.content.height === "number" ? `${data.content.height}px` : data.content.height;
-    }
 
     img.onload = () => {
       URL.revokeObjectURL(objectUrl);

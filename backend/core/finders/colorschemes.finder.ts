@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { ColorSchemesFinderData, ColorThemeData } from "../../../shared/exchange/colorschemes";
-import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
+import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { PreContextManager } from "../common/pre-context";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
@@ -50,14 +50,11 @@ export class ColorSchemesFinder implements FuzzyFinderProvider {
     }
   }
 
-  async getPreviewData(themeData: ColorThemeData): Promise<HighlightedCodePreviewData> {
+  async getPreviewData(themeData: ColorThemeData): Promise<TextPreviewData> {
     await this.updateTheme(themeData);
     return {
-      content: {
-        kind: "text",
-        path: `Theme: ${themeData.label}`,
-        text: this.generatePreviewContent(themeData),
-      },
+      content: this.generatePreviewContent(themeData),
+      kind: "text",
       language: "typescript",
       theme: themeData.label,
     };

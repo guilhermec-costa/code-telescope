@@ -14,7 +14,7 @@ export interface IPreviewRendererAdapter {
   /**
    * Renders the preview content for the given data.
    */
-  render(previewElement: HTMLElement, data: PreviewData, theme: string): Promise<void>;
+  render(previewElement: HTMLElement, data: PreviewData): Promise<void>;
 
   /**
    * (Optional) Renders a fallback state when there is no preview data available.

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { DiagnosticData, DiagnosticsFinderData } from "../../../shared/exchange/diagnostics";
-import { HighlightedCodePreviewData } from "../../../shared/extension-webview-protocol";
+import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../utils/files";
 import { FileReader } from "../common/cache/file-reader";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
@@ -53,18 +53,15 @@ export class DiagnosticsFinder implements FuzzyFinderProvider {
     editor.revealRange(selected.diagnostic.range, vscode.TextEditorRevealType.InCenter);
   }
 
-  async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
+  async getPreviewData(identifier: string): Promise<TextPreviewData> {
     const index = parseInt(identifier, 10);
     const diagnostics = await this.getAllDiagnostics();
     const selected = diagnostics[index];
 
     if (!selected) {
       return {
-        content: {
-          path: "",
-          kind: "text",
-          text: "No diagnostic selected",
-        },
+        content: "No diagnostic selected",
+        kind: "text",
         language: "plaintext",
       };
     }
@@ -75,11 +72,8 @@ export class DiagnosticsFinder implements FuzzyFinderProvider {
     const content = await FileReader.read(filePath);
 
     return {
-      content: {
-        path: filePath,
-        kind: "text",
-        text: content as string,
-      },
+      content: content as string,
+      kind: "text",
       language: getLanguageIdForFile(filePath),
       metadata: {
         highlightLine,

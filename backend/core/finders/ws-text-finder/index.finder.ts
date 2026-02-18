@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { HighlightedCodePreviewData } from "../../../../shared/extension-webview-protocol";
+import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../../utils/files";
 import { ChunkStreamer } from "../../chunk-streamer";
 import { FileReader } from "../../common/cache/file-reader";
@@ -92,7 +92,7 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
     };
   }
 
-  async getPreviewData(identifier: string): Promise<HighlightedCodePreviewData> {
+  async getPreviewData(identifier: string): Promise<TextPreviewData> {
     const { filePath, lineStr } = WorkspaceTextSearchProvider.destructureIdentifier(identifier);
 
     try {
@@ -100,12 +100,9 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
       const lines = (content as string).split("\n");
 
       return {
-        content: {
-          kind: "text",
-          path: filePath,
-          text: content as string,
-        },
+        content: content as string,
         language: getLanguageIdForFile(filePath),
+        kind: "text",
         metadata: {
           filePath,
           highlightLine: lineStr ? parseInt(lineStr, 10) - 1 : undefined,
@@ -114,12 +111,9 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
       };
     } catch {
       return {
-        content: {
-          path: filePath,
-          kind: "text",
-          text: "Error loading file",
-        },
+        content: "Error loading file",
         language: "text",
+        kind: "text",
         metadata: {},
       };
     }
