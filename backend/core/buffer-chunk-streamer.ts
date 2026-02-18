@@ -38,7 +38,6 @@ export class BufferChunkStreamer {
       limit(() =>
         WebviewController.sendMessage(webview, {
           type: "previewChunk",
-          previewAdapterType,
           chunkIndex: index,
           totalChunks,
           content: chunk,

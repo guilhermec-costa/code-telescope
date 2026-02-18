@@ -14,6 +14,7 @@ export class OptionListManager {
   private allOptions: any[] = [];
   private filteredOptions: any[] = [];
   private dataAdapter: IFuzzyFinderDataAdapter | undefined;
+  private lastOption: any;
   private readonly searchElement: HTMLInputElement | undefined;
   private static _instance: OptionListManager | undefined;
 
@@ -166,30 +167,12 @@ export class OptionListManager {
     }
   }
 
-  /**
-   * Clears options and preview when required by specific adapters.
-   */
   public resetIfNeeded() {
     const needReset: FuzzyProviderType[] = ["workspace.text", "currentFile.text"];
     if (this.searchElement.value === "" && needReset.includes(__PROVIDER__ as FuzzyProviderType)) {
       this.clearOptions();
       PreviewManager.instance.clearPreview();
     }
-  }
-
-  public removeHeavyFiles(paths: string[]) {
-    if (!this.dataAdapter || paths.length === 0) return;
-
-    const heavySet = new Set(paths);
-
-    const getValue = (opt: any) => this.dataAdapter!.getSelectionValue(opt);
-
-    this.allOptions = this.allOptions.filter((opt) => !heavySet.has(getValue(opt)));
-    this.filteredOptions = this.filteredOptions.filter((opt) => !heavySet.has(getValue(opt)));
-
-    this.updateItemsCount();
-    this.render();
-    this.selectedIndex = this.getRelativeFirstIndex();
   }
 
   public isEmpty() {
@@ -398,7 +381,9 @@ export class OptionListManager {
 
   private requestPreview(option: any): void {
     if (!this.dataAdapter) return;
+    if (option == this.lastOption) return;
     const value = this.dataAdapter.getSelectionValue(option);
+    this.lastOption = option;
     this.debouncedRequestPreview(value);
   }
 

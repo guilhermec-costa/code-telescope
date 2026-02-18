@@ -39,7 +39,7 @@ type ImagePreviewData = BasePreviewData & {
 };
 
 type GenericPreviewData<C> = BasePreviewData & {
-  kind?: undefined; // impede conflito com os discriminados
+  kind?: undefined;
   content: C;
 };
 
