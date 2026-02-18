@@ -13,7 +13,7 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
  */
 @FuzzyFinderAdapter({
   fuzzy: "debug.breakpoints",
-  previewRenderer: "preview.codeHighlighted",
+  previewRenderer: "preview.buffer",
   dataAdapter: "debugBreakpointsAdapter",
 })
 export class BreakpointsFinder implements FuzzyFinderProvider {

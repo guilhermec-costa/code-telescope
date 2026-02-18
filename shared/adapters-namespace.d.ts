@@ -14,6 +14,7 @@ export type BuiltinFuzzyProviderType =
   | "workspace.diagnostics"
   | "harpoon.marks"
   | "git.branches"
+  | "git.commits"
   | "workspace.symbols"
   | "document.symbols"
   | "debug.breakpoints";
@@ -33,8 +34,14 @@ export type DataAdapterType =
   | "workspaceDiagnosticsAdapter"
   | "harpoonMarksAdapter"
   | "gitBranchesAdapter"
+  | "gitCommitsAdapter"
   | "symbolsAdapter"
   | "debugBreakpointsAdapter"
   | `custom${string}Adapter`;
 
-export type PreviewRendererType = "preview.codeHighlighted" | "preview.branch" | "preview.image" | "preview.failed";
+export type PreviewRendererType =
+  | "preview.buffer"
+  | "preview.branch"
+  | "preview.commitDiff"
+  | "preview.image"
+  | "preview.failed";

@@ -12,7 +12,7 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
  */
 @FuzzyFinderAdapter({
   fuzzy: "workspace.colorschemes",
-  previewRenderer: "preview.codeHighlighted",
+  previewRenderer: "preview.buffer",
   dataAdapter: "workspaceColorschemesAdapter",
 })
 export class ColorSchemesFinder implements FuzzyFinderProvider {

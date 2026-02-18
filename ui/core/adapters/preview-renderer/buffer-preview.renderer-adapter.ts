@@ -73,9 +73,9 @@ class LazyLineParser {
 }
 
 @PreviewRendererAdapter({
-  adapter: "preview.codeHighlighted",
+  adapter: "preview.buffer",
 })
-export class CodeWithHighlightPreviewRendererAdapter implements IPreviewRendererAdapter {
+export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
   type: PreviewRendererType;
   private loadedChunks = new Set<number>();
   private minLoadedChunk = Infinity;

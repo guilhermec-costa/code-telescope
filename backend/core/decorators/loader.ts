@@ -9,6 +9,7 @@ import "../finders/custom/backend-proxy.finder";
 import "../finders/custom/ui-proxy.finder";
 import "../finders/diagnostics.finder";
 import "../finders/git/git-branch.finder";
+import "../finders/git/git-commit.finder";
 import "../finders/ws-text-finder/index.finder";
 import "../finders/ws-files.finder";
 import "../finders/harpoon.finder";

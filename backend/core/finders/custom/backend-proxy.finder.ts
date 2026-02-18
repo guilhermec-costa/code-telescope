@@ -30,7 +30,7 @@ export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
   private constructor(def: CustomFinderDefinition) {
     this.fuzzyAdapterType = def.fuzzyAdapterType as any;
     this.dataAdapterType = def.fuzzyAdapterType as any;
-    this.previewAdapterType = "preview.codeHighlighted";
+    this.previewAdapterType = "preview.buffer";
 
     this.querySelectableOptions = def.backend.querySelectableOptions;
     this.onSelect = async (item: any) => {

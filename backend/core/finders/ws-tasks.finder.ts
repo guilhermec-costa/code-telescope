@@ -10,7 +10,7 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
  */
 @FuzzyFinderAdapter({
   fuzzy: "workspace.tasks",
-  previewRenderer: "preview.codeHighlighted",
+  previewRenderer: "preview.buffer",
   dataAdapter: "workspaceTasksAdapter",
 })
 export class WorkspaceTasksFinder implements FuzzyFinderProvider {

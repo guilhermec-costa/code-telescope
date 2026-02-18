@@ -14,7 +14,7 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
  */
 @FuzzyFinderAdapter({
   fuzzy: "workspace.callHierarchy",
-  previewRenderer: "preview.codeHighlighted",
+  previewRenderer: "preview.buffer",
   dataAdapter: "workspaceCallHierarchyAdapter",
 })
 export class CallHierarchyFinder implements FuzzyFinderProvider {

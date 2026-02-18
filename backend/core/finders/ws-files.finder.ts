@@ -16,7 +16,7 @@ import { WebviewController } from "../presentation/webview.controller";
 
 @FuzzyFinderAdapter({
   fuzzy: "workspace.files",
-  previewRenderer: "preview.codeHighlighted",
+  previewRenderer: "preview.buffer",
   dataAdapter: "workspaceFilesAdapter",
 })
 export class WorkspaceFileFinder implements FuzzyFinderProvider {

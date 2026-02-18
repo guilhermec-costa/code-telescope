@@ -68,6 +68,11 @@ const BUILTIN_PROVIDER_META: Record<FuzzyProviderType, ProviderMeta> = {
     listTitle: "Branches",
     previewTitle: "Branch Details",
   },
+  "git.commits": {
+    tabTitle: "Git Commits",
+    listTitle: "Commits",
+    previewTitle: "Commit Diff",
+  },
   "workspace.symbols": {
     tabTitle: "Workspace Symbols",
     listTitle: "Symbols",

@@ -15,7 +15,7 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
  */
 @FuzzyFinderAdapter({
   fuzzy: "workspace.recentFiles",
-  previewRenderer: "preview.codeHighlighted",
+  previewRenderer: "preview.buffer",
   dataAdapter: "workspaceRecentFilesAdapter",
 })
 export class RecentFilesFinder implements FuzzyFinderProvider {

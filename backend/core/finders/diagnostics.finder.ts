@@ -12,7 +12,7 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
  */
 @FuzzyFinderAdapter({
   fuzzy: "workspace.diagnostics",
-  previewRenderer: "preview.codeHighlighted",
+  previewRenderer: "preview.buffer",
   dataAdapter: "workspaceDiagnosticsAdapter",
 })
 export class DiagnosticsFinder implements FuzzyFinderProvider {
@@ -80,7 +80,7 @@ export class DiagnosticsFinder implements FuzzyFinderProvider {
         kind: "text",
         text: content as string,
       },
-      language: await getLanguageIdForFile(filePath),
+      language: getLanguageIdForFile(filePath),
       metadata: {
         highlightLine,
       },

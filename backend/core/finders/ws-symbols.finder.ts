@@ -27,7 +27,7 @@ interface WorkspaceSymbolFinderData {
  */
 @FuzzyFinderAdapter({
   fuzzy: "workspace.symbols",
-  previewRenderer: "preview.codeHighlighted",
+  previewRenderer: "preview.buffer",
   dataAdapter: "symbolsAdapter",
 })
 export class WorkspaceSymbolsFinder implements FuzzyFinderProvider {

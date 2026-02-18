@@ -13,7 +13,7 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
  */
 @FuzzyFinderAdapter({
   fuzzy: "harpoon.marks",
-  previewRenderer: "preview.codeHighlighted",
+  previewRenderer: "preview.buffer",
   dataAdapter: "harpoonMarksAdapter",
 })
 export class HarpoonProvider implements FuzzyFinderProvider {

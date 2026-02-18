@@ -30,7 +30,7 @@ interface DocumentSymbolFinderData {
  */
 @FuzzyFinderAdapter({
   fuzzy: "document.symbols",
-  previewRenderer: "preview.codeHighlighted",
+  previewRenderer: "preview.buffer",
   dataAdapter: "symbolsAdapter",
 })
 export class DocumentSymbolsFinder implements FuzzyFinderProvider {

@@ -13,7 +13,7 @@ import { WorkspaceTextSearchProvider } from "./ws-text-finder/index.finder";
  */
 @FuzzyFinderAdapter({
   fuzzy: "currentFile.text",
-  previewRenderer: "preview.codeHighlighted",
+  previewRenderer: "preview.buffer",
   dataAdapter: "textSearchAdapter",
 })
 export class CurrentFileTextSearchProvider implements FuzzyFinderProvider {

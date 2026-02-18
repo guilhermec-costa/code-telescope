@@ -52,6 +52,10 @@
                 "title": "Code Telescope: Smart Branch Search"
             },
             {
+                "command": "code-telescope.fuzzy.commit",
+                "title": "Code Telescope: Smart Commit Search"
+            },
+            {
                 "command": "code-telescope.fuzzy.wsText",
                 "title": "Code Telescope: Workspace Text Search"
             },
@@ -185,6 +189,11 @@
                 "command": "code-telescope.fuzzy.branch",
                 "key": "ctrl+alt+b",
                 "mac": "cmd+alt+b"
+            },
+            {
+                "command": "code-telescope.fuzzy.commit",
+                "key": "ctrl+alt+c",
+                "mac": "cmd+alt+c"
             },
             {
                 "command": "code-telescope.fuzzy.wsSymbols",

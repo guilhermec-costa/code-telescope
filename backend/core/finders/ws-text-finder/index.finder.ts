@@ -13,7 +13,7 @@ import { RipgrepFinder } from "./ripgrep-finder";
  */
 @FuzzyFinderAdapter({
   fuzzy: "workspace.text",
-  previewRenderer: "preview.codeHighlighted",
+  previewRenderer: "preview.buffer",
   dataAdapter: "textSearchAdapter",
 })
 export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
