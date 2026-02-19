@@ -14,7 +14,6 @@ export class OptionListManager {
   private allOptions: any[] = [];
   private filteredOptions: any[] = [];
   private dataAdapter: IFuzzyFinderDataAdapter | undefined;
-  private lastOption: any;
   private readonly searchElement: HTMLInputElement | undefined;
   private static _instance: OptionListManager | undefined;
 
@@ -377,9 +376,7 @@ export class OptionListManager {
 
   private requestPreview(option: any): void {
     if (!this.dataAdapter) return;
-    if (option == this.lastOption) return;
     const value = this.dataAdapter.getSelectionValue(option);
-    this.lastOption = option;
     this.debouncedRequestPreview(value);
   }
 
