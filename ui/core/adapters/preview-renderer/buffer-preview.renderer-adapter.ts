@@ -9,7 +9,7 @@ import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapte
 import { PreviewRendererAdapterRegistry, SyntaxHighlighter } from "../../registry/preview-adapter.registry";
 import { HighlighterManager } from "../../render/highlighter-manager";
 
-const CHUNK_SIZE = 100;
+const CHUNK_SIZE = 30;
 const SCROLL_THRESHOLD = 300;
 const INITIAL_CHUNKS_TO_LOAD = 1;
 const MAX_CACHE_SIZE = 5000;
@@ -77,37 +77,48 @@ function escapeHtml(str: string): string {
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-/**
- * Converts a ThemedToken[][] (one array per line) into an HTML string that
- * matches the structure Shiki's codeToHtml() would produce, i.e.:
- */
-function makeHtmlFromTokens(lineTokens: ThemedToken[][], bg: string, fg: string, themeName: string): string {
-  const lineHtmlParts = lineTokens.map((tokens) => {
+function makeHtmlFromTokens(
+  lineTokens: ThemedToken[][],
+  bg: string,
+  fg: string,
+  themeName: string,
+  startLineIndex: number,
+  highlightLineNum?: number,
+  showLineNumbers: boolean = true,
+): string {
+  const lineHtmlParts = lineTokens.map((tokens, index) => {
+    const currentLineNum = startLineIndex + index + 1;
+    const isHighlighted = highlightLineNum !== undefined && currentLineNum - 1 === highlightLineNum;
+
+    const lineClass = isHighlighted ? 'class="line highlighted"' : 'class="line"';
+    const dataLine = showLineNumbers ? ` data-line="${currentLineNum}"` : "";
+
     const tokenSpans = tokens
       .map((token) => {
-        const styles: string[] = [];
-
-        if (token.color) styles.push(`color:${token.color}`);
-        if (token.bgColor) styles.push(`background-color:${token.bgColor}`);
-        if (token.fontStyle) {
-          // fontStyle is a bitmask in Shiki: 1=italic, 2=bold, 4=underline
-          if (token.fontStyle & 1) styles.push("font-style:italic");
-          if (token.fontStyle & 2) styles.push("font-weight:bold");
-          if (token.fontStyle & 4) styles.push("text-decoration:underline");
+        if (!token.color && !token.bgColor && !token.fontStyle) {
+          return `<span>${escapeHtml(token.content)}</span>`;
         }
 
-        const styleAttr = styles.length ? ` style="${styles.join(";")}"` : "";
-        return `<span${styleAttr}>${escapeHtml(token.content)}</span>`;
+        let style = "";
+        if (token.color) style += `color:${token.color};`;
+        if (token.bgColor) style += `background-color:${token.bgColor};`;
+        if (token.fontStyle) {
+          if (token.fontStyle & 1) style += "font-style:italic;";
+          if (token.fontStyle & 2) style += "font-weight:bold;";
+          if (token.fontStyle & 4) style += "text-decoration:underline;";
+        }
+
+        return `<span style="${style}">${escapeHtml(token.content)}</span>`;
       })
       .join("");
 
-    return `<span class="line">${tokenSpans}</span>`;
+    return `<span ${lineClass}${dataLine}>${tokenSpans}</span>`;
   });
 
   const codeContent = lineHtmlParts.join("\n");
 
   return (
-    `<pre class="shiki ${escapeHtml(themeName)}" style="background-color:${bg};color:${fg}" tabindex="0">` +
+    `<pre class="shiki ${escapeHtml(themeName)}" style="background-color:${bg};color:${fg}">` +
     `<code>${codeContent}</code>` +
     `</pre>`
   );
@@ -120,6 +131,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
   type: PreviewRendererType;
 
   private loadedChunks = new Set<number>();
+  private chunkHtmlCache = new Map<number, string>();
   private minLoadedChunk = Infinity;
   private maxLoadedChunk = -Infinity;
   private scrollHandler?: () => void;
@@ -127,12 +139,6 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
   private isRendering = false;
   private lineParser?: LazyLineParser;
   private abortController?: AbortController;
-
-  /**
-   * Stores the GrammarState produced at the *end* of each chunk so the next
-   * sequential chunk can resume tokenisation without re-parsing everything
-   * from the top
-   */
   private grammarStates = new Map<number, GrammarState>();
 
   constructor(private highlighter: SyntaxHighlighter) {}
@@ -150,6 +156,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
     previewElement.innerHTML = "";
     previewElement.scrollTop = 0;
     this.loadedChunks.clear();
+    this.chunkHtmlCache.clear();
     this.grammarStates.clear();
     this.minLoadedChunk = Infinity;
     this.maxLoadedChunk = -Infinity;
@@ -172,15 +179,9 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
 
     let finalLanguageId = "plaintext";
     if (language) {
-      console.log("[Renderer] Loading language grammar:", language);
       const langLoadResult = await HighlighterManager.loadLanguageIfNeeded(language);
-      console.log("[Renderer] Language load result:", langLoadResult);
-
       if (langLoadResult.ok) {
         finalLanguageId = langLoadResult.value.grammar.name;
-        console.log("[Renderer] Using language:", finalLanguageId, "(from grammar.name)");
-      } else {
-        console.log("[Renderer] Failed to load language grammar:", (langLoadResult as any).error);
       }
     }
 
@@ -188,15 +189,10 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
     let themeLoadError = false;
 
     if (data.theme) {
-      console.log("[Renderer] Loading theme grammar:", data.theme);
       const themeResult = await HighlighterManager.loadThemeIfNeeded(data.theme);
-      console.log("[Renderer] Theme load result:", themeResult);
-
       if (themeResult.ok) {
         finalThemeName = themeResult.value.jsonData?.name || themeResult.value.name;
-        console.log("[Renderer] Using theme:", finalThemeName);
       } else {
-        console.log("[Renderer] Failed to load theme grammar:", (themeResult as any).error);
         themeLoadError = true;
       }
     }
@@ -221,9 +217,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
         themeBg = resolvedTheme.bg ?? themeBg;
         themeFg = resolvedTheme.fg ?? themeFg;
       }
-    } catch {
-      // defaults
-    }
+    } catch {}
 
     const renderChunk = async (chunkIndex: number, position: "append" | "prepend" = "append"): Promise<void> => {
       if (OptionListManager.instance.isEmpty()) {
@@ -239,6 +233,11 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
       this.minLoadedChunk = Math.min(this.minLoadedChunk, chunkIndex);
       this.maxLoadedChunk = Math.max(this.maxLoadedChunk, chunkIndex);
 
+      if (this.chunkHtmlCache.has(chunkIndex)) {
+        this.insertChunkIntoDOM(previewElement, this.chunkHtmlCache.get(chunkIndex)!, chunkIndex, position);
+        return;
+      }
+
       const start = chunkIndex * CHUNK_SIZE;
       const end = Math.min(start + CHUNK_SIZE, totalLines);
 
@@ -249,16 +248,6 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
         const lines = content.split("\n");
         chunkText = lines.slice(start, end).join("\n");
       }
-
-      // ----------------------------------------------------------------
-      // Tokenise — reuse the GrammarState from the previous chunk so the
-      // highlighter knows what scope it's "inside" at this point in the file.
-      //
-      // For prepend chunks (chunkIndex < initialChunk) we don't have a prior
-      // state readily available, so we fall back to no state. This is still
-      // much better than the original for append chunks, which is the common
-      // scroll-down case.
-      // ----------------------------------------------------------------
 
       const prevGrammarState = this.grammarStates.get(chunkIndex - 1);
 
@@ -275,34 +264,34 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
         lineTokens = result.tokens as ThemedToken[][];
         nextGrammarState = result.grammarState as GrammarState | undefined;
       } catch (err) {
-        console.warn("[Renderer] codeToTokens failed, falling back to codeToHtml:", err);
-
         const html = this.highlighter.codeToHtml(chunkText, {
           lang: finalLanguageId,
           theme: finalThemeName,
         });
 
-        const chunkContainer = document.createElement("div");
-        chunkContainer.innerHTML = html;
-        chunkContainer.dataset.chunkIndex = String(chunkIndex);
-        this.applyLineDecorations(chunkContainer, start, metadata?.highlightLine);
-        this.insertChunkIntoDOM(previewElement, chunkContainer, position);
+        this.chunkHtmlCache.set(chunkIndex, html);
+        this.insertChunkIntoDOM(previewElement, html, chunkIndex, position);
         return;
       }
 
-      // save the state so the *next* sequential chunk can pick it up.
       if (nextGrammarState) {
         this.grammarStates.set(chunkIndex, nextGrammarState);
       }
 
-      const html = makeHtmlFromTokens(lineTokens, themeBg, themeFg, finalThemeName);
+      const showLineNumbers = (__PREVIEW_CFG__ as PreviewManagerConfig).showLineNumbers;
 
-      const chunkContainer = document.createElement("div");
-      chunkContainer.innerHTML = html;
-      chunkContainer.dataset.chunkIndex = String(chunkIndex);
+      const html = makeHtmlFromTokens(
+        lineTokens,
+        themeBg,
+        themeFg,
+        finalThemeName,
+        start,
+        metadata?.highlightLine,
+        showLineNumbers,
+      );
 
-      this.applyLineDecorations(chunkContainer, start, metadata?.highlightLine);
-      this.insertChunkIntoDOM(previewElement, chunkContainer, position);
+      this.chunkHtmlCache.set(chunkIndex, html);
+      this.insertChunkIntoDOM(previewElement, html, chunkIndex, position);
     };
 
     await renderChunk(initialChunk);
@@ -351,32 +340,16 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
     previewElement.addEventListener("scroll", this.scrollHandler, { passive: true });
   }
 
-  private applyLineDecorations(
-    chunkContainer: HTMLElement,
-    startLineIndex: number,
-    highlightLineNum: number | undefined,
-  ): void {
-    const showLineNumbers = (__PREVIEW_CFG__ as PreviewManagerConfig).showLineNumbers;
-    if (!showLineNumbers && highlightLineNum === undefined) return;
-
-    const linesEls = chunkContainer.querySelectorAll(".line");
-    const localHighlightIndex = highlightLineNum !== undefined ? highlightLineNum - startLineIndex : -1;
-
-    linesEls.forEach((lineEl, i) => {
-      if (showLineNumbers) {
-        (lineEl as HTMLElement).dataset.line = String(startLineIndex + i + 1);
-      }
-      if (i === localHighlightIndex) {
-        lineEl.classList.add("highlighted");
-      }
-    });
-  }
-
   private insertChunkIntoDOM(
     previewElement: HTMLElement,
-    chunkContainer: HTMLElement,
+    htmlContent: string,
+    chunkIndex: number,
     position: "append" | "prepend",
   ): void {
+    const chunkContainer = document.createElement("div");
+    chunkContainer.innerHTML = htmlContent;
+    chunkContainer.dataset.chunkIndex = String(chunkIndex);
+
     if (position === "prepend") {
       const oldScrollTop = previewElement.scrollTop;
       const oldScrollHeight = previewElement.scrollHeight;
@@ -408,5 +381,6 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
     this.lineParser?.clearCache();
     this.lineParser = undefined;
     this.grammarStates.clear();
+    this.chunkHtmlCache.clear();
   }
 }

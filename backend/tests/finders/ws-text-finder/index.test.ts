@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, type Mocked, vi } from "vitest";
 import * as vscode from "vscode";
-import { FileReader } from "../../../core/common/cache/file-reader";
 import { WorkspaceTextSearchProvider } from "../../../core/finders/ws-text-finder/index.finder";
 import { RegexFinder } from "../../../core/finders/ws-text-finder/regex-finder";
 import { RipgrepFinder } from "../../../core/finders/ws-text-finder/ripgrep-finder";
@@ -75,15 +74,6 @@ describe("WorkspaceTextSearchProvider", () => {
 
     expect(regexInstance.search).toHaveBeenCalledWith("test");
     expect(result.results).toEqual(["fallback"]);
-  });
-
-  it("returns error preview when file loading fails", async () => {
-    vi.mocked(FileReader.read).mockRejectedValueOnce(new Error("fail"));
-
-    const preview: any = await provider.getPreviewData("/tmp/file.ts");
-
-    expect(preview.content.text).toBe("Error loading file");
-    expect(preview.language).toBe("text");
   });
 
   it("opens file and reveals position on select", async () => {

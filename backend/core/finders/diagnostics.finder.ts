@@ -16,6 +16,14 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
   dataAdapter: "workspaceDiagnosticsAdapter",
 })
 export class DiagnosticsFinder implements FuzzyFinderProvider {
+  private cachedDiagnostics: DiagnosticData[] | null = null;
+
+  constructor() {
+    vscode.languages.onDidChangeDiagnostics(() => {
+      this.cachedDiagnostics = null;
+    });
+  }
+
   async querySelectableOptions(): Promise<DiagnosticsFinderData> {
     const diagnostics = await this.getAllDiagnostics();
 
@@ -85,6 +93,10 @@ export class DiagnosticsFinder implements FuzzyFinderProvider {
    * Gets all diagnostics from the workspace
    */
   private async getAllDiagnostics(): Promise<DiagnosticData[]> {
+    if (this.cachedDiagnostics) {
+      return this.cachedDiagnostics;
+    }
+
     const allDiagnostics: DiagnosticData[] = [];
     const diagnostics = vscode.languages.getDiagnostics();
 
@@ -115,6 +127,7 @@ export class DiagnosticsFinder implements FuzzyFinderProvider {
       return a.relativePath.localeCompare(b.relativePath);
     });
 
+    this.cachedDiagnostics = allDiagnostics;
     return allDiagnostics;
   }
 

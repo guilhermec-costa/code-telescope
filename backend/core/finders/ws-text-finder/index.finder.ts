@@ -52,7 +52,7 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
     }
 
     const allMatches = searchResult.results;
-    const CHUNK_SIZE = 2000;
+    const CHUNK_SIZE = 3500;
 
     const firstChunk = allMatches.slice(0, CHUNK_SIZE);
 
@@ -68,7 +68,7 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
         }),
       });
 
-      streamer.streamConcurrently(8);
+      streamer.streamConcurrently(16);
     }
 
     return {

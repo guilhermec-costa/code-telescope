@@ -1,4 +1,3 @@
-import { stat } from "node:fs/promises";
 import * as fg from "fast-glob";
 import * as vscode from "vscode";
 import { FileFinderData } from "../../../shared/exchange/file-search";
@@ -11,8 +10,6 @@ import { ChunkStreamer } from "../chunk-streamer";
 import { FileReader } from "../common/cache/file-reader";
 import { ExtensionConfigManager } from "../common/config-manager";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
-import { FuzzyFinderPanelController } from "../presentation/fuzzy-panel.controller";
-import { WebviewController } from "../presentation/webview.controller";
 
 @FuzzyFinderAdapter({
   fuzzy: "workspace.files",
@@ -22,7 +19,7 @@ import { WebviewController } from "../presentation/webview.controller";
 export class WorkspaceFileFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<FileFinderData> {
     const allFiles = await this.getWorkspaceFiles();
-    const CHUNK_SIZE = 2000;
+    const CHUNK_SIZE = 3500;
 
     const firstChunk = this.mapChunk(allFiles.slice(0, CHUNK_SIZE));
 
@@ -44,37 +41,6 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider {
     );
   }
 
-  private async detectAndNotifyLargeFiles(files: string[], maxBytes: number) {
-    const panel = FuzzyFinderPanelController.instance?.webview;
-    if (!panel) return;
-
-    const { default: pLimit } = await import("p-limit");
-    const limit = pLimit(32);
-
-    const heavyFiles: string[] = [];
-
-    await Promise.all(
-      files.map((file) =>
-        limit(async () => {
-          try {
-            const s = await stat(file);
-            if (s.size > maxBytes) {
-              heavyFiles.push(file);
-            }
-          } catch {}
-        }),
-      ),
-    );
-
-    if (heavyFiles.length === 0) return;
-
-    await WebviewController.sendMessage(panel, {
-      type: "removeHeavyOptions",
-      data: heavyFiles,
-      fuzzyProviderType: this.casted.fuzzyAdapterType,
-    });
-  }
-
   private async streamRemainingChunks(allFiles: string[], chunkSize: number) {
     const streamer = new ChunkStreamer(allFiles.slice(chunkSize), {
       messageType: "optionList",
@@ -84,7 +50,7 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider {
       mapChunk: this.mapChunk,
     });
 
-    streamer.streamConcurrently().then(() => {});
+    streamer.streamConcurrently(10).then(() => {});
   }
 
   async onSelect(filePath: string) {

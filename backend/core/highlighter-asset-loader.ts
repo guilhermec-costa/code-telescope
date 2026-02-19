@@ -1,5 +1,3 @@
-import * as fs from "fs/promises";
-import * as path from "path";
 import * as vscode from "vscode";
 import { LanguageGrammar, ThemeGrammar } from "../../shared/extension-webview-protocol";
 
@@ -29,15 +27,16 @@ export class HighlighterAssetLoader {
 
       if (matchedTheme) {
         try {
-          const themePath = path.join(ext.extensionPath, matchedTheme.path);
-          const content = await fs.readFile(themePath, "utf-8");
+          const themeUri = vscode.Uri.joinPath(ext.extensionUri, matchedTheme.path);
+          const contentBytes = await vscode.workspace.fs.readFile(themeUri);
+          const content = new TextDecoder().decode(contentBytes);
 
           const themeJson = this.parseJsonc(content);
 
           themeJson.name = themeName;
           themeJson.type = type;
 
-          if (themeName) this.langCache.set(themeName, themeJson);
+          if (themeName) this.themeCache.set(themeName, themeJson);
 
           return { name: themeName || "custom", type, jsonData: themeJson };
         } catch (e) {
@@ -64,8 +63,9 @@ export class HighlighterAssetLoader {
 
       if (matchedGrammar) {
         try {
-          const grammarPath = path.join(ext.extensionPath, matchedGrammar.path);
-          const content = await fs.readFile(grammarPath, "utf-8");
+          const grammarUri = vscode.Uri.joinPath(ext.extensionUri, matchedGrammar.path);
+          const contentBytes = await vscode.workspace.fs.readFile(grammarUri);
+          const content = new TextDecoder().decode(contentBytes);
 
           const grammarJson = this.parseJsonc(content);
 

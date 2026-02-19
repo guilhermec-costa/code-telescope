@@ -57,9 +57,7 @@ export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
     this.getPreviewData = async (identifier: string) => {
       const result = await def.backend.getPreviewData(identifier);
       return {
-        content: {
-          text: result.content,
-        },
+        content: result.content,
         language: result.language,
       } as any;
     };

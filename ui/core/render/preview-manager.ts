@@ -14,12 +14,6 @@ export class PreviewManager {
   private cfg: PreviewManagerConfig = __PREVIEW_CFG__;
   private static _instance: PreviewManager | undefined = undefined;
 
-  private lastPreviewedData: PreviewData = {
-    content: "",
-    language: "",
-    metadata: {},
-  };
-
   private chunkStore = {
     chunks: [],
     total: 0,
@@ -71,15 +65,13 @@ export class PreviewManager {
 
     await this.adapter.render(this.previewElement, data);
 
-    // Scroll after DOM is painted
     requestAnimationFrame(() => {
       this.scrollToHighlighted();
     });
-    this.lastPreviewedData = data;
   }
 
   clearPreview() {
-    this.lastPreviewedData = { content: "", language: "", metadata: {} };
+    this.chunkStore.reset();
     this.previewElement.innerHTML = "";
   }
 
@@ -171,8 +163,6 @@ export class PreviewManager {
       this.scrollToHighlighted();
     });
 
-    this.lastPreviewedData = previewData;
-    this.chunkStore.chunks = [];
     this.chunkStore.reset();
   }
 }

@@ -15,15 +15,13 @@ import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
 export class WebviewController {
   /** Search input HTML element used for filtering options. */
   private searchElement: HTMLInputElement;
-  private pendingHeavyFiles = new Set<string>();
   private activeProvider: FuzzyProviderType | undefined;
   private previewQueue: Promise<void> = Promise.resolve();
-  private vimHandler: VimInputHandler;
 
   constructor(private readonly keyboardHandler: KeyboardHandler) {
     console.log("[WebviewController] Initializing controller");
     this.searchElement = document.getElementById("search") as HTMLInputElement;
-    this.vimHandler = new VimInputHandler(this.searchElement);
+    new VimInputHandler(this.searchElement);
 
     this.setupEventListeners();
     this.setupKeyboardHandlers();
@@ -135,7 +133,7 @@ export class WebviewController {
    * Processes a list of options received from the extension.
    */
   private handleOptionListMessage(msg: OptionListMessage) {
-    const { fuzzyProviderType, dataAdapterType, data, isChunk } = msg;
+    const { fuzzyProviderType, dataAdapterType, data, isChunk, isLastChunk } = msg;
     const adapter = FuzzyFinderDataAdapterRegistry.instance.getAdapter(dataAdapterType);
 
     if (!adapter) return;
@@ -145,7 +143,7 @@ export class WebviewController {
     const options = adapter.parseOptions(data);
 
     if (isChunk) {
-      OptionListManager.instance.appendOptions(options);
+      OptionListManager.instance.appendOptions(options, isLastChunk);
     } else {
       OptionListManager.instance.setOptions(options);
     }

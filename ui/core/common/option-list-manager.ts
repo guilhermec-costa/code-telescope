@@ -65,15 +65,8 @@ export class OptionListManager {
     this.dataAdapter = adapter;
   }
 
-  /**
-   * Returns the debounce time used when filtering/searching,
-   */
-  public getAdapterSearchDebounceTime(): number {
-    if (this.dataAdapter && this.dataAdapter.debounceSearchTime) return this.dataAdapter.debounceSearchTime;
-    return 50;
-  }
-
-  public appendOptions(options: any[]): void {
+  public appendOptions(options: any[], isLastChunk: boolean): void {
+    const wasEmpty = this.allOptions.length === 0;
     this.allOptions.push(...options);
 
     if (this.searchElement.value === "") {
@@ -84,6 +77,12 @@ export class OptionListManager {
     }
 
     this.updateItemsCount();
+    if (isLastChunk || wasEmpty) {
+      this.selectedIndex = this.getRelativeFirstIndex();
+      this.render();
+      const first = this.getRelativeFirstItem();
+      if (first) this.requestPreview(first);
+    }
   }
 
   /**
@@ -255,9 +254,6 @@ export class OptionListManager {
     });
   }
 
-  /**
-   * Renders the option list using virtualization.
-   */
   /**
    * Renders the option list using virtualization.
    */

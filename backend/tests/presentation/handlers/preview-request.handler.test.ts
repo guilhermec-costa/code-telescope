@@ -64,7 +64,7 @@ describe("PreviewRequestHandler", () => {
     expect(WebviewController.sendMessage).toHaveBeenCalledWith(
       webview,
       expect.objectContaining({
-        type: "previewUpdate",
+        type: "fullPreviewUpdate",
         previewAdapterType: providerMock.fuzzyAdapterType,
         data: {
           mocked: true,
