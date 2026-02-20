@@ -1,0 +1,5 @@
+{
+  "name": "Code Telescope Dev",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "postCreateCommand": "npm install"
+}
