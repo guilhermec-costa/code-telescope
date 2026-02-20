@@ -1,4 +1,4 @@
-import * as fs from "fs/promises";
+import * as vscode from "vscode";
 import { resolvePathExt } from "../../../utils/files";
 
 export class FileReader {
@@ -23,10 +23,10 @@ export class FileReader {
     const ext = resolvePathExt(absPath);
     const isImg = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext);
 
-    const content = isImg
-      ? new Uint8Array(await fs.readFile(absPath)) // binary
-      : await fs.readFile(absPath, "utf-8"); // text
+    const uri = vscode.Uri.file(absPath);
+    const bytes = await vscode.workspace.fs.readFile(uri);
 
-    return content;
+    if (isImg) return new Uint8Array(bytes);
+    return new TextDecoder("utf-8").decode(bytes);
   }
 }
