@@ -56,7 +56,7 @@ describe("DynamicSearchHandler", () => {
       type: "optionList",
       data: dynSearchResult,
       fuzzyProviderType: providerMock.fuzzyAdapterType,
-      isChunk: false,
+      isChunk: true,
     });
   });
 

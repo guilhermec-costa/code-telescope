@@ -12,10 +12,13 @@ import { getGitApi } from "./api-utils";
 })
 export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
   /** Reference to the Git API exported by the official VS Code Git extension. */
-  private readonly gitApi: API | null;
+  private gitApi: API | null = null;
 
-  constructor(private options: GitBranchFinderOptions = {}) {
-    this.gitApi = getGitApi();
+  constructor(private options: GitBranchFinderOptions = {}) {}
+
+  private async ensureGitLoading() {
+    if (this.gitApi) return;
+    this.gitApi = await getGitApi();
   }
 
   onSelect(item: string): void | Promise<void> {
@@ -32,6 +35,7 @@ export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
    * Returns the list of branches to display in the fuzzy finder.
    */
   async querySelectableOptions(): Promise<BranchInfo[]> {
+    await this.ensureGitLoading();
     const branches = await this.findBranches();
     return branches.map((ref) => ({
       name: ref.name || "",
@@ -76,6 +80,7 @@ export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
   }
 
   async getPreviewData(branchName: string): Promise<PreviewData<CommitInfo[]>> {
+    await this.ensureGitLoading();
     const commits = await this.findCommitsFromBranch(branchName);
     return {
       content: commits,

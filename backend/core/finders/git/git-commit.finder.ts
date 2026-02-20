@@ -1,5 +1,6 @@
 import { CommitSearchInfo } from "../../../../shared/exchange/commit-search";
 import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
+import { API } from "../../../@types/git";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
 import { getGitApi } from "./api-utils";
 
@@ -9,13 +10,19 @@ import { getGitApi } from "./api-utils";
   dataAdapter: "gitCommitsAdapter",
 })
 export class GitCommitFuzzyFinder implements FuzzyFinderProvider {
-  private readonly gitApi = getGitApi();
+  private gitApi: API | null = null;
 
   onSelect(item: string): void | Promise<void> {
     throw new Error("Method not implemented.");
   }
 
+  private async ensureGitLoading() {
+    if (this.gitApi) return;
+    this.gitApi = await getGitApi();
+  }
+
   async querySelectableOptions(): Promise<CommitSearchInfo[]> {
+    await this.ensureGitLoading();
     const commits = await this.findCommitsFromCurrentBranch();
     return commits.map((commit) => ({
       hash: commit.hash,
@@ -38,6 +45,7 @@ export class GitCommitFuzzyFinder implements FuzzyFinderProvider {
   }
 
   async getPreviewData(hash: string): Promise<TextPreviewData> {
+    await this.ensureGitLoading();
     if (!this.gitApi) {
       return { kind: "text", content: "" };
     }

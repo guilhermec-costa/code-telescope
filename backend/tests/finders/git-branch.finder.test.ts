@@ -3,12 +3,14 @@ import { API, Ref } from "../../@types/git";
 import { getGitApi } from "../../core/finders/git/api-utils";
 import { GitBranchFuzzyFinder } from "../../core/finders/git/git-branch.finder";
 
-vi.mock("@backend/core/finders/git/api-utils.ts");
+vi.mock("../../core/finders/git/api-utils", () => ({
+  getGitApi: vi.fn(),
+}));
 
 describe("GitBranchFuzzyFinder", () => {
   let provider: GitBranchFuzzyFinder;
 
-  let gitApiMock = {
+  const gitApiMock = {
     repositories: [
       {
         getRefs: vi.fn(),
@@ -19,25 +21,18 @@ describe("GitBranchFuzzyFinder", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getGitApi).mockReturnValue(gitApiMock as unknown as API);
+    vi.mocked(getGitApi).mockResolvedValue(gitApiMock as unknown as API);
     provider = new GitBranchFuzzyFinder();
   });
 
-  it("should instantiate git api", () => {
-    vi.mocked(getGitApi).mockReturnValueOnce({} as any);
-    const _finder = new GitBranchFuzzyFinder();
-
-    expect(_finder["gitApi"]).toBeDefined();
-    expect(_finder["gitApi"]).not.toBeNull();
-  });
-
   it("returns empty list when git api is null", async () => {
-    vi.mocked(getGitApi).mockReturnValueOnce(null);
+    vi.mocked(getGitApi).mockResolvedValueOnce(null);
 
-    const _finder = new GitBranchFuzzyFinder();
-    const result = await _finder.querySelectableOptions();
+    const finder = new GitBranchFuzzyFinder();
+    const result = await finder.querySelectableOptions();
 
     expect(result).toEqual([]);
+    expect(getGitApi).toHaveBeenCalled();
   });
 
   it("returns only local branches by default", async () => {
@@ -50,6 +45,7 @@ describe("GitBranchFuzzyFinder", () => {
 
     const branches = await provider.querySelectableOptions();
 
+    expect(getGitApi).toHaveBeenCalled();
     expect(branches).toHaveLength(1);
     expect(branches[0].name).toBe("main");
   });
@@ -62,9 +58,10 @@ describe("GitBranchFuzzyFinder", () => {
 
     gitApiMock.repositories[0].getRefs.mockResolvedValueOnce(refs);
 
-    const _finder = new GitBranchFuzzyFinder({ includeRemotes: true });
-    const branches = await _finder.querySelectableOptions();
+    const finder = new GitBranchFuzzyFinder({ includeRemotes: true });
+    const branches = await finder.querySelectableOptions();
 
+    expect(getGitApi).toHaveBeenCalled();
     expect(branches).toHaveLength(2);
   });
 
@@ -78,12 +75,13 @@ describe("GitBranchFuzzyFinder", () => {
       },
     ];
 
-    gitApiMock.repositories[0].log.mockResolvedValue(commits);
+    gitApiMock.repositories[0].log.mockResolvedValueOnce(commits);
 
     const preview = await provider.getPreviewData("main");
 
+    expect(getGitApi).toHaveBeenCalled();
     expect(preview.content).toHaveLength(1);
-    expect(preview.content[0].hash).toBe("abc123");
-    expect(preview.content[0].message).toBe("initial commit");
+    expect((preview.content as any)[0].hash).toBe("abc123");
+    expect((preview.content as any)[0].message).toBe("initial commit");
   });
 });

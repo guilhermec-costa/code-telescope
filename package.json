@@ -38,9 +38,6 @@
         "onStartupFinished"
     ],
     "main": "./backend/dist/extension.js",
-    "extensionDependencies": [
-        "vscode.git"
-    ],
     "contributes": {
         "commands": [
             {
