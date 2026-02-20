@@ -1032,6 +1032,18 @@ Complete working examples are available in the `examples/` directory:
 
 ---
 
+## Environment Support
+
+| Environment | Theme | Syntax Highlighting |
+|---|---|---|
+| Linux / Windows (local) | ✅ Full support | ✅ Full support |
+| WSL | ✅ Resolved from Windows host (`/mnt/c`) | ✅ Resolved from Windows host |
+| Dev Container | ⚠️ Falls back to VS Code CSS variables | ⚠️ Falls back to `plaintext` |
+
+WSL support works by reading extensions directly from the Windows host filesystem, including both user-installed extensions and VS Code built-in grammars. See [`.devcontainer/README.md`](.devcontainer/README.md) for details on Dev Container limitations.
+
+---
+
 ## Why This Architecture?
 
 1. **Loose coupling**: Finders don't know about UI, UI doesn't know about implementation details

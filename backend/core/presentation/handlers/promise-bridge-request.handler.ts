@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { FromWebviewKindMessage } from "../../../../shared/extension-webview-protocol";
 import { IWebviewMessageHandler } from "../../abstractions/webview-message-handler";
 import { WebviewMessageHandler } from "../../decorators/webview-message-handler.decorator";
-import { HighlighterAssetLoader } from "../../highlighter-asset-loader";
+import { HighlighterAssetLoader } from "../../highlighter/highlighter-asset-loader";
 import { WebviewController } from "../webview.controller";
 
 @WebviewMessageHandler()

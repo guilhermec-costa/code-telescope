@@ -6,7 +6,7 @@ import { toInnerHTML } from "../../../utils/html";
 import { IPreviewRendererAdapter } from "../../abstractions/preview-renderer-adapter";
 import { OptionListManager } from "../../common/option-list-manager";
 import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapter.decorator";
-import { PreviewRendererAdapterRegistry, SyntaxHighlighter } from "../../registry/preview-adapter.registry";
+import { SyntaxHighlighter } from "../../registry/preview-adapter.registry";
 import { HighlighterManager } from "../../render/highlighter-manager";
 
 const CHUNK_SIZE = 30;
@@ -186,26 +186,14 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
     }
 
     let finalThemeName = data.theme;
-    let themeLoadError = false;
 
     if (data.theme) {
       const themeResult = await HighlighterManager.loadThemeIfNeeded(data.theme);
       if (themeResult.ok) {
         finalThemeName = themeResult.value.jsonData?.name || themeResult.value.name;
       } else {
-        themeLoadError = true;
+        finalThemeName = "none";
       }
-    }
-
-    if (themeLoadError) {
-      const failedAdapter = PreviewRendererAdapterRegistry.instance.getAdapter("preview.failed");
-      await failedAdapter.render(previewElement, {
-        content: {
-          title: "Preview error",
-          message: "An error occurred while rendering this preview (Theme Load Error).",
-        },
-      });
-      return;
     }
 
     let themeBg = "#1e1e1e";
