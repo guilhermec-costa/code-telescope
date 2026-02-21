@@ -28,6 +28,7 @@ export class DynamicSearchHandler implements IWebviewMessageHandler<"dynamicSear
       fuzzyProviderType: provider.fuzzyAdapterType,
       dataAdapterType: provider.dataAdapterType,
       isChunk: true,
+      query: msg.query,
     });
   }
 }

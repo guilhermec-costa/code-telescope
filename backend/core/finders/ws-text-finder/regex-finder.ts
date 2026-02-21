@@ -1,6 +1,6 @@
-import * as fs from "fs/promises";
 import { TextSearchMatch } from "../../../../shared/exchange/workspace-text-search";
 import { getSvgIconUrl } from "../../../utils/files";
+import { FileReader } from "../../common/cache/file-reader";
 import { WorkspaceFileFinder } from "../ws-files.finder";
 
 function escapeRegExp(string: string) {
@@ -33,11 +33,7 @@ export class RegexFinder {
             if (matches.length >= MAX_RESULTS) return;
 
             try {
-              const stat = await fs.stat(uri);
-              // files > 300kb
-              if (stat.size > 300 * 1024) return;
-
-              const content = await fs.readFile(uri, "utf-8");
+              const content = (await FileReader.read(uri)) as string;
               queryRegex.lastIndex = 0;
 
               const match = queryRegex.exec(content);

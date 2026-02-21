@@ -57,6 +57,7 @@ describe("DynamicSearchHandler", () => {
       data: dynSearchResult,
       fuzzyProviderType: providerMock.fuzzyAdapterType,
       isChunk: true,
+      query,
     });
   });
 

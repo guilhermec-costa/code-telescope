@@ -17,6 +17,7 @@ export class WebviewController {
   private searchElement: HTMLInputElement;
   private activeProvider: FuzzyProviderType | undefined;
   private previewQueue: Promise<void> = Promise.resolve();
+  private lastSearchQuery: string | undefined;
 
   constructor(private readonly keyboardHandler: KeyboardHandler) {
     console.log("[WebviewController] Initializing controller");
@@ -125,6 +126,7 @@ export class WebviewController {
    * Clears the search input and the preview section.
    */
   private handleResetWebview() {
+    this.lastSearchQuery = undefined;
     PreviewManager.instance.clearPreview();
     OptionListManager.instance.clearOptions();
   }
@@ -133,7 +135,7 @@ export class WebviewController {
    * Processes a list of options received from the extension.
    */
   private handleOptionListMessage(msg: OptionListMessage) {
-    const { fuzzyProviderType, dataAdapterType, data, isChunk, isLastChunk } = msg;
+    const { fuzzyProviderType, dataAdapterType, data, isChunk, isLastChunk, query } = msg;
     const adapter = FuzzyFinderDataAdapterRegistry.instance.getAdapter(dataAdapterType);
 
     if (!adapter) return;
@@ -143,8 +145,14 @@ export class WebviewController {
     const options = adapter.parseOptions(data);
 
     if (isChunk) {
+      const isNewSearch = query !== this.lastSearchQuery;
+      if (isNewSearch) {
+        this.lastSearchQuery = query;
+        OptionListManager.instance.clearOptions();
+      }
       OptionListManager.instance.appendOptions(options, isLastChunk);
     } else {
+      this.lastSearchQuery = undefined;
       OptionListManager.instance.setOptions(options);
     }
 

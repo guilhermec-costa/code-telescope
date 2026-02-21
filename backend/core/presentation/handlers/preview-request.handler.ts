@@ -6,6 +6,7 @@ import { IWebviewMessageHandler } from "../../abstractions/webview-message-handl
 import { BufferChunkStreamer } from "../../buffer-chunk-streamer";
 import { WebviewMessageHandler } from "../../decorators/webview-message-handler.decorator";
 import { FuzzyFinderPanelController } from "../fuzzy-panel.controller";
+import { PreviewRequestState } from "../preview-request-state";
 import { WebviewController } from "../webview.controller";
 
 const CONTENT_CHUNK_THRESHOLD_BYTES = 30 * 1024; // 30KB
@@ -17,7 +18,12 @@ export class PreviewRequestHandler implements IWebviewMessageHandler<"previewReq
 
   async handle(msg: Extract<FromWebviewKindMessage, { type: "previewRequest" }>, wv: vscode.Webview) {
     const provider = FuzzyFinderPanelController.instance!.provider;
-    const { selectedId } = msg.data;
+    const { selectedId, requestId } = msg.data;
+
+    if (requestId <= PreviewRequestState.getLatestPreviewRequestId()) {
+      return;
+    }
+    PreviewRequestState.setLatestPreviewRequestId(requestId);
 
     const previewData = await provider.getPreviewData(selectedId);
     const contentType = previewData.kind;
@@ -30,15 +36,20 @@ export class PreviewRequestHandler implements IWebviewMessageHandler<"previewReq
       const isLargeContent = textContent.length > CONTENT_CHUNK_THRESHOLD_BYTES;
 
       if (isLargeContent && textContent.length > 0) {
-        return await this.sendChunkedPreview(provider, previewData, textContent);
+        return await this.sendChunkedPreview(provider, previewData, textContent, requestId);
       } else {
-        return await this.sendFullPreview(provider, previewData, wv);
+        return await this.sendFullPreview(provider, previewData, wv, requestId);
       }
     }
-    await this.sendFullPreview(provider, previewData, wv);
+    await this.sendFullPreview(provider, previewData, wv, requestId);
   }
 
-  private async sendChunkedPreview(provider: IFuzzyFinderProvider, previewData: PreviewData, buffer: string) {
+  private async sendChunkedPreview(
+    provider: IFuzzyFinderProvider,
+    previewData: PreviewData,
+    buffer: string,
+    requestId: number,
+  ) {
     const theme =
       provider.fuzzyAdapterType !== "workspace.colorschemes" ? Globals.USER_THEME : (previewData.theme as string);
     const chunkStreamer = new BufferChunkStreamer(buffer, {
@@ -47,12 +58,13 @@ export class PreviewRequestHandler implements IWebviewMessageHandler<"previewReq
       theme,
       language: previewData.language as string,
       chunkSizeBytes: LARGE_CONTENT_CHUNK_SIZE,
+      requestId,
     });
 
     await chunkStreamer.streamConcurrently(4);
   }
 
-  private async sendFullPreview(provider: any, previewData: PreviewData, wv: vscode.Webview) {
+  private async sendFullPreview(provider: any, previewData: PreviewData, wv: vscode.Webview, requestId: number) {
     if (provider.fuzzyAdapterType !== "workspace.colorschemes") {
       previewData.theme = Globals.USER_THEME;
     }
@@ -61,6 +73,7 @@ export class PreviewRequestHandler implements IWebviewMessageHandler<"previewReq
       type: "fullPreviewUpdate",
       previewAdapterType: provider.previewAdapterType,
       data: previewData,
+      requestId,
     });
   }
 }

@@ -2,6 +2,7 @@ import * as fg from "fast-glob";
 import * as vscode from "vscode";
 import { FileFinderData } from "../../../shared/exchange/file-search";
 import { ImagePreviewData, TextPreviewData } from "../../../shared/extension-webview-protocol";
+import { DEFAULT_EXCLUDE_PATTERNS } from "../../config/exclude-patterns";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { getLanguageIdForFile, getSvgIconUrl, resolvePathExt } from "../../utils/files";
@@ -64,7 +65,7 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider {
     const folders = vscode.workspace.workspaceFolders;
     if (!folders || folders.length === 0) return [];
 
-    const ignore = [...excludePatterns];
+    const ignore = [...excludePatterns, ...DEFAULT_EXCLUDE_PATTERNS];
     if (excludeHidden) ignore.push("**/.*");
 
     const entries = includePatterns.length > 0 ? includePatterns : ["**/*"];
@@ -101,7 +102,7 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider {
     if (!folders || folders.length === 0) return [];
 
     const includes = includePatterns.length > 0 ? includePatterns : ["**/*"];
-    const excludes = [...excludePatterns];
+    const excludes = [...excludePatterns, ...DEFAULT_EXCLUDE_PATTERNS];
 
     if (excludeHidden) {
       excludes.push("**/.*");

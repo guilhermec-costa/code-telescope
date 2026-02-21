@@ -11,6 +11,7 @@ export interface BufferChunkOptions {
   language: string;
   theme: string;
   chunkSizeBytes?: number;
+  requestId: number;
 }
 
 export class BufferChunkStreamer {
@@ -41,19 +42,21 @@ export class BufferChunkStreamer {
           chunkIndex: index,
           totalChunks,
           content: chunk,
+          requestId: this.options.requestId,
         }),
       ),
     );
 
     await Promise.all(jobs);
 
-    const { language, theme } = this.options;
+    const { language, theme, requestId } = this.options;
     await WebviewController.sendMessage(webview, {
       type: "previewComplete",
       previewAdapterType,
       language,
       theme,
       metadata,
+      requestId,
     });
   }
 

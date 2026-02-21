@@ -3,6 +3,7 @@ import { FromWebviewKindMessage } from "../../../../shared/extension-webview-pro
 import { IWebviewMessageHandler } from "../../abstractions/webview-message-handler";
 import { WebviewMessageHandler } from "../../decorators/webview-message-handler.decorator";
 import { FuzzyFinderPanelController } from "../fuzzy-panel.controller";
+import { PreviewRequestState } from "../preview-request-state";
 import { WebviewController } from "../webview.controller";
 
 @WebviewMessageHandler()
@@ -10,6 +11,8 @@ export class WebviewDOMReadyHandler implements IWebviewMessageHandler<"webviewDO
   readonly type = "webviewDOMReady";
 
   async handle(msg: Extract<FromWebviewKindMessage, { type: "webviewDOMReady" }>, wv: vscode.Webview) {
+    PreviewRequestState.resetPreviewRequestId();
+
     const provider = FuzzyFinderPanelController.instance!.provider;
     const items = await provider.querySelectableOptions();
 

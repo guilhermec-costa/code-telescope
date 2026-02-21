@@ -20,15 +20,25 @@ export class OptionListManager {
   private listElement: HTMLUListElement;
   private itemsCountElement: HTMLElement | null;
   private selectedIndex: number = 0;
-
-  /** Prefix used to generate DOM ids for option items */
   private readonly OPTION_ITEM_ID_PREFIX = "option-item-id-";
 
   private readonly virtualizer: Virtualizer;
 
+  private getPreviewerDebounceTime(): number {
+    const provider = __PROVIDER__ as FuzzyProviderType;
+    switch (provider) {
+      case "workspace.colorschemes":
+        return 250;
+      case "git.commits":
+        return 150;
+      default:
+        return 0;
+    }
+  }
+
   private debouncedRequestPreview = debounce((value: string) => {
     PreviewManager.instance.requestPreview(value);
-  }, 0);
+  }, this.getPreviewerDebounceTime());
 
   private constructor() {
     this.listElement = document.getElementById("option-list") as HTMLUListElement;

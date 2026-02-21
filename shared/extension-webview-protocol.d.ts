@@ -59,6 +59,7 @@ export interface OptionListMessage {
   dataAdapterType: DataAdapterType;
   isChunk: boolean;
   isLastChunk?: boolean;
+  query?: string;
 }
 
 /**
@@ -69,6 +70,7 @@ export interface PreviewUpdateMessage {
   type: "fullPreviewUpdate";
   data: PreviewData;
   previewAdapterType: PreviewRendererType;
+  requestId: number;
 }
 
 export interface PreviewChunkMessage {
@@ -76,6 +78,7 @@ export interface PreviewChunkMessage {
   chunkIndex: number;
   totalChunks: number;
   content: string;
+  requestId: number;
 }
 
 export interface PreviewCompleteMessage {
@@ -84,6 +87,7 @@ export interface PreviewCompleteMessage {
   theme: string;
   language: string;
   metadata?: Record<string, unknown>;
+  requestId: number;
 }
 
 export interface ResetWebviewMessage {
@@ -170,6 +174,7 @@ export interface PreviewRequestMessage {
   type: "previewRequest";
   data: {
     selectedId: string;
+    requestId: number;
   };
 }
 

@@ -424,7 +424,7 @@
                 },
                 "codeTelescope.wsFileFinder.maxResults": {
                     "type": "number",
-                    "default": 2000,
+                    "default": 50000,
                     "description": "Max number of results to list",
                     "order": 8
                 },
@@ -475,7 +475,7 @@
                 },
                 "codeTelescope.wsTextFinder.maxResults": {
                     "type": "number",
-                    "default": 10000,
+                    "default": 50000,
                     "description": "Maximum number of search results to return",
                     "order": 15
                 },

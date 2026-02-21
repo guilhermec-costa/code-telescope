@@ -3,6 +3,7 @@ import * as fs from "fs/promises";
 import path from "path";
 import * as vscode from "vscode";
 import { TextSearchMatch } from "../../../../shared/exchange/workspace-text-search";
+import { DEFAULT_EXCLUDE_PATTERNS } from "../../../config/exclude-patterns";
 import { getSvgIconUrl } from "../../../utils/files";
 import { ExtensionConfigManager } from "../../common/config-manager";
 import { RipgrepArgsBuilder } from "./ripgrep-args.builder";
@@ -85,7 +86,7 @@ export class RipgrepFinder {
       .query(query)
       .maxColumns(searchCfg.maxColumns)
       .maxFileSize(searchCfg.maxFileSize)
-      .exclude(searchCfg.excludePatterns);
+      .exclude([...searchCfg.excludePatterns, ...DEFAULT_EXCLUDE_PATTERNS]);
 
     const { fixedStrings } = ExtensionConfigManager.wsTextFinderCfg;
     if (fixedStrings) _args.withFixedStrings();
