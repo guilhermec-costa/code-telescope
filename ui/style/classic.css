@@ -106,8 +106,8 @@ body {
   font-family: var(--font-family);
   background: var(--bg);
   text-align: center;
-  width: 12%;
   font-size: 14px;
+  padding: 2px 8px;
   font-weight: 400;
   top: -50%;
   left: 50%;
@@ -117,7 +117,7 @@ body {
 
 #search {
   width: 100%;
-  position: relative;;
+  position: relative;
   padding: 10px 56px 10px 10px;
   background: transparent;
   color: var(--input-fg);
@@ -126,6 +126,7 @@ body {
   font-family: var(--font-family);
   font-size: var(--prompt-font-size);
   font-weight: 400;
+  box-sizing: border-box;
   letter-spacing: 0;
 }
 

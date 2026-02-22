@@ -110,7 +110,9 @@ export class VimInputHandler {
     const borderLeft = parseFloat(inputStyle.borderLeftWidth) || 0;
     const lineHeight = parseFloat(inputStyle.lineHeight) || parseFloat(inputStyle.fontSize) || rect.height;
 
-    this.cursorElement.style.left = `${rect.left + paddingLeft + borderLeft + textWidth}px`;
+    const scrollLeft = this.input.scrollLeft;
+
+    this.cursorElement.style.left = `${rect.left + paddingLeft + borderLeft + textWidth - scrollLeft}px`;
     this.cursorElement.style.top = `${rect.top + (rect.height - lineHeight) / 2}px`;
     this.cursorElement.style.display = "block";
   }
