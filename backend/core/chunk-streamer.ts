@@ -54,15 +54,16 @@ export class ChunkStreamer<T> {
       const chunk = this.items.slice(i, i + this.chunkSize);
 
       jobs.push(
-        limit(() =>
+        limit(async () => {
+          const mapped = mapChunk ? await mapChunk(chunk) : chunk;
           WebviewController.sendMessage(webview, {
             type: messageType as any,
-            data: mapChunk ? mapChunk(chunk) : chunk,
+            data: mapped,
             fuzzyProviderType,
             dataAdapterType,
             totalLimit,
-          }),
-        ),
+          });
+        }),
       );
     }
 

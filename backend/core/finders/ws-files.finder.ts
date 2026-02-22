@@ -19,10 +19,10 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
 })
 export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvider<FileFinderData> {
   public readonly chunkSize = 3500;
+  public readonly concurrency = 16;
 
   async querySelectableOptions() {
-    const results = await this.getWorkspaceFiles();
-    return this.mapChunk(results);
+    return await this.getWorkspaceFiles();
   }
 
   public mapChunk(files: string[]): FileFinderData {

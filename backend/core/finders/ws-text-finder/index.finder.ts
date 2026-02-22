@@ -21,6 +21,7 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, Chunkab
   private readonly regexFinder: RegexFinder;
   private readonly ripgrepFinder: RipgrepFinder;
   public readonly chunkSize: number = 3500;
+  public readonly concurrency = 16;
 
   constructor() {
     this.regexFinder = new RegexFinder();
@@ -28,10 +29,10 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, Chunkab
   }
 
   async querySelectableOptions() {
-    return { results: [], query: "", message: "Type to search..." };
+    return [];
   }
 
-  public mapChunk(chunk: any) {
+  public mapChunk(chunk: any[]) {
     return {
       results: chunk,
     };

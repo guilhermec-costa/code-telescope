@@ -74,14 +74,14 @@ export class OptionListManager {
     this.dataAdapter = adapter;
   }
 
-  public appendOptions(options: any[], totalLimit: number): void {
+  public appendChunk(chunk: any[], totalLimit: number): void {
     const wasEmpty = this.allOptions.length === 0;
-    this.allOptions.push(...options);
+    this.allOptions.push(...chunk);
 
     if (this.searchElement.value === "") {
       this.filteredOptions = this.allOptions;
     } else {
-      const newFiltered = options.filter((opt) => this.dataAdapter!.filterOption(opt, this.searchElement.value));
+      const newFiltered = chunk.filter((opt) => this.dataAdapter!.filterOption(opt, this.searchElement.value));
       this.filteredOptions.push(...newFiltered);
     }
 
@@ -90,8 +90,9 @@ export class OptionListManager {
 
     const isComplete = this.allOptions.length >= totalLimit;
     this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
-    this.render();
     if (isComplete || wasEmpty) {
+      this.render();
+      this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
       const first = this.getRelativeFirstItem();
       if (first) this.requestPreview(first);
     }
@@ -105,8 +106,9 @@ export class OptionListManager {
     if (!this.dataAdapter) return;
 
     this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter.filterOption(opt, query));
-
     this.selectedIndex = this.getRelativeFirstIndex();
+
+    this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
     this.render();
     this.updateItemsCount();
 
@@ -189,11 +191,20 @@ export class OptionListManager {
   }
 
   private setupScrollListener(): void {
-    this.listElement.addEventListener("scroll", () => {
+    const renderVirtualized = () => {
       this.virtualizer.renderVirtualized(this.filteredOptions, this.searchElement.value, (item, idx, q) =>
         this.createListItem(item, idx, q),
       );
+    };
+
+    this.listElement.addEventListener("scroll", renderVirtualized);
+
+    const resizeObserver = new ResizeObserver(() => {
+      this.scrollToSelected();
+      renderVirtualized();
     });
+
+    resizeObserver.observe(this.listElement);
   }
 
   private moveSelection(direction: number): void {

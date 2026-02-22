@@ -142,7 +142,7 @@ export class WebviewController {
     this.activeProvider = fuzzyProviderType;
     OptionListManager.instance.setAdapter(adapter);
     const options = adapter.parseOptions(data);
-    OptionListManager.instance.appendOptions(options, totalLimit);
+    OptionListManager.instance.appendChunk(options, totalLimit);
 
     if (this.searchElement.value) {
       OptionListManager.instance.filter(this.searchElement.value);

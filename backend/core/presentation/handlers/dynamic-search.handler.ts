@@ -22,29 +22,30 @@ export class DynamicSearchHandler implements IWebviewMessageHandler<"dynamicSear
 
     if (!provider.supportsDynamicSearch || !provider.searchOnDynamicMode) return;
 
-    const results = await provider.searchOnDynamicMode(msg.query);
-    const totalLimit = Array.isArray(results) ? results.length : 0;
+    const searchResult = await provider.searchOnDynamicMode(msg.query);
+    const resultsArray = searchResult.results ?? [];
+    const totalLimit = resultsArray.length;
 
     if (isChunkableProvider(provider)) {
-      const streamer = new ChunkStreamer(results, {
+      const streamer = new ChunkStreamer(resultsArray, {
         messageType: "optionList",
         fuzzyProviderType: provider.fuzzyAdapterType,
         dataAdapterType: provider.dataAdapterType,
         chunkSize: provider.chunkSize,
         totalLimit,
-        mapChunk: (chunk) => ({
-          ...provider.mapChunk(chunk),
+        mapChunk: async (chunk) => ({
+          ...(await provider.mapChunk(chunk)),
           query: msg.query,
         }),
       });
 
-      streamer.streamConcurrently(16).catch(console.error);
+      streamer.streamConcurrently(provider.concurrency).catch(console.error);
       return;
     }
 
     await WebviewController.sendMessage(wv, {
       type: "optionList",
-      data: results,
+      data: searchResult,
       fuzzyProviderType: provider.fuzzyAdapterType,
       dataAdapterType: provider.dataAdapterType,
       query: msg.query,

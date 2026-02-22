@@ -29,15 +29,13 @@ export class WebviewDOMReadyHandler implements IWebviewMessageHandler<"webviewDO
         totalLimit,
       });
 
-      streamer.streamConcurrently(10).catch(console.error);
+      streamer.streamConcurrently(provider.concurrency).then(() => {});
       return;
     }
 
-    const items = await provider.querySelectableOptions();
-
     await WebviewController.sendMessage(wv, {
       type: "optionList",
-      data: items,
+      data: allItems,
       fuzzyProviderType: provider.fuzzyAdapterType,
       dataAdapterType: provider.dataAdapterType,
       totalLimit,

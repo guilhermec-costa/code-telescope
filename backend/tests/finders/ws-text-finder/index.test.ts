@@ -39,10 +39,7 @@ describe("WorkspaceTextSearchProvider", () => {
 
   it("returns initial selectable options", async () => {
     const result = await provider.querySelectableOptions();
-
-    expect(result.results).toEqual([]);
-    expect(result.query).toBe("");
-    expect(result.message).toBe("Type to search...");
+    expect(result).toEqual([]);
   });
 
   it("returns empty results for short query", async () => {

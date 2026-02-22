@@ -196,7 +196,7 @@ function testFunction() {
       assert.ok(options, "querySelectableOptions should return data");
 
       if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-        assert.ok(options.relative.length > 0, "Should find files in workspace");
+        assert.ok(options.length > 0, "Should find files in workspace");
       }
     });
 
