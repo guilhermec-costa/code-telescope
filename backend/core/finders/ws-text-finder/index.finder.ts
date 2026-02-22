@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../../utils/files";
-import { ChunkStreamer } from "../../chunk-streamer";
+import { ChunkableProvider } from "../../abstractions/chunkable-provider";
 import { FileReader } from "../../common/cache/file-reader";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
 import { RegexFinder } from "./regex-finder";
@@ -16,10 +16,11 @@ import { RipgrepFinder } from "./ripgrep-finder";
   previewRenderer: "preview.buffer",
   dataAdapter: "textSearchAdapter",
 })
-export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
+export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, ChunkableProvider<{ results: any }> {
   public readonly supportsDynamicSearch = true;
   private readonly regexFinder: RegexFinder;
   private readonly ripgrepFinder: RipgrepFinder;
+  public readonly chunkSize: number = 3500;
 
   constructor() {
     this.regexFinder = new RegexFinder();
@@ -28,6 +29,12 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
 
   async querySelectableOptions() {
     return { results: [], query: "", message: "Type to search..." };
+  }
+
+  public mapChunk(chunk: any) {
+    return {
+      results: chunk,
+    };
   }
 
   /**
@@ -52,29 +59,10 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider {
     }
 
     const allMatches = searchResult.results;
-    const CHUNK_SIZE = 3500;
-
-    const firstChunk = allMatches.slice(0, CHUNK_SIZE);
-
-    if (allMatches.length > CHUNK_SIZE) {
-      const streamer = new ChunkStreamer(allMatches.slice(CHUNK_SIZE), {
-        messageType: "optionList",
-        fuzzyProviderType: "workspace.text",
-        dataAdapterType: "textSearchAdapter",
-        chunkSize: CHUNK_SIZE,
-        mapChunk: (chunk) => ({
-          results: chunk,
-          query,
-        }),
-      });
-
-      streamer.streamConcurrently(16);
-    }
 
     return {
-      results: firstChunk,
+      results: allMatches,
       query,
-      isChunked: allMatches.length > CHUNK_SIZE,
     };
   }
 

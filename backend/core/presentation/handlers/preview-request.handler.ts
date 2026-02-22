@@ -61,7 +61,7 @@ export class PreviewRequestHandler implements IWebviewMessageHandler<"previewReq
       requestId,
     });
 
-    await chunkStreamer.streamConcurrently(4);
+    await chunkStreamer.streamConcurrently(8);
   }
 
   private async sendFullPreview(provider: any, previewData: PreviewData, wv: vscode.Webview, requestId: number) {

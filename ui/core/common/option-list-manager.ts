@@ -74,7 +74,7 @@ export class OptionListManager {
     this.dataAdapter = adapter;
   }
 
-  public appendOptions(options: any[], isLastChunk: boolean): void {
+  public appendOptions(options: any[], totalLimit: number): void {
     const wasEmpty = this.allOptions.length === 0;
     this.allOptions.push(...options);
 
@@ -86,33 +86,15 @@ export class OptionListManager {
     }
 
     this.updateItemsCount();
-    if (isLastChunk || wasEmpty) {
-      this.selectedIndex = this.getRelativeFirstIndex();
-      this.render();
+    this.selectedIndex = this.getRelativeFirstIndex();
+
+    const isComplete = this.allOptions.length >= totalLimit;
+    this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
+    this.render();
+    if (isComplete || wasEmpty) {
       const first = this.getRelativeFirstItem();
       if (first) this.requestPreview(first);
     }
-  }
-
-  /**
-   * Initializes the option list with a new dataset.
-   * Resets state, renders items and requests preview for the first option.
-   */
-  public setOptions(options: any[]): void {
-    if (!this.dataAdapter) {
-      console.error("[OptionListManager] No adapter set");
-      return;
-    }
-
-    this.allOptions = options;
-    this.filteredOptions = options;
-
-    this.selectedIndex = this.restoreSelectedIndex();
-    this.updateItemsCount();
-
-    this.render();
-    const first = this.getRelativeFirstItem();
-    if (first) this.requestPreview(first);
   }
 
   /**
@@ -220,17 +202,16 @@ export class OptionListManager {
     const previousIndex = this.selectedIndex;
     this.selectedIndex = (this.selectedIndex + direction + this.filteredOptions.length) % this.filteredOptions.length;
 
-    const prevLi = document.getElementById(`${this.OPTION_ITEM_ID_PREFIX}${previousIndex}`);
-    if (prevLi) {
-      prevLi.classList.remove("selected");
-    }
-
-    const curLi = document.getElementById(`${this.OPTION_ITEM_ID_PREFIX}${this.selectedIndex}`);
-    if (curLi) {
-      curLi.classList.add("selected");
-    }
-
     this.scrollToSelected();
+
+    requestAnimationFrame(() => {
+      const prevLi = document.getElementById(`${this.OPTION_ITEM_ID_PREFIX}${previousIndex}`);
+      prevLi?.classList.remove("selected");
+
+      const curLi = document.getElementById(`${this.OPTION_ITEM_ID_PREFIX}${this.selectedIndex}`);
+      curLi?.classList.add("selected");
+    });
+
     const selectedOption = this.filteredOptions.at(this.selectedIndex);
     this.requestPreview(selectedOption);
   }
@@ -239,9 +220,7 @@ export class OptionListManager {
    * Scrolls the list to keep the selected item visible.
    */
   private scrollToSelected() {
-    requestAnimationFrame(() => {
-      this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
-    });
+    this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
   }
 
   private applySortOnOptions(options: any[]) {
@@ -282,7 +261,6 @@ export class OptionListManager {
 
     const afterRender = performance.now();
 
-    this.scrollToSelected();
     const afterScroll = performance.now();
 
     console.log(

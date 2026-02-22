@@ -57,9 +57,8 @@ export interface OptionListMessage {
   data: any;
   fuzzyProviderType: FuzzyProviderType;
   dataAdapterType: DataAdapterType;
-  isChunk: boolean;
-  isLastChunk?: boolean;
   query?: string;
+  totalLimit: number;
 }
 
 /**

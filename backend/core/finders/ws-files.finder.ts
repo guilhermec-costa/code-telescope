@@ -6,8 +6,8 @@ import { DEFAULT_EXCLUDE_PATTERNS } from "../../config/exclude-patterns";
 import { Globals } from "../../globals";
 import { execCmd } from "../../utils/commands";
 import { getLanguageIdForFile, getSvgIconUrl, resolvePathExt } from "../../utils/files";
+import { ChunkableProvider } from "../abstractions/chunkable-provider";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { ChunkStreamer } from "../chunk-streamer";
 import { FileReader } from "../common/cache/file-reader";
 import { ExtensionConfigManager } from "../common/config-manager";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
@@ -17,20 +17,15 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
   previewRenderer: "preview.buffer",
   dataAdapter: "workspaceFilesAdapter",
 })
-export class WorkspaceFileFinder implements FuzzyFinderProvider {
-  async querySelectableOptions(): Promise<FileFinderData> {
-    const allFiles = await this.getWorkspaceFiles();
-    const CHUNK_SIZE = 3500;
+export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvider<FileFinderData> {
+  public readonly chunkSize = 3500;
 
-    const firstChunk = this.mapChunk(allFiles.slice(0, CHUNK_SIZE));
-
-    if (allFiles.length > CHUNK_SIZE) {
-      this.streamRemainingChunks(allFiles, CHUNK_SIZE);
-    }
-    return firstChunk;
+  async querySelectableOptions() {
+    const results = await this.getWorkspaceFiles();
+    return this.mapChunk(results);
   }
 
-  private mapChunk(files: string[]): FileFinderData {
+  public mapChunk(files: string[]): FileFinderData {
     return files.reduce<FileFinderData>(
       (result, fileEntry) => {
         result.abs.push(fileEntry);
@@ -40,18 +35,6 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider {
       },
       { abs: [], relative: [], svgIconUrl: [] },
     );
-  }
-
-  private async streamRemainingChunks(allFiles: string[], chunkSize: number) {
-    const streamer = new ChunkStreamer(allFiles.slice(chunkSize), {
-      messageType: "optionList",
-      fuzzyProviderType: this.casted.fuzzyAdapterType,
-      dataAdapterType: this.casted.dataAdapterType,
-      chunkSize,
-      mapChunk: this.mapChunk,
-    });
-
-    streamer.streamConcurrently(10).then(() => {});
   }
 
   async onSelect(filePath: string) {

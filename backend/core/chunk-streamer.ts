@@ -8,6 +8,7 @@ export interface ChunkStreamOptions<T> {
   dataAdapterType: DataAdapterType;
   chunkSize?: number;
   mapChunk?: (chunk: T[]) => any;
+  totalLimit: number;
 }
 
 export class ChunkStreamer<T> {
@@ -27,15 +28,12 @@ export class ChunkStreamer<T> {
       await new Promise((r) => setTimeout(r, 16)); // 1 frame
 
       const chunk = this.items.slice(i, i + this.chunkSize);
-      const isLastChunk = i + this.chunkSize >= this.items.length;
 
       const webview = FuzzyFinderPanelController.instance?.webview;
       if (!webview) return;
       await WebviewController.sendMessage(webview, {
         type: messageType as any,
         data: mapChunk ? mapChunk(chunk) : chunk,
-        isChunk: true,
-        isLastChunk,
         fuzzyProviderType,
         dataAdapterType,
       });
@@ -43,7 +41,7 @@ export class ChunkStreamer<T> {
   }
 
   async streamConcurrently(concurrency: number = 4) {
-    const { messageType, fuzzyProviderType, dataAdapterType, mapChunk } = this.options;
+    const { messageType, fuzzyProviderType, dataAdapterType, mapChunk, totalLimit } = this.options;
     const webview = FuzzyFinderPanelController.instance?.webview;
     if (!webview) return;
 
@@ -54,17 +52,15 @@ export class ChunkStreamer<T> {
 
     for (let i = 0; i < this.items.length; i += this.chunkSize) {
       const chunk = this.items.slice(i, i + this.chunkSize);
-      const isLastChunk = i + this.chunkSize >= this.items.length;
 
       jobs.push(
         limit(() =>
           WebviewController.sendMessage(webview, {
             type: messageType as any,
             data: mapChunk ? mapChunk(chunk) : chunk,
-            isChunk: true,
-            isLastChunk,
             fuzzyProviderType,
             dataAdapterType,
+            totalLimit,
           }),
         ),
       );
