@@ -43,9 +43,7 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, Chunkab
    * Prefers ripgrep and falls back to regex search on failure.
    */
   async searchOnDynamicMode(query: string, customPaths?: string[]): Promise<any> {
-    if (!query || query.length < 2) {
-      return { results: [], query };
-    }
+    if (!query) return [];
 
     let searchResult;
     if (this.ripgrepFinder.ripgrepAvailable) {

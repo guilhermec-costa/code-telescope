@@ -42,13 +42,6 @@ describe("WorkspaceTextSearchProvider", () => {
     expect(result).toEqual([]);
   });
 
-  it("returns empty results for short query", async () => {
-    const result = await provider.searchOnDynamicMode("a");
-
-    expect(result.results).toEqual([]);
-    expect(result.query).toBe("a");
-  });
-
   it("uses ripgrep when available", async () => {
     const rgInstance = vi.mocked(RipgrepFinder).mock.results[0].value as Mocked<RipgrepFinder>;
 

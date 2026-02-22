@@ -37,6 +37,7 @@ export class DynamicSearchHandler implements IWebviewMessageHandler<"dynamicSear
           ...(await provider.mapChunk(chunk)),
           query: msg.query,
         }),
+        query: msg.query,
       });
 
       streamer.streamConcurrently(provider.concurrency).catch(console.error);

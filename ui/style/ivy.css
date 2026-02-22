@@ -154,7 +154,7 @@ body {
 }
 
 .option-item {
-  padding: 4px 16px;
+  padding: 2px 12px;
   cursor: pointer;
   font-family: var(--font-family);
   font-size: var(--results-font-size);
@@ -178,14 +178,15 @@ body {
   background-color: var(--list-selected);
   color: var(--list-selected-fg);
   font-weight: 500;
+  padding-left: 2px;
 }
 
 .option-item.selected::before {
   color: var(--focus-border);
   content: "❯";
-  margin-right: 8px;
   color: var(--vscode-editorLineNumber-foreground);
   font-weight: 700;
+  margin-right: 2px;
 }
 
 #vertical-resizer {

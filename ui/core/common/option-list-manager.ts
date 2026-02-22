@@ -110,6 +110,7 @@ export class OptionListManager {
 
     this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
     this.render();
+    this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
     this.updateItemsCount();
 
     const first = this.getRelativeFirstItem();

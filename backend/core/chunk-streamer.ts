@@ -8,6 +8,7 @@ export interface ChunkStreamOptions<T> {
   dataAdapterType: DataAdapterType;
   chunkSize?: number;
   mapChunk?: (chunk: T[]) => any;
+  query?: string;
   totalLimit: number;
 }
 
@@ -22,7 +23,7 @@ export class ChunkStreamer<T> {
   }
 
   async streamAsync() {
-    const { messageType, fuzzyProviderType, dataAdapterType, mapChunk } = this.options;
+    const { messageType, fuzzyProviderType, dataAdapterType, mapChunk, totalLimit, query } = this.options;
 
     for (let i = 0; i < this.items.length; i += this.chunkSize) {
       await new Promise((r) => setTimeout(r, 16)); // 1 frame
@@ -36,12 +37,14 @@ export class ChunkStreamer<T> {
         data: mapChunk ? mapChunk(chunk) : chunk,
         fuzzyProviderType,
         dataAdapterType,
+        totalLimit,
+        query,
       });
     }
   }
 
   async streamConcurrently(concurrency: number = 4) {
-    const { messageType, fuzzyProviderType, dataAdapterType, mapChunk, totalLimit } = this.options;
+    const { messageType, fuzzyProviderType, dataAdapterType, mapChunk, totalLimit, query } = this.options;
     const webview = FuzzyFinderPanelController.instance?.webview;
     if (!webview) return;
 
@@ -62,6 +65,7 @@ export class ChunkStreamer<T> {
             fuzzyProviderType,
             dataAdapterType,
             totalLimit,
+            query,
           });
         }),
       );

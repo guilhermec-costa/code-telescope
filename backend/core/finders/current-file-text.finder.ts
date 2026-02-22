@@ -20,19 +20,16 @@ export class CurrentFileTextSearchProvider implements FuzzyFinderProvider {
   public readonly supportsDynamicSearch = true;
 
   async querySelectableOptions() {
-    return { results: [], query: "", message: "Type to search..." };
+    return [];
   }
 
   async searchOnDynamicMode(query: string): Promise<any> {
     const ctx = PreContextManager.instance.getContext();
     const adapter = FuzzyFinderAdapterRegistry.instance.getAdapter<WorkspaceTextSearchProvider>("workspace.text");
-    if (!query || query.trim().length < 2 || !ctx || !adapter) {
-      return { results: [], query };
-    }
+    if (!query || !ctx || !adapter) return [];
 
     const absPath = ctx.document.uri.fsPath;
-    const result = await adapter.searchOnDynamicMode(query, [absPath]);
-    return result;
+    return await adapter.searchOnDynamicMode(query, [absPath]);
   }
 
   async getPreviewData(identifier: string): Promise<TextPreviewData> {
