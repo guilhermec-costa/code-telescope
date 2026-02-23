@@ -56,6 +56,7 @@ export class FuzzyFinderPanelController {
           joinPath(Globals.EXTENSION_URI, "ui"),
           joinPath(Globals.EXTENSION_URI, "ui/dist"),
           joinPath(Globals.EXTENSION_URI, "node_modules/material-icon-theme/icons"),
+          vscode.Uri.joinPath(Globals.EXTENSION_URI, "ui", "dist"),
         ],
       },
     );

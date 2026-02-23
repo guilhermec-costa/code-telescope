@@ -22,14 +22,30 @@ export class ChunkStreamer<T> {
     this.chunkSize = options.chunkSize ?? 2000;
   }
 
+  async streamFromGenerator(generator: AsyncGenerator<T[]>) {
+    const { messageType, fuzzyProviderType, dataAdapterType, mapChunk, query } = this.options;
+    const webview = FuzzyFinderPanelController.instance?.webview;
+    if (!webview) return;
+
+    for await (const chunk of generator) {
+      const mapped = mapChunk ? await mapChunk(chunk) : chunk;
+      await WebviewController.sendMessage(webview, {
+        type: messageType as any,
+        data: mapped,
+        fuzzyProviderType,
+        dataAdapterType,
+        totalLimit: -1,
+        query,
+      });
+      await new Promise((r) => setTimeout(r, 8));
+    }
+  }
+
   async streamAsync() {
     const { messageType, fuzzyProviderType, dataAdapterType, mapChunk, totalLimit, query } = this.options;
-
     for (let i = 0; i < this.items.length; i += this.chunkSize) {
-      await new Promise((r) => setTimeout(r, 16)); // 1 frame
-
+      await new Promise((r) => setTimeout(r, 16));
       const chunk = this.items.slice(i, i + this.chunkSize);
-
       const webview = FuzzyFinderPanelController.instance?.webview;
       if (!webview) return;
       await WebviewController.sendMessage(webview, {
@@ -47,15 +63,11 @@ export class ChunkStreamer<T> {
     const { messageType, fuzzyProviderType, dataAdapterType, mapChunk, totalLimit, query } = this.options;
     const webview = FuzzyFinderPanelController.instance?.webview;
     if (!webview) return;
-
     const { default: pLimit } = await import("p-limit");
     const limit = pLimit(concurrency);
-
     const jobs = [];
-
     for (let i = 0; i < this.items.length; i += this.chunkSize) {
       const chunk = this.items.slice(i, i + this.chunkSize);
-
       jobs.push(
         limit(async () => {
           const mapped = mapChunk ? await mapChunk(chunk) : chunk;
@@ -70,7 +82,6 @@ export class ChunkStreamer<T> {
         }),
       );
     }
-
     await Promise.all(jobs);
   }
 }

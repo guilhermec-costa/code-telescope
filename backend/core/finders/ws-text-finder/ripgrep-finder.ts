@@ -165,7 +165,6 @@ export class RipgrepFinder {
             }
           }
 
-          console.log("Found", matches.length, "matches");
           resolve();
         } else {
           reject(new Error(`ripgrep exited with code ${code}: ${stderr}`));
