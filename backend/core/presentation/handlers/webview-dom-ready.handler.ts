@@ -14,8 +14,28 @@ export class WebviewDOMReadyHandler implements IWebviewMessageHandler<"webviewDO
 
   async handle(msg: Extract<FromWebviewKindMessage, { type: "webviewDOMReady" }>, wv: vscode.Webview) {
     PreviewRequestState.resetPreviewRequestId();
-
     const provider = FuzzyFinderPanelController.instance!.provider;
+
+    if (isChunkableProvider(provider) && typeof (provider as any).queryStream === "function") {
+      const streamer = new ChunkStreamer([], {
+        messageType: "optionList",
+        fuzzyProviderType: provider.fuzzyAdapterType,
+        dataAdapterType: provider.dataAdapterType,
+        chunkSize: provider.chunkSize,
+        mapChunk: provider.mapChunk.bind(provider),
+        totalLimit: 0,
+      });
+
+      const gen = await (provider as any).queryStream();
+
+      if (gen && typeof gen[Symbol.asyncIterator] === "function") {
+        streamer.streamFromGenerator(gen).catch((err) => {
+          console.error("Erro no streaming do gerador:", err);
+        });
+        return;
+      }
+    }
+
     const allItems = await provider.querySelectableOptions();
     const totalLimit = Array.isArray(allItems) ? allItems.length : 0;
 

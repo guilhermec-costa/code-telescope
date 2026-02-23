@@ -57,11 +57,21 @@ export function getIconNameFromPath(path: string): string {
   return (extToIcon as any)[ext] ?? "file";
 }
 
-export function getSvgIconUrl(path: string) {
-  const language = getIconNameFromPath(path);
+const svgIconUrlCache = new Map<string, string>();
+
+export function getSvgIconUrl(filePath: string) {
+  const language = getIconNameFromPath(filePath);
+
+  if (svgIconUrlCache.has(language)) {
+    return svgIconUrlCache.get(language)!;
+  }
+
   const svgPath = joinPath(Globals.EXTENSION_URI, "ui", "dist", "vendor", "material-icons", `${language}.svg`);
   const wv = FuzzyFinderPanelController.instance?.webview!;
-  return wv.asWebviewUri(svgPath).toString();
+  const url = wv.asWebviewUri(svgPath).toString();
+
+  svgIconUrlCache.set(language, url);
+  return url;
 }
 
 export function getLanguageIdForFile(filePath: string): string {
