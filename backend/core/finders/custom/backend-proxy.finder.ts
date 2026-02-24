@@ -6,7 +6,7 @@ import { PreviewData } from "../../../../shared/extension-webview-protocol";
 import { Result } from "../../../../shared/result";
 import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderPanelController } from "../../presentation/fuzzy-panel.controller";
-import { WorkspaceFileFinder } from "../ws-files.finder";
+import { WorkspaceFileFinder } from "../file/ws-files.finder";
 
 /**
  * Backend proxy that adapts a user-defined {@link CustomFinderDefinition}
