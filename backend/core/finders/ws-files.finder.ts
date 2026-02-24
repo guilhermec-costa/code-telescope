@@ -1,6 +1,4 @@
-import path from "node:path";
 import * as fg from "fast-glob";
-import fs from "fs";
 import * as vscode from "vscode";
 import { FileFinderData } from "../../../shared/exchange/file-search";
 import { ImagePreviewData, TextPreviewData } from "../../../shared/extension-webview-protocol";
@@ -41,8 +39,9 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
       return;
     }
 
-    // paralelo: cria um generator por folder e faz merge
     const queue: string[][] = [];
+
+    // wake up the infinite loop
     let resolveNext: (() => void) | null = null;
     let done = 0;
 
@@ -52,7 +51,6 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
       resolveNext = null;
     };
 
-    // dispara todos os folders em paralelo
     const runners = folders.map(async (folder) => {
       const rootPath = folder.uri.fsPath;
       const gen = WorkspaceFileFinder.rgFileFinder.ripgrepAvailable
@@ -67,17 +65,20 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
       resolveNext = null;
     });
 
-    // não awaita — deixa rodar em background
     Promise.all(runners).catch(console.error);
 
     const total = folders.length;
 
+    // should only run while there are either items in the queue or active runners
     while (done < total || queue.length > 0) {
+      // immediately dispatch the chunk to the consumer
       while (queue.length > 0) {
         yield queue.shift()!;
       }
 
+      // if queue is empty, but there's still active runners
       if (done < total) {
+        // when this condition fails, the stackframe pops off, and the generator ends
         await new Promise<void>((res) => {
           resolveNext = res;
         });
@@ -156,8 +157,6 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
     const ext = resolvePathExt(identifier);
     const isImg = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext);
 
-    // resolve o caminho absoluto a partir do workspace
-    // const absPath = this.resolveAbsolutePath(identifier);
     const content = await FileReader.read(identifier);
 
     if (isImg) {
@@ -177,28 +176,6 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
       language: getLanguageIdForFile(identifier),
       overridePreviewer: this.casted.previewAdapterType,
     };
-  }
-
-  private resolveAbsolutePath(relativePath: string): string {
-    if (path.isAbsolute(relativePath)) return relativePath;
-
-    const folders = vscode.workspace.workspaceFolders;
-    if (!folders || folders.length === 0) return relativePath;
-
-    for (const folder of folders) {
-      const folderName = path.basename(folder.uri.fsPath);
-      const stripped = relativePath.startsWith(folderName + path.sep)
-        ? relativePath.slice(folderName.length + 1)
-        : relativePath;
-
-      const candidate = path.join(folder.uri.fsPath, stripped);
-      if (fs.existsSync(candidate)) {
-        return candidate;
-      }
-    }
-
-    // fallback
-    return path.join(folders[0].uri.fsPath, relativePath);
   }
 
   private get casted() {

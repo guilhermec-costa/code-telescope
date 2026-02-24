@@ -72,6 +72,17 @@ export class WebviewController {
         MessageBridge.handleResponse(msg);
         break;
       }
+
+      case "grammarChunk": {
+        MessageBridge.handleGrammarChunk(msg);
+        break;
+      }
+
+      case "grammarComplete": {
+        MessageBridge.handleGrammarComplete(msg);
+        break;
+      }
+
       case "resetWebview": {
         this.handleResetWebview();
         if (this.activeProvider !== msg.currentProvider) {

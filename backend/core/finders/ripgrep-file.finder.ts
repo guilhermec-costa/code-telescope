@@ -66,7 +66,7 @@ export class RipgrepFileFinder {
     }
 
     if (!excludeHidden) args.push("--hidden");
-    // args.push("--no-ignore");
+    args.push("--no-ignore");
     args.push("--");
     args.push(rootPath);
 
@@ -89,7 +89,7 @@ export class RipgrepFileFinder {
     const CHUNK_SIZE = 8000;
     const MAX_BUFFER_LINES = CHUNK_SIZE * 2;
 
-    const getChunkSize = () => (isFirstChunk ? 200 : CHUNK_SIZE);
+    const getChunkSize = () => (isFirstChunk ? 100 : CHUNK_SIZE);
 
     rg.stdout.on("data", (data: Buffer) => {
       buffer += data.toString();
