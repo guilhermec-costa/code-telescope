@@ -3,7 +3,7 @@ import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { execCmd } from "../../utils/commands";
 import { getLanguageIdForFile } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
-import { FileReader } from "../common/cache/file-reader";
+import { FileReader } from "../common/file-reader";
 import { PreContextManager } from "../common/pre-context";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 

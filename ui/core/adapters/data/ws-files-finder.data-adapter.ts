@@ -21,7 +21,7 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
 
     for (let i = 0; i < data.relative.length; i++) {
       options.push({
-        absolute: data.abs[i],
+        absolute: "",
         relative: data.relative[i],
       });
     }
@@ -35,7 +35,7 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
   }
 
   getSelectionValue(option: FileOption): string {
-    return option.absolute;
+    return option.relative;
   }
 
   filterOption(option: FileOption, query: string): boolean {

@@ -1,6 +1,6 @@
 import { TextSearchMatch } from "../../../../shared/exchange/workspace-text-search";
 import { getSvgIconUrl } from "../../../utils/files";
-import { FileReader } from "../../common/cache/file-reader";
+import { FileReader } from "../../common/file-reader";
 import { WorkspaceFileFinder } from "../ws-files.finder";
 
 function escapeRegExp(string: string) {

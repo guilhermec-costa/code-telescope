@@ -1,3 +1,4 @@
+import path from "node:path";
 import * as fg from "fast-glob";
 import * as vscode from "vscode";
 import { FileFinderData } from "../../../shared/exchange/file-search";
@@ -8,8 +9,8 @@ import { execCmd } from "../../utils/commands";
 import { getLanguageIdForFile, resolvePathExt } from "../../utils/files";
 import { ChunkableProvider } from "../abstractions/chunkable-provider";
 import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { FileReader } from "../common/cache/file-reader";
 import { ExtensionConfigManager } from "../common/config-manager";
+import { FileReader } from "../common/file-reader";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 import { RipgrepFileFinder } from "./ripgrep-file.finder";
 
@@ -127,7 +128,6 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
   public mapChunk(files: string[]): FileFinderData {
     return files.reduce<FileFinderData>(
       (result, fileEntry) => {
-        result.abs.push(fileEntry);
         result.relative.push(vscode.workspace.asRelativePath(fileEntry));
         return result;
       },
@@ -153,11 +153,30 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
     return uris.map((uri) => uri.fsPath);
   }
 
+  private resolveAbsolutePath(relativePath: string): string {
+    if (path.isAbsolute(relativePath)) return relativePath;
+
+    const folders = vscode.workspace.workspaceFolders;
+    if (!folders || folders.length === 0) return relativePath;
+
+    for (const folder of folders) {
+      const folderName = path.basename(folder.uri.fsPath);
+      if (relativePath.startsWith(folderName + path.sep)) {
+        const stripped = relativePath.slice(folderName.length + 1);
+        return path.join(folder.uri.fsPath, stripped);
+      }
+    }
+
+    // with folder name prefix. Use the first folder
+    return path.join(folders[0].uri.fsPath, relativePath);
+  }
+
   async getPreviewData(identifier: string): Promise<TextPreviewData | ImagePreviewData> {
     const ext = resolvePathExt(identifier);
     const isImg = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext);
 
-    const content = await FileReader.read(identifier);
+    const absPath = this.resolveAbsolutePath(identifier);
+    const content = await FileReader.read(absPath);
 
     if (isImg) {
       return {
