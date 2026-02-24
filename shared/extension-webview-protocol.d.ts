@@ -116,6 +116,19 @@ export interface PromiseBridgeRequest {
   kind: "themeGrammar" | "langGrammar";
 }
 
+export interface GrammarChunkMessage {
+  type: "grammarChunk";
+  chunkIndex: number;
+  totalChunks: number;
+  content: string;
+  requestId: string;
+}
+
+export interface GrammarCompleteMessage {
+  type: "grammarComplete";
+  requestId: string;
+}
+
 export interface PostHandleListMessage {
   type: "postHandleListMessage";
 }
@@ -217,7 +230,9 @@ export type ToWebviewKindMessage =
   | PostQueryhandlerResultMessage
   | ResetWebviewMessage
   | RemoveHeavyOptions
-  | PromiseBridgeResponse;
+  | PromiseBridgeResponse
+  | GrammarChunkMessage
+  | GrammarCompleteMessage;
 
 /**
  * Represents all messages that **the webview sends to the backend**.
