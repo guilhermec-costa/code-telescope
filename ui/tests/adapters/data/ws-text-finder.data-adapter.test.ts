@@ -34,7 +34,6 @@ describe("WorkspaceTextFinderDataAdapter", () => {
       identifier: "/home/user/project/src/index.ts||10||5",
       file: "/home/user/project/src/index.ts",
       line: 10,
-      svgIconUrl: "file-icon",
       preview: "const value = 42;",
     });
   });
