@@ -16,6 +16,7 @@ export class OptionListManager {
   private dataAdapter: IFuzzyFinderDataAdapter | undefined;
   private readonly searchElement: HTMLInputElement | undefined;
   private static _instance: OptionListManager | undefined;
+  private lastOption: any | undefined;
 
   private listElement: HTMLUListElement;
   private itemsCountElement: HTMLElement | null;
@@ -89,13 +90,12 @@ export class OptionListManager {
     this.selectedIndex = this.getRelativeFirstIndex();
 
     const isComplete = this.allOptions.length >= totalLimit;
-    this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
     if (isComplete || wasEmpty) {
       this.render();
-      this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
       const first = this.getRelativeFirstItem();
       if (first) this.requestPreview(first);
     }
+    this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
   }
 
   /**
@@ -375,8 +375,10 @@ export class OptionListManager {
   }
 
   private requestPreview(option: any): void {
-    if (!this.dataAdapter) return;
+    console.log("Option: ", option);
+    if (!this.dataAdapter || option === this.lastOption) return;
     const value = this.dataAdapter.getSelectionValue(option);
+    this.lastOption = option;
     this.debouncedRequestPreview(value);
   }
 

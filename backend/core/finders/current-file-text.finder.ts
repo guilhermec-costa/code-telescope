@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../utils/files";
-import { FileReader } from "../common/cache/file-reader";
+import { FileReader } from "../common/file-reader";
 import { PreContextManager } from "../common/pre-context";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 import { FuzzyFinderAdapterRegistry } from "../registry/fuzzy-provider.registry";

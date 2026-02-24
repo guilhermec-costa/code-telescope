@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, type Mocked, vi } from "vitest";
 import * as vscode from "vscode";
+import { RipgrepTextFinder } from "../../../core/common/rg/rg-text-finder";
 import { WorkspaceTextSearchProvider } from "../../../core/finders/ws-text-finder/index.finder";
 import { RegexFinder } from "../../../core/finders/ws-text-finder/regex-finder";
-import { RipgrepFinder } from "../../../core/finders/ws-text-finder/ripgrep-finder";
 
 vi.mock("@backend/core/common/cache/file-reader", () => ({
   FileReader: {
@@ -19,14 +19,14 @@ vi.mock("@backend/core/finders/ws-text-finder/regex-finder", () => {
   return { RegexFinder };
 });
 
-vi.mock("@backend/core/finders/ws-text-finder/ripgrep-finder", () => {
-  const RipgrepFinder = vi.fn(
+vi.mock("@backend/core/common/rg/rg-text-finder", () => {
+  const RipgrepTextFinder = vi.fn(
     class MockClass {
       ripgrepAvailable = true;
       search = vi.fn();
     },
   );
-  return { RipgrepFinder };
+  return { RipgrepTextFinder };
 });
 
 describe("WorkspaceTextSearchProvider", () => {
@@ -43,9 +43,9 @@ describe("WorkspaceTextSearchProvider", () => {
   });
 
   it("uses ripgrep when available", async () => {
-    const rgInstance = vi.mocked(RipgrepFinder).mock.results[0].value as Mocked<RipgrepFinder>;
+    const rgInstance = vi.mocked(RipgrepTextFinder).mock.results[0].value as Mocked<RipgrepTextFinder>;
 
-    rgInstance.search.mockResolvedValueOnce({ results: ["match"] });
+    rgInstance.search.mockResolvedValueOnce({ results: ["match"] } as any);
 
     const result = await provider.searchOnDynamicMode("test");
 
@@ -54,7 +54,7 @@ describe("WorkspaceTextSearchProvider", () => {
   });
 
   it("falls back to regex finder when ripgrep fails", async () => {
-    const rgInstance = vi.mocked(RipgrepFinder).mock.results[0].value as Mocked<RipgrepFinder>;
+    const rgInstance = vi.mocked(RipgrepTextFinder).mock.results[0].value as Mocked<RipgrepTextFinder>;
     const regexInstance = vi.mocked(RegexFinder).mock.results[0].value as Mocked<RegexFinder>;
 
     rgInstance.search.mockRejectedValueOnce(new Error("rg error"));

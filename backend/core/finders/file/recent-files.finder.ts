@@ -1,12 +1,12 @@
 import * as fs from "fs";
 import * as vscode from "vscode";
-import { RecentFileData, RecentFilesFinderData } from "../../../shared/exchange/recent-files";
-import { TextPreviewData } from "../../../shared/extension-webview-protocol";
-import { Globals } from "../../globals";
-import { execCmd } from "../../utils/commands";
-import { getLanguageIdForFile, getSvgIconUrl } from "../../utils/files";
-import { FileReader } from "../common/cache/file-reader";
-import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
+import { RecentFileData, RecentFilesFinderData } from "../../../../shared/exchange/recent-files";
+import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
+import { Globals } from "../../../globals";
+import { execCmd } from "../../../utils/commands";
+import { getLanguageIdForFile, getSvgIconUrl } from "../../../utils/files";
+import { FileReader } from "../../common/file-reader";
+import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
 
 /**
  * Fuzzy provider that retrieves recently opened files.

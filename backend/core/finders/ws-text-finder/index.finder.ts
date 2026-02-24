@@ -2,10 +2,10 @@ import * as vscode from "vscode";
 import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../../utils/files";
 import { ChunkableProvider } from "../../abstractions/chunkable-provider";
-import { FileReader } from "../../common/cache/file-reader";
+import { FileReader } from "../../common/file-reader";
+import { RipgrepTextFinder } from "../../common/rg/rg-text-finder";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
 import { RegexFinder } from "./regex-finder";
-import { RipgrepFinder } from "./ripgrep-finder";
 
 /**
  * Provides workspace-wide text search with dynamic querying.
@@ -19,13 +19,14 @@ import { RipgrepFinder } from "./ripgrep-finder";
 export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, ChunkableProvider<{ results: any }> {
   public readonly supportsDynamicSearch = true;
   private readonly regexFinder: RegexFinder;
-  private readonly ripgrepFinder: RipgrepFinder;
+  private readonly ripgrepFinder: RipgrepTextFinder;
   public readonly chunkSize: number = 3500;
+  private _searchAbortController: AbortController | null = null;
   public readonly concurrency = 16;
 
   constructor() {
     this.regexFinder = new RegexFinder();
-    this.ripgrepFinder = new RipgrepFinder();
+    this.ripgrepFinder = new RipgrepTextFinder();
   }
 
   async querySelectableOptions() {
@@ -36,6 +37,30 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, Chunkab
     return {
       results: chunk,
     };
+  }
+
+  /**
+   * Performs a dynamic search as the user types, streaming the results via generator.
+   * Prefers ripgrep and falls back to regex search on failure.
+   */
+  async *searchOnDynamicModeStream(query: string, customPaths?: string[]): AsyncGenerator<any[]> {
+    if (!query) return;
+
+    this._searchAbortController?.abort();
+    this._searchAbortController = new AbortController();
+    const signal = this._searchAbortController.signal;
+
+    if (this.ripgrepFinder.ripgrepAvailable) {
+      try {
+        yield* this.ripgrepFinder.searchStream(query, customPaths, signal);
+        return;
+      } catch (error) {
+        console.error("ripgrep stream failed, falling back:", error);
+      }
+    }
+
+    const result = await this.regexFinder.search(query);
+    if (result.results?.length > 0) yield result.results;
   }
 
   /**

@@ -89,6 +89,7 @@ export class WebviewAssetManager {
       "{{__PREVIEW_SIDE_TITLE__}}": getProviderPreviewTitle(provider.fuzzyAdapterType),
       "{{__PROMPT_MSG__}}": getProviderPromptMessage(provider.fuzzyAdapterType),
       "{{__PROVIDER__}}": provider.fuzzyAdapterType,
+      "{{dist-uri}}": wv.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, "ui", "dist")).toString(),
     };
 
     let processed = html;

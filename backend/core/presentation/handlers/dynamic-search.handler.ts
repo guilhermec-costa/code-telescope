@@ -9,9 +9,8 @@ import { WebviewController } from "../webview.controller";
 
 /**
  * Handles dynamic search requests coming from the webview.
- *
  * Dispatches the query to the active fuzzy finder provider
- * and returns updated option lists in real time.
+ * and returns updated option lists in real time using streaming if available.
  */
 @WebviewMessageHandler()
 export class DynamicSearchHandler implements IWebviewMessageHandler<"dynamicSearch"> {
@@ -19,8 +18,27 @@ export class DynamicSearchHandler implements IWebviewMessageHandler<"dynamicSear
 
   async handle(msg: Extract<FromWebviewKindMessage, { type: "dynamicSearch" }>, wv: vscode.Webview) {
     const provider = FuzzyFinderPanelController.instance!.provider;
-
     if (!provider.supportsDynamicSearch || !provider.searchOnDynamicMode) return;
+
+    if (isChunkableProvider(provider) && typeof (provider as any).searchOnDynamicModeStream === "function") {
+      const gen = await (provider as any).searchOnDynamicModeStream(msg.query);
+      if (gen && typeof gen[Symbol.asyncIterator] === "function") {
+        const streamer = new ChunkStreamer([], {
+          messageType: "optionList",
+          fuzzyProviderType: provider.fuzzyAdapterType,
+          dataAdapterType: provider.dataAdapterType,
+          chunkSize: provider.chunkSize,
+          mapChunk: async (chunk) => ({
+            ...(await provider.mapChunk(chunk)),
+            query: msg.query,
+          }),
+          query: msg.query,
+          totalLimit: -1,
+        });
+        streamer.streamFromGenerator(gen).catch(console.error);
+        return;
+      }
+    }
 
     const searchResult = await provider.searchOnDynamicMode(msg.query);
     const resultsArray = searchResult.results ?? [];
@@ -39,7 +57,6 @@ export class DynamicSearchHandler implements IWebviewMessageHandler<"dynamicSear
         }),
         query: msg.query,
       });
-
       streamer.streamConcurrently(provider.concurrency).catch(console.error);
       return;
     }

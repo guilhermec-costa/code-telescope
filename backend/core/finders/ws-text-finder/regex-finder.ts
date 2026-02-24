@@ -1,7 +1,6 @@
 import { TextSearchMatch } from "../../../../shared/exchange/workspace-text-search";
-import { getSvgIconUrl } from "../../../utils/files";
-import { FileReader } from "../../common/cache/file-reader";
-import { WorkspaceFileFinder } from "../ws-files.finder";
+import { FileReader } from "../../common/file-reader";
+import { WorkspaceFileFinder } from "../file/ws-files.finder";
 
 function escapeRegExp(string: string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -57,7 +56,6 @@ export class RegexFinder {
                 matches.push({
                   file: uri,
                   line: lineNumber,
-                  svgIconUrl: getSvgIconUrl(uri),
                   column: matchIndex - lineStart + 1,
                   text: lineContent.trim(),
                   preview: lineContent.trim(),
