@@ -1,17 +1,17 @@
 import path from "node:path";
 import * as fg from "fast-glob";
 import * as vscode from "vscode";
-import { FileFinderData } from "../../../shared/exchange/file-search";
-import { ImagePreviewData, TextPreviewData } from "../../../shared/extension-webview-protocol";
-import { DEFAULT_EXCLUDE_PATTERNS } from "../../config/exclude-patterns";
-import { Globals } from "../../globals";
-import { execCmd } from "../../utils/commands";
-import { getLanguageIdForFile, resolvePathExt } from "../../utils/files";
-import { ChunkableProvider } from "../abstractions/chunkable-provider";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
-import { ExtensionConfigManager } from "../common/config-manager";
-import { FileReader } from "../common/file-reader";
-import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
+import { FileFinderData } from "../../../../shared/exchange/file-search";
+import { ImagePreviewData, TextPreviewData } from "../../../../shared/extension-webview-protocol";
+import { DEFAULT_EXCLUDE_PATTERNS } from "../../../config/exclude-patterns";
+import { Globals } from "../../../globals";
+import { execCmd } from "../../../utils/commands";
+import { getLanguageIdForFile, resolvePathExt } from "../../../utils/files";
+import { ChunkableProvider } from "../../abstractions/chunkable-provider";
+import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
+import { ExtensionConfigManager } from "../../common/config-manager";
+import { FileReader } from "../../common/file-reader";
+import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
 import { RipgrepFileFinder } from "./ripgrep-file.finder";
 
 @FuzzyFinderAdapter({
@@ -136,7 +136,8 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
   }
 
   async onSelect(filePath: string) {
-    const uri = vscode.Uri.file(filePath);
+    const abs = this.resolveAbsolutePath(filePath);
+    const uri = vscode.Uri.file(abs);
     await execCmd(Globals.cmds.openFile, uri);
   }
 

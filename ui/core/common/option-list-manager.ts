@@ -90,13 +90,12 @@ export class OptionListManager {
     this.selectedIndex = this.getRelativeFirstIndex();
 
     const isComplete = this.allOptions.length >= totalLimit;
-    this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
     if (isComplete || wasEmpty) {
       this.render();
-      this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
       const first = this.getRelativeFirstItem();
       if (first) this.requestPreview(first);
     }
+    this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
   }
 
   /**

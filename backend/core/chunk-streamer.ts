@@ -37,7 +37,6 @@ export class ChunkStreamer<T> {
         totalLimit: -1,
         query,
       });
-      await new Promise((r) => setTimeout(r, 8));
     }
   }
 
