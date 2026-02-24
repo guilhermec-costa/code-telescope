@@ -1,18 +1,37 @@
 import { spawn } from "child_process";
 
-export interface RipgrepLineStreamerOptions {
+type DefaultChunkingOptions = {
+  firstChunkSize?: number;
+  backpressureBufSize?: number;
+  customChunkSzResolver?: never;
+};
+
+type CustomChunkingOptions = {
+  customChunkSzResolver: (_isFirstChunk: boolean, curCount: number) => number;
+  firstChunkSize?: never;
+  backpressureBufSize?: number;
+};
+
+export type RipgrepLineStreamerOptions = {
   rgPath: string;
   args: string[];
   cwd: string;
-  firstChunkSize?: number;
-  chunkSize?: number;
   maxResults?: number;
-  signal?: AbortSignal; // to prevent spawning multiple rg processes in dynamic search
-}
+  signal?: AbortSignal;
+} & (DefaultChunkingOptions | CustomChunkingOptions);
 
 export class RipgrepLineStreamer {
   static async *stream(opts: RipgrepLineStreamerOptions): AsyncGenerator<string[]> {
-    const { signal, rgPath, args, cwd, firstChunkSize = 100, chunkSize = 8000, maxResults } = opts;
+    const {
+      signal,
+      rgPath,
+      args,
+      cwd,
+      customChunkSzResolver,
+      maxResults,
+      backpressureBufSize = 8000,
+      firstChunkSize = 100,
+    } = opts;
 
     const rg = spawn(rgPath, args, {
       cwd,
@@ -26,7 +45,7 @@ export class RipgrepLineStreamer {
 
     const closePromise = new Promise<void>((res) => rg.on("close", res));
 
-    const MAX_BUFFER_LINES = chunkSize * 2;
+    const MAX_BUFFER_LINES = backpressureBufSize * 2;
     const lines: string[] = [];
     let buffer = "";
     let done = false;
@@ -64,7 +83,14 @@ export class RipgrepLineStreamer {
     let currentChunk: string[] = [];
     let count = 0;
 
-    const getChunkSize = () => (isFirstChunk ? firstChunkSize : chunkSize);
+    const resolveChunkSize =
+      customChunkSzResolver ??
+      ((_isFirstChunk: boolean, count: number) => {
+        if (_isFirstChunk) return firstChunkSize ?? 500;
+        if (count < 10_000) return 5_000;
+        if (count < 50_000) return 20_000;
+        return 50_000;
+      });
 
     while (true) {
       while (lines.length > 0) {
@@ -72,7 +98,7 @@ export class RipgrepLineStreamer {
         currentChunk.push(line);
         count++;
 
-        if (currentChunk.length === getChunkSize()) {
+        if (currentChunk.length === resolveChunkSize(isFirstChunk, count)) {
           yield currentChunk;
           isFirstChunk = false;
           currentChunk = [];

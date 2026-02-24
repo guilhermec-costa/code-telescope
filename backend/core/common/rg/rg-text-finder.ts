@@ -2,10 +2,9 @@ import path from "path";
 import * as vscode from "vscode";
 import { TextSearchMatch } from "../../../../shared/exchange/workspace-text-search";
 import { DEFAULT_EXCLUDE_PATTERNS } from "../../../config/exclude-patterns";
-import { getSvgIconUrl } from "../../../utils/files";
-import { ExtensionConfigManager } from "../../common/config-manager";
-import { RipgrepAvailability } from "../../common/rg/rg-availability";
-import { RipgrepLineStreamer } from "../../common/rg/rg-line-streamer";
+import { ExtensionConfigManager } from "../config-manager";
+import { RipgrepAvailability } from "./rg-availability";
+import { RipgrepLineStreamer } from "./rg-line-streamer";
 import { RipgrepArgsBuilder } from "./ripgrep-args.builder";
 
 export class RipgrepTextFinder {
@@ -51,9 +50,16 @@ export class RipgrepTextFinder {
       rgPath: RipgrepAvailability.rgPath,
       args,
       cwd,
-      firstChunkSize: 50,
-      chunkSize: 5000,
       maxResults: searchCfg.maxResults,
+      backpressureBufSize: 5000,
+      customChunkSzResolver(isFirstChunk: boolean, curCount: number) {
+        // for low TTFB
+        if (isFirstChunk) return 50;
+        if (curCount < 5_000) return 500;
+        if (curCount < 20_000) return 2_000;
+        if (curCount < 100_000) return 10_000;
+        return 15_000;
+      },
       signal,
     })) {
       const matches: TextSearchMatch[] = [];
@@ -71,7 +77,6 @@ export class RipgrepTextFinder {
           matches.push({
             file: resolvedPath,
             line: data.line_number,
-            svgIconUrl: getSvgIconUrl(resolvedPath),
             column: data.submatches[0]?.start || 1,
             text: lineText,
             preview: lineText,

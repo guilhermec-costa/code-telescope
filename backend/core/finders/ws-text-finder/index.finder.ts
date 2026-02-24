@@ -3,9 +3,9 @@ import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../../utils/files";
 import { ChunkableProvider } from "../../abstractions/chunkable-provider";
 import { FileReader } from "../../common/file-reader";
+import { RipgrepTextFinder } from "../../common/rg/rg-text-finder";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
 import { RegexFinder } from "./regex-finder";
-import { RipgrepTextFinder } from "./ripgrep-finder";
 
 /**
  * Provides workspace-wide text search with dynamic querying.
@@ -53,6 +53,7 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, Chunkab
     if (this.ripgrepFinder.ripgrepAvailable) {
       try {
         yield* this.ripgrepFinder.searchStream(query, customPaths, signal);
+        return;
       } catch (error) {
         console.error("ripgrep stream failed, falling back:", error);
       }

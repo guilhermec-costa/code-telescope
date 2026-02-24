@@ -1,12 +1,12 @@
 import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { TextSearchData } from "../../../../shared/exchange/workspace-text-search";
 import { formatFileOptionHtml } from "../../../utils/html";
+import { getSvgIconUrl } from "../../../utils/icon";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
 
 interface SearchOption {
   identifier: string;
-  svgIconUrl: string;
   file: string;
   line: number;
   preview: string;
@@ -22,7 +22,6 @@ export class TextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearch
   parseOptions(data: TextSearchData): SearchOption[] {
     return data.results.map((match) => ({
       identifier: `${match.file}||${match.line}||${match.column}`,
-      svgIconUrl: match.svgIconUrl,
       file: match.file,
       line: match.line,
       preview: match.preview,
@@ -32,7 +31,8 @@ export class TextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearch
   getDisplayText(option: SearchOption): string {
     const fileName = this.getFileName(option.file);
     const displayText = `${fileName}:${option.line} - ${option.preview}`;
-    return formatFileOptionHtml(option.svgIconUrl, displayText);
+    const svgIconUrl = getSvgIconUrl(option.file);
+    return formatFileOptionHtml(svgIconUrl, displayText);
   }
 
   getSelectionValue(option: SearchOption): string {
