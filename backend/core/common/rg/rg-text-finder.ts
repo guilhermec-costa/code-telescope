@@ -54,11 +54,8 @@ export class RipgrepTextFinder {
       backpressureBufSize: 5000,
       customChunkSzResolver(isFirstChunk: boolean, curCount: number) {
         // for low TTFB
-        if (isFirstChunk) return 50;
-        if (curCount < 5_000) return 500;
-        if (curCount < 20_000) return 2_000;
-        if (curCount < 100_000) return 10_000;
-        return 15_000;
+        if (isFirstChunk) return 500;
+        return 10_000;
       },
       signal,
     })) {

@@ -30,9 +30,7 @@ export class RipgrepFileFinder {
       maxResults,
       customChunkSzResolver(_isFirstChunk, curCount) {
         if (_isFirstChunk) return 500;
-        if (curCount < 10_000) return 5_000;
-        if (curCount < 50_000) return 20_000;
-        return 50_000;
+        return 10_000;
       },
     })) {
       yield rawChunk.map((line) => (path.isAbsolute(line) ? line : path.join(rootPath, line)));
