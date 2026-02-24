@@ -1,4 +1,3 @@
-import path from "node:path";
 import * as fg from "fast-glob";
 import * as vscode from "vscode";
 import { FileFinderData } from "../../../../shared/exchange/file-search";
@@ -129,15 +128,15 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
     return files.reduce<FileFinderData>(
       (result, fileEntry) => {
         result.relative.push(vscode.workspace.asRelativePath(fileEntry));
+        result.abs.push(fileEntry);
         return result;
       },
-      { relative: [] },
+      { relative: [], abs: [] },
     );
   }
 
   async onSelect(filePath: string) {
-    const abs = this.resolveAbsolutePath(filePath);
-    const uri = vscode.Uri.file(abs);
+    const uri = vscode.Uri.file(filePath);
     await execCmd(Globals.cmds.openFile, uri);
   }
 
@@ -154,30 +153,11 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
     return uris.map((uri) => uri.fsPath);
   }
 
-  private resolveAbsolutePath(relativePath: string): string {
-    if (path.isAbsolute(relativePath)) return relativePath;
-
-    const folders = vscode.workspace.workspaceFolders;
-    if (!folders || folders.length === 0) return relativePath;
-
-    for (const folder of folders) {
-      const folderName = path.basename(folder.uri.fsPath);
-      if (relativePath.startsWith(folderName + path.sep)) {
-        const stripped = relativePath.slice(folderName.length + 1);
-        return path.join(folder.uri.fsPath, stripped);
-      }
-    }
-
-    // with folder name prefix. Use the first folder
-    return path.join(folders[0].uri.fsPath, relativePath);
-  }
-
   async getPreviewData(identifier: string): Promise<TextPreviewData | ImagePreviewData> {
     const ext = resolvePathExt(identifier);
     const isImg = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext);
 
-    const absPath = this.resolveAbsolutePath(identifier);
-    const content = await FileReader.read(absPath);
+    const content = await FileReader.read(identifier);
 
     if (isImg) {
       return {

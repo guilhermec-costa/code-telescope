@@ -14,6 +14,7 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
     it("should map absolute and relative paths correctly", () => {
       const data: FileFinderData = {
         relative: ["file1.ts", "file2.ts"],
+        abs: ["root/file1.ts", "root/file2.ts"],
       };
 
       const result = adapter.parseOptions(data);
@@ -21,9 +22,11 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
       expect(result).toEqual([
         {
           relative: "file1.ts",
+          absolute: "root/file1.ts",
         },
         {
           relative: "file2.ts",
+          absolute: "root/file2.ts",
         },
       ]);
     });
@@ -31,6 +34,7 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
     it("should return an empty array when data is empty", () => {
       const data: FileFinderData = {
         relative: [],
+        abs: [],
       };
 
       const result = adapter.parseOptions(data);
@@ -44,6 +48,7 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
       vi.stubGlobal("__FILE_PATH_DISPLAY__", "relative");
       const option: FileOption = {
         relative: "file.ts",
+        absolute: "root/file.ts",
       };
 
       const result = adapter.getDisplayText(option);
@@ -56,10 +61,11 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
     it("should return the relative path", () => {
       const option: FileOption = {
         relative: "file.ts",
+        absolute: "root/file.ts",
       };
 
       const result = adapter.getSelectionValue(option);
-      expect(result).toBe(option.relative);
+      expect(result).toBe(option.absolute);
     });
   });
 
@@ -67,6 +73,7 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
     it("should return true when relative path includes query (case insensitive)", () => {
       const option: FileOption = {
         relative: "MyFile.ts",
+        absolute: "root/MyFile.ts",
       };
 
       expect(adapter.filterOption(option, "myfile")).toBe(true);
@@ -77,6 +84,7 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
     it("should return false when relative path does not include query", () => {
       const option: FileOption = {
         relative: "file.ts",
+        absolute: "root/file.ts",
       };
 
       expect(adapter.filterOption(option, "json")).toBe(false);
