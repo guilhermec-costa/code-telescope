@@ -3,7 +3,7 @@ import { HarpoonFinderData } from "../../../shared/exchange/harpoon";
 import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { HarpoonOrchestrator } from "../../harpoon/orchestrator";
 import { getLanguageIdForFile, getSvgIconUrl } from "../../utils/files";
-import { FileReader } from "../common/cache/file-reader";
+import { FileReader } from "../common/file-reader";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**

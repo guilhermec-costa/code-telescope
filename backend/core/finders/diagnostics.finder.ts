@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { DiagnosticData, DiagnosticsFinderData } from "../../../shared/exchange/diagnostics";
 import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { getLanguageIdForFile } from "../../utils/files";
-import { FileReader } from "../common/cache/file-reader";
+import { FileReader } from "../common/file-reader";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
 /**

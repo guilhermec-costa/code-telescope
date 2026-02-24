@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { resolvePathExt } from "../../../utils/files";
+import { resolvePathExt } from "../../utils/files";
 
 export class FileReader {
   private static _instance: FileReader | undefined;
