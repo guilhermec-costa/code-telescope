@@ -64,10 +64,10 @@ body {
 }
 
 #input-container::before {
-  content: "❯";
-  color: var(--focus-border);
+  content: "$";
+  color: var(--input-fg);
+  font-family: var(--font-family);
   position: static;
-  font-weight: bold;
 }
 
 #search {
