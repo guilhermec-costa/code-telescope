@@ -131,7 +131,7 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
         result.relative.push(vscode.workspace.asRelativePath(fileEntry));
         return result;
       },
-      { abs: [], relative: [] },
+      { relative: [] },
     );
   }
 
