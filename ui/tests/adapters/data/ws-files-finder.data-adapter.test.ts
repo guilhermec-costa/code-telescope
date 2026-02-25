@@ -48,6 +48,7 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
       vi.stubGlobal("__FILE_PATH_DISPLAY__", "relative");
       const option: FileOption = {
         relative: "file.ts",
+        absolute: "root/file.ts",
       };
 
       const result = adapter.getDisplayText(option);
@@ -83,6 +84,7 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
     it("should return false when relative path does not include query", () => {
       const option: FileOption = {
         relative: "file.ts",
+        absolute: "root/file.ts",
       };
 
       expect(adapter.filterOption(option, "json")).toBe(false);
