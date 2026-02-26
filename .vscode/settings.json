@@ -6,7 +6,7 @@
 		"out": true
 	},
 	"typescript.tsc.autoDetect": "off",
-   "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.preferences.importModuleSpecifier": "relative",
   "javascript.preferences.importModuleSpecifier": "relative",
   "typescript.updateImportsOnFileMove.enabled": "always",
   "editor.defaultFormatter": "biomejs.biome",

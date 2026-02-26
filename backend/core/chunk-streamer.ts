@@ -22,12 +22,12 @@ export class ChunkStreamer<T> {
     this.chunkSize = options.chunkSize ?? 2000;
   }
 
-  async streamFromGenerator(generator: AsyncGenerator<T[]>) {
+  async streamFromGenerator(gen: AsyncGenerator<T[]>) {
     const { messageType, fuzzyProviderType, dataAdapterType, mapChunk, query } = this.options;
     const webview = FuzzyFinderPanelController.instance?.webview;
     if (!webview) return;
 
-    for await (const chunk of generator) {
+    for await (const chunk of gen) {
       const mapped = mapChunk ? await mapChunk(chunk) : chunk;
       await WebviewController.sendMessage(webview, {
         type: messageType as any,
