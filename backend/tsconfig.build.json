@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "module": "Node16",
+        "moduleResolution": "node16",
+        "target": "ES2022",
+        "outDir": "./dist",
+        "lib": ["ES2022"],
+        "sourceMap": true,
+        "rootDir": ".",
+        "baseUrl": "..",
+        "paths": {
+            "@shared/*": ["shared/*"],
+            "@backend/*": ["backend/*"]
+        },
+        "strict": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true
+    },
+    "include": ["./**/*", "./**/*.json", "../shared/**/*"],
+    "exclude": ["./dist", "./tests/*"]
+}
