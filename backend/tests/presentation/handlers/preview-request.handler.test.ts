@@ -1,12 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as vscode from "vscode";
-import { PreviewRequestMessage } from "../../../../shared/extension-webview-protocol";
-import { HighlighterAssetLoader } from "../../../core/highlighter-asset-loader";
 import { FuzzyFinderPanelController } from "../../../core/presentation/fuzzy-panel.controller";
 import { PreviewRequestHandler } from "../../../core/presentation/handlers/preview-request.handler";
 import { WebviewController } from "../../../core/presentation/webview.controller";
-
-HighlighterAssetLoader;
 
 vi.mock("@backend/utils/theme", () => ({
   getCurThemeMetadata: vi.fn().mockResolvedValue({}),
@@ -53,7 +49,7 @@ describe("PreviewRequestHandler", () => {
   });
 
   it("request selected option data", async () => {
-    const data: PreviewRequestMessage["data"] = {
+    const data: any = {
       selectedId: "1",
     };
 
