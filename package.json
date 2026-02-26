@@ -29,7 +29,7 @@
     ],
     "icon": "images/logo.webp",
     "engines": {
-        "vscode": "^1.105.0"
+        "vscode": "^1.85.0"
     },
     "categories": [
         "Other"
@@ -587,8 +587,8 @@
     "scripts": {
         "vscode:prepublish": "pnpm run backend:bundle:prod",
         "backend:bundle:prod": "tsx scripts/bundle-backend.ts --env=prod",
-        "backend:compile": "tsc -b ./backend",
-        "backend:watch": "tsc -b -w ./backend",
+        "backend:compile": "tsc -p ./backend/tsconfig.build.json",
+        "backend:watch": "tsc -w -p ./backend/tsconfig.build.json",
         "backend:build": "tsx scripts/bundle-backend.ts",
         "pretest": "pnpm run backend:bundle:prod && pnpm run lint",
         "bundle:shiki": "tsx scripts/shiki/plugin.ts",
@@ -617,7 +617,7 @@
         "@biomejs/biome": "2.3.11",
         "@types/mocha": "^10.0.10",
         "@types/node": "25.x",
-        "@types/vscode": "^1.105.1",
+        "@types/vscode": "1.85.0",
         "@vitest/coverage-v8": "4.0.16",
         "@vscode/test-cli": "^0.0.12",
         "@vscode/test-electron": "^2.5.2",
