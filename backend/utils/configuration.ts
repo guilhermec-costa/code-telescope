@@ -104,6 +104,12 @@ const BUILTIN_PROVIDER_META: Record<FuzzyProviderType, ProviderMeta> = {
     previewTitle: "Symbol Preview",
     promptMessage: "Document symbols...",
   },
+  "workspace.extensions": {
+    tabTitle: "Workspace Extensions",
+    listTitle: "Installed Extensions",
+    previewTitle: "Extension Details",
+    promptMessage: "Extensions...",
+  },
 };
 
 export function getProviderTabTitle(provider: FuzzyProviderType): string {

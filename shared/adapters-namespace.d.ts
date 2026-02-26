@@ -17,7 +17,8 @@ export type BuiltinFuzzyProviderType =
   | "git.commits"
   | "workspace.symbols"
   | "document.symbols"
-  | "debug.breakpoints";
+  | "debug.breakpoints"
+  | "workspace.extensions";
 
 export type CustomFuzzyProviderType = `custom.${string}`;
 
@@ -37,6 +38,7 @@ export type DataAdapterType =
   | "gitCommitsAdapter"
   | "symbolsAdapter"
   | "debugBreakpointsAdapter"
+  | "extensionsAdapter"
   | `custom${string}Adapter`;
 
 export type PreviewRendererType =

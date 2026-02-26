@@ -59,6 +59,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerProviderCmd("callHierarchy", () => FuzzyFinderPanelController.setupProvider("workspace.callHierarchy"), ctx);
   registerProviderCmd("breakpoints", () => FuzzyFinderPanelController.setupProvider("debug.breakpoints"), ctx);
   registerProviderCmd("documentSymbols", () => FuzzyFinderPanelController.setupProvider("document.symbols"), ctx);
+  registerProviderCmd("extensions", () => FuzzyFinderPanelController.setupProvider("workspace.extensions"), ctx);
   registerProviderCmd(
     "custom",
     async () => {

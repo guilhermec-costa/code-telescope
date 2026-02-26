@@ -105,6 +105,10 @@
                 "title": "Code Telescope: Workspace Tasks"
             },
             {
+                "command": "code-telescope.fuzzy.extensions",
+                "title": "Code Telescope: Workspace Extensions"
+            },
+            {
                 "command": "code-telescope.harpoon.addFile",
                 "title": "Code Telescope: Harpoon - Add File"
             },
@@ -231,6 +235,11 @@
                 "command": "code-telescope.fuzzy.breakpoints",
                 "key": "ctrl+alt+p",
                 "mac": "cmd+alt+p"
+            },
+            {
+                "command": "code-telescope.fuzzy.extensions",
+                "key": "ctrl+alt+e",
+                "mac": "cmd+alt+e"
             },
             {
                 "command": "code-telescope.fuzzy.harpoon",
