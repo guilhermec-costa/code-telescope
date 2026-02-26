@@ -18,5 +18,5 @@
         "esModuleInterop": true
     },
     "include": ["./**/*", "./**/*.json", "../shared/**/*"],
-    "exclude": ["./dist"]
+    "exclude": ["./dist", "./tests/*"]
 }
