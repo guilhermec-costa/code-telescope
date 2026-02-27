@@ -593,6 +593,16 @@
                     "default": 5,
                     "description": "Border radius (px)",
                     "order": 29
+                },
+                "codeTelescope.matching.algorithm": {
+                    "type": "string",
+                    "enum": [
+                        "substring",
+                        "subsequence"
+                    ],
+                    "default": "subsequence",
+                    "description": "Matching algorithm for search: 'substring' (exact substring match) or 'subsequence' (character-by-character match like fzf)",
+                    "order": 30
                 }
             }
         }

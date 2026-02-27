@@ -28,6 +28,16 @@ export interface IFuzzyFinderDataAdapter<TData = any, TOption = string> {
   getDisplayText(option: TOption): string;
 
   /**
+   * Returns the searchable text representation of an option.
+   *
+   * This value is used by the fuzzy engine to perform matching.
+   * It should contain only raw, searchable content (no markup).
+   *
+   * @param option The option to extract searchable text from.
+   */
+  getSearchText(option: TOption): string;
+
+  /**
    * Returns the human-readable label for a specific option.
    *
    * This text is shown inside the option list.

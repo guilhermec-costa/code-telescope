@@ -83,6 +83,7 @@ export class WebviewAssetManager {
       "{{__PREVIEW_CFG__}}": JSON.stringify(ExtensionConfigManager.previewManagerCfg),
       "{{__WS_PATH_DISPLAY__}}": ExtensionConfigManager.wsFileFinderCfg.textDisplay,
       "{{__KEYBINDINGS_CFG__}}": JSON.stringify(ExtensionConfigManager.keybindings),
+      "{{__MATCHING_CFG__}}": JSON.stringify(ExtensionConfigManager.matchingCfg),
       "{{__CUSTOM_DATA_ADAPTER__}}": JSON.stringify(customUiPayload, null, 2),
       "{{__CUSTOM_RENDER_ADAPTERS__}}": JSON.stringify([]),
       "{{__OPTIONS_SIDE_TITLE__}}": getProviderListTitle(provider.fuzzyAdapterType),

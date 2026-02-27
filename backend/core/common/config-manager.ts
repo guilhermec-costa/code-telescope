@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import {
   type KeybindingConfig,
   type LayoutSetupConfig,
+  type MatchingConfig,
   type PreviewManagerConfig,
   WindowConfig,
   type WsFileFinderConfig,
@@ -18,6 +19,7 @@ enum ExtensionCfgSection {
   LAYOUT = "layout",
   KEYBINDINGS = "keybindings",
   WINDOW = "window",
+  MATCHING = "matching",
 }
 
 export class ExtensionConfigManager {
@@ -65,5 +67,9 @@ export class ExtensionConfigManager {
 
   static get window(): WindowConfig {
     return this.root.get<WindowConfig>(ExtensionCfgSection.WINDOW)!;
+  }
+
+  static get matchingCfg(): MatchingConfig {
+    return this.root.get<MatchingConfig>(ExtensionCfgSection.MATCHING)!;
   }
 }

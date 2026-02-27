@@ -100,6 +100,8 @@ describe("Extension entrypoint", () => {
       "breakpoints",
       "documentSymbols",
       "commit",
+      "extensions",
+      "pkgDocs",
     ];
 
     expectedCommands.forEach((cmd) => {

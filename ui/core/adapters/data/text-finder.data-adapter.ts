@@ -35,6 +35,10 @@ export class TextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearch
     return formatFileOptionHtml(svgIconUrl, displayText);
   }
 
+  getSearchText(option: SearchOption): string {
+    return option.file;
+  }
+
   getSelectionValue(option: SearchOption): string {
     return option.identifier;
   }

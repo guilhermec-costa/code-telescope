@@ -1,51 +1,50 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-  <link rel="preload" href="{{script}}" as="script">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Code Telescope - Fuzzy Finder</title>
-  <cssvariables></cssvariables>
-  <link rel="stylesheet" href="{{style}}">
-  <link rel="stylesheet" href="{{highlight-styles}}">
-  <link rel="stylesheet" href="{{branch-styles}}">
-  <link rel="stylesheet" href="{{vim-styles}}">
-  <base href="{{dist-uri}}/">`
-  <script>
+  <head>
+    <link rel="preload" href="{{script}}" as="script">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Telescope - Fuzzy Finder</title>
+    <cssvariables></cssvariables>
+    <link rel="stylesheet" href="{{style}}">
+    <link rel="stylesheet" href="{{highlight-styles}}">
+    <link rel="stylesheet" href="{{branch-styles}}">
+    <link rel="stylesheet" href="{{vim-styles}}">
+    <base href="{{dist-uri}}/">`
+    <script>
     const __PREVIEW_CFG__ = JSON.parse('{{__PREVIEW_CFG__}}');
     const __KEYBINDINGS_CFG__ = JSON.parse('{{__KEYBINDINGS_CFG__}}');
+    const __MATCHING_CFG__ = JSON.parse('{{__MATCHING_CFG__}}');
     const __CUSTOM_RENDER_ADAPTERS__ = JSON.parse('{{__CUSTOM_RENDER_ADAPTERS__}}');
     const __FILE_PATH_DISPLAY__ = '{{__WS_PATH_DISPLAY__}}';
     const __PROVIDER__ = '{{__PROVIDER__}}'
-  </script>
-  <script id="__CUSTOM_DATA_ADAPTER__" type="text/plain">
+    </script>
+    <script id="__CUSTOM_DATA_ADAPTER__" type="text/plain">
     {{__CUSTOM_DATA_ADAPTER__}}
   </script>
-  <script defer src="{{script}}"></script>
-</head>
+    <script defer src="{{script}}"></script>
+  </head>
 
-<body data-layout="classic">
-  <div id="container">
-    <div id="split">
-      <div id="results-container">
-        <div id="search-results">
-          <div id="results-label">{{__OPTIONS_SIDE_TITLE__}}</div>
-          <ul id="option-list"></ul>
+  <body data-layout="classic">
+    <div id="container">
+      <div id="split">
+        <div id="results-container">
+          <div id="search-results">
+            <div id="results-label">{{__OPTIONS_SIDE_TITLE__}}</div>
+            <ul id="option-list"></ul>
+          </div>
+          <div id="input-container">
+            <div id="input-container-label">{{__PROMPT_MSG__}}</div>
+            <input id="search" type="text" autofocus>
+            <span id="items-count">0 / 0</span>
+          </div>
         </div>
-        <div id="input-container">
-          <div id="input-container-label">{{__PROMPT_MSG__}}</div>
-          <input id="search" type="text" autofocus>
-          <span id="items-count">0 / 0</span>
+        <div id="vertical-resizer"></div>
+        <div id="preview-side">
+          <div id="preview-label">{{__PREVIEW_SIDE_TITLE__}}</div>
+          <div id="preview"></div>
         </div>
-      </div>
-      <div id="vertical-resizer"></div>
-      <div id="preview-side">
-        <div id="preview-label">{{__PREVIEW_SIDE_TITLE__}}</div>
-        <div id="preview"></div>
       </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

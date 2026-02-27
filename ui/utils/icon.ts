@@ -15,10 +15,6 @@ function basename(filePath: string): string {
   return filePath.split(/[\\/]/).pop() ?? "";
 }
 
-function join(...parts: string[]): string {
-  return parts.join("/").replace(/\/+/g, "/");
-}
-
 /**
  * Resolve file extension considering special filenames
  */

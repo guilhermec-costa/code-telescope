@@ -14,6 +14,7 @@ export interface FileOption {
   type: "workspaceFilesAdapter",
 })
 export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<FileFinderData, FileOption> {
+  debounceSearchTime?: number;
   typeName: DataAdapterType;
 
   parseOptions(data: FileFinderData): FileOption[] {
@@ -32,6 +33,10 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
   getDisplayText(option: FileOption): string {
     const svgIconUrl = getSvgIconUrl(option.relative);
     return formatFileOptionHtml(svgIconUrl, option.relative);
+  }
+
+  getSearchText(option: FileOption): string {
+    return option.relative;
   }
 
   getSelectionValue(option: FileOption): string {

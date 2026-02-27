@@ -2,6 +2,7 @@ import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { debounce } from "../../utils/debounce";
 import { escapeHtml } from "../../utils/html";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
+import { getMatchIndices, matches, scoreMatch } from "../algos/subsequence";
 import { PreviewManager } from "../render/preview-manager";
 import { Virtualizer } from "../render/virtualizer";
 import { StateManager } from "./code/state-manager";
@@ -83,7 +84,10 @@ export class OptionListManager {
     if (this.searchElement.value === "") {
       this.filteredOptions = this.allOptions;
     } else {
-      const newFiltered = chunk.filter((opt) => this.dataAdapter!.filterOption(opt, this.searchElement.value));
+      const newFiltered = chunk.filter((opt) => {
+        const text = this.dataAdapter.getSearchText(opt);
+        return matches(this.searchElement.value, text);
+      });
       this.filteredOptions.push(...newFiltered);
     }
 
@@ -106,7 +110,10 @@ export class OptionListManager {
   public filter(query: string): void {
     if (!this.dataAdapter) return;
 
-    this.filteredOptions = this.allOptions.filter((opt) => this.dataAdapter.filterOption(opt, query));
+    this.filteredOptions = this.allOptions.filter((opt) => {
+      const text = this.dataAdapter.getSearchText(opt);
+      return matches(query.toLowerCase(), text);
+    });
     this.selectedIndex = this.getRelativeFirstIndex();
 
     this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
@@ -236,23 +243,51 @@ export class OptionListManager {
     this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
   }
 
-  private applySortOnOptions(options: any[]) {
+  private applySortOnOptions(options: any[], query: string) {
     const isIvy = this.isIvyLayout();
     const customSort = this.dataAdapter.sortFn;
 
-    options.sort((opt1, opt2) => {
+    if (customSort) {
+      options.sort((opt1, opt2) => {
+        const result = customSort(opt1, opt2);
+        return isIvy ? -result : result;
+      });
+
+      return;
+    }
+
+    let mappedOptions: { opt: any; sortValue: number | string }[];
+
+    if (query) {
+      const lowerQuery = query.toLowerCase();
+
+      mappedOptions = options.map((opt) => {
+        const text = this.dataAdapter.getSearchText(opt);
+        const score = scoreMatch(lowerQuery, text);
+        return { opt, sortValue: score };
+      });
+    } else {
+      mappedOptions = options.map((opt) => {
+        const text = this.dataAdapter.getSearchText(opt).toLowerCase();
+        return { opt, sortValue: text };
+      });
+    }
+
+    mappedOptions.sort((a, b) => {
       let result: number;
 
-      if (customSort) {
-        result = customSort(opt1, opt2);
+      if (typeof a.sortValue === "number") {
+        result = a.sortValue - (b.sortValue as number);
       } else {
-        const a = this.dataAdapter.getSelectionValue(opt1).toLowerCase();
-        const b = this.dataAdapter.getSelectionValue(opt2).toLowerCase();
-        result = a.localeCompare(b);
+        result = a.sortValue.localeCompare(b.sortValue as string);
       }
 
       return isIvy ? -result : result;
     });
+
+    for (let i = 0; i < options.length; i++) {
+      options[i] = mappedOptions[i].opt;
+    }
   }
 
   /**
@@ -261,7 +296,8 @@ export class OptionListManager {
   render(): void {
     const perfStart = performance.now();
 
-    this.applySortOnOptions(this.filteredOptions);
+    this.applySortOnOptions(this.filteredOptions, this.searchElement.value);
+    this.selectedIndex = this.getRelativeFirstIndex();
     const afterSort = performance.now();
 
     if (!this.dataAdapter) return;
@@ -274,14 +310,10 @@ export class OptionListManager {
 
     const afterRender = performance.now();
 
-    const afterScroll = performance.now();
-
     console.log(
       `[Code Telescope][Render] items=${itemsCount} ` +
         `sort=${(afterSort - perfStart).toFixed(2)}ms ` +
-        `virtualize=${(afterRender - afterSort).toFixed(2)}ms ` +
-        `scroll=${(afterScroll - afterRender).toFixed(2)}ms ` +
-        `total=${(afterScroll - perfStart).toFixed(2)}ms`,
+        `virtualize=${(afterRender - afterSort).toFixed(2)}ms `,
     );
   }
 
@@ -298,7 +330,7 @@ export class OptionListManager {
     }
 
     const displayText = this.dataAdapter.getDisplayText(option);
-    li.innerHTML = this.highlightMatch(displayText, query);
+    li.innerHTML = this.highlightMatch(displayText.toLowerCase(), query);
 
     li.onclick = () => {
       this.selectedIndex = idx;
@@ -314,34 +346,36 @@ export class OptionListManager {
   private highlightMatch(text: string, query: string): string {
     if (!query) return text;
 
-    // icon structure
     if (text.includes("<i class=") || text.includes("<i>")) {
       return this.highlightMatchWithIcon(text, query);
     }
 
-    // only text
-    const lowerText = text.toLowerCase();
-    const lowerQuery = query.toLowerCase();
-    const i = lowerText.indexOf(lowerQuery);
-    if (i === -1) return escapeHtml(text);
+    const matchIndices = getMatchIndices(query, text);
+    if (matchIndices.length === 0) {
+      return matches(query, text) ? escapeHtml(text) : escapeHtml(text);
+    }
 
     const escaped = escapeHtml(text);
-    return (
-      escaped.slice(0, i) +
-      `<span class="highlight">${escaped.slice(i, i + query.length)}</span>` +
-      escaped.slice(i + query.length)
-    );
+    let result = "";
+    let lastIdx = 0;
+
+    for (let i = 0; i < matchIndices.length; i++) {
+      const idx = matchIndices[i];
+      result += escaped.slice(lastIdx, idx);
+      result += `<span class="highlight">${escaped.slice(idx, idx + 1)}</span>`;
+      lastIdx = idx + 1;
+    }
+    result += escaped.slice(lastIdx);
+
+    return result;
   }
 
   /**
    * Highlights matches in text that contains an icon.
    */
   private highlightMatchWithIcon(html: string, query: string): string {
-    // white spaces/lb
     const cleanHtml = html.replace(/\s+/g, " ").trim();
 
-    // icon match
-    // everything between <i and </i>
     const iconMatch = cleanHtml.match(/^(<i[^>]*>.*?<\/i>)/);
 
     if (!iconMatch) {
@@ -350,27 +384,27 @@ export class OptionListManager {
 
     const icon = iconMatch[1];
 
-    // match text in span
     const pathMatch = cleanHtml.match(/<span class="file-path">([^<]+)<\/span>/);
 
     if (!pathMatch) return html;
 
     const path = pathMatch[1];
-    const lowerPath = path.toLowerCase();
-    const lowerQuery = query.toLowerCase();
-    const i = lowerPath.indexOf(lowerQuery);
+    const matchIndices = getMatchIndices(query, path);
 
-    if (i === -1) {
+    if (matchIndices.length === 0) {
       return cleanHtml;
     }
 
-    // highlight only in path
-    const beforeMatch = path.slice(0, i);
-    const match = path.slice(i, i + query.length);
-    const afterMatch = path.slice(i + query.length);
+    let highlightedPath = "";
+    let lastIdx = 0;
 
-    const highlightedPath =
-      escapeHtml(beforeMatch) + `<span class="highlight">${escapeHtml(match)}</span>` + escapeHtml(afterMatch);
+    for (let i = 0; i < matchIndices.length; i++) {
+      const idx = matchIndices[i];
+      highlightedPath += escapeHtml(path.slice(lastIdx, idx));
+      highlightedPath += `<span class="highlight">${escapeHtml(path.slice(idx, idx + 1))}</span>`;
+      lastIdx = idx + 1;
+    }
+    highlightedPath += escapeHtml(path.slice(lastIdx));
 
     return `${icon}<span class="file-path">${highlightedPath}</span>`;
   }

@@ -38,9 +38,9 @@
 
 .highlight {
   background-color: var(--highlight-bg);
+  font-family: var(--font-family);
   color: var(--fg);
-  font-weight: 600;
-  padding: 0 1px;
+  font-weight: 500;
   border-radius: 1px;
 }
 

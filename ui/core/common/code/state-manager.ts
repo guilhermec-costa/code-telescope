@@ -6,6 +6,10 @@ export type WebviewState = {
   previewContent: string | null;
 };
 
+export type MatchingAlgorithm = "substring" | "subsequence";
+
+declare const __MATCHING_CFG__: { algorithm: MatchingAlgorithm };
+
 /**
  * Manages persisted UI state for the fuzzy finder webview.
  *
@@ -69,6 +73,13 @@ export class StateManager {
 
   static get layoutMode() {
     return document.body.dataset.layout as LayoutMode;
+  }
+
+  static get matchingAlgorithm(): MatchingAlgorithm {
+    if (typeof __MATCHING_CFG__ !== "undefined") {
+      return __MATCHING_CFG__.algorithm;
+    }
+    return "substring";
   }
 }
 
