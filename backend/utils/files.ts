@@ -1,5 +1,6 @@
 import path from "path";
 import * as vscode from "vscode";
+import { PreviewRendererType } from "../../shared/adapters-namespace";
 import extToIcon from "../config/ext-to-icon-name.json";
 import extTolangId from "../config/ext-to-langid.json";
 import { FuzzyFinderPanelController } from "../core/presentation/fuzzy-panel.controller";
@@ -77,4 +78,18 @@ export function getSvgIconUrl(filePath: string) {
 export function getLanguageIdForFile(filePath: string): string {
   const ext = path.extname(filePath).toLowerCase();
   return (extTolangId as Record<string, string>)[ext] || "plaintext";
+}
+
+export function formatBytes(bytes: number): string {
+  if (bytes === 0) return "0 B";
+
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
+}
+
+export function getPreviewOverride(fileType: string): PreviewRendererType {
+  return "preview.branch";
 }

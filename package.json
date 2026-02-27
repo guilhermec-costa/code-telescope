@@ -109,6 +109,10 @@
                 "title": "Code Telescope: Workspace Extensions"
             },
             {
+                "command": "code-telescope.fuzzy.pkgDocs",
+                "title": "Code Telescope: Workspace Package Docs"
+            },
+            {
                 "command": "code-telescope.harpoon.addFile",
                 "title": "Code Telescope: Harpoon - Add File"
             },
@@ -655,6 +659,7 @@
         "@vscode/codicons": "^0.0.44",
         "fast-glob": "^3.3.3",
         "glob": "^13.0.0",
+        "marked": "^17.0.3",
         "material-icon-theme": "^5.30.0",
         "p-limit": "^7.2.0"
     },

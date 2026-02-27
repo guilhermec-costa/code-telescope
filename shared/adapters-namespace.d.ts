@@ -18,6 +18,7 @@ export type BuiltinFuzzyProviderType =
   | "workspace.symbols"
   | "document.symbols"
   | "debug.breakpoints"
+  | "workspace.packageDocs"
   | "workspace.extensions";
 
 export type CustomFuzzyProviderType = `custom.${string}`;
@@ -39,6 +40,7 @@ export type DataAdapterType =
   | "symbolsAdapter"
   | "debugBreakpointsAdapter"
   | "extensionsAdapter"
+  | "packageDocsAdapter"
   | `custom${string}Adapter`;
 
 export type PreviewRendererType =

@@ -26,8 +26,9 @@ export class OptionListManager {
   private readonly virtualizer: Virtualizer;
 
   private getPreviewerDebounceTime(): number {
-    const provider = __PROVIDER__ as FuzzyProviderType;
-    switch (provider) {
+    switch (__PROVIDER__ as FuzzyProviderType) {
+      case "workspace.packageDocs":
+        return 250;
       case "workspace.colorschemes":
         return 250;
       case "git.commits":

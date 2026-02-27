@@ -110,6 +110,12 @@ const BUILTIN_PROVIDER_META: Record<FuzzyProviderType, ProviderMeta> = {
     previewTitle: "Extension Details",
     promptMessage: "Extensions...",
   },
+  "workspace.packageDocs": {
+    tabTitle: "Package Documentation",
+    listTitle: "Documents in Package",
+    previewTitle: "Document Preview",
+    promptMessage: "Search package documents...",
+  },
 };
 
 export function getProviderTabTitle(provider: FuzzyProviderType): string {
