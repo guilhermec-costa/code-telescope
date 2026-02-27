@@ -33,6 +33,10 @@ export class KeybindingsFinderDataAdapter implements IFuzzyFinderDataAdapter<Key
     return `<i class="codicon codicon-record-keys file-icon sk-record-keys"></i><span class="file-path">${option.displayText}</span>`;
   }
 
+  getSearchText(option: KeybindingOption): string {
+    return option.displayText;
+  }
+
   getSelectionValue(option: KeybindingOption): string {
     return option.index.toString();
   }

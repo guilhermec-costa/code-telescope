@@ -54,6 +54,10 @@ export class BreakpointsFinderDataAdapter implements IFuzzyFinderDataAdapter<Bre
     return `${statusIcon}<span class="file-path">${relativePath}</span>${badges}`;
   }
 
+  getSearchText(option: BreakpointOption): string {
+    return option.displayText;
+  }
+
   getSelectionValue(option: BreakpointOption): string {
     return option.index.toString();
   }

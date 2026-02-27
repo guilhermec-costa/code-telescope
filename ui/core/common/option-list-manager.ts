@@ -2,7 +2,8 @@ import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { debounce } from "../../utils/debounce";
 import { escapeHtml } from "../../utils/html";
 import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
-import { getMatchIndices, matches, scoreMatch } from "../algos/subsequence";
+import { computeMatch, scoreMatch } from "../algos/score";
+import { matches } from "../algos/subsequence";
 import { PreviewManager } from "../render/preview-manager";
 import { Virtualizer } from "../render/virtualizer";
 import { StateManager } from "./code/state-manager";
@@ -128,6 +129,7 @@ export class OptionListManager {
 
     if (this.filteredOptions.length === 0) {
       PreviewManager.instance.clearPreview();
+      this.lastOption = undefined;
       return;
     }
   }
@@ -350,7 +352,7 @@ export class OptionListManager {
       return this.highlightMatchWithIcon(text, query);
     }
 
-    const matchIndices = getMatchIndices(query, text);
+    const matchIndices = computeMatch(query, text).indices;
     if (matchIndices.length === 0) {
       return matches(query, text) ? escapeHtml(text) : escapeHtml(text);
     }
@@ -389,7 +391,7 @@ export class OptionListManager {
     if (!pathMatch) return html;
 
     const path = pathMatch[1];
-    const matchIndices = getMatchIndices(query, path);
+    const matchIndices = computeMatch(query, path).indices;
 
     if (matchIndices.length === 0) {
       return cleanHtml;
@@ -410,7 +412,6 @@ export class OptionListManager {
   }
 
   private requestPreview(option: any): void {
-    console.log("Option: ", option);
     if (!this.dataAdapter || option === this.lastOption) return;
     const value = this.dataAdapter.getSelectionValue(option);
     this.lastOption = option;

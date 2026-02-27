@@ -32,6 +32,10 @@ export class ExtensionsFinderDataAdapter implements IFuzzyFinderDataAdapter<Exte
     return `<i class="codicon codicon-extensions file-icon ${statusClass}"></i><span class="file-path">${option.displayText}</span>`;
   }
 
+  getSearchText(option: ExtensionOption): string {
+    return option.displayText;
+  }
+
   getSelectionValue(option: ExtensionOption): string {
     return option.index.toString();
   }

@@ -28,6 +28,10 @@ export class DiagnosticsFinderDataAdapter implements IFuzzyFinderDataAdapter<Dia
     return `<i class="codicon codicon-${option.codicon} file-icon sk-diagnostic-${option.codicon}"></i><span class="file-path">${option.displayText}</span>`;
   }
 
+  getSearchText(option: DiagnosticOption): string {
+    return option.displayText;
+  }
+
   getSelectionValue(option: DiagnosticOption): string {
     return option.index.toString();
   }

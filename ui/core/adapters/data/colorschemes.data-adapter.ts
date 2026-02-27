@@ -35,6 +35,10 @@ export class ColorSchemesFinderDataAdapter
     return `<i class="codicon codicon-symbol-color file-icon sk-symbol-color"></i><span class="file-path">${option.displayText}</span>`;
   }
 
+  getSearchText(option: ColorSchemeOption): string {
+    return option.displayText;
+  }
+
   getSelectionValue(option: ColorSchemeOption) {
     return option.theme;
   }

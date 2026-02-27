@@ -39,6 +39,10 @@ export class CallHierarchyFinderDataAdapter
     return `<i class="codicon codicon-${codicon} file-icon sk-${codicon}"></i><i class="codicon codicon-${directionCodicon} file-icon sk-${codicon}"></i><span class="file-path">${option.displayText}</span>`;
   }
 
+  getSearchText(option: CallHierarchyOption): string {
+    return option.displayText;
+  }
+
   getSelectionValue(option: CallHierarchyOption): string {
     return option.index.toString();
   }

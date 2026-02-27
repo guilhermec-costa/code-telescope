@@ -36,6 +36,10 @@ export class RecentFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<Rec
     return formatFileOptionHtml(option.svgIconUrl, option.displayText);
   }
 
+  getSearchText(option: RecentFileOption): string {
+    return option.displayText;
+  }
+
   getSelectionValue(option: RecentFileOption): string {
     return option.file.path;
   }

@@ -90,6 +90,14 @@ export interface CustomFinderDefinition {
       getSelectionValue: (option: any) => string;
 
       /**
+       * Returns the searchable text for a given option.
+       *
+       * This value is used by the fuzzy engine to perform matching.
+       * If not provided, getDisplayText will be used as fallback.
+       */
+      getSearchText?: (option: any) => string;
+
+      /**
        * Optional custom filter logic for options.
        *
        * If provided, it overrides the default fuzzy filtering behavior.

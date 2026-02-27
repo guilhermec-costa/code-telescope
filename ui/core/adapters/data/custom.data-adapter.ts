@@ -18,6 +18,12 @@ export class CustomDataAdapterProxy implements IFuzzyFinderDataAdapter {
     this.getDisplayText = indirectEval(`(${adapter.getDisplayText})`);
     this.getSelectionValue = indirectEval(`(${adapter.getSelectionValue})`);
 
+    if (adapter.getSearchText) {
+      this.getSearchText = indirectEval(`(${adapter.getSearchText})`);
+    } else {
+      this.getSearchText = (option: string) => this.getDisplayText(option);
+    }
+
     if (adapter.filterOption) {
       this.filterOption = indirectEval(`(${adapter.filterOption})`);
     }
@@ -27,6 +33,7 @@ export class CustomDataAdapterProxy implements IFuzzyFinderDataAdapter {
 
   parseOptions!: (options: any) => string[];
   getDisplayText!: (option: string) => string;
+  getSearchText!: (option: string) => string;
   getSelectionValue!: (option: string) => string;
   filterOption: (option: string, query: string) => boolean;
   debounceSearchTime?: number;

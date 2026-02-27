@@ -1,5 +1,7 @@
 import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { HarpoonFinderData, HarpoonMark } from "../../../../shared/exchange/harpoon";
+import { formatFileOptionHtml } from "../../../utils/html";
+import { getSvgIconUrl } from "../../../utils/icon";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
 
@@ -32,19 +34,12 @@ export class HarpoonFinderDataAdapter implements IFuzzyFinderDataAdapter<Harpoon
   }
 
   getDisplayText(option: HarpoonOption): string {
-    return `
-    <i class="file-icon">
-      <img 
-        src="${option.svgIconUrl}" 
-        alt="" 
-        loading="eager" 
-        decoding="async"
-        width="16"
-        height="16"
-      />
-    </i>
-    <span class="file-path">${option.displayText}</span>
-    `.trim();
+    const svgIconUrl = getSvgIconUrl(option.mark.uri.fsPath);
+    return formatFileOptionHtml(svgIconUrl, option.displayText);
+  }
+
+  getSearchText(option: HarpoonOption): string {
+    return option.displayText;
   }
 
   getSelectionValue(option: HarpoonOption): string {

@@ -184,7 +184,7 @@ body {
 .option-item {
   padding: 2px 12px;
   cursor: pointer;
-  font-family: var(--font-family), "Fira Code", monospace;
+  font-family: var(--font-family), monospace;
   font-size: var(--results-font-size);
   font-weight: 500;
   transition: background-color 0.1s ease;
@@ -204,10 +204,12 @@ body {
 }
 
 .option-item.selected {
-  background-color: var(--list-selected);
-  color: var(--list-selected-fg);
+  background-color: var(--vscode-list-activeSelectionBackground, rgba(55, 55, 61, 0.5));
+  color: var(--vscode-list-activeSelectionForeground, #ffffff);
+  outline-offset: -1px;
   border-radius: 2px;
   padding-left: 0px;
+  cursor: pointer;
 }
 
 .option-item:not(.selected) {

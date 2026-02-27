@@ -15,7 +15,7 @@ export class HighlighterManager {
   private static langMap = new Map<string, LanguageGrammar>();
 
   private static loadedThemes = new Set<string>();
-  private static loadedLanguages = new Set<string>(["text"]);
+  private static loadedLanguages = new Set<string>(["plaintext"]);
 
   /**
    * Initializes the Shiki highlighter core with Oniguruma WASM.

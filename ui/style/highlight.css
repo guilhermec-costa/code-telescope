@@ -37,10 +37,11 @@
 }
 
 .highlight {
-  background-color: var(--highlight-bg);
-  font-family: var(--font-family);
-  color: var(--fg);
-  font-weight: 500;
+  color: var(--vscode-list-highlightForeground, #2aaaff);
+  font-weight: 600;
+  background-color: transparent;
+  text-decoration: underline;
+  text-underline-offset: 2px;
   border-radius: 1px;
 }
 

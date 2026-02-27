@@ -30,6 +30,10 @@ export class WorkspaceTasksFinderDataAdapter
     return `<i class="codicon codicon-${option.codicon} file-icon sk-source-${option.task.source}"></i><span class="file-path">${option.displayText}</span>`;
   }
 
+  getSearchText(option: WorkspaceTaskOption): string {
+    return option.displayText;
+  }
+
   getSelectionValue(option: WorkspaceTaskOption): string {
     return option.index.toString();
   }

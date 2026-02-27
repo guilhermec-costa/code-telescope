@@ -33,6 +33,10 @@ export class PackageDocsFinderDataAdapter implements IFuzzyFinderDataAdapter<Pac
     return `<i class="codicon codicon-${codicon} file-icon ${cssClass}"></i><span class="file-path">${option.displayText}</span>`;
   }
 
+  getSearchText(option: PackageDocOption): string {
+    return option.displayText;
+  }
+
   getSelectionValue(option: PackageDocOption): string {
     return option.index.toString();
   }

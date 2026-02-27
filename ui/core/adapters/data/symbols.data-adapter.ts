@@ -36,6 +36,10 @@ export class SymbolsFinderDataAdapter
     return `<i class="codicon codicon-${codicon} file-icon sk-${codicon}"></i><span class="file-path">${option.displayText}</span>`;
   }
 
+  getSearchText(option: WorkspaceSymbolOption): string {
+    return option.displayText;
+  }
+
   getSelectionValue(option: WorkspaceSymbolOption): string {
     return option.index.toString();
   }

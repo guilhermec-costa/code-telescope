@@ -19,6 +19,10 @@ export class CommitFinderDataAdapter implements IFuzzyFinderDataAdapter<CommitSe
     return `<i class="codicon codicon-git-commit file-icon"></i><span class="file-path">${shortHash} - ${option.message}</span>`;
   }
 
+  getSearchText(option: CommitSearchInfo): string {
+    return `${option.hash} ${option.message}`;
+  }
+
   getSelectionValue(option: CommitSearchInfo): string {
     return option.hash;
   }
