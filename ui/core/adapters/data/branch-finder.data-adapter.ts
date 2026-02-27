@@ -14,15 +14,12 @@ export class BranchFinderDataAdapter implements IFuzzyFinderDataAdapter<BranchIn
     return data;
   }
 
-  getDisplayText(option: BranchInfo): string {
-    const prefix = option.current ? "* " : "  ";
-    const remote = option.remote ? ` (${option.remote})` : "";
-    const displayText = `${prefix}${option.name}${remote}`;
-    return `<i class="codicon codicon-git-branch file-icon sk-git-branch"></i><span class="file-path">${displayText}</span>`;
-  }
-
   getSearchText(option: BranchInfo): string {
     return `${option.name} ${option.remote || ""}`;
+  }
+
+  getHtmlWrapper(option: BranchInfo, highlightedContent: string): string {
+    return `<i class="codicon codicon-git-branch file-icon sk-git-branch"></i><span class="file-path">${highlightedContent}</span>`;
   }
 
   getSelectionValue(option: BranchInfo): string {
@@ -30,8 +27,7 @@ export class BranchFinderDataAdapter implements IFuzzyFinderDataAdapter<BranchIn
   }
 
   filterOption(option: BranchInfo, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const displayText = this.getDisplayText(option).toLowerCase();
-    return displayText.includes(lowerQuery);
+    const searchText = this.getSearchText(option).toLowerCase();
+    return searchText.includes(query.toLowerCase());
   }
 }

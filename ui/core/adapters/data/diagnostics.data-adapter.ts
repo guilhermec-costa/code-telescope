@@ -24,12 +24,13 @@ export class DiagnosticsFinderDataAdapter implements IFuzzyFinderDataAdapter<Dia
     return options;
   }
 
-  getDisplayText(option: DiagnosticOption): string {
-    return `<i class="codicon codicon-${option.codicon} file-icon sk-diagnostic-${option.codicon}"></i><span class="file-path">${option.displayText}</span>`;
+  getSearchText(option: DiagnosticOption): string {
+    const diag = option.diagnostic;
+    return `${diag.message} ${diag.relativePath} ${diag.source || ""} ${diag.code || ""}`;
   }
 
-  getSearchText(option: DiagnosticOption): string {
-    return option.displayText;
+  getHtmlWrapper(option: DiagnosticOption, highlightedContent: string): string {
+    return `<i class="codicon codicon-${option.codicon} file-icon sk-diagnostic-${option.codicon}"></i><span class="file-path">${highlightedContent}</span>`;
   }
 
   getSelectionValue(option: DiagnosticOption): string {

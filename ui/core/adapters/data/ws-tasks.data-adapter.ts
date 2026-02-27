@@ -26,12 +26,13 @@ export class WorkspaceTasksFinderDataAdapter
     return options;
   }
 
-  getDisplayText(option: WorkspaceTaskOption): string {
-    return `<i class="codicon codicon-${option.codicon} file-icon sk-source-${option.task.source}"></i><span class="file-path">${option.displayText}</span>`;
+  getSearchText(option: WorkspaceTaskOption): string {
+    const task = option.task;
+    return `${task.name} ${task.source} ${task.detail || ""} ${task.definition.type || ""}`;
   }
 
-  getSearchText(option: WorkspaceTaskOption): string {
-    return option.displayText;
+  getHtmlWrapper(option: WorkspaceTaskOption, highlightedContent: string): string {
+    return `<i class="codicon codicon-${option.codicon} file-icon sk-source-${option.task.source}"></i><span class="file-path">${highlightedContent}</span>`;
   }
 
   getSelectionValue(option: WorkspaceTaskOption): string {

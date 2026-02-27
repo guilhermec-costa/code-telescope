@@ -33,14 +33,15 @@ export class CallHierarchyFinderDataAdapter
     return options;
   }
 
-  getDisplayText(option: CallHierarchyOption): string {
-    const codicon = option.codicon;
-    let directionCodicon = option.call.type === "incoming" ? "call-incoming" : "call-outgoing";
-    return `<i class="codicon codicon-${codicon} file-icon sk-${codicon}"></i><i class="codicon codicon-${directionCodicon} file-icon sk-${codicon}"></i><span class="file-path">${option.displayText}</span>`;
+  getSearchText(option: CallHierarchyOption): string {
+    const call = option.call;
+    return `${call.name} ${call.detail} ${call.relativePath} ${call.containerName || ""} ${call.type}`;
   }
 
-  getSearchText(option: CallHierarchyOption): string {
-    return option.displayText;
+  getHtmlWrapper(option: CallHierarchyOption, highlightedContent: string): string {
+    const codicon = option.codicon;
+    let directionCodicon = option.call.type === "incoming" ? "call-incoming" : "call-outgoing";
+    return `<i class="codicon codicon-${codicon} file-icon sk-${codicon}"></i><i class="codicon codicon-${directionCodicon} file-icon sk-${codicon}"></i><span class="file-path">${highlightedContent}</span>`;
   }
 
   getSelectionValue(option: CallHierarchyOption): string {

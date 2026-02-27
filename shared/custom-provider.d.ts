@@ -98,6 +98,13 @@ export interface CustomFinderDefinition {
       getSearchText?: (option: any) => string;
 
       /**
+       * Wraps the highlighted content with the appropriate HTML structure.
+       *
+       * If not provided, the icon will be extracted from getDisplayText.
+       */
+      getHtmlWrapper?: (option: any, highlightedContent: string) => string;
+
+      /**
        * Optional custom filter logic for options.
        *
        * If provided, it overrides the default fuzzy filtering behavior.

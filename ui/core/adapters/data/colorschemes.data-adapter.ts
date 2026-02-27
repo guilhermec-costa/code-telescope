@@ -31,12 +31,12 @@ export class ColorSchemesFinderDataAdapter
     return options;
   }
 
-  getDisplayText(option: ColorSchemeOption): string {
-    return `<i class="codicon codicon-symbol-color file-icon sk-symbol-color"></i><span class="file-path">${option.displayText}</span>`;
+  getSearchText(option: ColorSchemeOption): string {
+    return `${option.theme.label} ${option.theme.extensionId || ""}`;
   }
 
-  getSearchText(option: ColorSchemeOption): string {
-    return option.displayText;
+  getHtmlWrapper(option: ColorSchemeOption, highlightedContent: string): string {
+    return `<i class="codicon codicon-symbol-color file-icon sk-symbol-color"></i><span class="file-path">${highlightedContent}</span>`;
   }
 
   getSelectionValue(option: ColorSchemeOption) {

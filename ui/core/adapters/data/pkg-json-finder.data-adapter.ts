@@ -27,14 +27,14 @@ export class PackageDocsFinderDataAdapter implements IFuzzyFinderDataAdapter<Pac
     return options;
   }
 
-  getDisplayText(option: PackageDocOption): string {
-    const codicon = option.package.isDev ? "tools" : "package";
-    const cssClass = option.package.isDev ? "sk-dev" : "sk-dep";
-    return `<i class="codicon codicon-${codicon} file-icon ${cssClass}"></i><span class="file-path">${option.displayText}</span>`;
+  getSearchText(option: PackageDocOption): string {
+    return option.package.name;
   }
 
-  getSearchText(option: PackageDocOption): string {
-    return option.displayText;
+  getHtmlWrapper(option: PackageDocOption, highlightedContent: string): string {
+    const codicon = option.package.isDev ? "tools" : "package";
+    const cssClass = option.package.isDev ? "sk-dev" : "sk-dep";
+    return `<i class="codicon codicon-${codicon} file-icon ${cssClass}"></i><span class="file-path">${highlightedContent}</span>`;
   }
 
   getSelectionValue(option: PackageDocOption): string {

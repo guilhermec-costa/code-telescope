@@ -31,13 +31,14 @@ export class SymbolsFinderDataAdapter
     return options;
   }
 
-  getDisplayText(option: WorkspaceSymbolOption): string {
-    const codicon = option.symbol.codicon;
-    return `<i class="codicon codicon-${codicon} file-icon sk-${codicon}"></i><span class="file-path">${option.displayText}</span>`;
+  getSearchText(option: WorkspaceSymbolOption): string {
+    const symbol = option.symbol;
+    return `${symbol.name} ${symbol.containerName || ""} ${symbol.kindName}`;
   }
 
-  getSearchText(option: WorkspaceSymbolOption): string {
-    return option.displayText;
+  getHtmlWrapper(option: WorkspaceSymbolOption, highlightedContent: string): string {
+    const codicon = option.symbol.codicon;
+    return `<i class="codicon codicon-${codicon} file-icon sk-${codicon}"></i><span class="file-path">${highlightedContent}</span>`;
   }
 
   getSelectionValue(option: WorkspaceSymbolOption): string {

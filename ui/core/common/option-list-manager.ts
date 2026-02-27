@@ -331,8 +331,11 @@ export class OptionListManager {
       li.classList.add("selected");
     }
 
-    const displayText = this.dataAdapter.getDisplayText(option);
-    li.innerHTML = this.highlightMatch(displayText.toLowerCase(), query);
+    const searchText = this.dataAdapter.getSearchText(option);
+    const offset = this.dataAdapter.calcHlOffsetChars?.(option) ?? 0;
+    const highlightedContent = this.highlightMatch(searchText, query, offset);
+
+    li.innerHTML = this.dataAdapter.getHtmlWrapper(option, highlightedContent);
 
     li.onclick = () => {
       this.selectedIndex = idx;
@@ -343,72 +346,30 @@ export class OptionListManager {
   }
 
   /**
-   * Highlights matches in text that contains an icon.
+   * Highlights matches in text.
    */
-  private highlightMatch(text: string, query: string): string {
-    if (!query) return text;
+  private highlightMatch(text: string, query: string, offset: number = 0): string {
+    if (!query) return escapeHtml(text);
 
-    if (text.includes("<i class=") || text.includes("<i>")) {
-      return this.highlightMatchWithIcon(text, query);
-    }
-
-    const matchIndices = computeMatch(query, text).indices;
+    const matchIndices = computeMatch(query, text.slice(offset)).indices;
     if (matchIndices.length === 0) {
-      return matches(query, text) ? escapeHtml(text) : escapeHtml(text);
+      return escapeHtml(text);
     }
 
-    const escaped = escapeHtml(text);
     let result = "";
-    let lastIdx = 0;
+
+    result += escapeHtml(text.slice(0, offset));
+    let lastIdx = offset;
 
     for (let i = 0; i < matchIndices.length; i++) {
-      const idx = matchIndices[i];
-      result += escaped.slice(lastIdx, idx);
-      result += `<span class="highlight">${escaped.slice(idx, idx + 1)}</span>`;
+      const idx = matchIndices[i] + offset;
+      result += escapeHtml(text.slice(lastIdx, idx));
+      result += `<span class="highlight">${escapeHtml(text.slice(idx, idx + 1))}</span>`;
       lastIdx = idx + 1;
     }
-    result += escaped.slice(lastIdx);
+    result += escapeHtml(text.slice(lastIdx));
 
     return result;
-  }
-
-  /**
-   * Highlights matches in text that contains an icon.
-   */
-  private highlightMatchWithIcon(html: string, query: string): string {
-    const cleanHtml = html.replace(/\s+/g, " ").trim();
-
-    const iconMatch = cleanHtml.match(/^(<i[^>]*>.*?<\/i>)/);
-
-    if (!iconMatch) {
-      return html;
-    }
-
-    const icon = iconMatch[1];
-
-    const pathMatch = cleanHtml.match(/<span class="file-path">([^<]+)<\/span>/);
-
-    if (!pathMatch) return html;
-
-    const path = pathMatch[1];
-    const matchIndices = computeMatch(query, path).indices;
-
-    if (matchIndices.length === 0) {
-      return cleanHtml;
-    }
-
-    let highlightedPath = "";
-    let lastIdx = 0;
-
-    for (let i = 0; i < matchIndices.length; i++) {
-      const idx = matchIndices[i];
-      highlightedPath += escapeHtml(path.slice(lastIdx, idx));
-      highlightedPath += `<span class="highlight">${escapeHtml(path.slice(idx, idx + 1))}</span>`;
-      lastIdx = idx + 1;
-    }
-    highlightedPath += escapeHtml(path.slice(lastIdx));
-
-    return `${icon}<span class="file-path">${highlightedPath}</span>`;
   }
 
   private requestPreview(option: any): void {

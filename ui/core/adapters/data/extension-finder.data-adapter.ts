@@ -27,13 +27,14 @@ export class ExtensionsFinderDataAdapter implements IFuzzyFinderDataAdapter<Exte
     return options;
   }
 
-  getDisplayText(option: ExtensionOption): string {
-    const statusClass = option.extension.isActive ? "sk-active" : "sk-inactive";
-    return `<i class="codicon codicon-extensions file-icon ${statusClass}"></i><span class="file-path">${option.displayText}</span>`;
+  getSearchText(option: ExtensionOption): string {
+    const ext = option.extension;
+    return `${ext.displayName} ${ext.id} ${ext.publisher} ${ext.description}`;
   }
 
-  getSearchText(option: ExtensionOption): string {
-    return option.displayText;
+  getHtmlWrapper(option: ExtensionOption, highlightedContent: string): string {
+    const statusClass = option.extension.isActive ? "sk-active" : "sk-inactive";
+    return `<i class="codicon codicon-extensions file-icon ${statusClass}"></i><span class="file-path">${highlightedContent}</span>`;
   }
 
   getSelectionValue(option: ExtensionOption): string {

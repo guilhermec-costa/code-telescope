@@ -19,15 +19,6 @@ export interface IFuzzyFinderDataAdapter<TData = any, TOption = string> {
   parseOptions(data: TData): TOption[];
 
   /**
-   * Returns the human-readable label for a specific option.
-   *
-   * This text is shown inside the option list.
-   *
-   * @param option The option to format.
-   */
-  getDisplayText(option: TOption): string;
-
-  /**
    * Returns the searchable text representation of an option.
    *
    * This value is used by the fuzzy engine to perform matching.
@@ -38,6 +29,14 @@ export interface IFuzzyFinderDataAdapter<TData = any, TOption = string> {
   getSearchText(option: TOption): string;
 
   /**
+   * Wraps the highlighted content with the appropriate HTML structure.
+   *
+   * @param option The option to wrap.
+   * @param highlightedContent The content with highlight spans already applied.
+   */
+  getHtmlWrapper(option: TOption, highlightedContent: string): string;
+
+  /**
    * Returns the human-readable label for a specific option.
    *
    * This text is shown inside the option list.
@@ -46,6 +45,7 @@ export interface IFuzzyFinderDataAdapter<TData = any, TOption = string> {
    */
   getSelectionValue(option: TOption): any;
 
+  calcHlOffsetChars?(option: TOption): number;
   /**
    * Custom filter logic for a single option
    */

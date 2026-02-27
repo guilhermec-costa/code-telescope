@@ -14,13 +14,12 @@ export class CommitFinderDataAdapter implements IFuzzyFinderDataAdapter<CommitSe
     return data;
   }
 
-  getDisplayText(option: CommitSearchInfo): string {
-    const shortHash = option.hash.substring(0, 7);
-    return `<i class="codicon codicon-git-commit file-icon"></i><span class="file-path">${shortHash} - ${option.message}</span>`;
-  }
-
   getSearchText(option: CommitSearchInfo): string {
     return `${option.hash} ${option.message}`;
+  }
+
+  getHtmlWrapper(option: CommitSearchInfo, highlightedContent: string): string {
+    return `<i class="codicon codicon-git-commit file-icon"></i><span class="file-path">${highlightedContent}</span>`;
   }
 
   getSelectionValue(option: CommitSearchInfo): string {
@@ -28,8 +27,7 @@ export class CommitFinderDataAdapter implements IFuzzyFinderDataAdapter<CommitSe
   }
 
   filterOption(option: CommitSearchInfo, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const displayText = this.getDisplayText(option).toLowerCase();
-    return displayText.includes(lowerQuery);
+    const searchText = this.getSearchText(option).toLowerCase();
+    return searchText.includes(query.toLowerCase());
   }
 }

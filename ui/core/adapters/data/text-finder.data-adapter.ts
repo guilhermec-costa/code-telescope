@@ -1,6 +1,5 @@
 import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { TextSearchData } from "../../../../shared/exchange/workspace-text-search";
-import { formatFileOptionHtml } from "../../../utils/html";
 import { getSvgIconUrl } from "../../../utils/icon";
 import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
@@ -28,20 +27,36 @@ export class TextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearch
     }));
   }
 
-  getDisplayText(option: SearchOption): string {
-    const fileName = this.getFileName(option.file);
-    const displayText = `${fileName}:${option.line} - ${option.preview}`;
-    const svgIconUrl = getSvgIconUrl(option.file);
-    return formatFileOptionHtml(svgIconUrl, displayText);
-  }
-
   getSearchText(option: SearchOption): string {
     const fileName = this.getFileName(option.file);
     return `${fileName}:${option.line} - ${option.preview}`;
   }
 
+  getHtmlWrapper(option: SearchOption, highlightedContent: string): string {
+    const svgIconUrl = getSvgIconUrl(option.file);
+    return `
+      <i class="file-icon">
+        <img 
+          src="${svgIconUrl}" 
+          alt="" 
+          loading="eager" 
+          decoding="async"
+          width="16"
+          height="16"
+        />
+      </i>
+      <span class="file-path">${highlightedContent}</span>
+    `;
+  }
+
   getSelectionValue(option: SearchOption): string {
     return option.identifier;
+  }
+
+  calcHlOffsetChars(option: SearchOption): number {
+    const fileName = this.getFileName(option.file);
+    const prefix = `${fileName}:${option.line} - `;
+    return prefix.length;
   }
 
   filterOption(option: SearchOption, query: string): boolean {

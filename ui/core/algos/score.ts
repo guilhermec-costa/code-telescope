@@ -65,7 +65,6 @@ function computeBestMatch(lowerQuery: string, text: string): { score: number; in
 
     if (nextStates.length === 0) return { score: -Infinity, indices: [] };
 
-    // Beam search: mantém os 4 melhores estados
     nextStates.sort((a, b) => b.score - a.score);
     states = nextStates.slice(0, 4);
   }

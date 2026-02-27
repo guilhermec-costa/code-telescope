@@ -15,13 +15,18 @@ export class CustomDataAdapterProxy implements IFuzzyFinderDataAdapter {
     const adapter = serializedConfig.dataAdapter;
 
     this.parseOptions = indirectEval(`(${adapter.parseOptions})`);
-    this.getDisplayText = indirectEval(`(${adapter.getDisplayText})`);
     this.getSelectionValue = indirectEval(`(${adapter.getSelectionValue})`);
 
     if (adapter.getSearchText) {
       this.getSearchText = indirectEval(`(${adapter.getSearchText})`);
     } else {
-      this.getSearchText = (option: string) => this.getDisplayText(option);
+      throw new Error("getSearchText is required for custom adapters");
+    }
+
+    if (adapter.getHtmlWrapper) {
+      this.getHtmlWrapper = indirectEval(`(${adapter.getHtmlWrapper})`);
+    } else {
+      throw new Error("getHtmlWrapper is required for custom adapters");
     }
 
     if (adapter.filterOption) {
@@ -32,8 +37,8 @@ export class CustomDataAdapterProxy implements IFuzzyFinderDataAdapter {
   }
 
   parseOptions!: (options: any) => string[];
-  getDisplayText!: (option: string) => string;
   getSearchText!: (option: string) => string;
+  getHtmlWrapper!: (option: string, highlightedContent: string) => string;
   getSelectionValue!: (option: string) => string;
   filterOption: (option: string, query: string) => boolean;
   debounceSearchTime?: number;

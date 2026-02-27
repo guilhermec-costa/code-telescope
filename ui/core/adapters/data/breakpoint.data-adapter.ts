@@ -29,10 +29,13 @@ export class BreakpointsFinderDataAdapter implements IFuzzyFinderDataAdapter<Bre
     return options;
   }
 
-  getDisplayText(option: BreakpointOption): string {
+  getSearchText(option: BreakpointOption): string {
     const bp = option.breakpoint;
-    const relativePath = option.displayText.split(" ").slice(1).join(" ");
+    return `${bp.uri.fsPath} ${bp.condition || ""} ${bp.hitCondition || ""} ${bp.logMessage || ""} ${bp.line}`;
+  }
 
+  getHtmlWrapper(option: BreakpointOption, highlightedContent: string): string {
+    const bp = option.breakpoint;
     const statusIcon = bp.enabled
       ? '<i class="codicon codicon-debug-breakpoint file-icon" style="color: #e51400;"></i>'
       : '<i class="codicon codicon-debug-breakpoint-disabled file-icon" style="color: #848484;"></i>';
@@ -51,11 +54,7 @@ export class BreakpointsFinderDataAdapter implements IFuzzyFinderDataAdapter<Bre
         '<span class="breakpoint-badge" style="background: #1a7f37; padding: 2px 6px; border-radius: 3px; margin-left: 4px; font-size: 0.9em;">L</span>';
     }
 
-    return `${statusIcon}<span class="file-path">${relativePath}</span>${badges}`;
-  }
-
-  getSearchText(option: BreakpointOption): string {
-    return option.displayText;
+    return `${statusIcon}<span class="file-path">${highlightedContent}</span>${badges}`;
   }
 
   getSelectionValue(option: BreakpointOption): string {

@@ -29,12 +29,13 @@ export class KeybindingsFinderDataAdapter implements IFuzzyFinderDataAdapter<Key
     return options;
   }
 
-  getDisplayText(option: KeybindingOption): string {
-    return `<i class="codicon codicon-record-keys file-icon sk-record-keys"></i><span class="file-path">${option.displayText}</span>`;
+  getSearchText(option: KeybindingOption): string {
+    const kb = option.keybinding;
+    return `${kb.key} ${kb.command} ${kb.when || ""}`;
   }
 
-  getSearchText(option: KeybindingOption): string {
-    return option.displayText;
+  getHtmlWrapper(option: KeybindingOption, highlightedContent: string): string {
+    return `<i class="codicon codicon-record-keys file-icon sk-record-keys"></i><span class="file-path">${highlightedContent}</span>`;
   }
 
   getSelectionValue(option: KeybindingOption): string {
