@@ -7,7 +7,7 @@
     },
     "publisher": "guichina",
     "description": "A keyboard-first fuzzy finder for navigating files, symbols, text and more in VS Code, inspired by Neovim Telescope.",
-    "version": "1.1.4",
+    "version": "1.2.0",
     "keywords": [
         "fuzzy",
         "fuzzy finder",
