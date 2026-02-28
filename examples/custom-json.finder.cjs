@@ -94,8 +94,8 @@ module.exports = {
         return data;
       },
 
-      getDisplayText(option) {
-        return option.relativePath.padEnd(45);
+      getSearchText(option) {
+        return option.relativePath;
       },
 
       getSelectionValue(option) {

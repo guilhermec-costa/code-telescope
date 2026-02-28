@@ -43,16 +43,16 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
     });
   });
 
-  describe("getDisplayText", () => {
-    it("should return the relative path", () => {
+  describe("getHtmlWrapper", () => {
+    it("should return the relative path wrapped with icon", () => {
       vi.stubGlobal("__FILE_PATH_DISPLAY__", "relative");
       const option: FileOption = {
         relative: "file.ts",
         absolute: "root/file.ts",
       };
 
-      const result = adapter.getDisplayText(option);
-      const output = formatFileOptionHtml("./vendor/material-icons/typescript.svg", option.relative);
+      const result = adapter.getHtmlWrapper(option, "file.ts");
+      const output = formatFileOptionHtml("./vendor/material-icons/typescript.svg", "file.ts");
       expect(result).toBe(output);
     });
   });

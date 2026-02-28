@@ -62,8 +62,6 @@ export class WebviewAssetManager {
    * Injects global runtime state and configuration into the HTML.
    */
   private static injectGlobalState(html: string, wv: vscode.Webview, provider: IFuzzyFinderProvider): string {
-    const shikiUri = wv.asWebviewUri(joinPath(Globals.EXTENSION_URI, "ui", "dist", "shiki"));
-
     let customUiPayload: unknown = null;
 
     const isCustom = provider.fuzzyAdapterType.startsWith(Globals.CUSTOM_PROVIDER_PREFIX);

@@ -95,7 +95,7 @@ export interface CustomFinderDefinition {
        * This value is used by the fuzzy engine to perform matching.
        * If not provided, getDisplayText will be used as fallback.
        */
-      getSearchText?: (option: any) => string;
+      getSearchText: (option: any) => string;
 
       /**
        * Wraps the highlighted content with the appropriate HTML structure.

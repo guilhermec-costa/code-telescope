@@ -48,6 +48,10 @@ export class CustomFinderUiProxy {
       return { ok: false, error: "ui.dataAdapter.getSelectionValue must be a function" };
     }
 
+    if (typeof dataAdapter.getSearchText !== "function") {
+      return { ok: false, error: "ui.dataAdapter.getSelectionValue must be a function" };
+    }
+
     if (dataAdapter.filterOption !== undefined && typeof dataAdapter.filterOption !== "function") {
       return { ok: false, error: "ui.dataAdapter.filterOption must be a function if provided" };
     }
@@ -86,6 +90,7 @@ export class CustomFinderUiProxy {
         parseOptions: this.normalizeFn(this.dataAdapter.parseOptions),
         getDisplayText: this.normalizeFn(this.dataAdapter.getDisplayText),
         getSelectionValue: this.normalizeFn(this.dataAdapter.getSelectionValue),
+        getSearchText: this.normalizeFn(this.dataAdapter.getSearchText),
         filterOption: this.dataAdapter.filterOption ? this.normalizeFn(this.dataAdapter.filterOption) : undefined,
       },
     };

@@ -23,16 +23,16 @@ export function toInnerHTML(text: string): string {
 
 export function formatFileOptionHtml(svgIconUrl: string, text: string): string {
   return `
-<i class="file-icon">
-  <img 
-    src="${svgIconUrl}" 
-    alt="" 
-    loading="eager" 
-    decoding="async"
-    width="16"
-    height="16"
-  />
-</i>
-<span class="file-path">${escapeHtml(text)}</span>
+    <i class="file-icon">
+      <img 
+        src="${svgIconUrl}" 
+        alt="" 
+        loading="eager" 
+        decoding="async"
+        width="16"
+        height="16"
+      />
+    </i>
+    <span class="file-path">${text}</span>
 `;
 }

@@ -23,12 +23,6 @@ export class CustomDataAdapterProxy implements IFuzzyFinderDataAdapter {
       throw new Error("getSearchText is required for custom adapters");
     }
 
-    if (adapter.getHtmlWrapper) {
-      this.getHtmlWrapper = indirectEval(`(${adapter.getHtmlWrapper})`);
-    } else {
-      throw new Error("getHtmlWrapper is required for custom adapters");
-    }
-
     if (adapter.filterOption) {
       this.filterOption = indirectEval(`(${adapter.filterOption})`);
     }

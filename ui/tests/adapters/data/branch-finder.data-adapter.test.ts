@@ -30,23 +30,23 @@ describe("BranchFinderDataAdapter", () => {
     expect(options).toHaveLength(3);
   });
 
-  it("formats display text for current local branch", () => {
-    const text = adapter.getDisplayText(branches[0]);
+  it("formats html wrapper for current local branch", () => {
+    const text = adapter.getHtmlWrapper(branches[0], "* main");
 
     expect(text).toBe(
       `<i class="codicon codicon-git-branch file-icon sk-git-branch"></i><span class="file-path">* main</span>`,
     );
   });
 
-  it("formats display text for non-current local branch", () => {
-    const text = adapter.getDisplayText(branches[1]);
+  it("formats html wrapper for non-current local branch", () => {
+    const text = adapter.getHtmlWrapper(branches[1], "  develop");
     expect(text).toBe(
       `<i class="codicon codicon-git-branch file-icon sk-git-branch"></i><span class="file-path">  develop</span>`,
     );
   });
 
-  it("formats display text for remote branch", () => {
-    const text = adapter.getDisplayText(branches[2]);
+  it("formats html wrapper for remote branch", () => {
+    const text = adapter.getHtmlWrapper(branches[2], "  feature/login (origin)");
     expect(text).toBe(
       `<i class="codicon codicon-git-branch file-icon sk-git-branch"></i><span class="file-path">  feature/login (origin)</span>`,
     );
@@ -58,14 +58,14 @@ describe("BranchFinderDataAdapter", () => {
     expect(value).toBe("feature/login");
   });
 
-  it("filters using display text (case insensitive)", () => {
+  it("filters using search text (case insensitive)", () => {
     const result = adapter.filterOption(branches[2], "login");
 
     expect(result).toBe(true);
   });
 
   it("matches prefix and remote info in filter", () => {
-    const result = adapter.filterOption(branches[0], "* main");
+    const result = adapter.filterOption(branches[0], "main");
 
     expect(result).toBe(true);
   });
