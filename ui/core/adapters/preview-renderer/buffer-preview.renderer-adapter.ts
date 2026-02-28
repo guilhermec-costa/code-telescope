@@ -11,7 +11,7 @@ import { HighlighterManager } from "../../render/highlighter-manager";
 
 const CHUNK_SIZE = 30;
 const SCROLL_THRESHOLD = 300;
-const MAX_LINE_LENGTH = 120;
+const MAX_LINE_LENGTH = 200;
 const TRUNCATION_SUFFIX = "...";
 const INITIAL_CHUNKS_TO_LOAD = 1;
 const MAX_CACHE_SIZE = 5000;
