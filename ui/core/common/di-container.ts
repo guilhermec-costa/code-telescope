@@ -38,7 +38,8 @@ export class DIContainer {
 
         const customAdapter = new CustomDataAdapterProxy(serializedCustomAdapter);
         customAdapter.getHtmlWrapper = (option: any, content: string) => {
-          const svgIconUrl = getSvgIconUrl(option);
+          const searchPath = customAdapter.getSearchText(option);
+          const svgIconUrl = getSvgIconUrl(searchPath);
           return formatFileOptionHtml(svgIconUrl, content);
         };
         registerFuzzyDataAdapter(customAdapter);

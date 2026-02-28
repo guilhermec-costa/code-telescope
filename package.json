@@ -246,6 +246,11 @@
                 "mac": "cmd+alt+e"
             },
             {
+                "command": "code-telescope.fuzzy.pkgDocs",
+                "key": "ctrl+alt+v",
+                "mac": "cmd+alt+v"
+            },
+            {
                 "command": "code-telescope.fuzzy.harpoon",
                 "key": "ctrl+alt+h",
                 "mac": "cmd+alt+h"

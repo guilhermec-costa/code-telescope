@@ -333,7 +333,7 @@ export class OptionListManager {
 
     const searchText = this.dataAdapter.getSearchText(option);
     const offset = this.dataAdapter.calcHlOffsetChars?.(option) ?? 0;
-    const highlightedContent = this.highlightMatch(searchText, query, offset);
+    const highlightedContent = this.highlightMatch(searchText, query.toLowerCase(), offset);
 
     li.innerHTML = this.dataAdapter.getHtmlWrapper(option, highlightedContent);
 
