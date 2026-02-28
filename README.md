@@ -213,6 +213,19 @@ export class WorkspaceTextSearchProvider implements IFuzzyFinderProvider {
 }
 ```
 
+### Search Algorithms
+
+Code Telescope supports different matching algorithms that can be configured via the `codeTelescope.matching.algorithm` setting:
+
+| Algorithm | Description |
+|-----------|-------------|
+| `subsequence` (default) | Character-by-character matching like fzf. Matches characters in order even with gaps between them. |
+| `substring` | Exact substring matching. Searches for the exact text sequence within results. |
+
+**Example:** Searching for "fuz" would match:
+- `fuzzy` ✅ (subsequence: f→u→z)
+- `fuzzy` ✅ (substring: "fuz" inside "fuzzy")
+
 ### Text Search Implementation
 
 The workspace text search feature uses a smart fallback mechanism:
@@ -375,6 +388,18 @@ Ctrl+Alt+B
 
 ---
 
+### 📜 Git Commits
+**Command:** `code-telescope.fuzzy.commit`
+
+Browse and navigate through git commit history.
+
+**Usage:**
+```
+Ctrl+Alt+C
+```
+
+---
+
 ### 🔤 Workspace Symbols
 **Command:** `code-telescope.fuzzy.wsSymbols`
 
@@ -493,6 +518,30 @@ Ctrl+Alt+P
 
 ---
 
+### 📦 Workspace Extensions
+**Command:** `code-telescope.fuzzy.extensions`
+
+Browse and manage installed VS Code extensions in your workspace.
+
+**Usage:**
+```
+Ctrl+Alt+E
+```
+
+---
+
+### 📚 Workspace Package Docs
+**Command:** `code-telescope.fuzzy.pkgDocs`
+
+Browse documentation from installed npm packages in your workspace (reads README, CHANGELOG, etc. from node_modules).
+
+**Usage:**
+```
+Ctrl+Alt+V
+```
+
+---
+
 # Harpoon Plugin
 
 Quick file bookmarking and navigation system inspired by ThePrimeagen's Harpoon for Neovim.
@@ -602,10 +651,13 @@ Labels appear in the finder and help identify files at a glance.
 | Document Symbols | `Ctrl+Alt+U` | `Cmd+Alt+U` |
 | Recent Files | `Ctrl+Alt+R` | `Cmd+Alt+R` |
 | Git Branches | `Ctrl+Alt+B` | `Cmd+Alt+B` |
+| Git Commits | `Ctrl+Alt+C` | `Cmd+Alt+C` |
 | Diagnostics | `Ctrl+Alt+D` | `Cmd+Alt+D` |
 | Color Themes | `Ctrl+Alt+C` | `Cmd+Alt+C` |
 | Tasks | `Ctrl+Alt+T` | `Cmd+Alt+T` |
 | Keybindings | `Ctrl+Alt+K` | `Cmd+Alt+K` |
+| Workspace Extensions | `Ctrl+Alt+E` | `Cmd+Alt+E` |
+| Package Docs | `Ctrl+Alt+V` | `Cmd+Alt+V` |
 | Harpoon Marks | `Ctrl+Alt+H` | `Cmd+Alt+H` |
 | Custom Finders | `Ctrl+Alt+X` | `Cmd+Alt+X` |
 | Call Hierarchy | `Ctrl+Alt+Y` | `Cmd+Alt+Y` |
@@ -679,6 +731,18 @@ Labels appear in the finder and help identify files at a glance.
     "key":  "{custom-keybinding}",
     "command": "code-telescope.fuzzy.fileText",
     "when": "editorTextFocus"
+  },
+  {
+    "key":  "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.commit"
+  },
+  {
+    "key":  "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.extensions"
+  },
+  {
+    "key":  "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.pkgDocs"
   }
 ]
 ```
