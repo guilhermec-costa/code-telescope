@@ -11,8 +11,15 @@ import { HighlighterManager } from "../../render/highlighter-manager";
 
 const CHUNK_SIZE = 30;
 const SCROLL_THRESHOLD = 300;
+const MAX_LINE_LENGTH = 120;
+const TRUNCATION_SUFFIX = "...";
 const INITIAL_CHUNKS_TO_LOAD = 1;
 const MAX_CACHE_SIZE = 5000;
+
+function truncateLine(line: string): string {
+  if (line.length <= MAX_LINE_LENGTH) return line;
+  return line.substring(0, MAX_LINE_LENGTH) + TRUNCATION_SUFFIX;
+}
 
 class LazyLineParser {
   private lineCache = new Map<number, string>();
@@ -53,7 +60,7 @@ class LazyLineParser {
       if (line === undefined) {
         const startPos = this.lineOffsets[i];
         const endPos = this.lineOffsets[i + 1];
-        line = this.text.substring(startPos, endPos - (this.text[endPos - 1] === "\n" ? 1 : 0));
+        line = truncateLine(this.text.substring(startPos, endPos - (this.text[endPos - 1] === "\n" ? 1 : 0)));
 
         if (this.lineCache.size >= MAX_CACHE_SIZE) {
           const firstKey = this.lineCache.keys().next().value;
@@ -234,7 +241,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
         chunkText = this.lineParser.getLines(start, end).join("\n");
       } else {
         const lines = content.split("\n");
-        chunkText = lines.slice(start, end).join("\n");
+        chunkText = lines.slice(start, end).map(truncateLine).join("\n");
       }
 
       const prevGrammarState = this.grammarStates.get(chunkIndex - 1);
