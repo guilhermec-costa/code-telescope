@@ -40,10 +40,6 @@ export class CustomFinderUiProxy {
       return { ok: false, error: "ui.dataAdapter.parseOptions must be a function" };
     }
 
-    if (typeof dataAdapter.getDisplayText !== "function") {
-      return { ok: false, error: "ui.dataAdapter.getDisplayText must be a function" };
-    }
-
     if (typeof dataAdapter.getSelectionValue !== "function") {
       return { ok: false, error: "ui.dataAdapter.getSelectionValue must be a function" };
     }
@@ -88,7 +84,6 @@ export class CustomFinderUiProxy {
       dataAdapterType: this.fuzzyAdapterType,
       dataAdapter: {
         parseOptions: this.normalizeFn(this.dataAdapter.parseOptions),
-        getDisplayText: this.normalizeFn(this.dataAdapter.getDisplayText),
         getSelectionValue: this.normalizeFn(this.dataAdapter.getSelectionValue),
         getSearchText: this.normalizeFn(this.dataAdapter.getSearchText),
         filterOption: this.dataAdapter.filterOption ? this.normalizeFn(this.dataAdapter.filterOption) : undefined,

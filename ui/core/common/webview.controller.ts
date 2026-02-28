@@ -168,7 +168,7 @@ export class WebviewController {
 
   private getPromptDebounceTime(): number {
     const provider = __PROVIDER__ as FuzzyProviderType;
-    if (provider === "workspace.text" || provider === "currentFile.text") return 250;
+    if (provider === "workspace.text" || provider === "currentFile.text") return 350;
     return 0;
   }
 
