@@ -58,6 +58,7 @@ export interface OptionListMessage {
   fuzzyProviderType: FuzzyProviderType;
   dataAdapterType: DataAdapterType;
   query?: string;
+  requestId?: string;
   totalLimit: number;
 }
 
@@ -197,6 +198,7 @@ export interface PreviewRequestMessage {
 export interface DynamicSearchMessage {
   type: "dynamicSearch";
   query: string;
+  requestId: string;
 }
 
 export interface InitHighlighter {
