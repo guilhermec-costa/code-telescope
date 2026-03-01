@@ -1,6 +1,5 @@
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { OptionListMessage, ToWebviewKindMessage } from "../../../shared/extension-webview-protocol";
-import { debounce } from "../../utils/debounce";
 import { MessageBridge } from "../message-bridge";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { PreviewManager } from "../render/preview-manager";
@@ -18,6 +17,7 @@ export class WebviewController {
   private activeProvider: FuzzyProviderType | undefined;
   private previewQueue: Promise<void> = Promise.resolve();
   private lastSearchQuery: string | undefined;
+  private currentRequestId: string | undefined;
 
   constructor(private readonly keyboardHandler: KeyboardHandler) {
     console.log("[WebviewController] Initializing controller");
@@ -146,6 +146,10 @@ export class WebviewController {
    * Processes a list of options received from the extension.
    */
   private handleOptionListMessage(msg: OptionListMessage) {
+    if (msg.requestId && this.currentRequestId && msg.requestId !== this.currentRequestId) {
+      return;
+    }
+
     const { fuzzyProviderType, dataAdapterType, data, totalLimit, query } = msg;
     const adapter = FuzzyFinderDataAdapterRegistry.instance.getAdapter(dataAdapterType);
 
@@ -166,26 +170,18 @@ export class WebviewController {
     }
   }
 
-  private getPromptDebounceTime(): number {
-    const provider = __PROVIDER__ as FuzzyProviderType;
-    if (provider === "workspace.text" || provider === "currentFile.text") return 500;
-    return 0;
-  }
-
   /**
    * Registers DOM events
    */
   private setupEventListeners(): void {
-    const debouncedFilter = debounce((query: string) => {
+    this.searchElement.addEventListener("input", async () => {
+      const query = this.searchElement.value;
       if (query) {
         WebviewToExtensionMessenger.instance.requestDynamicSearch(query);
+        this.currentRequestId = WebviewToExtensionMessenger.instance.lastRequestId;
       }
       OptionListManager.instance.filter(query);
       OptionListManager.instance.resetIfNeeded();
-    }, this.getPromptDebounceTime());
-
-    this.searchElement.addEventListener("input", async () => {
-      debouncedFilter(this.searchElement.value);
     });
   }
 
