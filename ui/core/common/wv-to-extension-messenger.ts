@@ -8,12 +8,17 @@ import { VSCodeApi } from "./code/code-api";
  */
 export class WebviewToExtensionMessenger {
   private static _instance: WebviewToExtensionMessenger | null = null;
+  private _lastRequestId: string | undefined;
 
   static get instance() {
     if (this._instance) return this._instance;
 
     this._instance = new WebviewToExtensionMessenger();
     return this._instance;
+  }
+
+  get lastRequestId(): string | undefined {
+    return this._lastRequestId;
   }
 
   /**
@@ -69,6 +74,7 @@ export class WebviewToExtensionMessenger {
       type: "previewRequest",
       data: {
         selectedId,
+        requestId: Date.now(),
       },
     });
   }
@@ -80,9 +86,12 @@ export class WebviewToExtensionMessenger {
    * @param query - The text typed by the user.
    */
   requestDynamicSearch(query: string): void {
+    const requestId = crypto.randomUUID();
+    this._lastRequestId = requestId;
     this.postMessage({
       type: "dynamicSearch",
       query,
+      requestId,
     });
   }
 
