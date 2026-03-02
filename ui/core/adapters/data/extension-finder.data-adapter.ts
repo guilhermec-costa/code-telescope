@@ -29,7 +29,7 @@ export class ExtensionsFinderDataAdapter implements IFuzzyFinderDataAdapter<Exte
 
   getSearchText(option: ExtensionOption): string {
     const ext = option.extension;
-    return `${ext.displayName} ${ext.id} ${ext.publisher} ${ext.description}`;
+    return `${ext.displayName} (${ext.publisher}) ${ext.id}`;
   }
 
   getHtmlWrapper(option: ExtensionOption, highlightedContent: string): string {

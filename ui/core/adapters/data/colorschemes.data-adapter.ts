@@ -32,7 +32,8 @@ export class ColorSchemesFinderDataAdapter
   }
 
   getSearchText(option: ColorSchemeOption): string {
-    return `${option.theme.label} ${option.theme.extensionId || ""}`;
+    const ext = option.theme.extensionId ? `(${option.theme.extensionId})` : "";
+    return `${option.theme.label} ${ext}`;
   }
 
   getHtmlWrapper(option: ColorSchemeOption, highlightedContent: string): string {

@@ -15,7 +15,8 @@ export class BranchFinderDataAdapter implements IFuzzyFinderDataAdapter<BranchIn
   }
 
   getSearchText(option: BranchInfo): string {
-    return `${option.name} ${option.remote || ""}`;
+    const remote = option.remote ? `(${option.remote})` : "";
+    return `${option.name} ${remote}`;
   }
 
   getHtmlWrapper(option: BranchInfo, highlightedContent: string): string {

@@ -28,7 +28,7 @@ export class WorkspaceTasksFinderDataAdapter
 
   getSearchText(option: WorkspaceTaskOption): string {
     const task = option.task;
-    return `${task.name} ${task.source} ${task.detail || ""} ${task.definition.type || ""}`;
+    return `${task.name} [${task.source}]`;
   }
 
   getHtmlWrapper(option: WorkspaceTaskOption, highlightedContent: string): string {

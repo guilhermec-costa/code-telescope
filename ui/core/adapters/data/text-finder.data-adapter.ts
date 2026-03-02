@@ -30,7 +30,7 @@ export class TextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearch
 
   getSearchText(option: SearchOption): string {
     const fileName = this.getFileName(option.file);
-    return `${fileName}:${option.line} - ${option.preview}`;
+    return `${fileName}:${option.line} ${option.preview}`;
   }
 
   getHtmlWrapper(option: SearchOption, highlightedContent: string): string {

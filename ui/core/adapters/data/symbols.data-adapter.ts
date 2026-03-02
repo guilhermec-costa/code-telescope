@@ -33,7 +33,7 @@ export class SymbolsFinderDataAdapter
 
   getSearchText(option: WorkspaceSymbolOption): string {
     const symbol = option.symbol;
-    return `${symbol.name} ${symbol.containerName || ""} ${symbol.kindName}`;
+    return `${symbol.name} (${symbol.kindName}) ${symbol.containerName || ""}`;
   }
 
   getHtmlWrapper(option: WorkspaceSymbolOption, highlightedContent: string): string {

@@ -28,7 +28,7 @@ export class PackageDocsFinderDataAdapter implements IFuzzyFinderDataAdapter<Pac
   }
 
   getSearchText(option: PackageDocOption): string {
-    return option.package.name;
+    return `${option.package.name} v${option.package.version}`;
   }
 
   getHtmlWrapper(option: PackageDocOption, highlightedContent: string): string {

@@ -35,7 +35,8 @@ export class CallHierarchyFinderDataAdapter
 
   getSearchText(option: CallHierarchyOption): string {
     const call = option.call;
-    return `${call.name} ${call.detail} ${call.relativePath} ${call.containerName || ""} ${call.type}`;
+    const container = call.containerName ? `(${call.containerName})` : "";
+    return `${call.name} ${container} ${call.relativePath}`;
   }
 
   getHtmlWrapper(option: CallHierarchyOption, highlightedContent: string): string {

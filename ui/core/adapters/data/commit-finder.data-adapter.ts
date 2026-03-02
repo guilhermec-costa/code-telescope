@@ -15,7 +15,7 @@ export class CommitFinderDataAdapter implements IFuzzyFinderDataAdapter<CommitSe
   }
 
   getSearchText(option: CommitSearchInfo): string {
-    return `${option.hash} ${option.message}`;
+    return `${option.hash.slice(0, 7)} ${option.message}`;
   }
 
   getHtmlWrapper(option: CommitSearchInfo, highlightedContent: string): string {
