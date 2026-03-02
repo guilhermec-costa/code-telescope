@@ -28,7 +28,7 @@ export class DiagnosticsFinderDataAdapter implements IFuzzyFinderDataAdapter<Dia
     const diag = option.diagnostic;
     const fileName = diag.relativePath.split(/[/\\]/).pop() || "";
     const source = diag.source ? `(${diag.source})` : "";
-    return `${fileName}:${diag.line + 1} ${diag.message.slice(0, 60)}${diag.message.length > 60 ? "..." : ""} ${source}`;
+    return `${fileName}:${diag.line} ${diag.message.slice(0, 60)}${diag.message.length > 60 ? "..." : ""} ${source}`;
   }
 
   getHtmlWrapper(option: DiagnosticOption, highlightedContent: string): string {
