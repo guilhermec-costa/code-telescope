@@ -6,6 +6,8 @@ import { WorkspaceTextSearchProvider } from "./ws-text-finder/index.finder";
   fuzzy: "currentFile.text",
   previewRenderer: "preview.buffer",
   dataAdapter: "textSearchAdapter",
+  name: "Search in File",
+  description: "Search for text in the current file",
 })
 export class CurrentFileTextSearchProvider extends WorkspaceTextSearchProvider {
   async searchOnDynamicMode(query: string): Promise<any> {

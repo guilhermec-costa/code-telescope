@@ -7,6 +7,8 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
   fuzzy: "workspace.extensions",
   previewRenderer: "preview.buffer",
   dataAdapter: "extensionsAdapter",
+  name: "Extensions",
+  description: "Browse and manage installed VS Code extensions",
 })
 export class ExtensionsFinder implements FuzzyFinderProvider {
   private cachedExtensions: ExtensionData[] | null = null;

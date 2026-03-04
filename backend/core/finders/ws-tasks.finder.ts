@@ -12,6 +12,8 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
   fuzzy: "workspace.tasks",
   previewRenderer: "preview.buffer",
   dataAdapter: "workspaceTasksAdapter",
+  name: "Tasks",
+  description: "Browse and run workspace tasks",
 })
 export class WorkspaceTasksFinder implements FuzzyFinderProvider {
   private cachedTasks: TaskData[] | null = null;

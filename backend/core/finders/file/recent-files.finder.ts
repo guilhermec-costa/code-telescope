@@ -17,6 +17,8 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-
   fuzzy: "workspace.recentFiles",
   previewRenderer: "preview.buffer",
   dataAdapter: "workspaceRecentFilesAdapter",
+  name: "Recent Files",
+  description: "Browse recently opened files",
 })
 export class RecentFilesFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<RecentFilesFinderData> {

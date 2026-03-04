@@ -8,6 +8,8 @@ import { getGitApi } from "./api-utils";
   fuzzy: "git.commits",
   previewRenderer: "preview.buffer",
   dataAdapter: "gitCommitsAdapter",
+  name: "Git Commits",
+  description: "Search and view Git commit history",
 })
 export class GitCommitFuzzyFinder implements FuzzyFinderProvider {
   private gitApi: API | null = null;

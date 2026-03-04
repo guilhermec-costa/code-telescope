@@ -17,6 +17,8 @@ import { RipgrepFileFinder } from "./ripgrep-file.finder";
   fuzzy: "workspace.files",
   previewRenderer: "preview.buffer",
   dataAdapter: "workspaceFilesAdapter",
+  name: "Workspace Files",
+  description: "Search for files in your workspace",
 })
 export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvider<FileFinderData> {
   public readonly chunkSize = 5500;

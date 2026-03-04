@@ -14,6 +14,8 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
   fuzzy: "workspace.diagnostics",
   previewRenderer: "preview.buffer",
   dataAdapter: "workspaceDiagnosticsAdapter",
+  name: "Diagnostics",
+  description: "View all errors, warnings, and problems in the workspace",
 })
 export class DiagnosticsFinder implements FuzzyFinderProvider {
   private cachedDiagnostics: DiagnosticData[] | null = null;

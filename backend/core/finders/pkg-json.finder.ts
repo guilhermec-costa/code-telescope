@@ -12,6 +12,8 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
   fuzzy: "workspace.packageDocs",
   previewRenderer: "preview.buffer",
   dataAdapter: "packageDocsAdapter",
+  name: "Package Docs",
+  description: "Search package.json dependencies and view npm documentation",
 })
 export class PackageDocsFinder implements FuzzyFinderProvider {
   private cachedPackages: PackageData[] | null = null;

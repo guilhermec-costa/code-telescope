@@ -21,6 +21,10 @@ export interface IFuzzyFinderProvider {
    * Specifies which data adapter should process the data on the UI side
    */
   dataAdapterType: DataAdapterType;
+
+  finderName?: string;
+  finderDescription?: string;
+
   /**
    * Returns the list of items to be displayed in the fuzzy finder.
    * Example: files, branches, symbols, commands

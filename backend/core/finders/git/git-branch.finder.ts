@@ -9,6 +9,8 @@ import { getGitApi } from "./api-utils";
   fuzzy: "git.branches",
   previewRenderer: "preview.branch",
   dataAdapter: "gitBranchesAdapter",
+  name: "Git Branches",
+  description: "List and switch between Git branches",
 })
 export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
   /** Reference to the Git API exported by the official VS Code Git extension. */

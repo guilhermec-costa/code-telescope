@@ -18,6 +18,7 @@ import "../finders/current-file-text.finder";
 import "../finders/document-symbols.finder";
 import "../finders/extension.finder";
 import "../finders/pkg-json.finder";
+import "../finders/builtin.finder";
 
 // PRESENTATION HANDLERS
 import "../presentation/handlers/close-panel.handler";

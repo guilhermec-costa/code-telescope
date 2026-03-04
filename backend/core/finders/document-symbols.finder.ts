@@ -32,6 +32,8 @@ interface DocumentSymbolFinderData {
   fuzzy: "document.symbols",
   previewRenderer: "preview.buffer",
   dataAdapter: "symbolsAdapter",
+  name: "Document Symbols",
+  description: "Search for symbols in the current file",
 })
 export class DocumentSymbolsFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<DocumentSymbolFinderData> {

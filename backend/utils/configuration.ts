@@ -14,6 +14,12 @@ type ProviderMeta = {
 };
 
 const BUILTIN_PROVIDER_META: Record<FuzzyProviderType, ProviderMeta> = {
+  "builtin.finders": {
+    tabTitle: "Builtin Finders",
+    listTitle: "Finders",
+    previewTitle: "Finder Details",
+    promptMessage: "Find a finder...",
+  },
   "workspace.files": {
     tabTitle: "Workspace Files",
     listTitle: "Files",

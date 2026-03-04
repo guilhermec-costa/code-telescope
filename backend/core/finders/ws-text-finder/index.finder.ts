@@ -15,6 +15,8 @@ import { RegexFinder } from "./regex-finder";
   fuzzy: "workspace.text",
   previewRenderer: "preview.buffer",
   dataAdapter: "textSearchAdapter",
+  name: "Search in Workspace",
+  description: "Search for text across the entire workspace",
 })
 export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, ChunkableProvider<{ results: any }> {
   public readonly supportsDynamicSearch = true;

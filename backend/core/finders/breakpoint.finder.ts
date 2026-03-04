@@ -15,6 +15,8 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
   fuzzy: "debug.breakpoints",
   previewRenderer: "preview.buffer",
   dataAdapter: "debugBreakpointsAdapter",
+  name: "Breakpoints",
+  description: "View and manage debugging breakpoints",
 })
 export class BreakpointsFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<BreakpointsFinderData> {

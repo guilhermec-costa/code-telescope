@@ -14,6 +14,8 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
   fuzzy: "workspace.keybindings",
   previewRenderer: "preview.buffer",
   dataAdapter: "workspaceKeybindingsAdapter",
+  name: "Keybindings",
+  description: "Search and view keyboard shortcuts",
 })
 export class KeybindingsFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<KeybindingFinderData> {

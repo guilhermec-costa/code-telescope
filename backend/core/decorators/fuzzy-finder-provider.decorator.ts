@@ -4,10 +4,12 @@ import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 /**
  * Configuration object for a fuzzy finder adapter.
  */
-interface FuzzyFinderAdapterConfig {
+export interface FuzzyFinderAdapterConfig {
   fuzzy: FuzzyProviderType;
   previewRenderer: PreviewRendererType;
   dataAdapter: DataAdapterType;
+  name?: string;
+  description?: string;
 }
 
 export type FuzzyFinderProvider = Omit<
@@ -28,6 +30,8 @@ export function FuzzyFinderAdapter(config: FuzzyFinderAdapterConfig) {
     (constructor.prototype as IFuzzyFinderProvider).fuzzyAdapterType = config.fuzzy;
     (constructor.prototype as IFuzzyFinderProvider).previewAdapterType = config.previewRenderer;
     (constructor.prototype as IFuzzyFinderProvider).dataAdapterType = config.dataAdapter;
+    (constructor.prototype as IFuzzyFinderProvider).finderName = config.name;
+    (constructor.prototype as IFuzzyFinderProvider).finderDescription = config.description;
 
     const instance = new constructor() as IFuzzyFinderProvider;
 

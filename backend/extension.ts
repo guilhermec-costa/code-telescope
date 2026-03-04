@@ -61,6 +61,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerProviderCmd("documentSymbols", () => FuzzyFinderPanelController.setupProvider("document.symbols"), ctx);
   registerProviderCmd("extensions", () => FuzzyFinderPanelController.setupProvider("workspace.extensions"), ctx);
   registerProviderCmd("pkgDocs", () => FuzzyFinderPanelController.setupProvider("workspace.packageDocs"), ctx);
+  registerProviderCmd("builtin", () => FuzzyFinderPanelController.setupProvider("builtin.finders"), ctx);
   registerProviderCmd(
     "custom",
     async () => {

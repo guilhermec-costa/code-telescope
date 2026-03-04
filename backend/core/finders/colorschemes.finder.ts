@@ -14,6 +14,8 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
   fuzzy: "workspace.colorschemes",
   previewRenderer: "preview.buffer",
   dataAdapter: "workspaceColorschemesAdapter",
+  name: "Color Schemes",
+  description: "Browse and switch between installed color themes",
 })
 export class ColorSchemesFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<ColorSchemesFinderData> {
@@ -34,14 +36,17 @@ export class ColorSchemesFinder implements FuzzyFinderProvider {
   }
 
   async onSelect(themeData: ColorThemeData) {
-    this.updateTheme(themeData).then(async () => {
+    try {
+      await this.updateTheme(themeData);
       await PreContextManager.instance.focusOnCapture();
-    });
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   private async updateTheme(themeData: ColorThemeData) {
     try {
-      vscode.workspace
+      await vscode.workspace
         .getConfiguration()
         .update(Globals.cfgSections.colorTheme, themeData.label, vscode.ConfigurationTarget.Global);
     } catch (error) {

@@ -3,6 +3,7 @@
  * Each type here connects a provider (extension) with its adapter (webview).
  */
 export type BuiltinFuzzyProviderType =
+  | "builtin.finders"
   | "workspace.files"
   | "workspace.text"
   | "currentFile.text"
@@ -26,6 +27,7 @@ export type CustomFuzzyProviderType = `custom.${string}`;
 export type FuzzyProviderType = BuiltinFuzzyProviderType | CustomFuzzyProviderType;
 
 export type DataAdapterType =
+  | "builtinFindersAdapter"
   | "workspaceFilesAdapter"
   | "textSearchAdapter"
   | "workspaceRecentFilesAdapter"

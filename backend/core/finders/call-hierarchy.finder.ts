@@ -16,6 +16,8 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
   fuzzy: "workspace.callHierarchy",
   previewRenderer: "preview.buffer",
   dataAdapter: "workspaceCallHierarchyAdapter",
+  name: "Call Hierarchy",
+  description: "View call hierarchy for symbols (who calls this / what this calls)",
 })
 export class CallHierarchyFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<CallHierarchyFinderData> {

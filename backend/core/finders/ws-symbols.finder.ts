@@ -29,6 +29,8 @@ interface WorkspaceSymbolFinderData {
   fuzzy: "workspace.symbols",
   previewRenderer: "preview.buffer",
   dataAdapter: "symbolsAdapter",
+  name: "Workspace Symbols",
+  description: "Search for symbols in your workspace",
 })
 export class WorkspaceSymbolsFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<WorkspaceSymbolFinderData> {

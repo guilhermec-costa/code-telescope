@@ -113,6 +113,10 @@
                 "title": "Code Telescope: Workspace Package Docs"
             },
             {
+                "command": "code-telescope.fuzzy.builtin",
+                "title": "Code Telescope: Builtin Finders"
+            },
+            {
                 "command": "code-telescope.harpoon.addFile",
                 "title": "Code Telescope: Harpoon - Add File"
             },
