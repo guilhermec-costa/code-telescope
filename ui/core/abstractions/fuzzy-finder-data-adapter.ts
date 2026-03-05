@@ -53,5 +53,7 @@ export interface IFuzzyFinderDataAdapter<TData = any, TOption = string> {
 
   sortFn?(x1: TOption, x2: TOption): number;
 
+  shouldSort?: boolean;
+
   debounceSearchTime?: number;
 }

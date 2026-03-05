@@ -9,13 +9,14 @@ import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.deco
 export class CommitFinderDataAdapter implements IFuzzyFinderDataAdapter<CommitSearchInfo[], CommitSearchInfo> {
   typeName: DataAdapterType;
   debounceSearchTime = 30;
+  shouldSort = false;
 
   parseOptions(data: CommitSearchInfo[]) {
     return data;
   }
 
   getSearchText(option: CommitSearchInfo): string {
-    return `${option.hash.slice(0, 7)} ${option.message}`;
+    return `${option.hash.slice(0, 9)} ${option.message}`;
   }
 
   getHtmlWrapper(option: CommitSearchInfo, highlightedContent: string): string {

@@ -35,21 +35,6 @@ describe("GitBranchFuzzyFinder", () => {
     expect(getGitApi).toHaveBeenCalled();
   });
 
-  it("returns only local branches by default", async () => {
-    const refs: Ref[] = [
-      { name: "main", type: 0, remote: false } as any,
-      { name: "origin/dev", type: 1, remote: true } as any,
-    ];
-
-    gitApiMock.repositories[0].getRefs.mockResolvedValueOnce(refs);
-
-    const branches = await provider.querySelectableOptions();
-
-    expect(getGitApi).toHaveBeenCalled();
-    expect(branches).toHaveLength(1);
-    expect(branches[0].name).toBe("main");
-  });
-
   it("includes remote branches when includeRemotes is true", async () => {
     const refs: Ref[] = [
       { name: "main", type: 0, remote: false } as any,

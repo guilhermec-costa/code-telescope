@@ -1,8 +1,14 @@
+import { exec } from "child_process";
+import { promisify } from "util";
+import * as vscode from "vscode";
 import { CommitSearchInfo } from "../../../../shared/exchange/commit-search";
 import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
 import { API } from "../../../@types/git";
+import { ExtensionConfigManager } from "../../common/config-manager";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
 import { getGitApi } from "./api-utils";
+
+const execAsync = promisify(exec);
 
 @FuzzyFinderAdapter({
   fuzzy: "git.commits",
@@ -14,8 +20,22 @@ import { getGitApi } from "./api-utils";
 export class GitCommitFuzzyFinder implements FuzzyFinderProvider {
   private gitApi: API | null = null;
 
-  onSelect(item: string): void | Promise<void> {
-    throw new Error("Method not implemented.");
+  async onSelect(hash: string): Promise<void> {
+    const repo = this.gitApi?.repositories[0];
+    if (!repo) return;
+
+    const remote = repo.state.remotes[0];
+    const fetchUrl = remote?.fetchUrl ?? remote?.pushUrl;
+
+    if (fetchUrl) {
+      // transforms git@github.com:org/repo.git to https://github.com/org/repo/commit/<hash>
+      const httpsUrl = fetchUrl.replace(/^git@([^:]+):/, "https://$1/").replace(/\.git$/, "");
+
+      await vscode.env.openExternal(vscode.Uri.parse(`${httpsUrl}/commit/${hash}`));
+    } else {
+      await vscode.env.clipboard.writeText(hash);
+      vscode.window.showInformationMessage(`Copied ${hash} to clipboard`);
+    }
   }
 
   private async ensureGitLoading() {
@@ -38,51 +58,33 @@ export class GitCommitFuzzyFinder implements FuzzyFinderProvider {
     if (!this.gitApi) return [];
     const repo = this.gitApi.repositories[0];
     if (!repo) return [];
-
     const currentBranch = repo.state.HEAD;
     if (!currentBranch?.name) return [];
+    let log = await repo.log({ maxEntries: 500, range: currentBranch.name, maxParents: 1 });
 
-    const log = await repo.log({ refNames: [currentBranch.name], maxEntries: 500 });
+    const layout = ExtensionConfigManager.layoutCfg.mode;
+    if (layout === "classic") {
+      log = log.reverse();
+    }
     return log;
   }
 
   async getPreviewData(hash: string): Promise<TextPreviewData> {
     await this.ensureGitLoading();
-    if (!this.gitApi) {
-      return { kind: "text", content: "" };
-    }
+    if (!this.gitApi) return { kind: "text", content: "" };
 
     const repo = this.gitApi.repositories[0];
-    if (!repo) {
-      return { kind: "text", content: "" };
-    }
-
-    let diff = "";
+    if (!repo) return { kind: "text", content: "" };
 
     try {
-      const parentHash = hash + "~1";
-      const changes = await repo.diffBetween(parentHash, hash);
-
-      const diffParts: string[] = [];
-
-      for (const change of changes) {
-        const filePath = change.uri.fsPath;
-        const fileDiff = await repo.diffWith(parentHash, filePath);
-        if (fileDiff) {
-          diffParts.push(fileDiff);
-        }
-      }
-
-      diff = diffParts.join("\n");
+      const { stdout } = await execAsync(`git show ${hash} --patch --no-color`, { cwd: repo.rootUri.fsPath });
+      return { content: stdout, kind: "text", language: "diff" };
     } catch (e) {
+      if ((e as NodeJS.ErrnoException).code === "ENOENT") {
+        return { content: "git not found in PATH.", kind: "text", language: "plaintext" };
+      }
       console.error("Error getting commit diff:", e);
-      diff = "";
+      return { kind: "text", content: "" };
     }
-
-    return {
-      content: diff,
-      kind: "text",
-      language: "diff",
-    };
   }
 }

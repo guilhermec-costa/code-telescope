@@ -33,8 +33,6 @@ export class OptionListManager {
         return 250;
       case "workspace.colorschemes":
         return 250;
-      case "git.commits":
-        return 150;
       default:
         return 0;
     }
@@ -296,13 +294,15 @@ export class OptionListManager {
    * Renders the option list using virtualization.
    */
   render(): void {
+    if (!this.dataAdapter) return;
     const perfStart = performance.now();
 
-    this.applySortOnOptions(this.filteredOptions, this.searchElement.value);
+    const shouldSort = this.dataAdapter.shouldSort ?? true;
+    if (shouldSort) {
+      this.applySortOnOptions(this.filteredOptions, this.searchElement.value);
+    }
     this.selectedIndex = this.getRelativeFirstIndex();
     const afterSort = performance.now();
-
-    if (!this.dataAdapter) return;
 
     const itemsCount = this.filteredOptions.length;
 

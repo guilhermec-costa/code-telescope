@@ -56,7 +56,7 @@ export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
     const repo = this.gitApi.repositories[0];
     if (!repo) return [];
 
-    const includeRemotes = this.options?.includeRemotes ?? false;
+    const includeRemotes = this.options?.includeRemotes ?? true;
     const refs = await repo.getRefs({});
 
     const branches = refs.reduce<{ local: Ref[]; remote: Ref[] }>(
@@ -72,7 +72,7 @@ export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
   public async findCommitsFromBranch(branch: string) {
     if (!this.gitApi) return [];
     const repo = this.gitApi.repositories[0];
-    const log = await repo.log({ refNames: [branch] });
+    const log = await repo.log({ refNames: [branch], maxEntries: 50 });
     return log.map((commit) => ({
       hash: commit.hash,
       message: commit.message,
