@@ -101,6 +101,7 @@ describe("Extension entrypoint", () => {
       "documentSymbols",
       "commit",
       "extensions",
+      "fontFamily",
       "pkgDocs",
       "builtin",
     ];
