@@ -260,8 +260,8 @@
             },
             {
                 "command": "code-telescope.fuzzy.fontFamily",
-                "key": "ctrl+alt+y",
-                "mac": "cmd+alt+y"
+                "key": "ctrl+alt+,",
+                "mac": "cmd+alt+,"
             },
             {
                 "command": "code-telescope.fuzzy.harpoon",

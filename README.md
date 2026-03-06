@@ -530,6 +530,18 @@ Ctrl+Alt+E
 
 ---
 
+### 🔤 Font Family
+**Command:** `code-telescope.fuzzy.fonts`
+
+Browse and switch between installed system fonts for your editor.
+
+**Usage:**
+```
+Ctrl+Alt+F (when editor is focused)
+```
+
+---
+
 ### 📚 Workspace Package Docs
 **Command:** `code-telescope.fuzzy.pkgDocs`
 
@@ -663,6 +675,7 @@ Labels appear in the finder and help identify files at a glance.
 | Call Hierarchy | `Ctrl+Alt+Y` | `Cmd+Alt+Y` |
 | Current File Text Search | `Ctrl+Alt+L` | `Cmd+Alt+L` |
 | Workspace Breakpoints | `Ctrl+Alt+P` | `Cmd+Alt+P` |
+| Font Family | `Ctrl+Alt+,` | `Cmd+Alt+,` |
 
 #### Harpoon Shortcuts
 
@@ -743,6 +756,11 @@ Labels appear in the finder and help identify files at a glance.
   {
     "key":  "{custom-keybinding}",
     "command": "code-telescope.fuzzy.pkgDocs"
+  },
+  {
+    "key":  "{custom-keybinding}",
+    "command": "code-telescope.fuzzy.fonts",
+    "when": "editorTextFocus"
   }
 ]
 ```
