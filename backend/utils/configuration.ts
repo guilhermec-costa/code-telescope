@@ -122,6 +122,12 @@ const BUILTIN_PROVIDER_META: Record<FuzzyProviderType, ProviderMeta> = {
     previewTitle: "Document Preview",
     promptMessage: "Search package documents...",
   },
+  "workspace.fonts": {
+    tabTitle: "Font Picker",
+    listTitle: "Fonts",
+    previewTitle: "Font Preview",
+    promptMessage: "Fonts...",
+  },
 };
 
 export function getProviderTabTitle(provider: FuzzyProviderType): string {

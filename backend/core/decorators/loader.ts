@@ -19,6 +19,7 @@ import "../finders/document-symbols.finder";
 import "../finders/extension.finder";
 import "../finders/pkg-json.finder";
 import "../finders/builtin.finder";
+import "../finders/font-family.finder";
 
 // PRESENTATION HANDLERS
 import "../presentation/handlers/close-panel.handler";

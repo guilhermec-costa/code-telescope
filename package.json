@@ -117,6 +117,10 @@
                 "title": "Code Telescope: Builtin Finders"
             },
             {
+                "command": "code-telescope.fuzzy.fontFamily",
+                "title": "Code Telescope: Workspace Fonts"
+            },
+            {
                 "command": "code-telescope.harpoon.addFile",
                 "title": "Code Telescope: Harpoon - Add File"
             },
@@ -253,6 +257,11 @@
                 "command": "code-telescope.fuzzy.pkgDocs",
                 "key": "ctrl+alt+v",
                 "mac": "cmd+alt+v"
+            },
+            {
+                "command": "code-telescope.fuzzy.fontFamily",
+                "key": "ctrl+alt+y",
+                "mac": "cmd+alt+y"
             },
             {
                 "command": "code-telescope.fuzzy.harpoon",

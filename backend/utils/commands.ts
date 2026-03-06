@@ -1,3 +1,5 @@
+import { exec } from "child_process";
+import { promisify } from "util";
 import * as vscode from "vscode";
 import { Globals } from "../globals";
 
@@ -30,3 +32,5 @@ export async function execCmd<T = any>(cmd: string, ...rest: any[]): Promise<T> 
 export function stringifyError(error: unknown) {
   return error instanceof Error ? error.message : String(error);
 }
+
+export const execAsync = promisify(exec);

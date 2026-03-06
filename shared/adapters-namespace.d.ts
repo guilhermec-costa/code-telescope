@@ -19,6 +19,7 @@ export type BuiltinFuzzyProviderType =
   | "workspace.symbols"
   | "document.symbols"
   | "debug.breakpoints"
+  | "workspace.fonts"
   | "workspace.packageDocs"
   | "workspace.extensions";
 
@@ -41,6 +42,7 @@ export type DataAdapterType =
   | "gitCommitsAdapter"
   | "symbolsAdapter"
   | "debugBreakpointsAdapter"
+  | "fontsAdapter"
   | "extensionsAdapter"
   | "packageDocsAdapter"
   | `custom${string}Adapter`;
@@ -50,4 +52,5 @@ export type PreviewRendererType =
   | "preview.branch"
   | "preview.commitDiff"
   | "preview.image"
+  | "preview.font"
   | "preview.failed";

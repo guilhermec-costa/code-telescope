@@ -1,0 +1,89 @@
+#preview.preview-font,
+#preview.preview-font * {
+  font-family: var(--preview-font-override), monospace !important;
+}
+
+.fp-container {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.fp-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 14px;
+}
+
+.fp-font-name {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+}
+
+.fp-font-tag {
+  font-size: 11px;
+  color: var(--muted-fg);
+  font-family: var(--font-family), monospace;
+}
+
+.fp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fp-section--sizes {
+  gap: 4px;
+}
+
+.fp-label {
+  font-size: 10px;
+  font-family: var(--font-family), monospace;
+  color: var(--muted-fg);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.fp-size-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+.fp-size-tag {
+  font-size: 10px;
+  color: var(--muted-fg);
+  font-family: var(--font-family), monospace;
+  min-width: 28px;
+  text-align: right;
+}
+
+.fp-size-sample {
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fp-ambig-sample {
+  font-size: 15px;
+  color: var(--fg);
+  line-height: 1.8;
+}
+
+.fp-code {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre;
+  overflow-x: auto;
+  padding: 0;
+  background: transparent;
+}

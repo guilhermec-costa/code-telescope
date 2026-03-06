@@ -1,14 +1,11 @@
-import { exec } from "child_process";
-import { promisify } from "util";
 import * as vscode from "vscode";
 import { CommitSearchInfo } from "../../../../shared/exchange/commit-search";
 import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
 import { API } from "../../../@types/git";
+import { execAsync } from "../../../utils/commands";
 import { ExtensionConfigManager } from "../../common/config-manager";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
 import { getGitApi } from "./api-utils";
-
-const execAsync = promisify(exec);
 
 @FuzzyFinderAdapter({
   fuzzy: "git.commits",

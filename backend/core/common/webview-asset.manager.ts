@@ -45,6 +45,7 @@ export class WebviewAssetManager {
       "{{highlight-styles}}": path.join(basePath, "style/highlight.css"),
       "{{style}}": path.join(basePath, `style/${layoutStyleName}`),
       "{{branch-styles}}": path.join(basePath, "style/branch-preview.css"),
+      "{{font-styles}}": path.join(basePath, "style/font-preview.css"),
       "{{script}}": path.join(basePath, "index.js"),
       "{{vim-styles}}": path.join(basePath, "style/vim.css"),
     };
