@@ -137,14 +137,6 @@ export class FileDataAdapter implements IFuzzyFinderDataAdapter {
   parseOptions(data: any): FileOption[] {
     // Convert backend data to UI options
   }
-
-  getDisplayText(option: FileOption): string {
-    // Format option for display
-  }
-
-  filterOption(option: FileOption, query: string): boolean {
-    // Custom filtering logic
-  }
 }
 ```
 
@@ -850,17 +842,13 @@ module.exports = {
         return data;
       },
 
-      getDisplayText(option) {
+      getSearchText(option) {
         return option.name;
       },
 
       getSelectionValue(option) {
         return option.path;
       },
-
-      filterOption(option, query) {
-        return option.name.toLowerCase().includes(query.toLowerCase());
-      }
     }
   }
 };
@@ -1039,38 +1027,12 @@ getSelectionValue(option) {
 }
 ```
 
----
-
-#### `filterOption(option, query)` *(optional)*
-Custom filtering logic. If not provided, uses default fuzzy matching on `getDisplayText` result.
-
-**Signature:**
-```typescript
-filterOption(option: any, query: string): boolean
-```
-
-**Parameters:**
-- `option` - One option from the array returned by `parseOptions`
-- `query` - Current search query (lowercase)
-
-**Returns:** `true` if option matches the query, `false` otherwise.
-
-**Example:**
-```javascript
-filterOption(option, query) {
-  const lowerQuery = query.toLowerCase();
-  return (
-    option.name.toLowerCase().includes(lowerQuery) ||
-    option.description.toLowerCase().includes(lowerQuery)
-  );
-}
-```
 
 **Flow:**
 1. User opens custom finder
 2. Backend's `querySelectableOptions()` is called
 3. UI's `parseOptions()` transforms the data
-4. User types → UI's `filterOption()` filters results
+4. User types → UI's filters results
 5. User navigates → Backend's `getPreviewData()` shows preview
 6. User selects → Backend's `onSelect()` executes action
 

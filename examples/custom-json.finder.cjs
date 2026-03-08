@@ -14,7 +14,7 @@ function findFiles(dir, fileList = []) {
           continue;
         }
         findFiles(filePath, fileList);
-      } else if (file.endsWith('.ts')) {
+      } else if (file.endsWith('.js')) {
         fileList.push(filePath);
       }
     }
@@ -37,13 +37,8 @@ module.exports = {
 
   backend: {
     async querySelectableOptions() {
-      // Get workspace root (passed via environment or default to cwd)
       const workspaceRoot = process.cwd();
-
-      // Find all SQL files
       const tsFiles = findFiles(workspaceRoot);
-
-      // Read and parse each file
       const queries = [];
 
       for (const filePath of tsFiles) {
@@ -69,12 +64,9 @@ module.exports = {
 
     async onSelect(item) {
       const selectedQuery = JSON.parse(item);
-      console.log("query: ", selectedQuery)
-
-      // Return the file path to be opened
       return {
-        path: selectedQuery.absolutePath,
-        action: "openFile"
+        text: selectedQuery.absolutePath,
+        action: "copyToClipboard"
       };
     },
 
@@ -90,6 +82,7 @@ module.exports = {
 
   ui: {
     dataAdapter: {
+      htmlWrapperPreset: "file-icon",
       parseOptions(data) {
         return data;
       },
@@ -107,14 +100,6 @@ module.exports = {
           lines: option.lines
         });
       },
-
-      filterOption(option, query) {
-        const q = query.toLowerCase();
-        return (
-          option.relativePath.toLowerCase().includes(q) ||
-          option.content.toLowerCase().includes(q)
-        );
-      }
     }
   }
 };

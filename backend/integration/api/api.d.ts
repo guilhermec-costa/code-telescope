@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { IFuzzyFinderProvider } from "../../../shared/abstractions/fuzzy-finder.provider";
-import { IFuzzyFinderDataAdapter } from "../../../shared/abstractions/fuzzy-finder-data-adapter";
+import { HtmlWrapperConfig, IFuzzyFinderDataAdapter } from "../../../shared/abstractions/fuzzy-finder-data-adapter";
 import { CustomFuzzyProviderType, FuzzyProviderType } from "../../../shared/adapters-namespace";
 
 export interface FinderRegistration<TData = any, TOption = any> {
@@ -11,15 +11,20 @@ export interface FinderRegistration<TData = any, TOption = any> {
    * @example "ext.mycompany.myplugin.issues"
    */
   provider: IFuzzyFinderProvider;
-
   /**
-   * The UI data adapter, implementing the same interface as built-in adapters.
+   * The UI data adapter for this finder.
    *
-   * Transforms raw data from the provider into displayable options.
-   * Since this is passed by reference (not serialized via eval),
-   * closures and external references work normally.
+   * Use a preset via htmlWrapperPreset for common icon styles (file-icon, codicon, simple),
+   * or provide a custom getHtmlWrapper function for full control.
+   *
+   * **Note:** Functions are serialized via .toString() and reconstructed in the webview.
+   * Closures that reference external variables will not work — all logic must be self-contained.
    */
-  dataAdapter: IFuzzyFinderDataAdapter<TData, TOption>;
+  dataAdapter: Omit<
+    IFuzzyFinderDataAdapter<TData, TOption>,
+    "getHtmlWrapper" | "htmlWrapperPreset" | "getCodiconName"
+  > &
+    HtmlWrapperConfig;
 }
 
 /**
@@ -46,7 +51,6 @@ export interface FinderRegistration<TData = any, TOption = any> {
  *     getSearchText(option) { ... },
  *     getHtmlWrapper(option, highlighted) { ... },
  *     getSelectionValue(option) { ... },
- *     filterOption(option, query) { ... },
  *   }
  * });
  *
@@ -54,12 +58,6 @@ export interface FinderRegistration<TData = any, TOption = any> {
  * ```
  */
 export interface CodeTelescopeAPI {
-  /**
-   * The current API version. Follows semver.
-   * Check this before using features that may not be available in older versions.
-   */
-  readonly version: string;
-
   /**
    * Registers a finder programmatically using the same interface as built-in finders.
    *

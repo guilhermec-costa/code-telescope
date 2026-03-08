@@ -5,7 +5,7 @@ import { serializeFn } from "../../../utils/serialization";
 
 /**
  * UI-side proxy for a custom finder.
- * Validates and exposes UI adapters in a serializable format
+ * Validates and exposes UI adapters in a serializable format.
  */
 export class CustomFinderUiProxy {
   fuzzyAdapterType!: FuzzyProviderType;
@@ -13,8 +13,7 @@ export class CustomFinderUiProxy {
   dataAdapter!: CustomFinderDefinition["ui"]["dataAdapter"];
 
   private constructor(def: CustomFinderDefinition) {
-    this.fuzzyAdapterType = def.fuzzyAdapterType as any;
-
+    this.fuzzyAdapterType = def.fuzzyAdapterType;
     this.dataAdapter = def.ui.dataAdapter;
   }
 
@@ -27,12 +26,12 @@ export class CustomFinderUiProxy {
       return { ok: false, error: "Invalid custom finder definition" };
     }
 
-    const ui = def.ui as any;
+    const ui = def.ui;
     if (!ui || typeof ui !== "object") {
       return { ok: false, error: "Missing ui implementation" };
     }
 
-    const dataAdapter = ui.dataAdapter as any;
+    const dataAdapter = ui.dataAdapter;
     if (!dataAdapter || typeof dataAdapter !== "object") {
       return { ok: false, error: "Missing ui.dataAdapter implementation" };
     }
@@ -46,11 +45,22 @@ export class CustomFinderUiProxy {
     }
 
     if (typeof dataAdapter.getSearchText !== "function") {
-      return { ok: false, error: "ui.dataAdapter.getSelectionValue must be a function" };
+      return { ok: false, error: "ui.dataAdapter.getSearchText must be a function" };
     }
 
-    if (dataAdapter.filterOption !== undefined && typeof dataAdapter.filterOption !== "function") {
-      return { ok: false, error: "ui.dataAdapter.filterOption must be a function if provided" };
+    const preset = dataAdapter.htmlWrapperPreset;
+    if (preset === "codicon" && typeof dataAdapter.getCodiconName !== "function") {
+      return {
+        ok: false,
+        error: 'ui.dataAdapter.getCodiconName must be a function when htmlWrapperPreset is "codicon"',
+      };
+    }
+
+    if (!preset && typeof (dataAdapter as any).getHtmlWrapper !== "function") {
+      return {
+        ok: false,
+        error: "ui.dataAdapter.getHtmlWrapper must be a function when no htmlWrapperPreset is provided",
+      };
     }
 
     try {
@@ -65,6 +75,8 @@ export class CustomFinderUiProxy {
    * that can be sent to the webview.
    */
   toSerializableObject() {
+    const adapter = this.dataAdapter as any;
+
     return {
       fuzzyAdapterType: this.fuzzyAdapterType,
       previewAdapterType: this.previewAdapterType,
@@ -73,8 +85,9 @@ export class CustomFinderUiProxy {
         parseOptions: serializeFn(this.dataAdapter.parseOptions),
         getSelectionValue: serializeFn(this.dataAdapter.getSelectionValue),
         getSearchText: serializeFn(this.dataAdapter.getSearchText),
-        filterOption: this.dataAdapter.filterOption ? serializeFn(this.dataAdapter.filterOption) : undefined,
-        getHtmlWrapper: this.dataAdapter.getHtmlWrapper ? serializeFn(this.dataAdapter.getHtmlWrapper) : undefined,
+        htmlWrapperPreset: adapter.htmlWrapperPreset,
+        getHtmlWrapper: adapter.getHtmlWrapper ? serializeFn(adapter.getHtmlWrapper) : undefined,
+        getCodiconName: adapter.getCodiconName ? serializeFn(adapter.getCodiconName) : undefined,
       },
     };
   }
