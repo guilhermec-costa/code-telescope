@@ -23,7 +23,7 @@ export type BuiltinFuzzyProviderType =
   | "workspace.packageDocs"
   | "workspace.extensions";
 
-export type CustomFuzzyProviderType = `custom.${string}`;
+export type CustomFuzzyProviderType = `custom.${string}` | `ext.${string}`;
 
 export type FuzzyProviderType = BuiltinFuzzyProviderType | CustomFuzzyProviderType;
 
@@ -45,7 +45,8 @@ export type DataAdapterType =
   | "fontsAdapter"
   | "extensionsAdapter"
   | "packageDocsAdapter"
-  | `custom${string}Adapter`;
+  | `custom.${string}Adapter`
+  | `ext.${string}`;
 
 export type PreviewRendererType =
   | "preview.buffer"

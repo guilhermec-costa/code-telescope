@@ -1,5 +1,6 @@
 import * as fg from "fast-glob";
 import * as vscode from "vscode";
+import { IFuzzyFinderProvider } from "../../../../shared/abstractions/fuzzy-finder.provider";
 import { FileFinderData } from "../../../../shared/exchange/file-search";
 import { ImagePreviewData, TextPreviewData } from "../../../../shared/extension-webview-protocol";
 import { DEFAULT_EXCLUDE_PATTERNS } from "../../../config/exclude-patterns";
@@ -7,7 +8,6 @@ import { Globals } from "../../../globals";
 import { execCmd } from "../../../utils/commands";
 import { getLanguageIdForFile, resolvePathExt } from "../../../utils/files";
 import { ChunkableProvider } from "../../abstractions/chunkable-provider";
-import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
 import { ExtensionConfigManager } from "../../common/config-manager";
 import { FileReader } from "../../common/file-reader";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";

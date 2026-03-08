@@ -1,6 +1,6 @@
+import { IFuzzyFinderDataAdapter } from "../../../../shared/abstractions/fuzzy-finder-data-adapter";
 import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { BuiltinFinderData, BuiltinFinderItem } from "../../../../shared/exchange/builtin";
-import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
 
 export interface BuiltinFinderOption {

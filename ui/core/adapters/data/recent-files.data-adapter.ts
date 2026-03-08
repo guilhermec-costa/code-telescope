@@ -1,7 +1,7 @@
+import { IFuzzyFinderDataAdapter } from "../../../../shared/abstractions/fuzzy-finder-data-adapter";
 import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { RecentFileData, RecentFilesFinderData } from "../../../../shared/exchange/recent-files";
 import { formatFileOptionHtml } from "../../../utils/html";
-import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
 
 export interface RecentFileOption {

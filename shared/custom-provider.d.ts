@@ -28,7 +28,7 @@ export interface CustomFinderDefinition {
    * Example:
    * - "custom.github.issues"
    */
-  fuzzyAdapterType: `custom.${string}`;
+  fuzzyAdapterType: `custom.${string}` | `ext.${string}.${string}`;
 
   /**
    * Backend implementation executed in the extension host.
@@ -51,10 +51,7 @@ export interface CustomFinderDefinition {
      *
      * Should return the data to be used by the action and an action identifier.
      */
-    onSelect: (item: any) => Promise<{
-      path: string;
-      action: "openFile" | "none";
-    } | void>;
+    onSelect: (item: any) => Promise<SelectAction> | void;
 
     /**
      * Returns preview data for the given identifier.
@@ -62,6 +59,8 @@ export interface CustomFinderDefinition {
      * The returned object will be passed to the preview renderer.
      */
     getPreviewData: (identifier: any) => Promise<PreviewData>;
+
+    previewRenderer?: "preview.buffer" | "preview.markdown";
   };
 
   /**
@@ -113,3 +112,11 @@ export interface CustomFinderDefinition {
     };
   };
 }
+
+export type SelectAction =
+  | { action: "openFile"; path: string; line?: number }
+  | { action: "openUrl"; url: string }
+  | { action: "copyToClipboard"; text: string }
+  | { action: "executeCommand"; command: string; args?: any[] }
+  | { action: "dismiss" }
+  | { action: "none" };

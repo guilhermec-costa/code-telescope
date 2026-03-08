@@ -1,11 +1,11 @@
 import path from "node:path";
 import * as vscode from "vscode";
+import { IFuzzyFinderProvider } from "../../../shared/abstractions/fuzzy-finder.provider";
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { FromWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { Globals } from "../../globals";
 import { getProviderTabTitle } from "../../utils/configuration";
 import { joinPath } from "../../utils/files";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { PreContextManager } from "../common/pre-context";
 import { FuzzyFinderAdapterRegistry } from "../registry/fuzzy-provider.registry";
 import { WebviewMessageHandlerRegistry } from "../registry/webview-handler.registry";

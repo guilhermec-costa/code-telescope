@@ -1,5 +1,5 @@
+import { IFuzzyFinderDataAdapter } from "../../../shared/abstractions/fuzzy-finder-data-adapter";
 import { DataAdapterType } from "../../../shared/adapters-namespace";
-import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
 import { getRegisteredFuzzyDataAdapters } from "../decorators/fuzzy-data-adapter.decorator";
 
 /**
@@ -29,6 +29,10 @@ export class FuzzyFinderDataAdapterRegistry {
 
   getAdapter(finderType: DataAdapterType): IFuzzyFinderDataAdapter | undefined {
     return this.adapters.get(finderType);
+  }
+
+  deleteAdapter(finderType: string) {
+    this.adapters.delete(finderType);
   }
 
   /**

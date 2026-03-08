@@ -1,5 +1,5 @@
+import { IFuzzyFinderProvider } from "../../../shared/abstractions/fuzzy-finder.provider";
 import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 
 /**
  * Configuration object for a fuzzy finder adapter.

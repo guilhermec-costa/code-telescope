@@ -1,5 +1,5 @@
-import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../shared/adapters-namespace";
-import { PostQueryHandlerResult, PreviewData } from "../../../shared/extension-webview-protocol";
+import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../adapters-namespace";
+import { PreviewData } from "../extension-webview-protocol";
 
 /**
  * Represents a provider responsible for supplying data and behavior to the fuzzy finder
@@ -30,8 +30,6 @@ export interface IFuzzyFinderProvider {
    * Example: files, branches, symbols, commands
    */
   querySelectableOptions(): Promise<any>;
-
-  postQueryHandler?(): Promise<PostQueryHandlerResult>;
   /**
    * Triggered when the user selects an item (Enter).
    */

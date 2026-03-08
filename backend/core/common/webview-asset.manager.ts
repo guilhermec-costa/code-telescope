@@ -1,9 +1,10 @@
 import path from "path";
 import * as vscode from "vscode";
+import { IFuzzyFinderProvider, LayoutCustomPlaceholders } from "../../../shared/abstractions/fuzzy-finder.provider";
 import { Globals } from "../../globals";
+import { ExternalFinderRegistry } from "../../integration/api/external-registry";
 import { getProviderListTitle, getProviderPreviewTitle, getProviderPromptMessage } from "../../utils/configuration";
 import { joinPath } from "../../utils/files";
-import { IFuzzyFinderProvider, LayoutCustomPlaceholders } from "../abstractions/fuzzy-finder.provider";
 import { ExtensionConfigManager } from "../common/config-manager";
 import { CustomProviderStorage } from "./custom/custom-provider.storage";
 
@@ -66,16 +67,31 @@ export class WebviewAssetManager {
     let customUiPayload: unknown = null;
 
     const isCustom = provider.fuzzyAdapterType.startsWith(Globals.CUSTOM_PROVIDER_PREFIX);
+    const isExternal = provider.fuzzyAdapterType.startsWith("ext.");
 
     if (isCustom) {
       const uiResult = CustomProviderStorage.instance.getUiProxyDefinition(provider.fuzzyAdapterType);
-
       if (uiResult) {
         if (!uiResult.ok) {
           console.error("[WebviewAssetManager] Failed to load custom UI adapter:", uiResult.error);
         } else {
           customUiPayload = uiResult.value.toSerializableObject();
         }
+      }
+    } else if (isExternal) {
+      const serialized = ExternalFinderRegistry.instance.getSerializedDataAdapter(provider.fuzzyAdapterType);
+      if (serialized) {
+        customUiPayload = {
+          fuzzyAdapterType: provider.fuzzyAdapterType,
+          previewAdapterType: provider.previewAdapterType,
+          dataAdapterType: provider.dataAdapterType,
+          dataAdapter: serialized,
+        };
+      } else {
+        console.error(
+          "[WebviewAssetManager] No serialized data adapter found for external finder:",
+          provider.fuzzyAdapterType,
+        );
       }
     }
     const state: Record<string, string> = {

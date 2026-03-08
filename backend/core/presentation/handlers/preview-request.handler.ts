@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
+import { IFuzzyFinderProvider } from "../../../../shared/abstractions/fuzzy-finder.provider";
 import { FromWebviewKindMessage, PreviewData } from "../../../../shared/extension-webview-protocol";
 import { Globals } from "../../../globals";
-import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
 import { IWebviewMessageHandler } from "../../abstractions/webview-message-handler";
 import { BufferChunkStreamer } from "../../buffer-chunk-streamer";
 import { WebviewMessageHandler } from "../../decorators/webview-message-handler.decorator";

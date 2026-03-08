@@ -1,6 +1,7 @@
 {
     "name": "code-telescope",
     "displayName": "Code Telescope",
+    "types": "./backend/integration/api/api.d.ts",
     "repository": {
         "type": "git",
         "url": "https://github.com/guilhermec-costa/code-telescope"

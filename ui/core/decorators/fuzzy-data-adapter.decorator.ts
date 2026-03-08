@@ -1,5 +1,5 @@
+import { IFuzzyFinderDataAdapter } from "../../../shared/abstractions/fuzzy-finder-data-adapter";
 import { DataAdapterType } from "../../../shared/adapters-namespace";
-import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
 
 interface FuzzyDataAdapterConfig {
   type: DataAdapterType;

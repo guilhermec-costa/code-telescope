@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
+import { IFuzzyFinderProvider } from "../../../shared/abstractions/fuzzy-finder.provider";
 import { FromWebviewKindMessage, ToWebviewKindMessage } from "../../../shared/extension-webview-protocol";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { WebviewAssetManager } from "../common/webview-asset.manager";
 import { Logger } from "../log";
 
