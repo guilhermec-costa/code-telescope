@@ -1,6 +1,7 @@
 import { FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
 import { Result } from "../../../../shared/result";
+import { serializeFn } from "../../../utils/serialization";
 
 /**
  * UI-side proxy for a custom finder.
@@ -60,20 +61,6 @@ export class CustomFinderUiProxy {
   }
 
   /**
-   * Normalizes a function into a string that can be safely
-   * reconstructed via `new Function` on the webview side.
-   */
-  private normalizeFn(fn: Function): string {
-    const src = fn.toString();
-
-    if (!src.startsWith("function") && !src.startsWith("(")) {
-      return "function " + src;
-    }
-
-    return src;
-  }
-
-  /**
    * Converts the UI proxy into a fully serializable object
    * that can be sent to the webview.
    */
@@ -83,10 +70,11 @@ export class CustomFinderUiProxy {
       previewAdapterType: this.previewAdapterType,
       dataAdapterType: this.fuzzyAdapterType,
       dataAdapter: {
-        parseOptions: this.normalizeFn(this.dataAdapter.parseOptions),
-        getSelectionValue: this.normalizeFn(this.dataAdapter.getSelectionValue),
-        getSearchText: this.normalizeFn(this.dataAdapter.getSearchText),
-        filterOption: this.dataAdapter.filterOption ? this.normalizeFn(this.dataAdapter.filterOption) : undefined,
+        parseOptions: serializeFn(this.dataAdapter.parseOptions),
+        getSelectionValue: serializeFn(this.dataAdapter.getSelectionValue),
+        getSearchText: serializeFn(this.dataAdapter.getSearchText),
+        filterOption: this.dataAdapter.filterOption ? serializeFn(this.dataAdapter.filterOption) : undefined,
+        getHtmlWrapper: this.dataAdapter.getHtmlWrapper ? serializeFn(this.dataAdapter.getHtmlWrapper) : undefined,
       },
     };
   }

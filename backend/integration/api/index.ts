@@ -7,8 +7,6 @@ import { Globals } from "../../globals";
 import { CodeTelescopeAPI, FinderRegistration } from "./api";
 import { ExternalFinderRegistry } from "./external-registry";
 
-const EXTERNAL_PREFIX = "ext.";
-
 export function createCodeTelescopeAPI(): CodeTelescopeAPI {
   return {
     version: "1.0.0",
@@ -16,7 +14,7 @@ export function createCodeTelescopeAPI(): CodeTelescopeAPI {
       const { provider } = registration;
       const type = provider.fuzzyAdapterType;
 
-      if (!type.startsWith(EXTERNAL_PREFIX)) {
+      if (!type.startsWith(Globals.EXTERNAL_PROVIDER_PREFIX)) {
         throw new Error(`[CodeTelescope] External finders must use the "ext.*" namespace. Got: "${type}"`);
       }
 
@@ -57,7 +55,8 @@ export function createCodeTelescopeAPI(): CodeTelescopeAPI {
     },
 
     unregisterFinder(type: string): void {
-      const isBuiltin = !type.startsWith(Globals.CUSTOM_PROVIDER_PREFIX) && !type.startsWith(EXTERNAL_PREFIX);
+      const isBuiltin =
+        !type.startsWith(Globals.CUSTOM_PROVIDER_PREFIX) && !type.startsWith(Globals.EXTERNAL_PROVIDER_PREFIX);
 
       if (isBuiltin) {
         Logger.warn(`[CodeTelescope] Cannot unregister built-in finder: ${type}`);

@@ -51,7 +51,6 @@ export type DataAdapterType =
 export type PreviewRendererType =
   | "preview.buffer"
   | "preview.branch"
-  | "preview.commitDiff"
   | "preview.image"
   | "preview.font"
   | "preview.failed";

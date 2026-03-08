@@ -48,17 +48,4 @@ export class CallHierarchyFinderDataAdapter
   getSelectionValue(option: CallHierarchyOption): string {
     return option.index.toString();
   }
-
-  filterOption(option: CallHierarchyOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const call = option.call;
-
-    return (
-      call.name.toLowerCase().includes(lowerQuery) ||
-      call.detail.toLowerCase().includes(lowerQuery) ||
-      call.relativePath.toLowerCase().includes(lowerQuery) ||
-      (call.containerName?.toLowerCase().includes(lowerQuery) ?? false) ||
-      call.type.includes(lowerQuery)
-    );
-  }
 }

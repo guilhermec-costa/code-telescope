@@ -68,26 +68,4 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
       expect(result).toBe(option.absolute);
     });
   });
-
-  describe("filterOption", () => {
-    it("should return true when relative path includes query (case insensitive)", () => {
-      const option: FileOption = {
-        relative: "MyFile.ts",
-        absolute: "root/MyFile.ts",
-      };
-
-      expect(adapter.filterOption(option, "myfile")).toBe(true);
-      expect(adapter.filterOption(option, "FILE")).toBe(true);
-      expect(adapter.filterOption(option, "ts")).toBe(true);
-    });
-
-    it("should return false when relative path does not include query", () => {
-      const option: FileOption = {
-        relative: "file.ts",
-        absolute: "root/file.ts",
-      };
-
-      expect(adapter.filterOption(option, "json")).toBe(false);
-    });
-  });
 });

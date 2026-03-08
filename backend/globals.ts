@@ -10,8 +10,11 @@ export const Globals = {
   /** Prefix for extension configuration keys */
   EXTENSION_CONFIGURATION_PREFIX: "codeTelescope",
 
-  /** Prefix used to identify custom providers */
+  /** Prefix used to identify custom workspace providers */
   CUSTOM_PROVIDER_PREFIX: "custom.",
+
+  /** Prefix used to identify external providers */
+  EXTERNAL_PROVIDER_PREFIX: "ext.",
 
   /** Common VS Code command identifiers */
   cmds: {

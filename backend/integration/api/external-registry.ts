@@ -1,6 +1,7 @@
 import { IFuzzyFinderProvider } from "../../../shared/abstractions/fuzzy-finder.provider";
 import { Logger } from "../../core/log";
 import { FinderRegistration } from "../../integration/api/api";
+import { serializeFn } from "../../utils/serialization";
 
 interface SerializedDataAdapter {
   typeName: string;
@@ -46,13 +47,12 @@ export class ExternalFinderRegistry {
 
     const serializedDataAdapter: SerializedDataAdapter = {
       typeName: dataAdapter.typeName,
-      parseOptions: this.serializeFn(dataAdapter.parseOptions),
-      getSearchText: this.serializeFn(dataAdapter.getSearchText),
-      getHtmlWrapper: this.serializeFn(dataAdapter.getHtmlWrapper),
-      getSelectionValue: this.serializeFn(dataAdapter.getSelectionValue),
-      filterOption: dataAdapter.filterOption ? this.serializeFn(dataAdapter.filterOption) : undefined,
-      sortFn: dataAdapter.sortFn ? this.serializeFn(dataAdapter.sortFn) : undefined,
-      calcHlOffsetChars: dataAdapter.calcHlOffsetChars ? this.serializeFn(dataAdapter.calcHlOffsetChars) : undefined,
+      parseOptions: serializeFn(dataAdapter.parseOptions),
+      getSearchText: serializeFn(dataAdapter.getSearchText),
+      getHtmlWrapper: serializeFn(dataAdapter.getHtmlWrapper),
+      getSelectionValue: serializeFn(dataAdapter.getSelectionValue),
+      sortFn: dataAdapter.sortFn ? serializeFn(dataAdapter.sortFn) : undefined,
+      calcHlOffsetChars: dataAdapter.calcHlOffsetChars ? serializeFn(dataAdapter.calcHlOffsetChars) : undefined,
       shouldSort: dataAdapter.shouldSort,
       debounceSearchTime: dataAdapter.debounceSearchTime,
     };
@@ -80,13 +80,5 @@ export class ExternalFinderRegistry {
 
   getExternalTypes(): string[] {
     return Array.from(this.entries.keys());
-  }
-
-  private serializeFn(fn: Function): string {
-    const src = fn.toString();
-    if (!src.startsWith("function") && !src.startsWith("(") && !src.startsWith("async")) {
-      return "function " + src;
-    }
-    return src;
   }
 }

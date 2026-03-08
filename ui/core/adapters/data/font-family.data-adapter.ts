@@ -34,8 +34,4 @@ export class FontsFinderDataAdapter implements IFuzzyFinderDataAdapter<FontFinde
   getSelectionValue(option: FontOption): string {
     return option.index.toString();
   }
-
-  filterOption(option: FontOption, query: string): boolean {
-    return option.font.name.toLowerCase().includes(query.toLowerCase());
-  }
 }

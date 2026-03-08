@@ -26,9 +26,4 @@ export class BranchFinderDataAdapter implements IFuzzyFinderDataAdapter<BranchIn
   getSelectionValue(option: BranchInfo): string {
     return option.name;
   }
-
-  filterOption(option: BranchInfo, query: string): boolean {
-    const searchText = this.getSearchText(option).toLowerCase();
-    return searchText.includes(query.toLowerCase());
-  }
 }

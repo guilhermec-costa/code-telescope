@@ -39,18 +39,6 @@ export class WorkspaceTasksFinderDataAdapter
     return option.index.toString();
   }
 
-  filterOption(option: WorkspaceTaskOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const task = option.task;
-
-    return (
-      task.name.toLowerCase().includes(lowerQuery) ||
-      task.source.toLowerCase().includes(lowerQuery) ||
-      (task.detail?.toLowerCase().includes(lowerQuery) ?? false) ||
-      (task.definition.type?.toLowerCase().includes(lowerQuery) ?? false)
-    );
-  }
-
   sortFn(x1: WorkspaceTaskOption, x2: WorkspaceTaskOption): number {
     return x1.displayText.localeCompare(x2.displayText);
   }

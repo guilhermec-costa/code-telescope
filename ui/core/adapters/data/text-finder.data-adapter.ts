@@ -48,11 +48,6 @@ export class TextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearch
     return prefix.length;
   }
 
-  filterOption(option: SearchOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    return option.file.toLowerCase().includes(lowerQuery) || option.preview.toLowerCase().includes(lowerQuery);
-  }
-
   private getFileName(path: string): string {
     const parts = path.split(/[/\\]/);
     return parts[parts.length - 1];

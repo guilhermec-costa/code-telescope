@@ -43,19 +43,4 @@ export class HarpoonFinderDataAdapter implements IFuzzyFinderDataAdapter<Harpoon
   getSelectionValue(option: HarpoonOption): string {
     return option.index.toString();
   }
-
-  filterOption(option: HarpoonOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const mark = option.mark;
-
-    const path = mark.uri.fsPath.toLowerCase();
-    const fileName = mark.uri.fsPath.split(/[\\/]/).pop()?.toLowerCase() || "";
-
-    return (
-      path.includes(lowerQuery) ||
-      fileName.includes(lowerQuery) ||
-      (mark.label?.toLowerCase().includes(lowerQuery) ?? false) ||
-      option.index.toString() === query
-    );
-  }
 }

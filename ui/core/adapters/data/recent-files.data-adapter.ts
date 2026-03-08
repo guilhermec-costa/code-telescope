@@ -43,11 +43,4 @@ export class RecentFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<Rec
   getSelectionValue(option: RecentFileOption): string {
     return option.file.path;
   }
-
-  filterOption(option: RecentFileOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const file = option.file;
-
-    return file.relativePath.toLowerCase().includes(lowerQuery) || file.path.toLowerCase().includes(lowerQuery);
-  }
 }

@@ -42,9 +42,4 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
   getSelectionValue(option: FileOption): string {
     return option.absolute;
   }
-
-  filterOption(option: FileOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    return option.relative.toLowerCase().includes(lowerQuery);
-  }
 }

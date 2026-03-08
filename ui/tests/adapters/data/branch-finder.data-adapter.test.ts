@@ -57,22 +57,4 @@ describe("BranchFinderDataAdapter", () => {
 
     expect(value).toBe("feature/login");
   });
-
-  it("filters using search text (case insensitive)", () => {
-    const result = adapter.filterOption(branches[2], "login");
-
-    expect(result).toBe(true);
-  });
-
-  it("matches prefix and remote info in filter", () => {
-    const result = adapter.filterOption(branches[0], "main");
-
-    expect(result).toBe(true);
-  });
-
-  it("returns false when query does not match", () => {
-    const result = adapter.filterOption(branches[1], "release");
-
-    expect(result).toBe(false);
-  });
 });

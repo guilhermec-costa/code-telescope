@@ -46,10 +46,6 @@ export interface IFuzzyFinderDataAdapter<TData = any, TOption = string> {
   getSelectionValue(option: TOption): any;
 
   calcHlOffsetChars?(option: TOption): number;
-  /**
-   * Custom filter logic for a single option
-   */
-  filterOption(option: TOption, query: string): boolean;
 
   sortFn?(x1: TOption, x2: TOption): number;
 

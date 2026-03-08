@@ -40,10 +40,4 @@ export class PackageDocsFinderDataAdapter implements IFuzzyFinderDataAdapter<Pac
   getSelectionValue(option: PackageDocOption): string {
     return option.index.toString();
   }
-
-  filterOption(option: PackageDocOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const pkg = option.package;
-    return pkg.name.toLowerCase().includes(lowerQuery);
-  }
 }

@@ -41,15 +41,4 @@ export class KeybindingsFinderDataAdapter implements IFuzzyFinderDataAdapter<Key
   getSelectionValue(option: KeybindingOption): string {
     return option.index.toString();
   }
-
-  filterOption(option: KeybindingOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const kb = option.keybinding;
-
-    return (
-      kb.key.toLowerCase().includes(lowerQuery) ||
-      kb.command.toLowerCase().includes(lowerQuery) ||
-      (kb.when?.toLowerCase().includes(lowerQuery) ?? false)
-    );
-  }
 }

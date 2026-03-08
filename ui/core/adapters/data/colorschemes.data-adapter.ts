@@ -44,15 +44,6 @@ export class ColorSchemesFinderDataAdapter
     return option.theme;
   }
 
-  filterOption(option: ColorSchemeOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const theme = option.theme;
-
-    return (
-      theme.label.toLowerCase().includes(lowerQuery) || (theme.extensionId?.toLowerCase().includes(lowerQuery) ?? false)
-    );
-  }
-
   sortFn(x1: ColorSchemeOption, x2: ColorSchemeOption): number {
     return x1.displayText.localeCompare(x2.displayText);
   }

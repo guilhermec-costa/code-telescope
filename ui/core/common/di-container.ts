@@ -1,5 +1,3 @@
-import { formatFileOptionHtml } from "../../utils/html";
-import { getSvgIconUrl } from "../../utils/icon";
 import { CustomDataAdapterProxy, SerializedUiConfig } from "../adapters/data/custom.data-adapter";
 import { registerFuzzyDataAdapter } from "../decorators/fuzzy-data-adapter.decorator";
 import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.registry";
@@ -35,14 +33,7 @@ export class DIContainer {
 
       if (serializedCustomAdapter) {
         console.log("[DIContainer] Registering custom data adapter:", serializedCustomAdapter.fuzzyAdapterType);
-
-        const customAdapter = new CustomDataAdapterProxy(serializedCustomAdapter);
-        customAdapter.getHtmlWrapper = (option: any, content: string) => {
-          const searchPath = customAdapter.getSearchText(option);
-          const svgIconUrl = getSvgIconUrl(searchPath);
-          return formatFileOptionHtml(svgIconUrl, content);
-        };
-        registerFuzzyDataAdapter(customAdapter);
+        registerFuzzyDataAdapter(new CustomDataAdapterProxy(serializedCustomAdapter));
       }
 
       console.log("[DIContainer] All services initialized successfully!");
