@@ -1,6 +1,6 @@
+import { IFuzzyFinderDataAdapter } from "../../../../shared/abstractions/fuzzy-finder-data-adapter";
 import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { WorkspaceTaskOption, WorkspaceTasksFinderData } from "../../../../shared/exchange/ws-tasks";
-import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
 
 @FuzzyFinderDataAdapter({

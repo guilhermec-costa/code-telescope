@@ -1,7 +1,7 @@
+import { LayoutCustomPlaceholders } from "../../../../shared/abstractions/fuzzy-finder.provider";
 import { BranchInfo, CommitInfo } from "../../../../shared/exchange/branch-search";
 import { PreviewData } from "../../../../shared/extension-webview-protocol";
 import { API, Ref } from "../../../@types/git";
-import { LayoutCustomPlaceholders } from "../../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
 import { getGitApi } from "./api-utils";
 

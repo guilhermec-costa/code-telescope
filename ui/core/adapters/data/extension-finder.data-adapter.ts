@@ -1,6 +1,6 @@
+import { type IFuzzyFinderDataAdapter } from "../../../../shared/abstractions/fuzzy-finder-data-adapter";
 import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import type { ExtensionData, ExtensionFinderData } from "../../../../shared/exchange/extension";
-import { type IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.decorator";
 
 export interface ExtensionOption {

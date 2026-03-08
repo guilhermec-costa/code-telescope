@@ -10,6 +10,7 @@ import { FuzzyFinderPanelController } from "./core/presentation/fuzzy-panel.cont
 import { Globals } from "./globals";
 import { registerHarpoonCmds } from "./harpoon/commands";
 import { HarpoonOrchestrator } from "./harpoon/orchestrator";
+import { createCodeTelescopeAPI } from "./integration/api";
 import { PerformanceDevModule } from "./perf/perf-dev.module";
 import { registerProviderCmd } from "./utils/commands";
 import { getConfigurationSection } from "./utils/configuration";
@@ -83,8 +84,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
   Logger.info(`${Globals.EXTENSION_NAME} activated!`);
 
-  // for integration tests
-  return ctx;
+  return createCodeTelescopeAPI();
 }
 
 export function deactivate() {

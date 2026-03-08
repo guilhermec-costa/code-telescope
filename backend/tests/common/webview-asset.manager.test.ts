@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as vscode from "vscode";
-import { IFuzzyFinderProvider } from "../../core/abstractions/fuzzy-finder.provider";
+import { IFuzzyFinderProvider } from "../../../shared/abstractions/fuzzy-finder.provider";
 import { ExtensionConfigManager } from "../../core/common/config-manager";
 import { CustomProviderStorage } from "../../core/common/custom/custom-provider.storage";
 import { WebviewAssetManager } from "../../core/common/webview-asset.manager";

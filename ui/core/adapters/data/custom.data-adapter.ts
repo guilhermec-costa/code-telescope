@@ -1,6 +1,6 @@
+import { IFuzzyFinderDataAdapter } from "../../../../shared/abstractions/fuzzy-finder-data-adapter";
 import { DataAdapterType } from "../../../../shared/adapters-namespace";
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
-import { IFuzzyFinderDataAdapter } from "../../abstractions/fuzzy-finder-data-adapter";
 
 export interface SerializedUiConfig {
   fuzzyAdapterType: CustomFinderDefinition["fuzzyAdapterType"];

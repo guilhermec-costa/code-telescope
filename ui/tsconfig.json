@@ -19,14 +19,15 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "composite": true
   },
   "include": [
     "./**/*.ts",
     "../shared/**/*.ts",
     "../shared/**/*.d.ts",
     "../shared/types/*.d.ts"
-  ],
+, "../shared/abstractions/fuzzy-finder-data-adapter..dts"  ],
   "exclude": [
     "./dist",
     "./tests/*"

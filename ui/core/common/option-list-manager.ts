@@ -1,7 +1,7 @@
+import { IFuzzyFinderDataAdapter } from "../../../shared/abstractions/fuzzy-finder-data-adapter";
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { debounce } from "../../utils/debounce";
 import { escapeHtml } from "../../utils/html";
-import { IFuzzyFinderDataAdapter } from "../abstractions/fuzzy-finder-data-adapter";
 import { computeMatch, scoreMatch } from "../algos/score-engine";
 import { matches } from "../algos/subsequence";
 import { PreviewManager } from "../render/preview-manager";

@@ -28,6 +28,16 @@
         "${workspaceFolder}/backend/dist/**/*.js"
       ],
       "preLaunchTask": "build all",
+    },
+    {
+      "name": "Run Extension + Sandbox",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "--extensionDevelopmentPath=${workspaceFolder}/sandbox"
+      ],
+      "preLaunchTask": "build all",
     }
   ]
 }

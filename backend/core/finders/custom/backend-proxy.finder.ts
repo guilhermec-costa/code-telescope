@@ -1,12 +1,11 @@
 import * as fs from "fs";
 import * as vscode from "vscode";
+import { IFuzzyFinderProvider } from "../../../../shared/abstractions/fuzzy-finder.provider";
 import { DataAdapterType, FuzzyProviderType, PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { CustomFinderDefinition } from "../../../../shared/custom-provider";
 import { PreviewData } from "../../../../shared/extension-webview-protocol";
 import { Result } from "../../../../shared/result";
-import { IFuzzyFinderProvider } from "../../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderPanelController } from "../../presentation/fuzzy-panel.controller";
-import { WorkspaceFileFinder } from "../file/ws-files.finder";
 
 /**
  * Backend proxy that adapts a user-defined {@link CustomFinderDefinition}
@@ -34,23 +33,37 @@ export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
 
     this.querySelectableOptions = def.backend.querySelectableOptions;
     this.onSelect = async (item: any) => {
-      const selectedData = await def.backend.onSelect(item);
-      if (!selectedData) return;
+      const action = await def.backend.onSelect(item);
+      if (!action) return;
 
-      const { action, path } = selectedData;
-      switch (action) {
+      switch (action.action) {
         case "openFile": {
-          if (!fs.existsSync(path)) {
-            await vscode.window.showErrorMessage(`Code Telescope: file not found\n${path}`);
-            break;
+          if (!fs.existsSync(action.path)) {
+            await vscode.window.showErrorMessage(`File not found: ${action.path}`);
+            return;
           }
-          await new WorkspaceFileFinder().onSelect(path);
+          const doc = await vscode.workspace.openTextDocument(action.path);
+          const editor = await vscode.window.showTextDocument(doc);
+          if (action.line !== undefined) {
+            const pos = new vscode.Position(action.line, 0);
+            editor.selection = new vscode.Selection(pos, pos);
+            editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+          }
           break;
         }
-        case "none": {
+        case "openUrl":
+          await vscode.env.openExternal(vscode.Uri.parse(action.url));
+          break;
+        case "copyToClipboard":
+          await vscode.env.clipboard.writeText(action.text);
+          vscode.window.showInformationMessage(`Copied: ${action.text}`);
+          break;
+        case "executeCommand":
+          await vscode.commands.executeCommand(action.command, ...(action.args ?? []));
+          break;
+        case "dismiss":
           FuzzyFinderPanelController.instance?.dispose();
           break;
-        }
       }
     };
 

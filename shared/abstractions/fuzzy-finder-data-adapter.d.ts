@@ -1,4 +1,4 @@
-import { DataAdapterType } from "../../../shared/adapters-namespace";
+import { DataAdapterType } from "../adapters-namespace";
 
 /**
  * Defines how a specific finder mode should transform, display and filter data.

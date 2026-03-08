@@ -1,4 +1,4 @@
-import { IFuzzyFinderDataAdapter } from "./abstractions/fuzzy-finder-data-adapter";
+import { IFuzzyFinderDataAdapter } from "../../shared/abstractions/fuzzy-finder-data-adapter";
 import { IPreviewRendererAdapter } from "./abstractions/preview-renderer-adapter";
 
 export class PerformanceLogger {

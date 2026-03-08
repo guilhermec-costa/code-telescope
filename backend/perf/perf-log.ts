@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { IFuzzyFinderProvider } from "../core/abstractions/fuzzy-finder.provider";
+import { IFuzzyFinderProvider } from "../../shared/abstractions/fuzzy-finder.provider";
 import { IWebviewMessageHandler } from "../core/abstractions/webview-message-handler";
 
 interface PerformanceMetrics {

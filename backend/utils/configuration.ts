@@ -130,12 +130,22 @@ const BUILTIN_PROVIDER_META: Record<FuzzyProviderType, ProviderMeta> = {
   },
 };
 
+const EXTERNAL_PROVIDER_PREFIX = "ext.";
+
+function formatExternalName(provider: string): string {
+  // "ext.mycompany.myplugin.issues" → "Issues"
+  const parts = provider.split(".");
+  return capitalize(parts[parts.length - 1]);
+}
+
 export function getProviderTabTitle(provider: FuzzyProviderType): string {
   if (provider.startsWith(Globals.CUSTOM_PROVIDER_PREFIX)) {
     const name = provider.replace(Globals.CUSTOM_PROVIDER_PREFIX, "");
     return `Custom · ${capitalize(name)}`;
   }
-
+  if (provider.startsWith(EXTERNAL_PROVIDER_PREFIX)) {
+    return `${formatExternalName(provider)}`;
+  }
   return BUILTIN_PROVIDER_META[provider].tabTitle;
 }
 
@@ -144,7 +154,9 @@ export function getProviderListTitle(provider: FuzzyProviderType): string {
     const name = provider.replace(Globals.CUSTOM_PROVIDER_PREFIX, "");
     return `${capitalize(name)} Options`;
   }
-
+  if (provider.startsWith(EXTERNAL_PROVIDER_PREFIX)) {
+    return `${formatExternalName(provider)} Options`;
+  }
   return BUILTIN_PROVIDER_META[provider].listTitle;
 }
 
@@ -153,7 +165,9 @@ export function getProviderPreviewTitle(provider: FuzzyProviderType): string {
     const name = provider.replace(Globals.CUSTOM_PROVIDER_PREFIX, "");
     return `${capitalize(name)} Preview`;
   }
-
+  if (provider.startsWith(EXTERNAL_PROVIDER_PREFIX)) {
+    return `${formatExternalName(provider)} Preview`;
+  }
   return BUILTIN_PROVIDER_META[provider].previewTitle;
 }
 
@@ -162,7 +176,9 @@ export function getProviderPromptMessage(provider: FuzzyProviderType): string {
     const name = provider.replace(Globals.CUSTOM_PROVIDER_PREFIX, "");
     return `${capitalize(name)}...`;
   }
-
+  if (provider.startsWith(EXTERNAL_PROVIDER_PREFIX)) {
+    return `${formatExternalName(provider)}...`;
+  }
   return BUILTIN_PROVIDER_META[provider].promptMessage;
 }
 

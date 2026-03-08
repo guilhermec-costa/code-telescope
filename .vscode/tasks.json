@@ -66,6 +66,28 @@
       }
     },
     {
+      "label": "sandbox build",
+      "type": "shell",
+      "command": "cd ${workspaceFolder}/sandbox && npm install && npx tsc -p tsconfig.json",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": "build"
+    },
+    {
+      "label": "sandbox watch",
+      "type": "shell",
+      "command": "cd ${workspaceFolder}/sandbox && npx tsc -watch -p tsconfig.json",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": "$tsc-watch",
+      "group": "build"
+    },
+    {
       "label": "tsc watch",
       "type": "npm",
       "script": "backend:watch",
@@ -76,8 +98,9 @@
       "label": "build all",
       "dependsOn": [
         "tsc watch",
+        "sandbox watch"
       ],
-      "dependsOrder": "sequence"
+      "dependsOrder": "parallel"
     }
   ]
 }

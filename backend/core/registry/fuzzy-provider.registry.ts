@@ -1,7 +1,7 @@
+import { IFuzzyFinderProvider } from "../../../shared/abstractions/fuzzy-finder.provider";
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { Globals } from "../../globals";
 import { withPerformanceLogging } from "../../perf/perf-log";
-import { IFuzzyFinderProvider } from "../abstractions/fuzzy-finder.provider";
 import { FuzzyFinderProvider, getRegisteredFuzzyFinderAdapters } from "../decorators/fuzzy-finder-provider.decorator";
 import { Logger } from "../log";
 
