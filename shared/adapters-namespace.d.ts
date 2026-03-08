@@ -45,7 +45,7 @@ export type DataAdapterType =
   | "fontsAdapter"
   | "extensionsAdapter"
   | "packageDocsAdapter"
-  | `custom.${string}Adapter`
+  | `custom.${string}`
   | `ext.${string}`;
 
 export type PreviewRendererType =

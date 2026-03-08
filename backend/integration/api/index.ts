@@ -9,7 +9,6 @@ import { ExternalFinderRegistry } from "./external-registry";
 
 export function createCodeTelescopeAPI(): CodeTelescopeAPI {
   return {
-    version: "1.0.0",
     registerFinder<TData, TOption>(registration: FinderRegistration<TData, TOption>): vscode.Disposable {
       const { provider } = registration;
       const type = provider.fuzzyAdapterType;

@@ -12,7 +12,6 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
   const api = await telescopeExt.activate();
 
-  console.log(`[Sandbox] Code Telescope API version: ${api.version}`);
   console.log(`[Sandbox] Registered finders: ${api.getRegisteredFinders().join(", ")}`);
 
   const registration: FinderRegistration<string[], string> = {
@@ -41,6 +40,11 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
     dataAdapter: {
       typeName: "ext.sandbox.workspaceFolders",
+      htmlWrapperPreset: "codicon",
+
+      getCodiconName(option) {
+        return "folder";
+      },
 
       parseOptions(data: string[]): string[] {
         return data;
@@ -48,10 +52,6 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
       getSearchText(option: string): string {
         return option;
-      },
-
-      getHtmlWrapper(option: string, highlightedContent: string): string {
-        return `<span class="file-path">${highlightedContent}</span>`;
       },
 
       getSelectionValue(option: string): string {

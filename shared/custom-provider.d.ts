@@ -1,3 +1,5 @@
+import { HtmlWrapperConfig } from "./abstractions/fuzzy-finder-data-adapter";
+import { PreviewRendererType } from "./adapters-namespace";
 import { type PreviewData } from "./extension-webview-protocol";
 
 /**
@@ -9,14 +11,6 @@ import { type PreviewData } from "./extension-webview-protocol";
  * This definition is consumed by the CustomProviderManager, which validates,
  * proxies and registers the provider at runtime.
  *
- * ---
- * Architecture overview:
- *
- * - backend: Runs in the extension process. Responsible for querying data,
- *   handling selection actions and providing preview content.
- *
- * - ui: Runs in the webview. Responsible for adapting raw data into displayable
- *   options and handling UI-specific filtering and rendering logic.
  */
 export interface CustomFinderDefinition {
   /**
@@ -25,8 +19,7 @@ export interface CustomFinderDefinition {
    * Built-in providers use predefined identifiers, while custom providers
    * should use the `custom.*` namespace.
    *
-   * Example:
-   * - "custom.github.issues"
+   * @example "custom.github.issues"
    */
   fuzzyAdapterType: `custom.${string}` | `ext.${string}.${string}`;
 
@@ -41,36 +34,42 @@ export interface CustomFinderDefinition {
   backend: {
     /**
      * Queries and returns the list of selectable options.
-     *
-     * This method is typically called when the fuzzy finder is opened.
+     * Typically called when the fuzzy finder is opened.
      */
     querySelectableOptions: () => Promise<any>;
 
     /**
      * Called when the user selects an item.
-     *
-     * Should return the data to be used by the action and an action identifier.
+     * Should return a SelectAction describing what to do next.
      */
     onSelect: (item: any) => Promise<SelectAction> | void;
 
     /**
      * Returns preview data for the given identifier.
-     *
      * The returned object will be passed to the preview renderer.
      */
     getPreviewData: (identifier: any) => Promise<PreviewData>;
 
-    previewRenderer?: "preview.buffer" | "preview.markdown";
+    /**
+     * Which preview renderer to use.
+     * Defaults to "preview.buffer" (plain text / code).
+     */
+    previewRenderer?: PreviewRendererType;
   };
 
   /**
    * UI adapters executed in the webview.
-   *
-   * This layer adapts raw backend data into UI-friendly representations.
+   * Adapts raw backend data into UI-friendly representations.
    */
   ui: {
     /**
      * Data adapter used to transform and display options in the UI.
+     *
+     * HTML wrapper behavior is configured via HtmlWrapperConfig:
+     * - "file-icon": picks icon from file extension, requires getSearchText to return a path
+     * - "codicon": uses a VS Code codicon, requires getCodiconName
+     * - "simple": plain text, no icon
+     * - no preset: requires getHtmlWrapper function
      */
     dataAdapter: {
       /**
@@ -79,37 +78,17 @@ export interface CustomFinderDefinition {
       parseOptions: (data: any) => any[];
 
       /**
-       * Returns the text displayed for a given option.
-       */
-      getDisplayText: (option: any) => string;
-
-      /**
        * Returns the value used to identify an option when selected.
+       * This value is passed to backend's onSelect.
        */
       getSelectionValue: (option: any) => string;
 
       /**
        * Returns the searchable text for a given option.
-       *
-       * This value is used by the fuzzy engine to perform matching.
-       * If not provided, getDisplayText will be used as fallback.
+       * Used by the fuzzy engine for matching.
        */
       getSearchText: (option: any) => string;
-
-      /**
-       * Wraps the highlighted content with the appropriate HTML structure.
-       *
-       * If not provided, the icon will be extracted from getDisplayText.
-       */
-      getHtmlWrapper?: (option: any, highlightedContent: string) => string;
-
-      /**
-       * Optional custom filter logic for options.
-       *
-       * If provided, it overrides the default fuzzy filtering behavior.
-       */
-      filterOption?: (option: any, query: string) => boolean;
-    };
+    } & HtmlWrapperConfig;
   };
 }
 

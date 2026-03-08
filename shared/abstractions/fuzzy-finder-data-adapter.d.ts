@@ -1,5 +1,13 @@
 import { DataAdapterType } from "../adapters-namespace";
 
+export type HtmlWrapperPreset = "file-icon" | "codicon" | "simple";
+
+export type HtmlWrapperConfig =
+  | { htmlWrapperPreset: "file-icon" }
+  | { htmlWrapperPreset: "codicon"; getCodiconName: (option: any) => string }
+  | { htmlWrapperPreset?: "simple" }
+  | { htmlWrapperPreset?: never; getHtmlWrapper: (option: any, highlightedContent: string) => string };
+
 /**
  * Defines how a specific finder mode should transform, display and filter data.
  */
@@ -49,7 +57,8 @@ export interface IFuzzyFinderDataAdapter<TData = any, TOption = string> {
 
   sortFn?(x1: TOption, x2: TOption): number;
 
+  htmlWrapperPreset?: HtmlWrapperPreset;
   shouldSort?: boolean;
-
   debounceSearchTime?: number;
+  getCodiconName?: (option: any) => string;
 }

@@ -1,4 +1,5 @@
 import { IFuzzyFinderProvider } from "../../../shared/abstractions/fuzzy-finder.provider";
+import { HtmlWrapperPreset } from "../../../shared/abstractions/fuzzy-finder-data-adapter";
 import { Logger } from "../../core/log";
 import { FinderRegistration } from "../../integration/api/api";
 import { serializeFn } from "../../utils/serialization";
@@ -7,9 +8,10 @@ interface SerializedDataAdapter {
   typeName: string;
   parseOptions: string;
   getSearchText: string;
-  getHtmlWrapper: string;
   getSelectionValue: string;
-  filterOption?: string;
+  htmlWrapperPreset: HtmlWrapperPreset | undefined;
+  getHtmlWrapper?: string;
+  getCodiconName?: string;
   sortFn?: string;
   shouldSort?: boolean;
   debounceSearchTime?: number;
@@ -44,13 +46,16 @@ export class ExternalFinderRegistry {
   register<TData, TOption>(registration: FinderRegistration<TData, TOption>): void {
     const { provider, dataAdapter } = registration;
     const type = provider.fuzzyAdapterType;
+    const adapter = dataAdapter as any;
 
     const serializedDataAdapter: SerializedDataAdapter = {
       typeName: dataAdapter.typeName,
       parseOptions: serializeFn(dataAdapter.parseOptions),
       getSearchText: serializeFn(dataAdapter.getSearchText),
-      getHtmlWrapper: serializeFn(dataAdapter.getHtmlWrapper),
       getSelectionValue: serializeFn(dataAdapter.getSelectionValue),
+      htmlWrapperPreset: adapter.htmlWrapperPreset ?? "simple",
+      getHtmlWrapper: adapter.getHtmlWrapper ? serializeFn(adapter.getHtmlWrapper) : undefined,
+      getCodiconName: adapter.getCodiconName ? serializeFn(adapter.getCodiconName) : undefined,
       sortFn: dataAdapter.sortFn ? serializeFn(dataAdapter.sortFn) : undefined,
       calcHlOffsetChars: dataAdapter.calcHlOffsetChars ? serializeFn(dataAdapter.calcHlOffsetChars) : undefined,
       shouldSort: dataAdapter.shouldSort,
