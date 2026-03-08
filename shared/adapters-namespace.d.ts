@@ -53,4 +53,5 @@ export type PreviewRendererType =
   | "preview.branch"
   | "preview.image"
   | "preview.font"
-  | "preview.failed";
+  | "preview.failed"
+  | "preview.none";

@@ -55,6 +55,14 @@ export class PreviewManager {
       : PreviewRendererAdapterRegistry.instance.getAdapter(finderType);
 
     this.clearPreview();
+
+    if (finderType === "preview.none" || data.overridePreviewer === "preview.none") {
+      this.hidePreviewPanel();
+      return;
+    }
+
+    this.showPreviewPanel();
+
     if (!adapter) {
       console.error(`No adapter found for finder type: ${finderType}`);
       console.log("Available adapters:", PreviewRendererAdapterRegistry.instance.getRegisteredTypes());
@@ -68,6 +76,48 @@ export class PreviewManager {
     requestAnimationFrame(() => {
       this.scrollToHighlighted();
     });
+  }
+
+  hidePreviewPanel() {
+    const previewSide = document.getElementById("preview-side");
+    if (previewSide) {
+      previewSide.style.display = "none";
+    }
+    const verticalResizer = document.getElementById("vertical-resizer");
+    if (verticalResizer) {
+      verticalResizer.style.display = "none";
+    }
+    // Classic layout
+    const resultsContainer = document.getElementById("results-container");
+    if (resultsContainer) {
+      resultsContainer.style.width = "100%";
+    }
+    // Ivy layout
+    const searchResults = document.getElementById("search-results");
+    if (searchResults) {
+      searchResults.style.width = "100%";
+    }
+  }
+
+  showPreviewPanel() {
+    const previewSide = document.getElementById("preview-side");
+    if (previewSide) {
+      previewSide.style.display = "";
+    }
+    const verticalResizer = document.getElementById("vertical-resizer");
+    if (verticalResizer) {
+      verticalResizer.style.display = "";
+    }
+    // Classic layout
+    const resultsContainer = document.getElementById("results-container");
+    if (resultsContainer) {
+      resultsContainer.style.width = "";
+    }
+    // Ivy layout
+    const searchResults = document.getElementById("search-results");
+    if (searchResults) {
+      searchResults.style.width = "";
+    }
   }
 
   clearPreview() {
@@ -151,6 +201,15 @@ export class PreviewManager {
     let adapter = PreviewRendererAdapterRegistry.instance.getAdapter(previewAdapterType);
 
     this.clearPreview();
+
+    if (previewAdapterType === "preview.none") {
+      this.hidePreviewPanel();
+      this.chunkStore.reset();
+      return;
+    }
+
+    this.showPreviewPanel();
+
     if (!adapter) {
       console.error(`[PreviewManager] No adapter found for finder type: ${previewAdapterType}`);
       return;
