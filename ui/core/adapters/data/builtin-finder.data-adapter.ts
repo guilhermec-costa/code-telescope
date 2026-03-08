@@ -38,15 +38,4 @@ export class BuiltinFinderDataAdapter implements IFuzzyFinderDataAdapter<Builtin
   getSelectionValue(option: BuiltinFinderOption): string {
     return option.index.toString();
   }
-
-  filterOption(option: BuiltinFinderOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const item = option.item;
-
-    return (
-      item.name.toLowerCase().includes(lowerQuery) ||
-      item.description.toLowerCase().includes(lowerQuery) ||
-      item.type.toLowerCase().includes(lowerQuery)
-    );
-  }
 }

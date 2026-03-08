@@ -45,28 +45,4 @@ describe("WorkspaceTextFinderDataAdapter", () => {
 
     expect(value).toBe("/home/user/project/src/utils/math.ts||3||1");
   });
-
-  it("filters by file path", () => {
-    const option = adapter.parseOptions(data)[0];
-
-    const result = adapter.filterOption(option, "index");
-
-    expect(result).toBe(true);
-  });
-
-  it("filters by preview text", () => {
-    const option = adapter.parseOptions(data)[1];
-
-    const result = adapter.filterOption(option, "sum");
-
-    expect(result).toBe(true);
-  });
-
-  it("returns false when query does not match", () => {
-    const option = adapter.parseOptions(data)[0];
-
-    const result = adapter.filterOption(option, "nonexistent");
-
-    expect(result).toBe(false);
-  });
 });

@@ -40,15 +40,4 @@ export class ExtensionsFinderDataAdapter implements IFuzzyFinderDataAdapter<Exte
   getSelectionValue(option: ExtensionOption): string {
     return option.index.toString();
   }
-
-  filterOption(option: ExtensionOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const ext = option.extension;
-    return (
-      ext.displayName.toLowerCase().includes(lowerQuery) ||
-      ext.id.toLowerCase().includes(lowerQuery) ||
-      ext.publisher.toLowerCase().includes(lowerQuery) ||
-      ext.description.toLowerCase().includes(lowerQuery)
-    );
-  }
 }

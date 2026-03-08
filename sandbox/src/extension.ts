@@ -57,10 +57,6 @@ export async function activate(ctx: vscode.ExtensionContext) {
       getSelectionValue(option: string): string {
         return option;
       },
-
-      filterOption(option: string, query: string): boolean {
-        return option.toLowerCase().includes(query.toLowerCase());
-      },
     },
   };
 

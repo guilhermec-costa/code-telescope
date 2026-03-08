@@ -26,9 +26,4 @@ export class CommitFinderDataAdapter implements IFuzzyFinderDataAdapter<CommitSe
   getSelectionValue(option: CommitSearchInfo): string {
     return option.hash;
   }
-
-  filterOption(option: CommitSearchInfo, query: string): boolean {
-    const searchText = this.getSearchText(option).toLowerCase();
-    return searchText.includes(query.toLowerCase());
-  }
 }

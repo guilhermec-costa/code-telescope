@@ -60,21 +60,4 @@ export class BreakpointsFinderDataAdapter implements IFuzzyFinderDataAdapter<Bre
   getSelectionValue(option: BreakpointOption): string {
     return option.index.toString();
   }
-
-  filterOption(option: BreakpointOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const bp = option.breakpoint;
-
-    const filePath = bp.uri.fsPath.toLowerCase();
-    const fileName = bp.uri.fsPath.split(/[\\/]/).pop()?.toLowerCase() || "";
-
-    return (
-      filePath.includes(lowerQuery) ||
-      fileName.includes(lowerQuery) ||
-      (bp.condition?.toLowerCase().includes(lowerQuery) ?? false) ||
-      (bp.hitCondition?.toLowerCase().includes(lowerQuery) ?? false) ||
-      (bp.logMessage?.toLowerCase().includes(lowerQuery) ?? false) ||
-      `${bp.line + 1}`.includes(lowerQuery)
-    );
-  }
 }

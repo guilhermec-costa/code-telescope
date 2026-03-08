@@ -38,16 +38,4 @@ export class DiagnosticsFinderDataAdapter implements IFuzzyFinderDataAdapter<Dia
   getSelectionValue(option: DiagnosticOption): string {
     return option.index.toString();
   }
-
-  filterOption(option: DiagnosticOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const diag = option.diagnostic;
-
-    return (
-      diag.message.toLowerCase().includes(lowerQuery) ||
-      diag.relativePath.toLowerCase().includes(lowerQuery) ||
-      (diag.source?.toLowerCase().includes(lowerQuery) ?? false) ||
-      (diag.code?.toString().toLowerCase().includes(lowerQuery) ?? false)
-    );
-  }
 }

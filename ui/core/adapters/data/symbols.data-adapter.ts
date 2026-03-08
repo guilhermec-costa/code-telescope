@@ -44,15 +44,4 @@ export class SymbolsFinderDataAdapter
   getSelectionValue(option: WorkspaceSymbolOption): string {
     return option.index.toString();
   }
-
-  filterOption(option: WorkspaceSymbolOption, query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    const symbol = option.symbol;
-
-    return (
-      symbol.name.toLowerCase().includes(lowerQuery) ||
-      (symbol.containerName?.toLowerCase().includes(lowerQuery) ?? false) ||
-      symbol.kindName.toLowerCase().includes(lowerQuery)
-    );
-  }
 }
