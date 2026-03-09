@@ -68,7 +68,7 @@
     {
       "label": "sandbox build",
       "type": "shell",
-      "command": "cd ${workspaceFolder}/sandbox && npm install && npx tsc -p tsconfig.json",
+      "command": "cd ${workspaceFolder}/sandbox && npx tsc -p tsconfig.json",
       "presentation": {
         "reveal": "always",
         "panel": "new"
@@ -99,6 +99,14 @@
       "dependsOn": [
         "tsc watch",
         "sandbox watch"
+      ],
+      "dependsOrder": "parallel"
+    },
+    {
+      "label": "build all prod",
+      "dependsOn": [
+        "backend bundle prod",
+        "sandbox build"
       ],
       "dependsOrder": "parallel"
     }
