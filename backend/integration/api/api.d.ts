@@ -35,36 +35,11 @@ export interface FinderRegistration<TData = any, TOption = any> {
  * ```ts
  * const ext = vscode.extensions.getExtension<CodeTelescopeAPI>("guichina.code-telescope");
  * const api = await ext?.activate();
- *
- * const disposable = api.registerFinder({
- *   provider: {
- *     fuzzyAdapterType: "ext.mycompany.myplugin.issues",
- *     previewAdapterType: "preview.buffer",
- *     dataAdapterType: "ext.mycompany.myplugin.issues",
- *     async querySelectableOptions() { ... },
- *     async onSelect(item) { ... },
- *     async getPreviewData(id) { ... },
- *   },
- *   dataAdapter: {
- *     typeName: "ext.mycompany.myplugin.issues",
- *     parseOptions(data) { ... },
- *     getSearchText(option) { ... },
- *     getHtmlWrapper(option, highlighted) { ... },
- *     getSelectionValue(option) { ... },
- *   }
- * });
- *
- * ctx.subscriptions.push(disposable);
  * ```
  */
 export interface CodeTelescopeAPI {
   /**
    * Registers a finder programmatically using the same interface as built-in finders.
-   *
-   * Unlike `CustomFinderDefinition` (which uses file-based .cjs definitions and
-   * serializes UI functions via eval), this API accepts plain TypeScript objects
-   * with full type safety, closure support, and no serialization overhead.
-   *
    * The returned Disposable unregisters the finder when disposed.
    *
    * @throws If the fuzzyAdapterType is already registered or doesn't use the "ext.*" namespace.
