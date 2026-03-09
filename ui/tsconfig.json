@@ -18,9 +18,7 @@
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "composite": true
+    "resolveJsonModule": true
   },
   "include": [
     "./**/*.ts",
