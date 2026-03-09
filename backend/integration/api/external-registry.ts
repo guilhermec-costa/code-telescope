@@ -25,12 +25,6 @@ interface ExternalFinderEntry {
 
 /**
  * Backend-side registry for externally registered finders.
- *
- * Stores both the provider (used in the extension host) and a serialized
- * version of the dataAdapter (sent to the webview when the finder opens).
- *
- * This mirrors what CustomFinderUiProxy does for .cjs custom finders,
- * but for programmatically registered external finders.
  */
 export class ExternalFinderRegistry {
   private static _instance: ExternalFinderRegistry | null = null;
