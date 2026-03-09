@@ -27,7 +27,7 @@
     "../shared/**/*.ts",
     "../shared/**/*.d.ts",
     "../shared/types/*.d.ts"
-, "../shared/abstractions/fuzzy-finder-data-adapter..dts"  ],
+  ],
   "exclude": [
     "./dist",
     "./tests/*"
