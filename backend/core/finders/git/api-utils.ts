@@ -1,17 +1,23 @@
 import * as vscode from "vscode";
-import { GitExtension } from "../../../@types/git";
+import { execAsync } from "../../../utils/commands";
 
-/**
- * Loads the Git extension and returns its exposed API instance.
- * If the extension is unavailable, `null` is returned.
- */
-export async function getGitApi() {
-  const gitExtension = vscode.extensions.getExtension<GitExtension>("vscode.git");
-  if (!gitExtension) return null;
+export async function getGitRoots() {
+  const folders = vscode.workspace.workspaceFolders ?? [];
 
-  if (!gitExtension.isActive) {
-    await gitExtension.activate();
-  }
+  const results = await Promise.allSettled(
+    folders.map(async (folder) => {
+      const { stdout } = await execAsync("git rev-parse --show-toplevel", { cwd: folder.uri.fsPath });
+      return {
+        path: stdout.trim(),
+        name: folder.name,
+      };
+    }),
+  );
 
-  return gitExtension.exports.getAPI(1);
+  return results.filter((r): r is PromiseFulfilledResult<RepoRoot> => r.status === "fulfilled").map((r) => r.value);
 }
+
+export type RepoRoot = {
+  path: string;
+  name: string;
+};

@@ -1,7 +1,9 @@
 export interface BranchInfo {
   name: string;
-  remote?: string;
+  remote?: boolean;
   current?: boolean;
+  repoName?: string;
+  repoPath: string;
 }
 
 export interface CommitInfo {

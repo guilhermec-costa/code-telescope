@@ -20,10 +20,15 @@ export class CommitFinderDataAdapter implements IFuzzyFinderDataAdapter<CommitSe
   }
 
   getHtmlWrapper(option: CommitSearchInfo, highlightedContent: string): string {
-    return `<i class="codicon codicon-git-commit file-icon"></i><span class="file-path">${highlightedContent}</span>`;
+    const repoTag = option.repoName ? `<span class="sk-repo-tag">${option.repoName}</span>` : "";
+    return `
+      <i class="codicon codicon-git-commit file-icon"></i>
+      <span class="file-path">${highlightedContent}</span>
+      ${repoTag}
+    `;
   }
 
-  getSelectionValue(option: CommitSearchInfo): string {
-    return option.hash;
+  getSelectionValue(option: CommitSearchInfo): CommitSearchInfo {
+    return option;
   }
 }

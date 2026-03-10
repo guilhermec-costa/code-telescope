@@ -1,11 +1,10 @@
 import * as vscode from "vscode";
 import { CommitSearchInfo } from "../../../../shared/exchange/commit-search";
 import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
-import { API } from "../../../@types/git";
 import { execAsync } from "../../../utils/commands";
 import { ExtensionConfigManager } from "../../common/config-manager";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
-import { getGitApi } from "./api-utils";
+import { getGitRoots } from "./api-utils";
 
 @FuzzyFinderAdapter({
   fuzzy: "git.commits",
@@ -15,72 +14,78 @@ import { getGitApi } from "./api-utils";
   description: "Search and view Git commit history",
 })
 export class GitCommitFuzzyFinder implements FuzzyFinderProvider {
-  private gitApi: API | null = null;
+  async onSelect(commit: CommitSearchInfo): Promise<void> {
+    const { repoPath, hash } = commit;
 
-  async onSelect(hash: string): Promise<void> {
-    const repo = this.gitApi?.repositories[0];
-    if (!repo) return;
-
-    const remote = repo.state.remotes[0];
-    const fetchUrl = remote?.fetchUrl ?? remote?.pushUrl;
-
-    if (fetchUrl) {
-      // transforms git@github.com:org/repo.git to https://github.com/org/repo/commit/<hash>
-      const httpsUrl = fetchUrl.replace(/^git@([^:]+):/, "https://$1/").replace(/\.git$/, "");
-
+    try {
+      const { stdout: remoteUrl } = await execAsync("git remote get-url origin", { cwd: repoPath });
+      const httpsUrl = remoteUrl
+        .trim()
+        .replace(/^git@([^:]+):/, "https://$1/")
+        .replace(/\.git$/, "");
       await vscode.env.openExternal(vscode.Uri.parse(`${httpsUrl}/commit/${hash}`));
-    } else {
+    } catch {
       await vscode.env.clipboard.writeText(hash);
       vscode.window.showInformationMessage(`Copied ${hash} to clipboard`);
     }
   }
 
-  private async ensureGitLoading() {
-    if (this.gitApi) return;
-    this.gitApi = await getGitApi();
-  }
-
   async querySelectableOptions(): Promise<CommitSearchInfo[]> {
-    await this.ensureGitLoading();
-    const commits = await this.findCommitsFromCurrentBranch();
-    return commits.map((commit) => ({
-      hash: commit.hash,
-      message: commit.message,
-      author: commit.authorName || "",
-      date: commit.authorDate?.toISOString() || "",
-    }));
-  }
+    const repos = await getGitRoots();
+    if (repos.length === 0) return [];
 
-  public async findCommitsFromCurrentBranch() {
-    if (!this.gitApi) return [];
-    const repo = this.gitApi.repositories[0];
-    if (!repo) return [];
-    const currentBranch = repo.state.HEAD;
-    if (!currentBranch?.name) return [];
-    let log = await repo.log({ maxEntries: 500, range: currentBranch.name, maxParents: 1 });
+    const perRepo = await Promise.allSettled(
+      repos.map(async (repo) => {
+        const { stdout: branch } = await execAsync("git rev-parse --abbrev-ref HEAD", { cwd: repo.path });
+        const currentBranch = branch.trim();
+        if (!currentBranch) return [];
+
+        const { stdout } = await execAsync(
+          `git log ${currentBranch} --max-count=500 --no-merges --format="%H|%s|%an|%aI"`,
+          { cwd: repo.path },
+        );
+
+        return stdout
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => {
+            const [hash, message, author, date] = line.split("|");
+            return {
+              hash,
+              message,
+              author,
+              date,
+              repoName: repos.length > 1 ? repo.name : undefined,
+              repoPath: repo.path,
+            } satisfies CommitSearchInfo;
+          });
+      }),
+    );
+
+    let commits = perRepo
+      .filter((r): r is PromiseFulfilledResult<CommitSearchInfo[]> => r.status === "fulfilled")
+      .flatMap((r) => r.value);
 
     const layout = ExtensionConfigManager.layoutCfg.mode;
     if (layout === "classic") {
-      log = log.reverse();
+      commits = commits.reverse();
     }
-    return log;
+
+    return commits;
   }
 
-  async getPreviewData(hash: string): Promise<TextPreviewData> {
-    await this.ensureGitLoading();
-    if (!this.gitApi) return { kind: "text", content: "" };
-
-    const repo = this.gitApi.repositories[0];
-    if (!repo) return { kind: "text", content: "" };
+  async getPreviewData(commit: CommitSearchInfo): Promise<TextPreviewData> {
+    const { repoPath, hash } = commit;
 
     try {
-      const { stdout } = await execAsync(`git show ${hash} --patch --no-color`, { cwd: repo.rootUri.fsPath });
+      const { stdout } = await execAsync(`git show ${hash} --patch --no-color`, { cwd: repoPath });
       return { content: stdout, kind: "text", language: "diff" };
     } catch (e) {
       if ((e as NodeJS.ErrnoException).code === "ENOENT") {
         return { content: "git not found in PATH.", kind: "text", language: "plaintext" };
       }
-      console.error("Error getting commit diff:", e);
+      console.error("[GitCommitFuzzyFinder] getPreviewData error:", e);
       return { kind: "text", content: "" };
     }
   }

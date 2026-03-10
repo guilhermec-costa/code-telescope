@@ -1,9 +1,9 @@
-import { LayoutCustomPlaceholders } from "../../../../shared/abstractions/fuzzy-finder.provider";
+import * as vscode from "vscode";
 import { BranchInfo, CommitInfo } from "../../../../shared/exchange/branch-search";
 import { PreviewData } from "../../../../shared/extension-webview-protocol";
-import { API, Ref } from "../../../@types/git";
+import { execAsync } from "../../../utils/commands";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
-import { getGitApi } from "./api-utils";
+import { getGitRoots } from "./api-utils";
 
 @FuzzyFinderAdapter({
   fuzzy: "git.branches",
@@ -13,86 +13,84 @@ import { getGitApi } from "./api-utils";
   description: "List and switch between Git branches",
 })
 export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
-  /** Reference to the Git API exported by the official VS Code Git extension. */
-  private gitApi: API | null = null;
-
   constructor(private options: GitBranchFinderOptions = {}) {}
 
-  private async ensureGitLoading() {
-    if (this.gitApi) return;
-    this.gitApi = await getGitApi();
+  async onSelect(branch: BranchInfo): Promise<void> {
+    const { repoPath, name } = branch;
+
+    try {
+      const localName = name.replace(/^remotes\/[^/]+\//, "");
+      await execAsync(`git checkout ${localName}`, { cwd: repoPath });
+    } catch (e) {
+      vscode.window.showErrorMessage(`Failed to checkout branch: ${name}`);
+      console.error("[GitBranchFuzzyFinder] checkout error:", e);
+    }
   }
 
-  onSelect(item: string): void | Promise<void> {
-    throw new Error("Method not implemented.");
-  }
-
-  customPlaceholders(): LayoutCustomPlaceholders {
-    return {
-      layoutCssFilename: "classic.css",
-    };
-  }
-
-  /**
-   * Returns the list of branches to display in the fuzzy finder.
-   */
   async querySelectableOptions(): Promise<BranchInfo[]> {
-    await this.ensureGitLoading();
-    const branches = await this.findBranches();
-    return branches.map((ref) => ({
-      name: ref.name || "",
-      remote: ref.remote,
-      current: false,
-      type: ref.type,
-    }));
-  }
+    const repos = await getGitRoots();
+    if (repos.length === 0) return [];
 
-  /**
-   * Retrieves Git branches from the current repository, separating local
-   * and remote refs. Remote branches are included only when enabled.
-   */
-  public async findBranches() {
-    if (!this.gitApi) return [];
-    const repo = this.gitApi.repositories[0];
-    if (!repo) return [];
+    const includeRemotes = this.options.includeRemotes ?? true;
+    const flag = includeRemotes ? "-a" : "";
 
-    const includeRemotes = this.options?.includeRemotes ?? true;
-    const refs = await repo.getRefs({});
+    const perRepo = await Promise.allSettled(
+      repos.map(async (repo) => {
+        const [branchesResult, headResult] = await Promise.all([
+          execAsync(`git branch ${flag} --format="%(refname:short)"`, { cwd: repo.path }),
+          execAsync("git rev-parse --abbrev-ref HEAD", { cwd: repo.path }),
+        ]);
 
-    const branches = refs.reduce<{ local: Ref[]; remote: Ref[] }>(
-      (acc, branch) => {
-        branch.type == 0 ? acc.local.push(branch) : includeRemotes && acc.remote.push(branch);
-        return acc;
-      },
-      { local: [], remote: [] },
+        const currentBranch = headResult.stdout.trim();
+
+        return branchesResult.stdout
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map(
+            (name): BranchInfo => ({
+              name,
+              repoName: repos.length > 1 ? repo.name : undefined,
+              repoPath: repo.path,
+              remote: name.startsWith("remotes/") || name.includes("/"),
+              current: name === currentBranch,
+            }),
+          );
+      }),
     );
-    return [...branches.local, ...branches.remote];
+
+    return perRepo
+      .filter((r): r is PromiseFulfilledResult<BranchInfo[]> => r.status === "fulfilled")
+      .flatMap((r) => r.value);
   }
 
-  public async findCommitsFromBranch(branch: string) {
-    if (!this.gitApi) return [];
-    const repo = this.gitApi.repositories[0];
-    const log = await repo.log({ refNames: [branch], maxEntries: 50 });
-    return log.map((commit) => ({
-      hash: commit.hash,
-      message: commit.message,
-      author: commit.authorName || "",
-      date: commit.authorDate?.toISOString() || "",
-    }));
+  async getPreviewData(branch: BranchInfo): Promise<PreviewData<CommitInfo[]>> {
+    const { repoPath, name } = branch;
+    const commits = await this.findCommitsFromBranch(name, repoPath);
+    return { content: commits };
   }
 
-  async getPreviewData(branchName: string): Promise<PreviewData<CommitInfo[]>> {
-    await this.ensureGitLoading();
-    const commits = await this.findCommitsFromBranch(branchName);
-    return {
-      content: commits,
-    };
+  public async findCommitsFromBranch(branch: string, cwd: string): Promise<CommitInfo[]> {
+    try {
+      const { stdout } = await execAsync(`git log ${branch} --max-count=50 --no-merges --format="%H|%s|%an|%aI"`, {
+        cwd,
+      });
+
+      return stdout
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((line) => {
+          const [hash, message, author, date] = line.split("|");
+          return { hash, message, author, date };
+        });
+    } catch (e) {
+      console.error("[GitBranchFuzzyFinder] findCommitsFromBranch error:", e);
+      return [];
+    }
   }
 }
 
-/**
- * Configuration options for the VSCodeGitBranchFinder.
- */
 type GitBranchFinderOptions = {
   includeRemotes?: boolean;
 };
