@@ -90,11 +90,6 @@ export interface PreviewCompleteMessage {
   requestId: number;
 }
 
-export interface ResetWebviewMessage {
-  type: "resetWebview";
-  currentProvider: FuzzyProviderType;
-}
-
 export interface RemoveHeavyOptions {
   type: "removeHeavyOptions";
   data: string[];
@@ -230,7 +225,6 @@ export type ToWebviewKindMessage =
   | OptionListMessage
   | InitHighlighter
   | PostQueryhandlerResultMessage
-  | ResetWebviewMessage
   | RemoveHeavyOptions
   | PromiseBridgeResponse
   | GrammarChunkMessage

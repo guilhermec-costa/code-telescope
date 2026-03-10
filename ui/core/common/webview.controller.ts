@@ -83,15 +83,6 @@ export class WebviewController {
         break;
       }
 
-      case "resetWebview": {
-        this.handleResetWebview();
-        if (this.activeProvider !== msg.currentProvider) {
-          this.searchElement.value = "";
-        }
-        WebviewToExtensionMessenger.instance.onDOMReady();
-        break;
-      }
-
       case "optionList": {
         this.handleOptionListMessage(msg);
         break;
@@ -131,15 +122,6 @@ export class WebviewController {
         break;
       }
     }
-  }
-
-  /**
-   * Clears the search input and the preview section.
-   */
-  private handleResetWebview() {
-    this.lastSearchQuery = undefined;
-    PreviewManager.instance.clearPreview();
-    OptionListManager.instance.clearOptions();
   }
 
   /**

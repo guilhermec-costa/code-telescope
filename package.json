@@ -332,34 +332,6 @@
         "configuration": {
             "title": "Code Telescope – Search & Panel Settings",
             "properties": {
-                "codeTelescope.window.closeBehaviorOnSelection": {
-                    "type": "string",
-                    "enum": [
-                        "minimize",
-                        "dispose"
-                    ],
-                    "description": "Defines the window behavior when an option is selected",
-                    "enumDescriptions": [
-                        "Minimize: Keeps the state, making subsequent openings faster.",
-                        "Dispose: Closes the window and reloads everything next time."
-                    ],
-                    "default": "dispose",
-                    "order": 1
-                },
-                "codeTelescope.window.closeBehaviorOnClose": {
-                    "type": "string",
-                    "enum": [
-                        "minimize",
-                        "dispose"
-                    ],
-                    "description": "Defines the window behavior when the user closes the window",
-                    "enumDescriptions": [
-                        "Minimize: Keeps the state for faster reopening.",
-                        "Dispose: Closes and disposes the window, clearing its state."
-                    ],
-                    "default": "dispose",
-                    "order": 2
-                },
                 "codeTelescope.keybindings": {
                     "order": 3,
                     "type": "object",

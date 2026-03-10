@@ -50,11 +50,6 @@ export interface KeybindingConfig {
   promptDelete: string;
 }
 
-export interface WindowConfig {
-  closeBehaviorOnSelection: "minimize" | "dispose";
-  closeBehaviorOnClose: "minimize" | "dispose";
-}
-
 export interface MatchingConfig {
   algorithm: "substring" | "subsequence";
 }

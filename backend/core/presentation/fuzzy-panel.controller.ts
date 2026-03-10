@@ -54,9 +54,7 @@ export class FuzzyFinderPanelController {
         enableScripts: true,
         localResourceRoots: [
           joinPath(Globals.EXTENSION_URI, "ui"),
-          joinPath(Globals.EXTENSION_URI, "ui/dist"),
           joinPath(Globals.EXTENSION_URI, "node_modules/material-icon-theme/icons"),
-          vscode.Uri.joinPath(Globals.EXTENSION_URI, "ui", "dist"),
         ],
       },
     );
@@ -99,15 +97,8 @@ export class FuzzyFinderPanelController {
       return;
     }
 
-    // if the user is trying to reopen the same provider and it supports dynamic search, it can't reset the webview,
-    // so the search state is mantained when the webview is remounted
-    if (this._provider && this._provider.supportsDynamicSearch && this._provider.fuzzyAdapterType === providerType)
-      return;
-
     this.setFuzzyProvider(provider as IFuzzyFinderProvider);
     this.wvPanel.webview.html = await WebviewController.resolveProviderWebviewHtml(this.webview, this._provider);
-
-    await this.emitResetWebviewEvent();
   }
 
   /**
@@ -121,17 +112,6 @@ export class FuzzyFinderPanelController {
 
   public get webview() {
     return this.wvPanel.webview;
-  }
-
-  /**
-   * Sends an event to the Webview instructing it to clear current preview data and current input search
-   */
-  private async emitResetWebviewEvent() {
-    console.log(`[FuzzyPanel] Sending ClearPreview event`);
-    await WebviewController.sendMessage(this.webview, {
-      type: "resetWebview",
-      currentProvider: this.provider.fuzzyAdapterType,
-    });
   }
 
   /**
