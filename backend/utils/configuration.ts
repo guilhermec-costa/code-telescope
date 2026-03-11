@@ -128,6 +128,12 @@ const BUILTIN_PROVIDER_META: Record<FuzzyProviderType, ProviderMeta> = {
     previewTitle: "Font Preview",
     promptMessage: "Fonts...",
   },
+  "workspace.references": {
+    tabTitle: "LSP References",
+    listTitle: "References",
+    previewTitle: "Reference Preview",
+    promptMessage: "References...",
+  },
 };
 
 function formatExternalName(provider: string): string {

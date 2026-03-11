@@ -63,6 +63,8 @@ export interface IFuzzyFinderProvider {
    * It's only called when supportsDynamicSearch is true.
    */
   searchOnDynamicMode?(query: string): Promise<any>;
+
+  onPanelClose?(): Promise<void>;
 }
 
 /**

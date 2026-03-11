@@ -64,6 +64,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerProviderCmd("pkgDocs", () => FuzzyFinderPanelController.setupProvider("workspace.packageDocs"), ctx);
   registerProviderCmd("builtin", () => FuzzyFinderPanelController.setupProvider("builtin.finders"), ctx);
   registerProviderCmd("fontFamily", () => FuzzyFinderPanelController.setupProvider("workspace.fonts"), ctx);
+  registerProviderCmd("lspRefs", () => FuzzyFinderPanelController.setupProvider("workspace.references"), ctx);
   registerProviderCmd(
     "custom",
     async () => {

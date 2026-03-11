@@ -169,14 +169,24 @@
   color: var(--vscode-symbolIcon-variableForeground);
 }
 
-/* Incoming calls */
-.sk-call-incoming {
-  color: var(--vscode-symbolIcon-functionForeground);
+.sk-call-direction {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  font-size: 0.78em;
+  opacity: 0.45;
+  font-style: italic;
 }
 
-/* Outgoing calls */
-.sk-call-outgoing {
-  color: var(--vscode-symbolIcon-methodForeground);
+.sk-call-caller {
+  color: var(--vscode-charts-blue);
+  background: color-mix(in srgb, var(--vscode-charts-blue) 15%, transparent);
+}
+
+.sk-call-callee {
+  color: var(--vscode-charts-green);
+  background: color-mix(in srgb, var(--vscode-charts-green) 15%, transparent);
 }
 
 .sk-symbol-enum,

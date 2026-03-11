@@ -11,5 +11,9 @@ export class OptionSelectedHandler implements IWebviewMessageHandler<"optionSele
     const provider = FuzzyFinderPanelController.instance!.provider;
     FuzzyFinderPanelController.instance!.dispose();
     await provider.onSelect(msg.data);
+
+    // It is important to perform this action after the selection logic completes,
+    // because the selection logic may depend on resources that are cleaned up by onPanelClose.
+    await provider.onPanelClose?.();
   }
 }

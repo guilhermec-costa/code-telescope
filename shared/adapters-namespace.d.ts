@@ -21,6 +21,7 @@ export type BuiltinFuzzyProviderType =
   | "debug.breakpoints"
   | "workspace.fonts"
   | "workspace.packageDocs"
+  | "workspace.references"
   | "workspace.extensions";
 
 export type CustomFuzzyProviderType = `custom.${string}` | `ext.${string}`;
@@ -45,6 +46,7 @@ export type DataAdapterType =
   | "fontsAdapter"
   | "extensionsAdapter"
   | "packageDocsAdapter"
+  | "workspaceReferencesAdapter"
   | `custom.${string}`
   | `ext.${string}`;
 

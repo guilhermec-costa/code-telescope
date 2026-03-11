@@ -41,8 +41,18 @@ export class CallHierarchyFinderDataAdapter
 
   getHtmlWrapper(option: CallHierarchyOption, highlightedContent: string): string {
     const codicon = option.codicon;
-    let directionCodicon = option.call.type === "incoming" ? "call-incoming" : "call-outgoing";
-    return `<i class="codicon codicon-${codicon} file-icon sk-${codicon}"></i><i class="codicon codicon-${directionCodicon} file-icon sk-${codicon}"></i><span class="file-path">${highlightedContent}</span>`;
+    const isIncoming = option.call.type === "incoming";
+    const directionCodicon = isIncoming ? "call-incoming" : "call-outgoing";
+    const directionLabel = isIncoming ? "caller" : "callee";
+
+    return `
+    <i class="codicon codicon-${codicon} file-icon sk-${codicon}"></i>
+    <span class="file-path">${highlightedContent}</span>
+    <span class="sk-call-direction">
+      <i class="codicon codicon-${directionCodicon}"></i>
+      ${directionLabel}
+    </span>
+  `;
   }
 
   getSelectionValue(option: CallHierarchyOption): string {
