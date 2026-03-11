@@ -103,6 +103,7 @@ describe("Extension entrypoint", () => {
       "extensions",
       "fontFamily",
       "pkgDocs",
+      "lspRefs",
       "builtin",
     ];
 

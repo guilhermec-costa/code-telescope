@@ -1,22 +1,18 @@
+import { execAsync } from "@backend/utils/commands";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Ref } from "../../@types/git";
+import { getGitRoots } from "../../core/finders/git/api-utils";
 import { GitBranchFuzzyFinder } from "../../core/finders/git/git-branch.finder";
 
 vi.mock("../../core/finders/git/api-utils", () => ({
-  getGitApi: vi.fn(),
+  getGitRoots: vi.fn(),
+}));
+
+vi.mock("@backend/utils/commands", () => ({
+  execAsync: vi.fn(),
 }));
 
 describe("GitBranchFuzzyFinder", () => {
   let provider: GitBranchFuzzyFinder;
-
-  const gitApiMock = {
-    repositories: [
-      {
-        getRefs: vi.fn(),
-        log: vi.fn(),
-      },
-    ],
-  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -24,6 +20,8 @@ describe("GitBranchFuzzyFinder", () => {
   });
 
   it("returns empty list when git api is null", async () => {
+    vi.mocked(getGitRoots).mockResolvedValueOnce([]);
+
     const finder = new GitBranchFuzzyFinder();
     const result = await finder.querySelectableOptions();
 
@@ -31,12 +29,10 @@ describe("GitBranchFuzzyFinder", () => {
   });
 
   it("includes remote branches when includeRemotes is true", async () => {
-    const refs: Ref[] = [
-      { name: "main", type: 0, remote: false } as any,
-      { name: "origin/dev", type: 1, remote: true } as any,
-    ];
-
-    gitApiMock.repositories[0].getRefs.mockResolvedValueOnce(refs);
+    vi.mocked(getGitRoots).mockResolvedValueOnce([{ path: "/proj", name: "myproject" }]);
+    vi.mocked(execAsync)
+      .mockResolvedValueOnce({ stdout: "main\norigin/dev", stderr: "" })
+      .mockResolvedValueOnce({ stdout: "main", stderr: "" });
 
     const finder = new GitBranchFuzzyFinder({ includeRemotes: true });
     const branches = await finder.querySelectableOptions();
@@ -45,16 +41,10 @@ describe("GitBranchFuzzyFinder", () => {
   });
 
   it("returns commits as preview data", async () => {
-    const commits = [
-      {
-        hash: "abc123",
-        message: "initial commit",
-        authorName: "Gui",
-        authorDate: new Date("2024-01-01"),
-      },
-    ];
-
-    gitApiMock.repositories[0].log.mockResolvedValueOnce(commits);
+    vi.mocked(execAsync).mockResolvedValueOnce({
+      stdout: "abc123|initial commit|Gui|2024-01-01",
+      stderr: "",
+    });
 
     const preview = await provider.getPreviewData({
       name: "main",
