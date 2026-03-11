@@ -1,8 +1,6 @@
 import extToIcon from "../config/ext-to-icon-name.json";
+import extToLangId from "../config/ext-to-langid.json";
 
-/**
- * Browser-safe path utilities
- */
 function extname(filePath: string): string {
   const lastDot = filePath.lastIndexOf(".");
   const lastSlash = Math.max(filePath.lastIndexOf("/"), filePath.lastIndexOf("\\"));
@@ -68,6 +66,10 @@ export function resolvePathExt(filePath: string): string {
     return "c";
   }
 
+  if (ext === "sh") {
+    return "ps1";
+  }
+
   return ext !== "" ? ext : "txt";
 }
 
@@ -89,4 +91,9 @@ export function getSvgIconUrl(filePath: string): string {
   const url = `./vendor/material-icons/${language}.svg`;
   svgIconUrlCache.set(language, url);
   return url;
+}
+
+export function getLanguageIdForFile(filePath: string): string {
+  const ext = extname(filePath).toLowerCase();
+  return (extToLangId as Record<string, string>)[ext] || "plaintext";
 }

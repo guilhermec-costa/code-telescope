@@ -8,5 +8,4 @@ export interface RecentFileData {
 export interface RecentFilesFinderData {
   files: RecentFileData[];
   displayTexts: string[];
-  svgIconUrls: string[];
 }

@@ -14,5 +14,4 @@ export interface HarpoonData {
 export interface HarpoonFinderData {
   marks: HarpoonMark[];
   displayTexts: string[];
-  svgIconUrls: string[];
 }

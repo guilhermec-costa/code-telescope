@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { CallHierarchyData, CallHierarchyFinderData } from "../../../shared/exchange/call-hierarchy";
 import { TextPreviewData } from "../../../shared/extension-webview-protocol";
-import { getLanguageIdForFile } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
 import { FileReader } from "../common/file-reader";
 import { PreContextManager } from "../common/pre-context";
@@ -77,7 +76,6 @@ export class CallHierarchyFinder implements FuzzyFinderProvider {
       return {
         content: "No call selected",
         kind: "text",
-        language: "plaintext",
       };
     }
 
@@ -88,8 +86,8 @@ export class CallHierarchyFinder implements FuzzyFinderProvider {
     return {
       content: content as string,
       kind: "text",
-      language: getLanguageIdForFile(filePath),
       metadata: {
+        filePath,
         highlightLine,
       },
     };

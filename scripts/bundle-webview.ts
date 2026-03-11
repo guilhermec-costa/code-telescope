@@ -2,7 +2,7 @@ import chokidar from "chokidar";
 import esbuild, { type Plugin } from "esbuild";
 import fs from "fs";
 import path from "path";
-import extToLang from "../backend/config/ext-to-icon-name.json";
+import extToLang from "../ui/config/ext-to-icon-name.json";
 import { decoratorsPlugin } from "./decorators-plugin";
 
 const args = process.argv.slice(2);

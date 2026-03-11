@@ -1,10 +1,6 @@
 import path from "path";
 import * as vscode from "vscode";
 import { PreviewRendererType } from "../../shared/adapters-namespace";
-import extToIcon from "../config/ext-to-icon-name.json";
-import extTolangId from "../config/ext-to-langid.json";
-import { FuzzyFinderPanelController } from "../core/presentation/fuzzy-panel.controller";
-import { Globals } from "../globals";
 
 export function joinPath(baseUri: vscode.Uri, ...paths: string[]): vscode.Uri {
   return vscode.Uri.joinPath(baseUri, ...paths);
@@ -51,33 +47,6 @@ export function resolvePathExt(_path: string) {
   }
 
   return ext !== "" ? ext : "txt";
-}
-
-export function getIconNameFromPath(path: string): string {
-  const ext = resolvePathExt(path).toLowerCase();
-  return (extToIcon as any)[ext] ?? "file";
-}
-
-const svgIconUrlCache = new Map<string, string>();
-
-export function getSvgIconUrl(filePath: string) {
-  const language = getIconNameFromPath(filePath);
-
-  if (svgIconUrlCache.has(language)) {
-    return svgIconUrlCache.get(language)!;
-  }
-
-  const svgPath = joinPath(Globals.EXTENSION_URI, "ui", "dist", "vendor", "material-icons", `${language}.svg`);
-  const wv = FuzzyFinderPanelController.instance?.webview!;
-  const url = wv.asWebviewUri(svgPath).toString();
-
-  svgIconUrlCache.set(language, url);
-  return url;
-}
-
-export function getLanguageIdForFile(filePath: string): string {
-  const ext = path.extname(filePath).toLowerCase();
-  return (extTolangId as Record<string, string>)[ext] || "plaintext";
 }
 
 export function formatBytes(bytes: number): string {

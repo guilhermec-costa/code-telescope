@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { execCmd } from "../../utils/commands";
-import { getLanguageIdForFile } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
 import { FileReader } from "../common/file-reader";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
@@ -73,7 +72,6 @@ export class WorkspaceSymbolsFinder implements FuzzyFinderProvider {
     if (!selected) {
       return {
         content: "No symbol selected",
-        language: "plaintext",
         kind: "text",
       };
     }
@@ -86,8 +84,8 @@ export class WorkspaceSymbolsFinder implements FuzzyFinderProvider {
     return {
       content: content as string,
       kind: "text",
-      language: getLanguageIdForFile(filePath),
       metadata: {
+        filePath,
         highlightLine,
       },
     };

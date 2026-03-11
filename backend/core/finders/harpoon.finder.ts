@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 import { HarpoonFinderData } from "../../../shared/exchange/harpoon";
 import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { HarpoonOrchestrator } from "../../harpoon/orchestrator";
-import { getLanguageIdForFile, getSvgIconUrl } from "../../utils/files";
 import { FileReader } from "../common/file-reader";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
@@ -35,7 +34,7 @@ export class HarpoonProvider implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<HarpoonFinderData> {
     const marks = this.getManager().getMarks();
 
-    const { displayTexts, svgIconUrls } = marks.reduce<{ displayTexts: string[]; svgIconUrls: string[] }>(
+    const { displayTexts } = marks.reduce<{ displayTexts: string[] }>(
       (result, mark, idx) => {
         result.displayTexts;
         const relativePath = vscode.workspace.asRelativePath(mark.uri);
@@ -45,16 +44,14 @@ export class HarpoonProvider implements FuzzyFinderProvider {
         const text = `${indexDisplay} ${relativePath}${position}${label}`;
 
         result.displayTexts.push(text);
-        result.svgIconUrls.push(getSvgIconUrl(mark.uri.fsPath));
         return result;
       },
-      { displayTexts: [], svgIconUrls: [] },
+      { displayTexts: [] },
     );
 
     return {
       marks: [...marks],
       displayTexts,
-      svgIconUrls,
     };
   }
 
@@ -72,7 +69,6 @@ export class HarpoonProvider implements FuzzyFinderProvider {
       return {
         content: "No mark selected",
         kind: "text",
-        language: "plaintext",
       };
     }
 
@@ -85,14 +81,15 @@ export class HarpoonProvider implements FuzzyFinderProvider {
       return {
         content: content as string,
         kind: "text",
-        language: getLanguageIdForFile(filePath),
-        metadata: highlightLine !== undefined ? { highlightLine } : undefined,
+        metadata: {
+          filePath,
+          ...(highlightLine !== undefined ? { highlightLine } : {}),
+        },
       };
     } catch (error) {
       return {
         content: `Error loading file: ${error}`,
         kind: "text",
-        language: "plaintext",
       };
     }
   }

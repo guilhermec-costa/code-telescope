@@ -1,10 +1,6 @@
 import { DiagnosticsFinder } from "@backend/core/finders/diagnostics.finder";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@backend/utils/files", () => ({
-  getLanguageIdForFile: vi.fn().mockReturnValue("typescript"),
-}));
-
 vi.mock("@backend/core/common/file-reader", () => ({
   FileReader: {
     read: vi.fn().mockResolvedValue("file content"),

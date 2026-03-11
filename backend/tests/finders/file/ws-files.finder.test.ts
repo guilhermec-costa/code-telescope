@@ -20,7 +20,6 @@ vi.mock("@backend/config/exclude-patterns", () => ({
 
 vi.mock("@backend/utils/files", () => ({
   resolvePathExt: vi.fn().mockReturnValue("ts"),
-  getLanguageIdForFile: vi.fn().mockReturnValue("typescript"),
 }));
 
 vi.mock("@backend/core/common/file-reader", () => ({

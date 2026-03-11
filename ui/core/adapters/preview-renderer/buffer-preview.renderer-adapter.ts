@@ -3,6 +3,7 @@ import { PreviewRendererType } from "../../../../shared/adapters-namespace";
 import { PreviewManagerConfig } from "../../../../shared/exchange/extension-config";
 import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
 import { toInnerHTML } from "../../../utils/html";
+import { getLanguageIdForFile } from "../../../utils/icon";
 import { IPreviewRendererAdapter } from "../../abstractions/preview-renderer-adapter";
 import { OptionListManager } from "../../common/option-list-manager";
 import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapter.decorator";
@@ -187,6 +188,12 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
     let finalLanguageId = "plaintext";
     if (language) {
       const langLoadResult = await HighlighterManager.loadLanguageIfNeeded(language);
+      if (langLoadResult.ok) {
+        finalLanguageId = langLoadResult.value.grammar.name;
+      }
+    } else if (metadata?.filePath) {
+      const detectedLanguage = getLanguageIdForFile(metadata.filePath);
+      const langLoadResult = await HighlighterManager.loadLanguageIfNeeded(detectedLanguage);
       if (langLoadResult.ok) {
         finalLanguageId = langLoadResult.value.grammar.name;
       }

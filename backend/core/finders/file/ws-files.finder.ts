@@ -6,7 +6,7 @@ import { ImagePreviewData, TextPreviewData } from "../../../../shared/extension-
 import { DEFAULT_EXCLUDE_PATTERNS } from "../../../config/exclude-patterns";
 import { Globals } from "../../../globals";
 import { execCmd } from "../../../utils/commands";
-import { getLanguageIdForFile, resolvePathExt } from "../../../utils/files";
+import { resolvePathExt } from "../../../utils/files";
 import { ChunkableProvider } from "../../abstractions/chunkable-provider";
 import { ExtensionConfigManager } from "../../common/config-manager";
 import { FileReader } from "../../common/file-reader";
@@ -157,7 +157,7 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
 
   async getPreviewData(identifier: string): Promise<TextPreviewData | ImagePreviewData> {
     const ext = resolvePathExt(identifier);
-    const isImg = ["jpg", "jpeg", "png", "webp", "gif"].includes(ext);
+    const isImg = ["jpg", "jpeg", "png", "webp", "gif", "svg"].includes(ext);
 
     const content = await FileReader.read(identifier);
 
@@ -165,18 +165,18 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
       return {
         content: {
           buffer: content as Uint8Array,
-          mimeType: `image/${ext === "jpg" ? "jpeg" : ext}`,
+          mimeType: ext === "jpg" ? "image/jpeg" : ext === "svg" ? "image/svg+xml" : `image/${ext}`,
         },
         kind: "image",
-        language: getLanguageIdForFile(identifier),
         overridePreviewer: "preview.image",
       };
     }
     return {
       kind: "text",
       content: content as string,
-      language: getLanguageIdForFile(identifier),
-      overridePreviewer: this.casted.previewAdapterType,
+      metadata: {
+        filePath: identifier,
+      },
     };
   }
 

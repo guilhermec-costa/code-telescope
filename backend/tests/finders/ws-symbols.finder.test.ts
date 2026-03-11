@@ -2,10 +2,6 @@ import { WorkspaceSymbolsFinder } from "@backend/core/finders/ws-symbols.finder"
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { execCmd } from "../../utils/commands";
 
-vi.mock("@backend/utils/files", () => ({
-  getLanguageIdForFile: vi.fn().mockReturnValue("typescript"),
-}));
-
 vi.mock("@backend/utils/symbol", () => ({
   getSymbolCodicon: vi.fn().mockReturnValue("symbol-method"),
 }));
@@ -57,7 +53,7 @@ describe("WorkspaceSymbolsFinder", () => {
       const result = await finder.getPreviewData("999");
 
       expect(result.content).toBe("No symbol selected");
-      expect(result.language).toBe("plaintext");
+      expect(result.kind).toBe("text");
     });
   });
 });

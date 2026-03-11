@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { TextPreviewData } from "../../../shared/extension-webview-protocol";
 import { execCmd } from "../../utils/commands";
-import { getLanguageIdForFile } from "../../utils/files";
 import { getSymbolCodicon } from "../../utils/symbol";
 import { FileReader } from "../common/file-reader";
 import { PreContextManager } from "../common/pre-context";
@@ -82,7 +81,6 @@ export class DocumentSymbolsFinder implements FuzzyFinderProvider {
       return {
         content: "No symbol selected",
         kind: "text",
-        language: "plaintext",
       };
     }
 
@@ -93,8 +91,8 @@ export class DocumentSymbolsFinder implements FuzzyFinderProvider {
     return {
       content: content as string,
       kind: "text",
-      language: getLanguageIdForFile(filePath),
       metadata: {
+        filePath,
         highlightLine,
       },
     };

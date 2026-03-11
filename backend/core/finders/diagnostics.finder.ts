@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import { DiagnosticData, DiagnosticsFinderData } from "../../../shared/exchange/diagnostics";
 import { TextPreviewData } from "../../../shared/extension-webview-protocol";
-import { getLanguageIdForFile } from "../../utils/files";
 import { FileReader } from "../common/file-reader";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
@@ -72,7 +71,6 @@ export class DiagnosticsFinder implements FuzzyFinderProvider {
       return {
         content: "No diagnostic selected",
         kind: "text",
-        language: "plaintext",
       };
     }
 
@@ -84,8 +82,8 @@ export class DiagnosticsFinder implements FuzzyFinderProvider {
     return {
       content: content as string,
       kind: "text",
-      language: getLanguageIdForFile(filePath),
       metadata: {
+        filePath,
         highlightLine,
       },
     };

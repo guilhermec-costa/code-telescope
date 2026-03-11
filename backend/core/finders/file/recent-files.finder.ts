@@ -4,7 +4,6 @@ import { RecentFileData, RecentFilesFinderData } from "../../../../shared/exchan
 import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
 import { Globals } from "../../../globals";
 import { execCmd } from "../../../utils/commands";
-import { getLanguageIdForFile, getSvgIconUrl } from "../../../utils/files";
 import { FileReader } from "../../common/file-reader";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
 
@@ -24,19 +23,17 @@ export class RecentFilesFinder implements FuzzyFinderProvider {
   async querySelectableOptions(): Promise<RecentFilesFinderData> {
     const files = await this.getRecentFiles();
 
-    const { displayTexts, svgIconUrls } = files.reduce<{ displayTexts: string[]; svgIconUrls: string[] }>(
+    const { displayTexts } = files.reduce<{ displayTexts: string[] }>(
       (acc, f) => {
         acc.displayTexts.push(f.relativePath.padEnd(50));
-        acc.svgIconUrls.push(getSvgIconUrl(f.path));
         return acc;
       },
-      { displayTexts: [], svgIconUrls: [] },
+      { displayTexts: [] },
     );
 
     return {
       files,
       displayTexts,
-      svgIconUrls,
     };
   }
 
@@ -51,7 +48,9 @@ export class RecentFilesFinder implements FuzzyFinderProvider {
     return {
       content: content as string,
       kind: "text",
-      language: getLanguageIdForFile(path),
+      metadata: {
+        filePath: path,
+      },
     };
   }
 

@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
-import { getLanguageIdForFile } from "../../../utils/files";
 import { ChunkableProvider } from "../../abstractions/chunkable-provider";
 import { FileReader } from "../../common/file-reader";
 import { RipgrepTextFinder } from "../../common/rg/rg-text-finder";
@@ -115,7 +114,6 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, Chunkab
 
       return {
         content: content as string,
-        language: getLanguageIdForFile(filePath),
         kind: "text",
         metadata: {
           filePath,
@@ -126,7 +124,6 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, Chunkab
     } catch {
       return {
         content: "Error loading file",
-        language: "text",
         kind: "text",
         metadata: {},
       };

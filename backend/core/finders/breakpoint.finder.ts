@@ -1,7 +1,6 @@
 import { BreakpointData, BreakpointsFinderData } from "@shared/exchange/breakpoint";
 import * as vscode from "vscode";
 import { TextPreviewData } from "../../../shared/extension-webview-protocol";
-import { getLanguageIdForFile } from "../../utils/files";
 import { FileReader } from "../common/file-reader";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-finder-provider.decorator";
 
@@ -77,7 +76,6 @@ export class BreakpointsFinder implements FuzzyFinderProvider {
       return {
         content: "No breakpoint selected",
         kind: "text",
-        language: "plaintext",
       };
     }
 
@@ -90,8 +88,8 @@ export class BreakpointsFinder implements FuzzyFinderProvider {
       return {
         content: content as string,
         kind: "text",
-        language: getLanguageIdForFile(filePath),
         metadata: {
+          filePath,
           highlightLine,
         },
       };
@@ -99,7 +97,6 @@ export class BreakpointsFinder implements FuzzyFinderProvider {
       return {
         content: `Error loading file: ${error}`,
         kind: "text",
-        language: "plaintext",
       };
     }
   }

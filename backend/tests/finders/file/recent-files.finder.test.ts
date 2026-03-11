@@ -5,7 +5,6 @@ import { execCmd } from "../../../utils/commands";
 
 vi.mock("@backend/utils/files", () => ({
   getSvgIconUrl: vi.fn().mockReturnValue("svg://file"),
-  getLanguageIdForFile: vi.fn().mockReturnValue("typescript"),
 }));
 
 vi.mock("@backend/core/common/file-reader", () => ({
