@@ -124,9 +124,20 @@ export class HighlighterManager {
   private static async registerLanguage(lang: LanguageGrammar): AsyncResult<LanguageGrammar> {
     const t0 = performance.now();
     try {
+      for (const support of lang.supportGrammars ?? []) {
+        try {
+          await this.highlighter.loadLanguage({
+            ...support.grammar,
+            name: support.scopeName,
+            scopeName: support.scopeName,
+          });
+        } catch (e) {}
+      }
+
       await this.highlighter.loadLanguage({
         ...lang.grammar,
-        name: lang.grammar.name,
+        name: lang.id,
+        aliases: [lang.grammar.name],
         scopeName: lang.scopeName,
       });
 

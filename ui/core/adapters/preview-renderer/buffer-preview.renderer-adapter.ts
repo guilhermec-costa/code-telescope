@@ -12,7 +12,7 @@ import { HighlighterManager } from "../../render/highlighter-manager";
 
 const CHUNK_SIZE = 30;
 const SCROLL_THRESHOLD = 300;
-const MAX_LINE_LENGTH = 200;
+const MAX_LINE_LENGTH = 300;
 const TRUNCATION_SUFFIX = "...";
 const INITIAL_CHUNKS_TO_LOAD = 1;
 const MAX_CACHE_SIZE = 5000;
@@ -147,6 +147,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
   private isRendering = false;
   private lineParser?: LazyLineParser;
   private abortController?: AbortController;
+  private grammarStateCache = new Map<string, Map<number, GrammarState>>();
   private grammarStates = new Map<number, GrammarState>();
 
   constructor(private highlighter: SyntaxHighlighter) {}
@@ -189,13 +190,13 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
     if (language) {
       const langLoadResult = await HighlighterManager.loadLanguageIfNeeded(language);
       if (langLoadResult.ok) {
-        finalLanguageId = langLoadResult.value.grammar.name;
+        finalLanguageId = langLoadResult.value.id;
       }
     } else if (metadata?.filePath) {
       const detectedLanguage = getLanguageIdForFile(metadata.filePath);
       const langLoadResult = await HighlighterManager.loadLanguageIfNeeded(detectedLanguage);
       if (langLoadResult.ok) {
-        finalLanguageId = langLoadResult.value.grammar.name;
+        finalLanguageId = langLoadResult.value.id;
       }
     }
 
@@ -221,6 +222,54 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
       }
     } catch {}
 
+    const cacheKey = metadata?.filePath ?? language ?? "unknown";
+    const cachedStates = this.grammarStateCache.get(cacheKey);
+    if (cachedStates) {
+      this.grammarStates = new Map(cachedStates);
+    }
+
+    const splitLines = !this.lineParser && initialChunk > 0 && !cachedStates ? content.split("\n") : null;
+
+    const getChunkText = (start: number, end: number): string => {
+      if (this.lineParser) return this.lineParser.getLines(start, end).join("\n");
+      const lines = splitLines ?? content.split("\n");
+      return lines.slice(start, end).map(truncateLine).join("\n");
+    };
+
+    const BATCH_SIZE = 10;
+
+    // returns true if completed fully, false if aborted mid-way
+    const warmupChunks = async (): Promise<boolean> => {
+      for (let i = 0; i < initialChunk; i += BATCH_SIZE) {
+        if (this.abortController?.signal.aborted) return false;
+
+        const batchEnd = Math.min(i + BATCH_SIZE, initialChunk);
+        for (let j = i; j < batchEnd; j++) {
+          if (this.grammarStates.has(j)) continue;
+
+          const start = j * CHUNK_SIZE;
+          const end = Math.min(start + CHUNK_SIZE, totalLines);
+          const chunkText = getChunkText(start, end);
+          const prevState = this.grammarStates.get(j - 1);
+
+          try {
+            const result = this.highlighter.codeToTokens(chunkText, {
+              lang: finalLanguageId,
+              theme: finalThemeName,
+              ...(prevState ? { grammarState: prevState } : {}),
+            });
+            if (result.grammarState) {
+              this.grammarStates.set(j, result.grammarState as GrammarState);
+            }
+          } catch {}
+        }
+
+        await new Promise((r) => setTimeout(r, 0));
+      }
+
+      return true;
+    };
+
     const renderChunk = async (chunkIndex: number, position: "append" | "prepend" = "append"): Promise<void> => {
       if (OptionListManager.instance.isEmpty()) {
         this.abortController.abort();
@@ -242,15 +291,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
 
       const start = chunkIndex * CHUNK_SIZE;
       const end = Math.min(start + CHUNK_SIZE, totalLines);
-
-      let chunkText: string;
-      if (this.lineParser) {
-        chunkText = this.lineParser.getLines(start, end).join("\n");
-      } else {
-        const lines = content.split("\n");
-        chunkText = lines.slice(start, end).map(truncateLine).join("\n");
-      }
-
+      const chunkText = getChunkText(start, end);
       const prevGrammarState = this.grammarStates.get(chunkIndex - 1);
 
       let lineTokens: ThemedToken[][];
@@ -262,6 +303,8 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
           theme: finalThemeName,
           ...(prevGrammarState ? { grammarState: prevGrammarState } : {}),
         });
+
+        console.log("Raw tokens:", JSON.stringify(result.tokens[0]));
 
         lineTokens = result.tokens as ThemedToken[][];
         nextGrammarState = result.grammarState as GrammarState | undefined;
@@ -296,7 +339,24 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
       this.insertChunkIntoDOM(previewElement, html, chunkIndex, position);
     };
 
-    await renderChunk(initialChunk);
+    renderChunk(initialChunk);
+
+    if (initialChunk > 0 && !cachedStates) {
+      warmupChunks().then((completed) => {
+        if (!completed || this.abortController?.signal.aborted) return;
+
+        this.grammarStateCache.set(cacheKey, new Map(this.grammarStates));
+
+        this.loadedChunks.delete(initialChunk);
+        this.chunkHtmlCache.delete(initialChunk);
+        renderChunk(initialChunk).then(() => {
+          if (metadata?.highlightLine !== undefined) {
+            const highlightedLine = previewElement.querySelector(".line.highlighted");
+            highlightedLine?.scrollIntoView({ block: "center", behavior: "instant" });
+          }
+        });
+      });
+    }
 
     const adjacentPromises: Promise<void>[] = [];
     for (let i = 1; i <= INITIAL_CHUNKS_TO_LOAD; i++) {
@@ -306,8 +366,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
 
     Promise.all(adjacentPromises).then(() => {
       if (this.abortController?.signal.aborted) return;
-
-      if (metadata?.highlightLine !== undefined) {
+      if (metadata?.highlightLine !== undefined && (initialChunk === 0 || !!cachedStates)) {
         const highlightedLine = previewElement.querySelector(".line.highlighted");
         highlightedLine?.scrollIntoView({ block: "center", behavior: "instant" });
       }

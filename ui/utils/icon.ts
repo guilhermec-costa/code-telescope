@@ -16,59 +16,20 @@ function basename(filePath: string): string {
 /**
  * Resolve file extension considering special filenames
  */
-export function resolvePathExt(filePath: string): string {
-  let ext = extname(filePath).slice(1).toLowerCase();
+export function resolveIconKey(filePath: string): string {
+  const ext = extname(filePath).slice(1).toLowerCase();
   const base = basename(filePath).toLowerCase();
 
-  // Special files
-  if (base === "dockerfile" || base.startsWith("dockerfile.")) {
-    return "docker";
-  }
-
-  if (base === "makefile") {
-    return "makefile";
-  }
-
-  if (base === ".gitignore") {
-    return "txt";
-  }
-
-  if (base === ".gitattributes") {
-    return "gitattributes";
-  }
-
-  if (base === ".gitmodules") {
-    return "gitmodules";
-  }
-
-  if (base === ".env" || base.startsWith(".env.")) {
-    return "env";
-  }
-
-  if (base === ".editorconfig") {
-    return "editorconfig";
-  }
-
-  if (base === ".prettierrc" || base === "prettier.config.js") {
-    return "prettierrc";
-  }
-
-  if (base === ".eslintrc" || base.startsWith(".eslintrc.")) {
-    return "eslintrc";
-  }
-
-  if (base === "package.json") {
-    return "json";
-  }
-
-  // C header treated as C
-  if (ext === "h") {
-    return "c";
-  }
-
-  if (ext === "sh") {
-    return "ps1";
-  }
+  if (base === "readme" || base === "readme.md") return "readme";
+  if (base === "dockerfile" || base.startsWith("dockerfile.")) return "docker";
+  if (base === "makefile" || base.startsWith("makefile.")) return "makefile";
+  if (base === ".gitignore") return "gitignore";
+  if (base === ".gitattributes") return "gitattributes";
+  if (base === ".gitmodules") return "gitmodules";
+  if (base === ".env" || base.startsWith(".env.")) return "env";
+  if (base === ".editorconfig") return "editorconfig";
+  if (base === ".prettierrc" || base === "prettier.config.js") return "prettierrc";
+  if (base === ".eslintrc" || base.startsWith(".eslintrc.")) return "eslintrc";
 
   return ext !== "" ? ext : "txt";
 }
@@ -77,7 +38,8 @@ export function resolvePathExt(filePath: string): string {
  * Resolve icon name from extension mapping
  */
 export function getIconNameFromPath(filePath: string): string {
-  const ext = resolvePathExt(filePath).toLowerCase();
+  const ext = resolveIconKey(filePath).toLowerCase();
+  console.log("Icon key: ", ext);
   return (extToIcon as Record<string, string>)[ext] ?? "file";
 }
 
@@ -94,6 +56,25 @@ export function getSvgIconUrl(filePath: string): string {
 }
 
 export function getLanguageIdForFile(filePath: string): string {
-  const ext = extname(filePath).toLowerCase();
-  return (extToLangId as Record<string, string>)[ext] || "plaintext";
+  const ext = extname(filePath).slice(1).toLowerCase();
+  const base = basename(filePath).toLowerCase();
+
+  if (base === "makefile" || base.startsWith("makefile.")) return "makefile";
+  if (base === "dockerfile" || base.startsWith("dockerfile.")) return "dockerfile";
+  if (base === ".gitignore" || base === ".dockerignore" || base === ".prettierignore") return "ignore";
+  if (base === ".gitattributes") return "ignore";
+  if (base === ".env" || base.startsWith(".env.")) return "dotenv";
+  if (base === ".editorconfig") return "ini";
+  if (base === ".prettierrc") return "json";
+  if (base === ".eslintrc") return "json";
+  if (base === ".babelrc") return "json";
+  if (base === ".npmrc" || base === ".yarnrc") return "ini";
+  if (base === ".bashrc" || base === ".bash_profile" || base === ".zshrc" || base === ".profile") return "shellscript";
+  if (base === "gemfile" || base === "rakefile" || base === "podfile" || base === "vagrantfile") return "ruby";
+  if (base === "cmakelists.txt") return "cmake";
+  if (base === "gradlew") return "shellscript";
+
+  const key = ext ? `.${ext}` : "";
+  console.log("Key: ", key);
+  return (extToLangId as Record<string, string>)[key] || "plaintext";
 }

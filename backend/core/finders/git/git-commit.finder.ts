@@ -40,10 +40,9 @@ export class GitCommitFuzzyFinder implements FuzzyFinderProvider {
         const currentBranch = branch.trim();
         if (!currentBranch) return [];
 
-        const { stdout } = await execAsync(
-          `git log ${currentBranch} --max-count=500 --no-merges --format="%H|%s|%an|%aI"`,
-          { cwd: repo.path },
-        );
+        const { stdout } = await execAsync(`git log ${currentBranch} --no-merges --format="%H|%s|%an|%aI"`, {
+          cwd: repo.path,
+        });
 
         return stdout
           .split("\n")

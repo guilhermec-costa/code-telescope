@@ -11,6 +11,7 @@ export interface LanguageGrammar {
   scopeName: string;
   grammar: any;
   embeddedLangs?: string[];
+  supportGrammars?: { scopeName: string; grammar: any }[];
 }
 
 export interface PostQueryHandlerResult {

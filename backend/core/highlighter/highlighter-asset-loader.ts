@@ -59,16 +59,35 @@ export class HighlighterAssetLoader {
       const matchedGrammar = grammars.find((g: any) => g.language === langId);
       if (!matchedGrammar) continue;
 
+      const isDerivative = matchedGrammar.scopeName?.includes("derivative");
+      const finalGrammar = isDerivative
+        ? (grammars.find((g: any) => g.scopeName?.includes(langId)) ?? matchedGrammar)
+        : matchedGrammar;
+
       try {
-        const grammarUri = vscode.Uri.joinPath(ext.extensionUri, matchedGrammar.path);
+        const grammarUri = vscode.Uri.joinPath(ext.extensionUri, finalGrammar.path);
         const contentBytes = await vscode.workspace.fs.readFile(grammarUri);
         const grammarJson = JsoncParser.parse(new TextDecoder().decode(contentBytes));
 
+        const supportGrammars: { scopeName: string; grammar: any }[] = [];
+        for (const g of grammars) {
+          if (g.language || g === finalGrammar) continue;
+          try {
+            const uri = vscode.Uri.joinPath(ext.extensionUri, g.path);
+            const bytes = await vscode.workspace.fs.readFile(uri);
+            const grammar = JsoncParser.parse(new TextDecoder().decode(bytes));
+            supportGrammars.push({ scopeName: g.scopeName, grammar });
+          } catch (e) {
+            console.error(`[LanguageLoader] Error loading support grammar ${g.scopeName}:`, e);
+          }
+        }
+
         const langInfo: LanguageGrammar = {
           id: langId,
-          scopeName: matchedGrammar.scopeName || grammarJson.scopeName,
+          scopeName: finalGrammar.scopeName || grammarJson.scopeName,
           grammar: grammarJson,
-          embeddedLangs: matchedGrammar.embeddedLanguages,
+          embeddedLangs: finalGrammar.embeddedLanguages,
+          supportGrammars: supportGrammars.length > 0 ? supportGrammars : undefined,
         };
 
         this.langCache.set(langId, langInfo);

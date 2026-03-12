@@ -75,7 +75,10 @@ function copyMaterialIcons() {
     const file = `${iconName}.svg`;
     const srcFile = path.join(src, file);
     const destFile = path.join(dest, file);
-    if (!fs.existsSync(srcFile)) continue;
+    if (!fs.existsSync(srcFile)) {
+      console.log("Missing: ", srcFile);
+      continue;
+    }
     fs.copyFileSync(srcFile, destFile);
     copied++;
   }
