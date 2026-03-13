@@ -36,25 +36,30 @@ export class BreakpointsFinderDataAdapter implements IFuzzyFinderDataAdapter<Bre
 
   getHtmlWrapper(option: BreakpointOption, highlightedContent: string): string {
     const bp = option.breakpoint;
+
     const statusIcon = bp.enabled
-      ? '<i class="codicon codicon-debug-breakpoint file-icon" style="color: #e51400;"></i>'
-      : '<i class="codicon codicon-debug-breakpoint-disabled file-icon" style="color: #848484;"></i>';
+      ? `<i class="codicon codicon-debug-breakpoint file-icon sk-breakpoint-active"></i>`
+      : `<i class="codicon codicon-debug-breakpoint-disabled file-icon sk-breakpoint-disabled"></i>`;
 
-    let badges = "";
-    if (bp.condition) {
-      badges +=
-        '<span class="breakpoint-badge" style="background: #0e639c; padding: 2px 6px; border-radius: 3px; margin-left: 8px; font-size: 0.9em;">C</span>';
-    }
-    if (bp.hitCondition) {
-      badges +=
-        '<span class="breakpoint-badge" style="background: #8f4e00; padding: 2px 6px; border-radius: 3px; margin-left: 4px; font-size: 0.9em;">H</span>';
-    }
-    if (bp.logMessage) {
-      badges +=
-        '<span class="breakpoint-badge" style="background: #1a7f37; padding: 2px 6px; border-radius: 3px; margin-left: 4px; font-size: 0.9em;">L</span>';
-    }
+    const conditionBadge = bp.condition
+      ? `<span class="sk-bp-badge sk-bp-badge--condition" title="Condition: ${bp.condition}">C</span>`
+      : "";
+    const hitBadge = bp.hitCondition
+      ? `<span class="sk-bp-badge sk-bp-badge--hit" title="Hit condition: ${bp.hitCondition}">H</span>`
+      : "";
+    const logBadge = bp.logMessage
+      ? `<span class="sk-bp-badge sk-bp-badge--log" title="Log: ${bp.logMessage}">L</span>`
+      : "";
 
-    return `${statusIcon}<span class="file-path">${highlightedContent}</span>${badges}`;
+    const disabledAttr = !bp.enabled ? `sk-bp-row--disabled` : "";
+
+    return `
+    ${statusIcon}
+    <span class="file-path ${disabledAttr}">${highlightedContent}</span>
+    <span class="sk-bp-badges">
+      ${conditionBadge}${hitBadge}${logBadge}
+    </span>
+  `;
   }
 
   getSelectionValue(option: BreakpointOption): string {

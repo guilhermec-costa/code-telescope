@@ -320,3 +320,61 @@
   background-color: var(--vscode-editor-background);
   box-shadow: 0 0 0 1px var(--vscode-editorWidget-border);
 }
+
+/* BREAKPOINT STYLES */
+
+.sk-breakpoint-active {
+  color: #e51400;
+}
+
+.sk-breakpoint-disabled {
+  color: #848484;
+}
+
+.sk-bp-row--disabled {
+  opacity: 0.5;
+}
+
+.sk-bp-badges {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+.sk-bp-badge {
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.75em;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.sk-bp-badge--condition {
+  background: #0e639c;
+}
+
+.sk-bp-badge--hit {
+  background: #8f4e00;
+}
+
+.sk-bp-badge--log {
+  background: #1a7f37;
+}
+
+/* THEME STYLES */
+.sk-theme-kind {
+  font-size: 0.75em;
+  opacity: 0.5;
+  font-style: italic;
+  margin-left: 6px;
+}
+
+/* COMMIT STYLES */
+
+.sk-repo-tag {
+  font-size: 0.75em;
+  opacity: 0.45;
+  font-style: italic;
+  flex-shrink: 0;
+  color: var(--vscode-descriptionForeground);
+}

@@ -36,19 +36,19 @@ describe("BranchFinderDataAdapter", () => {
   it("formats html wrapper for current local branch", () => {
     const text = adapter.getHtmlWrapper(branches[0], "* main");
 
-    expect(text).toContain('<i class="codicon codicon-git-branch file-icon sk-git-branch"></i>');
+    expect(text).toContain('<i class="codicon codicon-git-branch file-icon"></i>');
     expect(text).toContain('<span class="file-path">* main</span>');
   });
 
   it("formats html wrapper for non-current local branch", () => {
     const text = adapter.getHtmlWrapper(branches[1], "  develop");
-    expect(text).toContain('<i class="codicon codicon-git-branch file-icon sk-git-branch"></i>');
+    expect(text).toContain('<i class="codicon codicon-git-branch file-icon"></i>');
     expect(text).toContain('<span class="file-path">  develop</span>');
   });
 
   it("formats html wrapper for remote branch", () => {
     const text = adapter.getHtmlWrapper(branches[2], "  feature/login (origin)");
-    expect(text).toContain('<i class="codicon codicon-git-branch file-icon sk-git-branch"></i>');
+    expect(text).toContain('<i class="codicon codicon-cloud file-icon"></i>');
     expect(text).toContain('<span class="file-path">  feature/login (origin)</span>');
   });
 

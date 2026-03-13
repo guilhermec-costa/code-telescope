@@ -20,12 +20,21 @@ export class BranchFinderDataAdapter implements IFuzzyFinderDataAdapter<BranchIn
   }
 
   getHtmlWrapper(option: BranchInfo, highlightedContent: string): string {
+    const isRemote = option.remote;
+    const isCurrent = option.current;
+
+    const branchIcon = isRemote ? "codicon-cloud" : "codicon-git-branch";
+    const currentIndicator = isCurrent
+      ? `<span class="sk-branch-current"><i class="codicon codicon-check"></i></span>`
+      : "";
     const repoTag = option.repoName ? `<span class="sk-repo-tag">${option.repoName}</span>` : "";
+
     return `
-      <i class="codicon codicon-git-branch file-icon sk-git-branch"></i>
-      <span class="file-path">${highlightedContent}</span>
-      ${repoTag}
-    `;
+    <i class="codicon ${branchIcon} file-icon"></i>
+    <span class="file-path">${highlightedContent}</span>
+    ${repoTag}
+    ${currentIndicator}
+  `;
   }
 
   getSelectionValue(option: BranchInfo): BranchInfo {
