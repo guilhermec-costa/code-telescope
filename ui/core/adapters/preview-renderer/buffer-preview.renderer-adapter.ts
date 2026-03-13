@@ -304,8 +304,6 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
           ...(prevGrammarState ? { grammarState: prevGrammarState } : {}),
         });
 
-        console.log("Raw tokens:", JSON.stringify(result.tokens[0]));
-
         lineTokens = result.tokens as ThemedToken[][];
         nextGrammarState = result.grammarState as GrammarState | undefined;
       } catch (err) {

@@ -39,7 +39,6 @@ export function resolveIconKey(filePath: string): string {
  */
 export function getIconNameFromPath(filePath: string): string {
   const ext = resolveIconKey(filePath).toLowerCase();
-  console.log("Icon key: ", ext);
   return (extToIcon as Record<string, string>)[ext] ?? "file";
 }
 
@@ -75,6 +74,5 @@ export function getLanguageIdForFile(filePath: string): string {
   if (base === "gradlew") return "shellscript";
 
   const key = ext ? `.${ext}` : "";
-  console.log("Key: ", key);
   return (extToLangId as Record<string, string>)[key] || "plaintext";
 }

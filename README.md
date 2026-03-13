@@ -14,7 +14,7 @@ Code Telescope brings that same philosophy to VS Code — a single, powerful int
 
 Find files instantly, search across your workspace, explore symbols, browse git branches and commits — all from one unified, consistent experience.
 
-![Code Telescope demo](images/code-telescope.gif)
+![Code Telescope Preview](https://i.imgur.com/TOwbD8x.gif)
 
 ## Architecture Overview
 
