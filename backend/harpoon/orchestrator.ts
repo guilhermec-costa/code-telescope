@@ -57,6 +57,11 @@ export class HarpoonOrchestrator {
     return true;
   }
 
+  public async insertAt(mark: HarpoonMark, index: number): Promise<void> {
+    this.marks.splice(index, 0, mark);
+    await this.persist();
+  }
+
   public async removeFile(index: number): Promise<boolean> {
     if (index < 0 || index >= this.marks.length) {
       vscode.window.showWarningMessage(`Invalid mark index: ${index + 1}`);

@@ -378,3 +378,27 @@
   flex-shrink: 0;
   color: var(--vscode-descriptionForeground);
 }
+
+/* HARPOON STYLES */
+
+.sk-harpoon-index {
+  font-size: 0.78em;
+  color: var(--vscode-gitDecoration-modifiedResourceForeground);
+  opacity: 0.8;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+.sk-harpoon-position {
+  font-size: 0.75em;
+  opacity: 0.45;
+  color: var(--vscode-editorLineNumber-foreground);
+  flex-shrink: 0;
+}
+
+.sk-harpoon-label {
+  font-size: 0.75em;
+  font-style: italic;
+  opacity: 0.5;
+  color: var(--vscode-descriptionForeground);
+}

@@ -1,5 +1,5 @@
-import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { OptionListMessage, ToWebviewKindMessage } from "../../../shared/extension-webview-protocol";
+import { HarpoonKeyPlugin } from "../../plugins/harpoon-key.plugin";
 import { MessageBridge } from "../message-bridge";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { PreviewManager } from "../render/preview-manager";
@@ -14,7 +14,7 @@ import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
 export class WebviewController {
   /** Search input HTML element used for filtering options. */
   private searchElement: HTMLInputElement;
-  private activeProvider: FuzzyProviderType | undefined;
+  private harpoonKeyPlugin: HarpoonKeyPlugin | undefined;
   private previewQueue: Promise<void> = Promise.resolve();
   private lastSearchQuery: string | undefined;
   private currentRequestId: string | undefined;
@@ -137,8 +137,15 @@ export class WebviewController {
 
     if (!adapter) return;
 
-    this.activeProvider = fuzzyProviderType;
     OptionListManager.instance.setAdapter(adapter);
+
+    if (fuzzyProviderType === "harpoon.marks") {
+      OptionListManager.instance.clearOptions();
+      if (!this.harpoonKeyPlugin) {
+        this.harpoonKeyPlugin = new HarpoonKeyPlugin(this.searchElement);
+      }
+    }
+
     const options = adapter.parseOptions(data);
     const isNewSearch = query !== this.lastSearchQuery;
     if (isNewSearch) {

@@ -32,7 +32,7 @@ export class HarpoonFinderDataAdapter implements IFuzzyFinderDataAdapter<Harpoon
   }
 
   getSearchText(option: HarpoonOption): string {
-    return `${option.mark.uri.fsPath} ${option.mark.label || ""}`;
+    return option.displayText;
   }
 
   getHtmlWrapper(option: HarpoonOption, highlightedContent: string): string {

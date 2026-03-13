@@ -30,3 +30,4 @@ import "../presentation/handlers/preview-request.handler";
 import "../presentation/handlers/update-layout-prop.handler";
 import "../presentation/handlers/webview-dom-ready.handler";
 import "../presentation/handlers/promise-bridge-request.handler";
+import "../presentation/handlers/harpoon-action.handler";

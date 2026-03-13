@@ -197,6 +197,12 @@ export interface DynamicSearchMessage {
   requestId: string;
 }
 
+export interface HarpoonActionMessage {
+  type: "harpoonAction";
+  action: "delete" | "paste";
+  index: number;
+}
+
 export interface InitHighlighter {
   type: "highlighterInit";
   data: {
@@ -243,6 +249,7 @@ export type FromWebviewKindMessage =
   | PreviewRequestMessage
   | DynamicSearchMessage
   | OptionSelectedMessage
+  | HarpoonActionMessage
   | HighlighterInitDone
   | PostHandleListMessage
   | PromiseBridgeRequest

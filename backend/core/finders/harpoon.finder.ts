@@ -18,7 +18,7 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../decorators/fuzzy-fin
   description: "Navigate to files marked by Harpoon",
 })
 export class HarpoonProvider implements FuzzyFinderProvider {
-  private static context: vscode.ExtensionContext;
+  public static context: vscode.ExtensionContext;
 
   public static initialize(context: vscode.ExtensionContext): void {
     HarpoonProvider.context = context;

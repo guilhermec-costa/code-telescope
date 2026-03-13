@@ -95,6 +95,14 @@ export class WebviewToExtensionMessenger {
     });
   }
 
+  sendHarpoonAction(action: "delete" | "paste", index: number): void {
+    this.postMessage({
+      type: "harpoonAction",
+      action,
+      index,
+    });
+  }
+
   requestLayoutPropUpdate(data: UpdateLayoutPropMessage["data"]) {
     this.postMessage({
       type: "updateLayoutProp",
