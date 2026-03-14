@@ -12,6 +12,7 @@ export class HarpoonOrchestrator {
 
   private constructor(private context: vscode.ExtensionContext) {
     this.storage = new HarpoonStorage(context);
+    this.load();
   }
 
   public static getInstance(context: vscode.ExtensionContext): HarpoonOrchestrator {
@@ -19,6 +20,10 @@ export class HarpoonOrchestrator {
       HarpoonOrchestrator.instance = new HarpoonOrchestrator(context);
     }
     return HarpoonOrchestrator.instance;
+  }
+
+  private async load(): Promise<void> {
+    this.marks = await this.storage.load();
   }
 
   /**
