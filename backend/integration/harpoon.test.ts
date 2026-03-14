@@ -40,8 +40,6 @@ suite("Harpoon Integration Tests", () => {
         "code-telescope.harpoon.addFile",
         "code-telescope.harpoon.removeCurrentFile",
         "code-telescope.harpoon.clear",
-        "code-telescope.harpoon.editMark",
-        "code-telescope.harpoon.reorderMarks",
         "code-telescope.harpoon.gotoFile1",
         "code-telescope.harpoon.gotoFile2",
         "code-telescope.harpoon.gotoFile3",

@@ -5,15 +5,20 @@ vi.mock("@exodus/bytes", () => ({}));
 
 vi.mock("vscode", () => ({
   Uri: {
-    file: (path: string) => ({ fsPath: path }),
-    joinPath: vi.fn((uri, ...parts) => ({ fsPath: parts.join("/") })),
-    parse: vi.fn((str) => ({ toString: () => str, fsPath: str })),
+    file: (path: string) => ({ fsPath: path, path, toString: () => path }),
+    joinPath: vi.fn((uri, ...parts) => ({
+      fsPath: parts.join("/"),
+      path: parts.join("/"),
+      toString: () => parts.join("/"),
+    })),
+    parse: vi.fn((str) => ({ toString: () => str, fsPath: str, path: str, scheme: "file" })),
   },
   Position: vi.fn(
     class {
-      constructor(line: number, char: number) {
-        return { line, character: char };
-      }
+      constructor(
+        public line: number,
+        public character: number,
+      ) {}
     },
   ),
   RelativePattern: vi.fn(
@@ -51,14 +56,17 @@ vi.mock("vscode", () => ({
   workspace: {
     createFileSystemWatcher: vi.fn(),
     get workspaceFolders() {
-      return [{ uri: { fsPath: "/workspace" } }];
+      return [{ uri: { fsPath: "/workspace", toString: () => "/workspace" } }];
     },
-    asRelativePath: vi.fn(),
+    asRelativePath: vi.fn((path: any) => path.fsPath || path.path || String(path)),
     findFiles: vi.fn(),
     fs: {
       stat: vi.fn(),
-      readFile: vi.fn(),
+      readFile: vi.fn().mockResolvedValue(new TextEncoder().encode("{}")),
       readDirectory: vi.fn(),
+      createDirectory: vi.fn().mockResolvedValue(undefined),
+      writeFile: vi.fn().mockResolvedValue(undefined),
+      delete: vi.fn().mockResolvedValue(undefined),
     },
     onDidChangeConfiguration: vi.fn(),
     getConfiguration: vi.fn().mockReturnValue({

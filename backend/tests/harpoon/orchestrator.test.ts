@@ -17,6 +17,11 @@ describe("HarpoonOrchestrator", () => {
         update: vi.fn(() => Promise.resolve()),
       },
       subscriptions: [],
+      globalStorageUri: {
+        path: "/mock/globalStorage",
+        fsPath: "/mock/globalStorage",
+        toString: () => "/mock/globalStorage",
+      },
     } as any;
 
     manager = HarpoonOrchestrator.getInstance(context);
@@ -240,6 +245,11 @@ describe("HarpoonStorage", () => {
         get: vi.fn(),
         update: vi.fn(() => Promise.resolve()),
       },
+      globalStorageUri: {
+        path: "/mock/globalStorage",
+        fsPath: "/mock/globalStorage",
+        toString: () => "/mock/globalStorage",
+      },
     } as any;
 
     storage = new HarpoonStorage(context);
@@ -257,17 +267,18 @@ describe("HarpoonStorage", () => {
 
       await storage.save(marks);
 
-      expect(context.workspaceState.update).toHaveBeenCalledWith(
-        "harpoon.marks",
-        expect.objectContaining({
-          marks: expect.arrayContaining([
-            expect.objectContaining({
-              uriString: "file:///test.ts",
-              label: "Test",
-              position: { line: 10, character: 5 },
-            }),
-          ]),
-        }),
+      expect(vscode.workspace.fs.writeFile).toHaveBeenCalled();
+      const writeCall = (vscode.workspace.fs.writeFile as any).mock.calls[0];
+      const content = new TextDecoder().decode(writeCall[1]);
+      const parsed = JSON.parse(content);
+      expect(parsed.marks).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            uriString: "file:///test.ts",
+            label: "Test",
+            position: { line: 10, character: 5 },
+          }),
+        ]),
       );
     });
   });
@@ -276,7 +287,7 @@ describe("HarpoonStorage", () => {
     it("should clear workspace state", async () => {
       await storage.clearAllMarks();
 
-      expect(context.workspaceState.update).toHaveBeenCalledWith("harpoon.marks", undefined);
+      expect(vscode.workspace.fs.delete).toHaveBeenCalled();
     });
   });
 });
