@@ -309,15 +309,17 @@ Complete working examples are available in the [`examples/`](examples/) director
 | `getSelectionValue(option)` | Identifier passed to `onSelect` and `getPreviewData` |
 | `getHtmlWrapper(option, highlighted)` | HTML rendered for each list item |
 
-### Extension API
-
-Third-party VS Code extensions can register finders programmatically via the Code Telescope API. See [`backend/integration/api/README.md`](backend/integration/api/README.md) for the full API reference, including `registerFinder`, `openFinder`, `hasFinder`, and `unregisterFinder`.
-
 ### Limitations
 
 - CommonJS format only (`.cjs`)
 - Runs in extension host — no browser APIs
 - No access to extension internal state
+
+---
+
+### Extension API
+
+Third-party VS Code extensions can register finders programmatically via the Code Telescope API. See [`backend/integration/api/README.md`](backend/integration/api/README.md) for the full API reference, including `registerFinder`, `openFinder`, `hasFinder`, and `unregisterFinder`.
 
 ---
 
