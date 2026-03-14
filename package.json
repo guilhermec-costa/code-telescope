@@ -137,14 +137,6 @@
                 "title": "Code Telescope: Harpoon - Clear All Marks"
             },
             {
-                "command": "code-telescope.harpoon.editMark",
-                "title": "Code Telescope: Harpoon - Edit Marks"
-            },
-            {
-                "command": "code-telescope.harpoon.reorderMarks",
-                "title": "Code Telescope: Harpoon - Reorder Marks"
-            },
-            {
                 "command": "code-telescope.harpoon.gotoFile1",
                 "title": "Code Telescope: Harpoon - Go to File 1"
             },
