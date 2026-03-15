@@ -8,7 +8,6 @@ import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.deco
 })
 export class CommitFinderDataAdapter implements IFuzzyFinderDataAdapter<CommitSearchInfo[], CommitSearchInfo> {
   typeName: DataAdapterType;
-  debounceSearchTime = 30;
   shouldSort = false;
 
   parseOptions(data: CommitSearchInfo[]) {

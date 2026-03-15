@@ -53,6 +53,10 @@
                 "title": "Code Telescope: Smart Commit Search"
             },
             {
+                "command": "code-telescope.fuzzy.stash",
+                "title": "Code Telescope: Smart Stash Search"
+            },
+            {
                 "command": "code-telescope.fuzzy.wsText",
                 "title": "Code Telescope: Workspace Text Search"
             },

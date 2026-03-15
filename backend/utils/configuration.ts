@@ -92,6 +92,12 @@ const BUILTIN_PROVIDER_META: Record<FuzzyProviderType, ProviderMeta> = {
     previewTitle: "Commit Diff",
     promptMessage: "Commits...",
   },
+  "git.stashes": {
+    tabTitle: "Git Stashes",
+    listTitle: "Stashes",
+    previewTitle: "Stash diff",
+    promptMessage: "Stash...",
+  },
   "workspace.symbols": {
     tabTitle: "Workspace Symbols",
     listTitle: "Symbols",

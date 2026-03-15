@@ -10,6 +10,7 @@ import "../finders/custom/ui-proxy.finder";
 import "../finders/diagnostics.finder";
 import "../finders/git/git-branch.finder";
 import "../finders/git/git-commit.finder";
+import "../finders/git/git-stash.finder";
 import "../finders/ws-text-finder/index.finder";
 import "../finders/file/ws-files.finder";
 import "../finders/harpoon.finder";
