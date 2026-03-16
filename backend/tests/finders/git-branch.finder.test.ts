@@ -32,7 +32,8 @@ describe("GitBranchFuzzyFinder", () => {
     vi.mocked(getGitRoots).mockResolvedValueOnce([{ path: "/proj", name: "myproject" }]);
     vi.mocked(execAsync)
       .mockResolvedValueOnce({ stdout: "main\norigin/dev", stderr: "" })
-      .mockResolvedValueOnce({ stdout: "main", stderr: "" });
+      .mockResolvedValueOnce({ stdout: "main", stderr: "" })
+      .mockResolvedValueOnce({ stdout: "origin", stderr: "" });
 
     const finder = new GitBranchFuzzyFinder({ includeRemotes: true });
     const branches = await finder.querySelectableOptions();

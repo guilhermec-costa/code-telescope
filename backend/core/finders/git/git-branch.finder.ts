@@ -36,12 +36,17 @@ export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
 
     const perRepo = await Promise.allSettled(
       repos.map(async (repo) => {
-        const [branchesResult, headResult] = await Promise.all([
+        const [branchesResult, headResult, remotesResult] = await Promise.all([
           execAsync(`git branch ${flag} --format="%(refname:short)"`, { cwd: repo.path }),
           execAsync("git rev-parse --abbrev-ref HEAD", { cwd: repo.path }),
+          execAsync("git remote", { cwd: repo.path }),
         ]);
 
         const currentBranch = headResult.stdout.trim();
+        const remotes = remotesResult.stdout
+          .split("\n")
+          .map((r) => r.trim())
+          .filter(Boolean);
 
         return branchesResult.stdout
           .split("\n")
@@ -52,7 +57,7 @@ export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
               name,
               repoName: repos.length > 1 ? repo.name : undefined,
               repoPath: repo.path,
-              remote: name.startsWith("remotes/") || name.includes("/"),
+              remote: remotes.some((r) => name.startsWith(`${r}/`)),
               current: name === currentBranch,
             }),
           );

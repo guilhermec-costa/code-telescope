@@ -22,7 +22,6 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, Chunkab
   private readonly regexFinder: RegexFinder;
   private readonly ripgrepFinder: RipgrepTextFinder;
   public readonly chunkSize: number = 3500;
-  private _searchAbortController: AbortController | null = null;
   public readonly concurrency = 16;
 
   constructor() {
@@ -44,23 +43,21 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, Chunkab
    * Performs a dynamic search as the user types, streaming the results via generator.
    * Prefers ripgrep and falls back to regex search on failure.
    */
-  async *searchOnDynamicModeStream(query: string, customPaths?: string[]): AsyncGenerator<any[]> {
+  async *searchOnDynamicModeStream(query: string, customPaths?: string[], signal?: AbortSignal): AsyncGenerator<any[]> {
     if (!query) return;
-
-    this._searchAbortController?.abort();
-    this._searchAbortController = new AbortController();
-    const signal = this._searchAbortController.signal;
 
     if (this.ripgrepFinder.ripgrepAvailable) {
       try {
         yield* this.ripgrepFinder.searchStream(query, customPaths, signal);
         return;
       } catch (error) {
+        if (signal?.aborted) return;
         console.error("ripgrep stream failed, falling back:", error);
       }
     }
 
     const result = await this.regexFinder.search(query);
+    if (signal?.aborted) return;
     if (result.results?.length > 0) yield result.results;
   }
 

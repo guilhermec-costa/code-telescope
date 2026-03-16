@@ -219,6 +219,11 @@
                 "mac": "alt+m c"
             },
             {
+                "command": "code-telescope.fuzzy.stash",
+                "key": "alt+m z",
+                "mac": "alt+m z"
+            },
+            {
                 "command": "code-telescope.fuzzy.diagnostics",
                 "key": "alt+m d",
                 "mac": "alt+m d"

@@ -19,6 +19,7 @@ export class OptionListManager {
   private readonly searchElement: HTMLInputElement | undefined;
   private static _instance: OptionListManager | undefined;
   private lastOption: any | undefined;
+  private lastFilterQuery: string = "";
 
   private listElement: HTMLUListElement;
   private itemsCountElement: HTMLElement | null;
@@ -102,17 +103,23 @@ export class OptionListManager {
     this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
   }
 
-  /**
-   * Filters options based on the provided query.
-   * Uses adapter-specific filtering if available.
-   */
   public filter(query: string): void {
     if (!this.dataAdapter) return;
 
-    this.filteredOptions = this.allOptions.filter((opt) => {
+    const lowerQuery = query.toLowerCase();
+    const lowerLast = this.lastFilterQuery.toLowerCase();
+
+    // if the query is an extension of the previous query,
+    // filter only over the current filtered options, not over all the options
+    const sourceList =
+      lowerQuery.startsWith(lowerLast) && lowerLast.length > 0 ? this.filteredOptions : this.allOptions;
+
+    this.filteredOptions = sourceList.filter((opt) => {
       const text = this.dataAdapter.getSearchText(opt);
       return matches(query.toLowerCase(), text);
     });
+
+    this.lastFilterQuery = query;
     this.selectedIndex = this.getRelativeFirstIndex();
 
     this.virtualizer.scrollToSelectedVirtualized(this.selectedIndex);
@@ -252,41 +259,28 @@ export class OptionListManager {
         const result = customSort(opt1, opt2);
         return isIvy ? -result : result;
       });
-
       return;
     }
 
-    let mappedOptions: { opt: any; sortValue: number | string }[];
+    if (!query) return;
 
-    if (query) {
-      const lowerQuery = query.toLowerCase();
+    const lowerQuery = query.toLowerCase();
+    const limit = 5000;
+    const hasOverflow = options.length > limit;
+    const workingSet = hasOverflow ? options.slice(0, limit) : options;
 
-      mappedOptions = options.map((opt) => {
-        const text = this.dataAdapter.getSearchText(opt);
-        const score = scoreMatch(lowerQuery, text);
-        return { opt, sortValue: score };
-      });
-    } else {
-      mappedOptions = options.map((opt) => {
-        const text = this.dataAdapter.getSearchText(opt).toLowerCase();
-        return { opt, sortValue: text };
-      });
-    }
+    const scored = workingSet.map((opt) => ({
+      opt,
+      score: scoreMatch(lowerQuery, this.dataAdapter.getSearchText(opt)),
+    }));
 
-    mappedOptions.sort((a, b) => {
-      let result: number;
-
-      if (typeof a.sortValue === "number") {
-        result = a.sortValue - (b.sortValue as number);
-      } else {
-        result = a.sortValue.localeCompare(b.sortValue as string);
-      }
-
+    scored.sort((a, b) => {
+      const result = a.score - b.score;
       return isIvy ? -result : result;
     });
 
-    for (let i = 0; i < options.length; i++) {
-      options[i] = mappedOptions[i].opt;
+    for (let i = 0; i < workingSet.length; i++) {
+      options[i] = scored[i].opt;
     }
   }
 
