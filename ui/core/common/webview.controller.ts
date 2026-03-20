@@ -189,9 +189,19 @@ export class WebviewController {
     );
     this.keyboardHandler.setPromptDeleteHandler(() => {
       const input = this.searchElement;
-      input.value = input.value.slice(0, -1);
+      const pos = input.selectionStart || 0;
+      const selectionEnd = input.selectionEnd || 0;
 
-      // propagate the changes, so current filter reacts
+      // text range selected
+      if (pos !== selectionEnd) {
+        input.value = input.value.slice(0, pos) + input.value.slice(selectionEnd);
+        input.setSelectionRange(pos, pos);
+      } else if (pos > 0) {
+        input.value = input.value.slice(0, pos - 1) + input.value.slice(pos);
+        input.setSelectionRange(pos - 1, pos - 1);
+      }
+
+      // propagate the changes, so the input reacts
       input.dispatchEvent(new Event("input", { bubbles: true }));
     });
   }

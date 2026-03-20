@@ -82,7 +82,7 @@
             },
             {
                 "command": "code-telescope.fuzzy.recentFiles",
-                "title": "Code Telescope: Recent File History"
+                "title": "Code Telescope: Active Tabs"
             },
             {
                 "command": "code-telescope.fuzzy.colorschemes",
