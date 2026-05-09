@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code Telescope | Keyboard-first navigation for VS Code</title>
+    <meta
+      name="description"
+      content="A Telescope-inspired fuzzy finder for VS Code with previews, keyboard-first navigation, git tooling, Harpoon marks, and an API for custom finders."
+    />
+    <meta
+      name="keywords"
+      content="VS Code extension, telescope.nvim, fuzzy finder, code navigation, keyboard-first, harpoon, ripgrep"
+    />
+    <meta name="theme-color" content="#08111f" />
+    <meta property="og:title" content="Code Telescope | Keyboard-first navigation for VS Code" />
+    <meta
+      property="og:description"
+      content="Bring the power and flow of Telescope.nvim to Visual Studio Code."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="./assets/logo.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="./assets/logo.webp" type="image/webp" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-bg" aria-hidden="true">
+      <div class="page-glow page-glow-left"></div>
+      <div class="page-glow page-glow-right"></div>
+      <div class="page-grid"></div>
+    </div>
+
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Code Telescope home">
+        <img src="./assets/logo.webp" alt="Code Telescope logo" />
+        <span>Code Telescope</span>
+      </a>
+
+      <nav class="topnav" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#extensible">Extensibility</a>
+        <a href="#trust">Trust</a>
+      </nav>
+
+      <div class="topbar-actions">
+        <a class="link-button" href="https://github.com/guilhermec-costa/code-telescope" target="_blank" rel="noreferrer">
+          GitHub
+        </a>
+        <a
+          class="button button-small"
+          href="https://marketplace.visualstudio.com/items?itemName=guichina.code-telescope"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Install Extension
+        </a>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero section reveal">
+        <div class="hero-copy">
+          <div class="eyebrow-row">
+            <span class="eyebrow">VS Code extension</span>
+            <span class="eyebrow eyebrow-soft">inspired by telescope.nvim</span>
+          </div>
+
+          <h1>Telescope-style fuzzy finding for VS Code.</h1>
+
+          <p class="hero-text">
+            Files, grep, symbols, branches, diagnostics, tasks, Harpoon marks, and custom finders in one
+            keyboard-first panel with previews.
+          </p>
+
+          <div class="cta-row">
+            <a
+              class="button"
+              href="https://marketplace.visualstudio.com/items?itemName=guichina.code-telescope"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Install on Marketplace
+            </a>
+            <a class="link-button strong" href="https://open-vsx.org/extension/guichina/code-telescope" target="_blank" rel="noreferrer">
+              Open VSX
+            </a>
+          </div>
+
+          <div class="community-badges" aria-label="Repository and extension stats">
+            <a class="metric-chip" href="https://github.com/guilhermec-costa/code-telescope" target="_blank" rel="noreferrer">
+              <span class="metric-label">GitHub stars</span>
+              <strong class="metric-value" data-metric="github-stars">...</strong>
+            </a>
+            <a class="metric-chip" href="https://marketplace.visualstudio.com/items?itemName=guichina.code-telescope" target="_blank" rel="noreferrer">
+              <span class="metric-label">Marketplace installs</span>
+              <strong class="metric-value" data-metric="marketplace-installs">...</strong>
+            </a>
+            <a class="metric-chip" href="https://open-vsx.org/extension/guichina/code-telescope" target="_blank" rel="noreferrer">
+              <span class="metric-label">Open VSX downloads</span>
+              <strong class="metric-value" data-metric="openvsx-downloads">...</strong>
+            </a>
+            <a class="metric-chip" href="https://marketplace.visualstudio.com/items?itemName=guichina.code-telescope" target="_blank" rel="noreferrer">
+              <span class="metric-label">Marketplace rating</span>
+              <strong class="metric-value" data-metric="marketplace-rating">...</strong>
+            </a>
+          </div>
+
+          <ul class="stats" aria-label="Project highlights">
+            <li>
+              <strong>22</strong>
+              <span>built-in finders</span>
+            </li>
+            <li>
+              <strong>ripgrep</strong>
+              <span>power and speed for workspace search</span>
+            </li>
+            <li>
+              <strong>High performance</strong>
+              <span>built to handle workspaces with tens of thousands of files</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="hero-visual">
+          <div class="window-chrome">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
+          <div class="hero-panel">
+            <div class="command-bar">
+              <span class="command-prefix">Alt+M</span>
+              <span class="command-input">workspace.files · workspace.text · git.branches · harpoon.marks</span>
+              <span class="command-tag">preview on</span>
+            </div>
+
+            <div class="hero-preview-shell">
+              <figure class="demo-card">
+                <video autoplay muted loop playsinline preload="metadata" poster="./assets/preview.gif">
+                  <source src="./assets/preview.mp4" type="video/mp4" />
+                  <img
+                    src="./assets/preview.gif"
+                    alt="Animated preview of Code Telescope running inside VS Code"
+                  />
+                </video>
+                <figcaption>Preview before opening. Search and inspect from the same place.</figcaption>
+              </figure>
+
+              <div class="finder-list">
+                <div class="finder-list-header">What ships today</div>
+                <ul>
+                  <li><span>F</span> workspace files</li>
+                  <li><span>G</span> workspace text search</li>
+                  <li><span>S</span> workspace and document symbols</li>
+                  <li><span>B</span> git branches and commits</li>
+                  <li><span>D</span> diagnostics and breakpoints</li>
+                  <li><span>M</span> Harpoon, fonts, themes, and custom finders</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="proof-bar reveal">
+        <p>Built for VS Code users who miss the speed and consistency of Telescope.nvim.</p>
+        <p>Fast enough to stay fluid in large codebases, including workspaces with tens of thousands of files.</p>
+      </section>
+
+      <section class="section story reveal">
+        <div class="section-heading">
+          <span class="kicker">Why it exists</span>
+          <h2>Built to close a very specific gap.</h2>
+        </div>
+
+        <div class="story-grid">
+          <article class="story-card">
+            <h3>The origin</h3>
+            <p>
+              Telescope.nvim made project navigation feel fast, composable, and predictable. Code Telescope
+              started as a way to get that same feel inside VS Code.
+            </p>
+          </article>
+
+          <article class="story-card">
+            <h3>The evolution</h3>
+            <p>
+              It grew beyond a file picker into a broader navigation layer with grep, git views, workspace
+              signals, Harpoon-style jumps, multiple layouts, and previews.
+            </p>
+          </article>
+
+          <article class="story-card">
+            <h3>The payoff</h3>
+            <p>
+              The result is a tool that feels native to keyboard-heavy workflows and stays open to custom
+              extension-driven integrations.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="features" class="section reveal">
+        <div class="section-heading">
+          <span class="kicker">Features</span>
+          <h2>Useful surface area, not filler.</h2>
+          <p>
+            Code Telescope puts navigation, search, previews, git inspection, and workspace signals behind one
+            consistent UI.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card">
+            <h3>Unified navigation</h3>
+            <p>Files, recent tabs, symbols, breakpoints, references, diagnostics, tasks, and extensions share one interaction model.</p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Multi-language previews</h3>
+            <p>Preview code across many languages through a grammar-based highlighting system instead of hardcoded assumptions.</p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Fast search at scale</h3>
+            <p>Workspace text search uses ripgrep when available and falls back automatically, with dynamic search support for large result sets.</p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Theme-aware rendering</h3>
+            <p>The preview layer loads theme data from the active VS Code ecosystem, so highlighted content stays aligned with the theme you already use.</p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Vim motions inside the prompt</h3>
+            <p>Normal mode, word motions, delete and change operators, yanks, pastes, undo, and redo keep it close to terminal-native muscle memory.</p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Harpoon for VS Code</h3>
+            <p>Mark files, jump by index, preserve cursor position, and reorder marks directly inside the fuzzy finder.</p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Font finder</h3>
+            <p>Browse workspace fonts and preview them inside the panel. It is a surprisingly fun finder and genuinely useful when working with UI-heavy projects.</p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Git and code intelligence</h3>
+            <p>Open finders for branches, commits, stash entries, call hierarchy, references, symbols, and package docs without leaving the same interaction loop.</p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Configurable UI</h3>
+            <p>Choose classic or ivy layouts, then tune proportions, font sizes, borders, line numbers, and scrolling behavior.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section reveal">
+        <div class="section-heading">
+          <span class="kicker">Finder lineup</span>
+          <h2>A wider set of finders than the usual file and grep combo.</h2>
+          <p>
+            The extension already ships with a broad catalog of finders, all exposed through the same panel and
+            the same selection model.
+          </p>
+        </div>
+
+        <div class="trust-grid">
+          <article class="trust-card">
+            <strong>Navigation</strong>
+            <p>Workspace files, recent files, current file text, workspace text, document symbols, workspace symbols, and LSP references.</p>
+          </article>
+
+          <article class="trust-card">
+            <strong>Git and project state</strong>
+            <p>Branches, commits, stash entries, diagnostics, breakpoints, tasks, installed extensions, and package docs.</p>
+          </article>
+
+          <article class="trust-card">
+            <strong>Workflow extras</strong>
+            <p>Harpoon marks, font family browsing, keybindings, color schemes, builtin finder discovery, and custom finders.</p>
+          </article>
+
+          <article class="trust-card">
+            <strong>One interaction model</strong>
+            <p>The point is not just having many finders. It is that they all feel coherent, so once the panel clicks, the rest of the workflow follows.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="workflow" class="section reveal">
+        <div class="section-heading">
+          <span class="kicker">Workflow</span>
+          <h2>Built for people who navigate by keyboard.</h2>
+        </div>
+
+        <div class="workflow-layout">
+          <div class="workflow-panel">
+            <h3>Common jumps</h3>
+            <div class="shortcut-cloud" aria-label="Keyboard shortcuts">
+              <span>Alt+M F</span>
+              <span>Alt+M G</span>
+              <span>Alt+M S</span>
+              <span>Alt+M B</span>
+              <span>Alt+M C</span>
+              <span>Alt+M D</span>
+              <span>Alt+M E</span>
+              <span>Alt+M M</span>
+              <span>Ctrl+1..9</span>
+              <span>Ctrl+J / Ctrl+K</span>
+              <span>Ctrl+U / Ctrl+D</span>
+              <span>Esc for Normal mode</span>
+            </div>
+          </div>
+
+          <div class="workflow-panel">
+            <h3>What that feels like</h3>
+            <ol class="workflow-steps">
+              <li>Open one finder instead of bouncing between quick open, search views, git panels, and menus.</li>
+              <li>Filter what you need with the same scoring and selection behavior every time.</li>
+              <li>Read context in the preview pane before opening, jumping, or acting.</li>
+              <li>Keep both hands on the keyboard and let repetition do the rest.</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section id="extensible" class="section reveal">
+        <div class="section-heading">
+          <span class="kicker">Extensibility</span>
+          <h2>Not just built-ins. Custom finders too.</h2>
+          <p>
+            Code Telescope has a typed backend/UI boundary, decorator-based registration, and a public API so
+            other VS Code extensions can plug into the same interface.
+          </p>
+        </div>
+
+        <div class="extensible-grid">
+          <article class="extensible-card">
+            <h3>For personal workflows</h3>
+            <p>
+              Drop CommonJS custom finders into `.vscode/code-telescope/` and surface project-specific data in
+              the same panel you already use for files and grep.
+            </p>
+          </article>
+
+          <article class="extensible-card code-card">
+            <h3>For extension authors</h3>
+            <pre><code>const api = await ext.activate();
+
+api.registerFinder({
+  provider: { fuzzyAdapterType: "ext.acme.issues" },
+  dataAdapter: { typeName: "ext.acme.issues" },
+});</code></pre>
+            <p>Reuse the shell, prompt, and preview system instead of rebuilding them from scratch.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="trust" class="section reveal">
+        <div class="section-heading">
+          <span class="kicker">Why trust it</span>
+          <h2>Strong internals behind a simple UI.</h2>
+        </div>
+
+        <div class="trust-grid">
+          <article class="trust-card">
+            <strong>Typed architecture</strong>
+            <p>Backend and webview communicate through shared contracts, keeping the boundary explicit and reducing fragile glue code.</p>
+          </article>
+
+          <article class="trust-card">
+            <strong>Built for maintenance</strong>
+            <p>The codebase is split into clear layers and responsibilities, which makes it easier to reason about behavior and evolve features without spreading changes everywhere.</p>
+          </article>
+
+          <article class="trust-card">
+            <strong>Patterns that scale</strong>
+            <p>Adapters, registries, decorators, and typed message boundaries give the project a structure that favors extensibility instead of one-off patches.</p>
+          </article>
+
+          <article class="trust-card">
+            <strong>Code quality matters</strong>
+            <p>This is not a pile of commands glued together. It is a well-architected extension built to support new finders, new preview behaviors, and long-term maintenance.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section final-cta reveal">
+        <div class="final-cta-card">
+          <span class="kicker">Ready to try it</span>
+          <h2>Install it and see if it fits your hands.</h2>
+          <p>
+            If your workflow already leans on the keyboard, Code Telescope should feel familiar very quickly.
+          </p>
+          <div class="cta-row">
+            <a
+              class="button"
+              href="https://marketplace.visualstudio.com/items?itemName=guichina.code-telescope"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Install on VS Code Marketplace
+            </a>
+            <a class="link-button strong" href="https://github.com/guilhermec-costa/code-telescope" target="_blank" rel="noreferrer">
+              Read the source
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Code Telescope. Built for keyboard-first developers.</p>
+      <p>
+        <a href="https://github.com/guilhermec-costa/code-telescope" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="https://marketplace.visualstudio.com/items?itemName=guichina.code-telescope" target="_blank" rel="noreferrer">Marketplace</a>
+        <a href="https://open-vsx.org/extension/guichina/code-telescope" target="_blank" rel="noreferrer">Open VSX</a>
+      </p>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
