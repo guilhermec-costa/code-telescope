@@ -18,6 +18,7 @@ export class WebviewController {
   private previewQueue: Promise<void> = Promise.resolve();
   private lastSearchQuery: string | undefined;
   private currentRequestId: string | undefined;
+  private lastHandledOptionListRequestId: string | undefined;
 
   constructor(private readonly keyboardHandler: KeyboardHandler) {
     console.log("[WebviewController] Initializing controller");
@@ -147,11 +148,15 @@ export class WebviewController {
     }
 
     const options = adapter.parseOptions(data);
-    const isNewSearch = query !== this.lastSearchQuery;
+    // Same query can be submitted again (for example: Ctrl+A + paste the same text).
+    // A fresh requestId means a fresh search cycle, so we clear old items to avoid stacking.
+    const isNewRequest = msg.requestId !== this.lastHandledOptionListRequestId;
+    const isNewSearch = query !== this.lastSearchQuery || isNewRequest;
     if (isNewSearch) {
       this.lastSearchQuery = query;
       OptionListManager.instance.clearOptions();
     }
+    this.lastHandledOptionListRequestId = msg.requestId;
     OptionListManager.instance.appendChunk(options, totalLimit);
 
     if (this.searchElement.value) {
@@ -172,6 +177,8 @@ export class WebviewController {
       OptionListManager.instance.filter(query);
       OptionListManager.instance.resetIfNeeded();
     });
+    this.searchElement.value = __INITIAL_QUERY__;
+    this.searchElement.dispatchEvent(new Event("input", { bubbles: true }));
   }
 
   private setupKeyboardHandlers(): void {

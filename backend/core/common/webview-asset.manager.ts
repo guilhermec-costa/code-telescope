@@ -7,6 +7,7 @@ import { getProviderListTitle, getProviderPreviewTitle, getProviderPromptMessage
 import { joinPath } from "../../utils/files";
 import { ExtensionConfigManager } from "../common/config-manager";
 import { CustomProviderStorage } from "./custom/custom-provider.storage";
+import { PreContextManager } from "./pre-context";
 
 /**
  * Responsible for resolving and processing webview HTML assets.
@@ -94,6 +95,10 @@ export class WebviewAssetManager {
         );
       }
     }
+
+    const ctx = PreContextManager.instance.getContext();
+    const initialQuery = ctx && provider.usePreSelection ? ctx.selectedText : "";
+
     const state: Record<string, string> = {
       "{{__PREVIEW_CFG__}}": JSON.stringify(ExtensionConfigManager.previewManagerCfg),
       "{{__WS_PATH_DISPLAY__}}": ExtensionConfigManager.wsFileFinderCfg.textDisplay,
@@ -105,6 +110,7 @@ export class WebviewAssetManager {
       "{{__PREVIEW_SIDE_TITLE__}}": getProviderPreviewTitle(provider.fuzzyAdapterType),
       "{{__PROMPT_MSG__}}": getProviderPromptMessage(provider.fuzzyAdapterType),
       "{{__PROVIDER__}}": provider.fuzzyAdapterType,
+      "{{__INITIAL_QUERY__}}": JSON.stringify(initialQuery),
       "{{dist-uri}}": wv.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, "ui", "dist")).toString(),
     };
 

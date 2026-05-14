@@ -1,48 +1,75 @@
 import * as vscode from "vscode";
 
+type TContext = {
+  document: vscode.TextDocument | null;
+  position: vscode.Position | null;
+  selectedText: string;
+};
+
+type TCapturedContext = {
+  document: vscode.TextDocument;
+  position: vscode.Position;
+  selectedText: string;
+};
+
 export class PreContextManager {
   private static _instance: PreContextManager;
+
+  private _ctx: TContext = {
+    document: null,
+    position: null,
+    selectedText: "",
+  };
+
+  private constructor() {}
 
   static get instance(): PreContextManager {
     if (!this._instance) {
       this._instance = new PreContextManager();
     }
+
     return this._instance;
   }
 
-  private document?: vscode.TextDocument;
-  private position?: vscode.Position;
-
   captureFromActiveEditor(): void {
     const editor = vscode.window.activeTextEditor;
+
     if (!editor) return;
 
-    this.document = editor.document;
-    this.position = editor.selection.active;
+    this._ctx.document = editor.document;
+    this._ctx.position = editor.selection.active;
+    this._ctx.selectedText = editor.document.getText(editor.selection);
   }
 
-  getContext(): { document: vscode.TextDocument; position: vscode.Position } | null {
-    if (!this.document || !this.position) return null;
-    return {
-      document: this.document,
-      position: this.position,
-    };
+  getContext(): TCapturedContext | null {
+    if (!this._ctx.document || !this._ctx.position) {
+      return null;
+    }
+
+    return this._ctx as TCapturedContext;
   }
 
   async focusOnCapture() {
-    const ctx = PreContextManager.instance.getContext();
-    if (ctx) {
-      const { document, position } = ctx;
-      await vscode.workspace.openTextDocument(document.uri);
-      const editor = await vscode.window.showTextDocument(document);
+    const ctx = this.getContext();
 
-      editor.selection = new vscode.Selection(position, position);
-      return editor;
-    }
+    if (!ctx) return;
+
+    const { document, position } = ctx;
+
+    await vscode.workspace.openTextDocument(document.uri);
+
+    const editor = await vscode.window.showTextDocument(document);
+
+    editor.selection = new vscode.Selection(position, position);
+
+    return editor;
   }
 
   clear(): void {
-    this.document = undefined;
-    this.position = undefined;
+    this._ctx = {
+      document: null,
+      position: null,
+      selectedText: "",
+    };
   }
 }

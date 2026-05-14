@@ -24,6 +24,8 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, Chunkab
   public readonly chunkSize: number = 3500;
   public readonly concurrency = 16;
 
+  usePreSelection = true;
+
   constructor() {
     this.regexFinder = new RegexFinder();
     this.ripgrepFinder = new RipgrepTextFinder();

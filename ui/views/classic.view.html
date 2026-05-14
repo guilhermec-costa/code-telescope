@@ -19,10 +19,14 @@
     const __CUSTOM_RENDER_ADAPTERS__ = JSON.parse('{{__CUSTOM_RENDER_ADAPTERS__}}');
     const __FILE_PATH_DISPLAY__ = '{{__WS_PATH_DISPLAY__}}';
     const __PROVIDER__ = '{{__PROVIDER__}}'
+    // Your editor may show a JavaScript syntax error here — that's expected.
+    // This placeholder is intentionally left unquoted so the final template can
+    // correctly preserve and escape both single and double quotes.
+    const __INITIAL_QUERY__ = {{__INITIAL_QUERY__}};
     </script>
     <script id="__CUSTOM_DATA_ADAPTER__" type="text/plain">
     {{__CUSTOM_DATA_ADAPTER__}}
-  </script>
+    </script>
     <script defer src="{{script}}"></script>
   </head>
 

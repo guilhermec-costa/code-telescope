@@ -24,6 +24,7 @@ export interface IFuzzyFinderProvider {
 
   finderName?: string;
   finderDescription?: string;
+  usePreSelection?: boolean;
 
   /**
    * Returns the list of items to be displayed in the fuzzy finder.
