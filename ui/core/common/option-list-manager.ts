@@ -2,8 +2,7 @@ import { IFuzzyFinderDataAdapter } from "../../../shared/abstractions/fuzzy-find
 import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { debounce } from "../../utils/debounce";
 import { escapeHtml } from "../../utils/html";
-import { computeMatch, scoreMatch } from "../algos/score-engine";
-import { matches } from "../algos/subsequence";
+import { computeMatch, MatchResult } from "../algos/score-engine";
 import { PreviewManager } from "../render/preview-manager";
 import { Virtualizer } from "../render/virtualizer";
 import { StateManager } from "./code/state-manager";
@@ -16,7 +15,7 @@ export class OptionListManager {
   private allOptions: any[] = [];
   private filteredOptions: any[] = [];
   private dataAdapter: IFuzzyFinderDataAdapter | undefined;
-  private readonly searchElement: HTMLInputElement | undefined;
+  private readonly searchElement: HTMLInputElement;
   private static _instance: OptionListManager | undefined;
   private lastOption: any | undefined;
   private lastFilterQuery: string = "";
@@ -25,6 +24,8 @@ export class OptionListManager {
   private itemsCountElement: HTMLElement | null;
   private selectedIndex: number = 0;
   private readonly OPTION_ITEM_ID_PREFIX = "option-item-id-";
+  private matchCache = new Map<string, MatchResult>();
+  private matchCacheScope = "";
 
   private readonly virtualizer: Virtualizer;
 
@@ -84,9 +85,10 @@ export class OptionListManager {
     if (this.searchElement.value === "") {
       this.filteredOptions = this.allOptions;
     } else {
+      this.resetMatchCacheIfNeeded(this.searchElement.value);
       const newFiltered = chunk.filter((opt) => {
-        const text = this.dataAdapter.getSearchText(opt);
-        return matches(this.searchElement.value, text);
+        const text = this.dataAdapter!.getSearchText(opt);
+        return this.getMatchResult(this.searchElement.value, text).score > -Infinity;
       });
       this.filteredOptions.push(...newFiltered);
     }
@@ -105,6 +107,7 @@ export class OptionListManager {
 
   public filter(query: string): void {
     if (!this.dataAdapter) return;
+    this.resetMatchCacheIfNeeded(query);
 
     const lowerQuery = query.toLowerCase();
     const lowerLast = this.lastFilterQuery.toLowerCase();
@@ -115,8 +118,8 @@ export class OptionListManager {
       lowerQuery.startsWith(lowerLast) && lowerLast.length > 0 ? this.filteredOptions : this.allOptions;
 
     this.filteredOptions = sourceList.filter((opt) => {
-      const text = this.dataAdapter.getSearchText(opt);
-      return matches(query.toLowerCase(), text);
+      const text = this.dataAdapter!.getSearchText(opt);
+      return this.getMatchResult(query, text).score > -Infinity;
     });
 
     this.lastFilterQuery = query;
@@ -161,6 +164,8 @@ export class OptionListManager {
     this.allOptions = [];
     this.filteredOptions = [];
     this.selectedIndex = 0;
+    this.matchCache.clear();
+    this.matchCacheScope = "";
     this.updateItemsCount();
     this.render();
   }
@@ -252,7 +257,7 @@ export class OptionListManager {
 
   private applySortOnOptions(options: any[], query: string) {
     const isIvy = this.isIvyLayout();
-    const customSort = this.dataAdapter.sortFn;
+    const customSort = this.dataAdapter!.sortFn;
 
     if (customSort) {
       options.sort((opt1, opt2) => {
@@ -268,10 +273,11 @@ export class OptionListManager {
     const limit = 5000;
     const hasOverflow = options.length > limit;
     const workingSet = hasOverflow ? options.slice(0, limit) : options;
+    this.resetMatchCacheIfNeeded(lowerQuery);
 
     const scored = workingSet.map((opt) => ({
       opt,
-      score: scoreMatch(lowerQuery, this.dataAdapter.getSearchText(opt)),
+      score: this.getMatchResult(lowerQuery, this.dataAdapter!.getSearchText(opt)).score,
     }));
 
     scored.sort((a, b) => {
@@ -325,11 +331,11 @@ export class OptionListManager {
       li.classList.add("selected");
     }
 
-    const searchText = this.dataAdapter.getSearchText(option);
-    const offset = this.dataAdapter.calcHlOffsetChars?.(option) ?? 0;
+    const searchText = this.dataAdapter!.getSearchText(option);
+    const offset = this.dataAdapter!.calcHlOffsetChars?.(option) ?? 0;
     const highlightedContent = this.highlightMatch(searchText, query.toLowerCase(), offset);
 
-    li.innerHTML = this.dataAdapter.getHtmlWrapper(option, highlightedContent);
+    li.innerHTML = this.dataAdapter!.getHtmlWrapper(option, highlightedContent);
 
     li.onclick = () => {
       this.selectedIndex = idx;
@@ -345,7 +351,7 @@ export class OptionListManager {
   private highlightMatch(text: string, query: string, offset: number = 0): string {
     if (!query) return escapeHtml(text);
 
-    const matchIndices = computeMatch(query, text.slice(offset)).indices;
+    const matchIndices = this.getMatchResult(query, text.slice(offset)).indices;
     if (matchIndices.length === 0) {
       return escapeHtml(text);
     }
@@ -363,6 +369,30 @@ export class OptionListManager {
     }
     result += escapeHtml(text.slice(lastIdx));
 
+    return result;
+  }
+
+  private resetMatchCacheIfNeeded(query: string): void {
+    const scope = `${StateManager.matchingAlgorithm}::${query.toLowerCase()}`;
+
+    if (scope !== this.matchCacheScope) {
+      this.matchCache.clear();
+      this.matchCacheScope = scope;
+    }
+  }
+
+  private getMatchResult(query: string, text: string): MatchResult {
+    if (!query) return { score: 0, indices: [] };
+    if (!text) return { score: -Infinity, indices: [] };
+
+    const lowerQuery = query.toLowerCase();
+    const key = `${lowerQuery}\u0000${text}`;
+    const cached = this.matchCache.get(key);
+
+    if (cached) return cached;
+
+    const result = computeMatch(lowerQuery, text);
+    this.matchCache.set(key, result);
     return result;
   }
 

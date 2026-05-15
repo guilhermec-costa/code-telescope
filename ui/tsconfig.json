@@ -10,11 +10,10 @@
       "DOM",
       "ES2022"
     ],
-    "baseUrl": ".",
     "paths": {
       "@shared/*": [
-        "shared/*"
-      ]
+        "../shared/*"
+      ],
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
