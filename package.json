@@ -617,12 +617,12 @@
         }
     },
     "scripts": {
-        "vscode:prepublish": "pnpm run backend:bundle:prod",
+        "vscode:prepublish": "npm run backend:bundle:prod",
         "backend:bundle:prod": "tsx scripts/bundle-backend.ts --env=prod",
         "backend:compile": "tsc -p ./backend/tsconfig.build.json",
         "backend:watch": "tsc -w -p ./backend/tsconfig.build.json",
         "backend:build": "tsx scripts/bundle-backend.ts",
-        "pretest": "pnpm run backend:bundle:prod && pnpm run lint",
+        "pretest": "npm run backend:bundle:prod && npm run lint",
         "bundle:shiki": "tsx scripts/shiki/plugin.ts",
         "lint": "biome lint",
         "check": "biome check",
@@ -638,11 +638,11 @@
         "webview:prod": "tsx scripts/bundle-webview.ts --env=prod",
         "webview:prod:watch": "tsx scripts/bundle-webview.ts --env=prod --watch=true",
         "clean": "rm -rf ui/dist && rm -rf backend/dist",
-        "build": "pnpm webview:prod && pnpm backend:bundle:prod",
-        "make:package": "pnpm clean && pnpm build && vsce package",
-        "deploy:patch": "pnpm make:package && vsce publish patch",
-        "deploy:minor": "pnpm make:package && vsce publish minor",
-        "deploy:major": "pnpm make:package && vsce publish major",
+        "build": "npm run webview:prod && npm run backend:bundle:prod",
+        "make:package": "npm run clean && npm run build && vsce package",
+        "deploy:patch": "npm run make:package && vsce publish patch",
+        "deploy:minor": "npm run make:package && vsce publish minor",
+        "deploy:major": "npm run make:package && vsce publish major",
         "deploy:openvsx": "ovsx publish"
     },
     "devDependencies": {
