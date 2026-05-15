@@ -33,6 +33,15 @@
     <div class="page-bg" aria-hidden="true">
       <div class="page-glow page-glow-left"></div>
       <div class="page-glow page-glow-right"></div>
+      <div class="page-stars page-stars-near"></div>
+      <div class="page-stars page-stars-far"></div>
+      <div class="page-comet page-comet-a"></div>
+      <div class="page-comet page-comet-b"></div>
+      <div class="page-orbit page-orbit-left"></div>
+      <div class="page-orbit page-orbit-right"></div>
+      <div class="page-planet page-planet-small"></div>
+      <div class="page-planet page-planet-medium"></div>
+      <div class="page-planet page-planet-tiny"></div>
       <div class="page-grid"></div>
     </div>
 
@@ -70,13 +79,14 @@
           <div class="eyebrow-row">
             <span class="eyebrow">VS Code extension</span>
             <span class="eyebrow eyebrow-soft">inspired by telescope.nvim</span>
+            <span class="eyebrow eyebrow-soft">keyboard observatory</span>
           </div>
 
-          <h1>Telescope-style fuzzy finding for VS Code.</h1>
+          <h1>Point your workflow at the right target, fast.</h1>
 
           <p class="hero-text">
-            Files, grep, symbols, branches, diagnostics, tasks, Harpoon marks, and custom finders in one
-            keyboard-first panel with previews.
+            Code Telescope brings a Telescope.nvim-like flow to VS Code with one keyboard-first panel for
+            files, grep, symbols, Git, Harpoon, and custom finders, all with fast previews.
           </p>
 
           <div class="cta-row">
@@ -129,6 +139,17 @@
         </div>
 
         <div class="hero-visual">
+          <div class="hero-orbit hero-orbit-top" aria-hidden="true"></div>
+          <div class="hero-orbit hero-orbit-bottom" aria-hidden="true"></div>
+          <div class="hero-satellite-orbit hero-satellite-orbit-a" aria-hidden="true">
+            <span class="hero-satellite hero-satellite-a"></span>
+          </div>
+          <div class="hero-satellite-orbit hero-satellite-orbit-b" aria-hidden="true">
+            <span class="hero-satellite hero-satellite-b"></span>
+          </div>
+          <div class="hero-star hero-star-a" aria-hidden="true"></div>
+          <div class="hero-star hero-star-b" aria-hidden="true"></div>
+
           <div class="window-chrome">
             <span></span>
             <span></span>
@@ -155,12 +176,12 @@
               </figure>
 
               <div class="finder-list">
-                <div class="finder-list-header">What ships today</div>
+                <div class="finder-list-header">In orbit today</div>
                 <ul>
                   <li><span>F</span> workspace files</li>
                   <li><span>G</span> workspace text search</li>
                   <li><span>S</span> workspace and document symbols</li>
-                  <li><span>B</span> git branches and commits</li>
+                  <li><span>B</span> git branches, diffs, stashes, and commits</li>
                   <li><span>D</span> diagnostics and breakpoints</li>
                   <li><span>M</span> Harpoon, fonts, themes, and custom finders</li>
                 </ul>
@@ -171,7 +192,7 @@
       </section>
 
       <section class="proof-bar reveal">
-        <p>Built for VS Code users who miss the speed and consistency of Telescope.nvim.</p>
+        <p>Built for VS Code users who miss the rhythm, consistency, and focus of Telescope.nvim.</p>
         <p>Fast enough to stay fluid in large codebases, including workspaces with tens of thousands of files.</p>
       </section>
 
@@ -186,7 +207,7 @@
             <h3>The origin</h3>
             <p>
               Telescope.nvim made project navigation feel fast, composable, and predictable. Code Telescope
-              started as a way to get that same feel inside VS Code.
+              started as a way to bring that same feeling of guided exploration into VS Code.
             </p>
           </article>
 
@@ -256,7 +277,7 @@
 
           <article class="feature-card">
             <h3>Git and code intelligence</h3>
-            <p>Open finders for branches, commits, stash entries, call hierarchy, references, symbols, and package docs without leaving the same interaction loop.</p>
+            <p>Open finders for branches, diffs, commits, stash entries, call hierarchy, references, symbols, and package docs without leaving the same interaction loop.</p>
           </article>
 
           <article class="feature-card">
