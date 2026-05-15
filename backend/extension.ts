@@ -48,6 +48,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerProviderCmd("file", () => FuzzyFinderPanelController.setupProvider("workspace.files"), ctx);
   registerProviderCmd("keybindings", () => FuzzyFinderPanelController.setupProvider("workspace.keybindings"), ctx);
   registerProviderCmd("branch", () => FuzzyFinderPanelController.setupProvider("git.branches"), ctx);
+  registerProviderCmd("diff", () => FuzzyFinderPanelController.setupProvider("git.diffs"), ctx);
   registerProviderCmd("commit", () => FuzzyFinderPanelController.setupProvider("git.commits"), ctx);
   registerProviderCmd("stash", () => FuzzyFinderPanelController.setupProvider("git.stashes"), ctx);
   registerProviderCmd("wsText", () => FuzzyFinderPanelController.setupProvider("workspace.text"), ctx);

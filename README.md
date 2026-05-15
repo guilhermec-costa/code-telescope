@@ -11,7 +11,7 @@ A Telescope-inspired fuzzy finder for VS Code, bringing the power and flexibilit
 
 Telescope.nvim transformed navigation in Neovim with its extensible, keyboard-first fuzzy finder architecture. Code Telescope brings that same philosophy to VS Code — a single, powerful interface for navigating your entire project.
 
-Find files instantly, search across your workspace, explore symbols, browse git branches and commits — all from one unified, consistent experience.
+Find files instantly, search across your workspace, explore symbols, browse git branches, diffs and commits — all from one unified, consistent experience.
 
 ![Code Telescope Preview](images/preview.gif)
 
@@ -232,8 +232,9 @@ Uses ripgrep when available (bundled with VS Code or in PATH), with automatic fa
 | 🔤 Workspace Symbols | `code-telescope.fuzzy.wsSymbols` | `Alt+M S` |
 | 📋 Document Symbols | `code-telescope.fuzzy.documentSymbols` | `Alt+M .` |
 | 🌿 Git Branches | `code-telescope.fuzzy.branch` | `Alt+M B` |
+| 𝚫 Git Diffs | `code-telescope.fuzzy.diff` | `Alt+M D` |
 | 📜 Git Commits | `code-telescope.fuzzy.commit` | `Alt+M C` |
-| ⚠️ Diagnostics | `code-telescope.fuzzy.diagnostics` | `Alt+M D` |
+| ⚠️ Diagnostics | `code-telescope.fuzzy.diagnostics` | `Alt+M Shift+D` |
 | 📞 Call Hierarchy | `code-telescope.fuzzy.callHierarchy` | `Alt+M H` |
 | 🔗 LSP References | `code-telescope.fuzzy.lspRefs` | `Alt+M N` |
 | 🔑 Keybindings | `code-telescope.fuzzy.keybindings` | `Alt+M K` |

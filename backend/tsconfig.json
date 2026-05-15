@@ -7,11 +7,11 @@
         "outDir": "./dist",
         "lib": ["ES2022"],
         "sourceMap": true,
+        "types": ["mocha"],
         "rootDir": ".",
-        "baseUrl": "..",
         "paths": {
-            "@shared/*": ["shared/*"],
-            "@backend/*": ["backend/*"]
+            "@shared/*": ["../shared/*"],
+            "@backend/*": ["./*"]
         },
         "strict": true,
         "resolveJsonModule": true,

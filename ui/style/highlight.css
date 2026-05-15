@@ -379,6 +379,37 @@
   color: var(--vscode-descriptionForeground);
 }
 
+.sk-git-diff-status {
+  min-width: 2ch;
+  margin-right: 6px;
+  font-size: 0.82em;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.sk-git-diff-status--added {
+  color: var(--vscode-gitDecoration-addedResourceForeground);
+}
+
+.sk-git-diff-status--modified {
+  color: var(--vscode-gitDecoration-modifiedResourceForeground);
+}
+
+.sk-git-diff-status--removed {
+  color: var(--vscode-gitDecoration-deletedResourceForeground);
+}
+
+.sk-git-diff-status--renamed {
+  color: var(--vscode-textLink-foreground);
+}
+
+.sk-git-diff-meta {
+  font-size: 0.75em;
+  opacity: 0.5;
+  flex-shrink: 0;
+  color: var(--vscode-descriptionForeground);
+}
+
 /* HARPOON STYLES */
 
 .sk-harpoon-index {

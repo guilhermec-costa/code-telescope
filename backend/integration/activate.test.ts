@@ -24,6 +24,7 @@ suite("Integration Tests", () => {
         "workspace.files",
         "workspace.keybindings",
         "git.branches",
+        "git.diffs",
         "workspace.text",
         "workspace.symbols",
         "workspace.recentFiles",
@@ -58,6 +59,7 @@ suite("Integration Tests", () => {
         getCmdId("fuzzy", "file"),
         getCmdId("fuzzy", "keybindings"),
         getCmdId("fuzzy", "branch"),
+        getCmdId("fuzzy", "diff"),
         getCmdId("fuzzy", "wsText"),
         getCmdId("fuzzy", "wsSymbols"),
         getCmdId("fuzzy", "recentFiles"),
@@ -78,6 +80,7 @@ suite("Integration Tests", () => {
     const testCases = [
       { cmd: "file", provider: "workspace.files" },
       { cmd: "branch", provider: "git.branches" },
+      { cmd: "diff", provider: "git.diffs" },
       { cmd: "wsText", provider: "workspace.text" },
       { cmd: "wsSymbols", provider: "workspace.symbols" },
       { cmd: "recentFiles", provider: "workspace.recentFiles" },

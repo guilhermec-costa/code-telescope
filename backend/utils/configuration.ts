@@ -86,6 +86,12 @@ const BUILTIN_PROVIDER_META: Record<FuzzyProviderType, ProviderMeta> = {
     previewTitle: "Branch Details",
     promptMessage: "Branches...",
   },
+  "git.diffs": {
+    tabTitle: "Git Diffs",
+    listTitle: "Changed Files",
+    previewTitle: "Diff Preview",
+    promptMessage: "Git diffs...",
+  },
   "git.commits": {
     tabTitle: "Git Commits",
     listTitle: "Commits",

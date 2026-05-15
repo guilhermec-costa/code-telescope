@@ -87,6 +87,7 @@ describe("Extension entrypoint", () => {
       "file",
       "keybindings",
       "branch",
+      "diff",
       "stash",
       "wsText",
       "fileText",

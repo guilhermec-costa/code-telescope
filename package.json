@@ -49,6 +49,10 @@
                 "title": "Code Telescope: Smart Branch Search"
             },
             {
+                "command": "code-telescope.fuzzy.diff",
+                "title": "Code Telescope: Current Git Diffs"
+            },
+            {
                 "command": "code-telescope.fuzzy.commit",
                 "title": "Code Telescope: Smart Commit Search"
             },
@@ -224,9 +228,14 @@
                 "mac": "alt+m z"
             },
             {
-                "command": "code-telescope.fuzzy.diagnostics",
+                "command": "code-telescope.fuzzy.diff",
                 "key": "alt+m d",
                 "mac": "alt+m d"
+            },
+            {
+                "command": "code-telescope.fuzzy.diagnostics",
+                "key": "alt+m shift+d",
+                "mac": "alt+m shift+d"
             },
             {
                 "command": "code-telescope.fuzzy.callHierarchy",
@@ -656,9 +665,9 @@
         "vitest": "^4.0.16"
     },
     "lint-staged": {
-        "*.{js,ts}": [
-            "pnpm check:write"
-        ]
+      "*.{js,ts}": [
+        "biome check --write"
+      ]
     },
     "pnpm": {
         "overrides": {
