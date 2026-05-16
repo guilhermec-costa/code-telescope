@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { BranchInfo, CommitInfo } from "../../../../shared/exchange/branch-search";
 import { PreviewData } from "../../../../shared/extension-webview-protocol";
-import { execAsync } from "../../../utils/commands";
+import { execAsync, execFileAsync } from "../../../utils/commands";
 import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-finder-provider.decorator";
 import { getGitRoots } from "./api-utils";
 
@@ -20,9 +20,9 @@ export class GitBranchFuzzyFinder implements FuzzyFinderProvider {
 
     try {
       const localName = name.replace(/^remotes\/[^/]+\//, "");
-      await execAsync(`git checkout ${localName}`, { cwd: repoPath });
+      await execFileAsync("git", ["checkout", localName], { cwd: repoPath });
     } catch (e) {
-      vscode.window.showErrorMessage(`Failed to checkout branch: ${name}`);
+      vscode.window.showErrorMessage(`Failed to checkout branch "${name}": ${e}`);
       console.error("[GitBranchFuzzyFinder] checkout error:", e);
     }
   }

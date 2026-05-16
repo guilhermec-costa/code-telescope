@@ -1,14 +1,15 @@
-import { execAsync } from "@backend/utils/commands";
+import { getGitRoots } from "@backend/core/finders/git/api-utils";
+import { GitBranchFuzzyFinder } from "@backend/core/finders/git/git-branch.finder";
+import { execAsync, execFileAsync } from "@backend/utils/commands";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getGitRoots } from "../../core/finders/git/api-utils";
-import { GitBranchFuzzyFinder } from "../../core/finders/git/git-branch.finder";
 
-vi.mock("../../core/finders/git/api-utils", () => ({
+vi.mock("@backend/core/finders/git/api-utils", () => ({
   getGitRoots: vi.fn(),
 }));
 
 vi.mock("@backend/utils/commands", () => ({
   execAsync: vi.fn(),
+  execFileAsync: vi.fn(),
 }));
 
 describe("GitBranchFuzzyFinder", () => {
@@ -55,5 +56,16 @@ describe("GitBranchFuzzyFinder", () => {
     expect(preview.content).toHaveLength(1);
     expect((preview.content as any)[0].hash).toBe("abc123");
     expect((preview.content as any)[0].message).toBe("initial commit");
+  });
+
+  it("uses argument-based git checkout for branch selection", async () => {
+    vi.mocked(execFileAsync).mockResolvedValueOnce({ stdout: "", stderr: "" });
+
+    await provider.onSelect({
+      name: "feature/safe-checkout",
+      repoPath: "/proj",
+    });
+
+    expect(execFileAsync).toHaveBeenCalledWith("git", ["checkout", "--", "feature/safe-checkout"], { cwd: "/proj" });
   });
 });

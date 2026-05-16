@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta http-equiv="Content-Security-Policy" content="{{__CSP__}}">
     <link rel="preload" href="{{script}}" as="script">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,23 +12,22 @@
     <link rel="stylesheet" href="{{branch-styles}}">
     <link rel="stylesheet" href="{{font-styles}}">
     <link rel="stylesheet" href="{{vim-styles}}">
-    <base href="{{dist-uri}}/">`
-    <script>
-    const __PREVIEW_CFG__ = JSON.parse('{{__PREVIEW_CFG__}}');
-    const __KEYBINDINGS_CFG__ = JSON.parse('{{__KEYBINDINGS_CFG__}}');
-    const __MATCHING_CFG__ = JSON.parse('{{__MATCHING_CFG__}}');
-    const __CUSTOM_RENDER_ADAPTERS__ = JSON.parse('{{__CUSTOM_RENDER_ADAPTERS__}}');
-    const __FILE_PATH_DISPLAY__ = '{{__WS_PATH_DISPLAY__}}';
-    const __PROVIDER__ = '{{__PROVIDER__}}'
-    // Your editor may show a JavaScript syntax error here — that's expected.
-    // This placeholder is intentionally left unquoted so the final template can
-    // correctly preserve and escape both single and double quotes.
-    const __INITIAL_QUERY__ = {{__INITIAL_QUERY__}};
+    <base href="{{dist-uri}}/">
+    <script nonce="{{__NONCE__}}">
+      // Template placeholders are replaced at runtime by WebviewAssetManager.
+      // Editor parse errors here are expected.
+      const __PREVIEW_CFG__ = {{__PREVIEW_CFG__}};
+      const __KEYBINDINGS_CFG__ = {{__KEYBINDINGS_CFG__}};
+      const __MATCHING_CFG__ = {{__MATCHING_CFG__}};
+      const __CUSTOM_RENDER_ADAPTERS__ = {{__CUSTOM_RENDER_ADAPTERS__}};
+      const __FILE_PATH_DISPLAY__ = {{__FILE_PATH_DISPLAY__}};
+      const __PROVIDER__ = {{__PROVIDER__}};
+      const __INITIAL_QUERY__ = {{__INITIAL_QUERY__}};
     </script>
-    <script id="__CUSTOM_DATA_ADAPTER__" type="text/plain">
+    <script nonce="{{__NONCE__}}" id="__CUSTOM_DATA_ADAPTER__" type="text/plain">
     {{__CUSTOM_DATA_ADAPTER__}}
     </script>
-    <script defer src="{{script}}"></script>
+    <script nonce="{{__NONCE__}}" defer src="{{script}}"></script>
   </head>
 
   <body data-layout="classic">
@@ -40,7 +40,7 @@
           </div>
           <div id="input-container">
             <div id="input-container-label">{{__PROMPT_MSG__}}</div>
-            <input id="search" type="text" autofocus>
+            <input id="search" type="text">
             <span id="items-count">0 / 0</span>
           </div>
         </div>

@@ -16,6 +16,10 @@ export class CustomProviderLoader {
   async initialize(): Promise<void> {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!workspaceFolders || workspaceFolders.length === 0) return;
+    if (!vscode.workspace.isTrusted) {
+      Logger.warn?.("[CodeTelescope] Workspace is untrusted. Skipping custom provider loading.");
+      return;
+    }
 
     const wsGlob = new vscode.RelativePattern(workspaceFolders[0], ".vscode/code-telescope/*.{finder,provider}.cjs");
 
@@ -48,11 +52,13 @@ export class CustomProviderLoader {
   }
 
   private async onCreate(uri: vscode.Uri) {
+    if (!vscode.workspace.isTrusted) return;
     Logger.info(`[CodeTelescope] Custom provider created: ${uri.fsPath}`);
     await this.loadAndTrack(uri);
   }
 
   private async onChange(uri: vscode.Uri) {
+    if (!vscode.workspace.isTrusted) return;
     console.log("[CodeTelescope] Custom provider changed:", uri.fsPath);
     await this.loadAndTrack(uri);
   }

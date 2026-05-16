@@ -52,6 +52,10 @@ export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
           break;
         }
         case "openUrl":
+          if (!CustomFinderBackendProxy.isSafeExternalUrl(action.url)) {
+            await vscode.window.showErrorMessage(`Blocked unsafe URL: ${action.url}`);
+            return;
+          }
           await vscode.env.openExternal(vscode.Uri.parse(action.url));
           break;
         case "copyToClipboard":
@@ -116,4 +120,13 @@ export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
   getPreviewData!: (identifier: string) => Promise<PreviewData>;
 
   supportsDynamicSearch = false;
+
+  private static isSafeExternalUrl(url: string): boolean {
+    try {
+      const parsed = new URL(url);
+      return parsed.protocol === "https:" || parsed.protocol === "http:";
+    } catch {
+      return false;
+    }
+  }
 }

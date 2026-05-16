@@ -54,6 +54,7 @@ describe("WebviewAssetManager", () => {
     vi.clearAllMocks();
 
     mockWebview = {
+      cspSource: "webview-csp",
       asWebviewUri: vi.fn((uri) => {
         const path = typeof uri === "string" ? uri : uri.fsPath;
         return { toString: () => `webview-uri://${path}` } as any;
@@ -85,7 +86,7 @@ describe("WebviewAssetManager", () => {
 
     const result = await WebviewAssetManager.getProcessedHtml(mockWebview, mockProvider);
 
-    expect(result).toContain("<style>:root {");
+    expect(result).toContain("<style nonce=");
     expect(result).toContain("--left-pane-width: 50%");
     expect(result).toContain("--prompt-font-size: 14px");
     expect(result).toContain("--border-radius: 4px");
@@ -123,7 +124,56 @@ describe("WebviewAssetManager", () => {
 
     const result = await WebviewAssetManager.getProcessedHtml(mockWebview, mockProvider);
 
-    expect(result).toContain(JSON.stringify(mockPayload, null, 2));
+    expect(result).toContain(`"some": "data"`);
     expect(CustomProviderStorage.instance.getUiProxyDefinition).toHaveBeenCalledWith("custom.my-finder");
+  });
+
+  it("should escape custom adapter JSON for script-tag context without breaking JSON.parse", async () => {
+    mockProvider.fuzzyAdapterType = "custom.my-finder";
+    const rawHtml = `<script id="__CUSTOM_DATA_ADAPTER__" type="text/plain">{{__CUSTOM_DATA_ADAPTER__}}</script>`;
+    vi.mocked(vscode.workspace.fs.readFile).mockResolvedValue(Buffer.from(rawHtml) as any);
+
+    const mockPayload = { template: "</script>" };
+    vi.mocked(CustomProviderStorage.instance.getUiProxyDefinition).mockReturnValue({
+      ok: true,
+      value: { toSerializableObject: () => mockPayload },
+    } as any);
+
+    const result = await WebviewAssetManager.getProcessedHtml(mockWebview, mockProvider);
+
+    expect(result).toContain(`"<\\/script>"`);
+    const scriptStart = `<script id="__CUSTOM_DATA_ADAPTER__" type="text/plain">`;
+    const jsonContent = result.split(scriptStart)[1]?.split("</script>")[0]?.trim() ?? "null";
+
+    expect(() => JSON.parse(jsonContent)).not.toThrow();
+  });
+
+  it("should inject CSP and nonce-protected inline script state", async () => {
+    const rawHtml = `<meta http-equiv="Content-Security-Policy" content="{{__CSP__}}"><script nonce="{{__NONCE__}}">const __PROVIDER__ = {{__PROVIDER__}}</script>`;
+    vi.mocked(vscode.workspace.fs.readFile).mockResolvedValue(Buffer.from(rawHtml) as any);
+
+    const result = await WebviewAssetManager.getProcessedHtml(mockWebview, mockProvider);
+
+    expect(result).toContain("Content-Security-Policy");
+    expect(result).toContain("default-src 'none'");
+    expect(result).toContain("script-src");
+    expect(result).toContain(`style-src-attr 'unsafe-inline'`);
+    expect(result).toContain(`img-src webview-csp https: data:`);
+    expect(result).toContain(`base-uri webview-csp`);
+    expect(result).toContain(`'wasm-unsafe-eval'`);
+    expect(result).toContain('const __PROVIDER__ = "workspace.files"');
+    expect(result).not.toContain("{{__NONCE__}}");
+  });
+
+  it("should escape HTML-sensitive provider titles and prompts", async () => {
+    const rawHtml = "<div>{{__OPTIONS_SIDE_TITLE__}} {{__PROMPT_MSG__}}</div>";
+    vi.mocked(vscode.workspace.fs.readFile).mockResolvedValue(Buffer.from(rawHtml) as any);
+
+    mockProvider.fuzzyAdapterType = "custom.<unsafe>" as any;
+
+    const result = await WebviewAssetManager.getProcessedHtml(mockWebview, mockProvider);
+
+    expect(result).toContain("&lt;unsafe&gt;");
+    expect(result).not.toContain("<unsafe>");
   });
 });

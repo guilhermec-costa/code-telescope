@@ -56,6 +56,7 @@ describe("CustomProviderLoader", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(vscode.workspace, { partial: true }).isTrusted = true;
 
     vi.mocked(vscode.workspace.findFiles).mockResolvedValue([]);
     vi.mocked(vscode.workspace.fs.readDirectory).mockResolvedValue([]);
@@ -67,6 +68,17 @@ describe("CustomProviderLoader", () => {
       dispose: vi.fn(),
     };
     vi.mocked(vscode.workspace.createFileSystemWatcher).mockReturnValue(mockWatcher as any);
+  });
+
+  it("should skip loading workspace custom providers when workspace is untrusted", async () => {
+    vi.mocked(vscode.workspace, { partial: true }).isTrusted = false as any;
+
+    const loader = new CustomProviderLoader(fakeContext);
+
+    await loader.initialize();
+
+    expect(vscode.workspace.findFiles).not.toHaveBeenCalled();
+    expect(vscode.workspace.createFileSystemWatcher).not.toHaveBeenCalled();
   });
 
   it("should load workspace providers on initialize", async () => {

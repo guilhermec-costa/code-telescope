@@ -33,7 +33,7 @@ function getRelativePath(filePath, workspaceRoot) {
  * @type {import('../shared/custom-provider').CustomFinderDefinition}
  */
 module.exports = {
-  fuzzyAdapterType: "custom.ts.files",
+  fuzzyAdapterType: "custom.js.files",
 
   backend: {
     async querySelectableOptions() {
@@ -75,7 +75,7 @@ module.exports = {
 
       return {
         content: selectedQuery.content,
-        language: "typescript"
+        language: "javascript"
       };
     }
   },

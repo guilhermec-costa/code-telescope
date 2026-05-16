@@ -1,4 +1,4 @@
-import { exec } from "child_process";
+import { exec, execFile } from "child_process";
 import { promisify } from "util";
 import * as vscode from "vscode";
 import { Globals } from "../globals";
@@ -34,3 +34,4 @@ export function stringifyError(error: unknown) {
 }
 
 export const execAsync = promisify(exec);
+export const execFileAsync = promisify(execFile);

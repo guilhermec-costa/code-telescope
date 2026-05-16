@@ -58,6 +58,7 @@ vi.mock("vscode", () => ({
     File: 1,
   },
   workspace: {
+    isTrusted: true,
     createFileSystemWatcher: vi.fn(),
     get workspaceFolders() {
       return [{ uri: { fsPath: "/workspace", toString: () => "/workspace" } }];
@@ -77,6 +78,9 @@ vi.mock("vscode", () => ({
       get: vi.fn(),
     }),
     openTextDocument: vi.fn(),
+  },
+  commands: {
+    executeCommand: vi.fn(),
   },
   ExtensionContext: class {},
   ExtensionMode: {

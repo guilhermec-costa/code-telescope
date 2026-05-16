@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import path from "path";
 import * as vscode from "vscode";
 import { IFuzzyFinderProvider, LayoutCustomPlaceholders } from "../../../shared/abstractions/fuzzy-finder.provider";
@@ -18,6 +19,7 @@ import { PreContextManager } from "./pre-context";
 export class WebviewAssetManager {
   public static async getProcessedHtml(wv: vscode.Webview, provider: IFuzzyFinderProvider): Promise<string> {
     const customPlaceholders = provider.customPlaceholders?.() ?? {};
+    const nonce = randomUUID();
 
     const layoutFilename =
       customPlaceholders.layoutHtmlFilename ?? `${ExtensionConfigManager.layoutCfg.mode}.view.html`;
@@ -25,8 +27,8 @@ export class WebviewAssetManager {
     const rawContent = (await vscode.workspace.fs.readFile(htmlPath)).toString();
 
     let html = this.resolveAssetUris(rawContent, wv, customPlaceholders);
-    html = this.injectGlobalState(html, wv, provider);
-    html = this.injectDynamicStyles(html);
+    html = this.injectGlobalState(html, wv, provider, nonce);
+    html = this.injectDynamicStyles(html, nonce);
 
     return html;
   }
@@ -64,7 +66,12 @@ export class WebviewAssetManager {
   /**
    * Injects global runtime state and configuration into the HTML.
    */
-  private static injectGlobalState(html: string, wv: vscode.Webview, provider: IFuzzyFinderProvider): string {
+  private static injectGlobalState(
+    html: string,
+    wv: vscode.Webview,
+    provider: IFuzzyFinderProvider,
+    nonce: string,
+  ): string {
     let customUiPayload: unknown = null;
 
     const isCustom = provider.fuzzyAdapterType.startsWith(Globals.CUSTOM_PROVIDER_PREFIX);
@@ -98,20 +105,32 @@ export class WebviewAssetManager {
 
     const ctx = PreContextManager.instance.getContext();
     const initialQuery = ctx && provider.usePreSelection ? ctx.selectedText : "";
+    const csp = [
+      "default-src 'none'",
+      `img-src ${wv.cspSource} https: data:`,
+      `style-src ${wv.cspSource} 'nonce-${nonce}'`,
+      `style-src-attr 'unsafe-inline'`,
+      `font-src ${wv.cspSource} data:`,
+      `script-src ${wv.cspSource} 'nonce-${nonce}' 'wasm-unsafe-eval' 'unsafe-eval'`,
+      `connect-src ${wv.cspSource}`,
+      `base-uri ${wv.cspSource}`,
+    ].join("; ");
 
     const state: Record<string, string> = {
       "{{__PREVIEW_CFG__}}": JSON.stringify(ExtensionConfigManager.previewManagerCfg),
-      "{{__WS_PATH_DISPLAY__}}": ExtensionConfigManager.wsFileFinderCfg.textDisplay,
+      "{{__FILE_PATH_DISPLAY__}}": JSON.stringify(ExtensionConfigManager.wsFileFinderCfg.textDisplay),
       "{{__KEYBINDINGS_CFG__}}": JSON.stringify(ExtensionConfigManager.keybindings),
       "{{__MATCHING_CFG__}}": JSON.stringify(ExtensionConfigManager.matchingCfg),
-      "{{__CUSTOM_DATA_ADAPTER__}}": JSON.stringify(customUiPayload, null, 2),
+      "{{__CUSTOM_DATA_ADAPTER__}}": this.escapeScriptTagContent(JSON.stringify(customUiPayload, null, 2)),
       "{{__CUSTOM_RENDER_ADAPTERS__}}": JSON.stringify([]),
-      "{{__OPTIONS_SIDE_TITLE__}}": getProviderListTitle(provider.fuzzyAdapterType),
-      "{{__PREVIEW_SIDE_TITLE__}}": getProviderPreviewTitle(provider.fuzzyAdapterType),
-      "{{__PROMPT_MSG__}}": getProviderPromptMessage(provider.fuzzyAdapterType),
-      "{{__PROVIDER__}}": provider.fuzzyAdapterType,
+      "{{__OPTIONS_SIDE_TITLE__}}": this.escapeHtml(getProviderListTitle(provider.fuzzyAdapterType)),
+      "{{__PREVIEW_SIDE_TITLE__}}": this.escapeHtml(getProviderPreviewTitle(provider.fuzzyAdapterType)),
+      "{{__PROMPT_MSG__}}": this.escapeHtml(getProviderPromptMessage(provider.fuzzyAdapterType)),
+      "{{__PROVIDER__}}": JSON.stringify(provider.fuzzyAdapterType),
       "{{__INITIAL_QUERY__}}": JSON.stringify(initialQuery),
       "{{dist-uri}}": wv.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, "ui", "dist")).toString(),
+      "{{__NONCE__}}": nonce,
+      "{{__CSP__}}": csp,
     };
 
     let processed = html;
@@ -124,7 +143,7 @@ export class WebviewAssetManager {
   /**
    * Injects dynamic CSS variables based on layout configuration.
    */
-  private static injectDynamicStyles(html: string): string {
+  private static injectDynamicStyles(html: string, nonce: string): string {
     const panelCfg = ExtensionConfigManager.layoutCfg;
     const vars = {
       "--left-pane-width": `${panelCfg.leftSideWidthPct}%`,
@@ -141,8 +160,26 @@ export class WebviewAssetManager {
     const cssBody = Object.entries(vars)
       .map(([k, v]) => `${k}: ${v};`)
       .join("\n");
-    const styleTag = `<style>:root { ${cssBody} }</style>`;
+    const styleTag = `<style nonce="${nonce}">:root { ${cssBody} }</style>`;
 
     return html.replace("<cssvariables></cssvariables>", styleTag);
+  }
+
+  private static escapeHtml(value: string): string {
+    return value.replace(/[&<>"']/g, (char) => {
+      const entities: Record<string, string> = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      };
+
+      return entities[char];
+    });
+  }
+
+  private static escapeScriptTagContent(value: string): string {
+    return value.replace(/<\/script/gi, "<\\/script");
   }
 }
