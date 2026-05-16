@@ -643,7 +643,7 @@
         "deploy:patch": "npm run make:package && vsce publish patch",
         "deploy:minor": "npm run make:package && vsce publish minor",
         "deploy:major": "npm run make:package && vsce publish major",
-        "deploy:openvsx": "ovsx publish"
+        "deploy:openvsx": "npm run make:package && ovsx publish"
     },
     "devDependencies": {
         "@biomejs/biome": "2.3.11",
