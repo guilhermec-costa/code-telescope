@@ -66,6 +66,6 @@ describe("GitBranchFuzzyFinder", () => {
       repoPath: "/proj",
     });
 
-    expect(execFileAsync).toHaveBeenCalledWith("git", ["checkout", "--", "feature/safe-checkout"], { cwd: "/proj" });
+    expect(execFileAsync).toHaveBeenCalledWith("git", ["checkout", "feature/safe-checkout"], { cwd: "/proj" });
   });
 });
