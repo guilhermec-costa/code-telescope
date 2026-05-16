@@ -40,7 +40,7 @@ function getBeamWidth(queryLen: number, textLen: number): number {
   return 48;
 }
 
-function buildStrPositionIndex(text: string): Map<string, number[]> {
+function buildPositionIndex(text: string): Map<string, number[]> {
   const positions = new Map<string, number[]>();
 
   for (let i = 0; i < text.length; i++) {
@@ -143,7 +143,7 @@ function computeBestMatch(lowerQuery: string, text: string): MatchResult {
   const filenameStart = getFilenameStart(text);
   const exactSubstringIdx = lowerText.indexOf(lowerQuery);
   const beamWidth = getBeamWidth(queryLen, textLen);
-  const positionIndex = buildStrPositionIndex(lowerText);
+  const positionIndex = buildPositionIndex(lowerText);
 
   let globalStateHistory: State[] = [{ score: 0, lastIdx: -1, prev: null }];
 

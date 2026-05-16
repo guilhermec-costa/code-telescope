@@ -12,7 +12,7 @@ export interface BuiltinFinderOption {
   type: "builtinFindersAdapter",
 })
 export class BuiltinFinderDataAdapter implements IFuzzyFinderDataAdapter<BuiltinFinderData, BuiltinFinderOption> {
-  typeName: DataAdapterType;
+  typeName!: DataAdapterType;
 
   parseOptions(data: BuiltinFinderData): BuiltinFinderOption[] {
     const options: BuiltinFinderOption[] = [];

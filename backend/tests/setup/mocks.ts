@@ -49,6 +49,10 @@ vi.mock("vscode", () => ({
   },
   env: {
     appRoot: "/app",
+    openExternal: vi.fn(),
+    clipboard: {
+      writeText: vi.fn(),
+    },
   },
   FileType: {
     File: 1,

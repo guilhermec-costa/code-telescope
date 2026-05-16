@@ -7,7 +7,7 @@ import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.deco
   type: "gitCommitsAdapter",
 })
 export class CommitFinderDataAdapter implements IFuzzyFinderDataAdapter<CommitSearchInfo[], CommitSearchInfo> {
-  typeName: DataAdapterType;
+  typeName!: DataAdapterType;
   shouldSort = false;
 
   parseOptions(data: CommitSearchInfo[]) {

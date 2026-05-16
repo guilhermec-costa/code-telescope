@@ -7,7 +7,7 @@ import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.deco
   type: "gitBranchesAdapter",
 })
 export class BranchFinderDataAdapter implements IFuzzyFinderDataAdapter<BranchInfo[], BranchInfo> {
-  typeName: DataAdapterType;
+  typeName!: DataAdapterType;
   debounceSearchTime = 30;
 
   parseOptions(data: BranchInfo[]) {
