@@ -123,8 +123,9 @@ export class GitDiffFuzzyFinder implements FuzzyFinderProvider {
   }
 
   private async getUntrackedDiff(repoPath: string, escapedPath: string): Promise<string> {
+    const nullDevice = process.platform === "win32" ? "NUL" : "/dev/null";
     try {
-      const { stdout } = await execAsync(`git diff --no-index --no-color -- /dev/null ${escapedPath}`, {
+      const { stdout } = await execAsync(`git diff --no-index --no-color -- ${nullDevice} ${escapedPath}`, {
         cwd: repoPath,
       });
       return stdout;
@@ -138,6 +139,9 @@ export class GitDiffFuzzyFinder implements FuzzyFinderProvider {
   }
 
   private escapeShellArg(value: string): string {
+    if (process.platform === "win32") {
+      return `"${value.replace(/"/g, '\\"')}"`;
+    }
     return `'${value.replace(/'/g, `'\\''`)}'`;
   }
 }
