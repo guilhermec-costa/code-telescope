@@ -45,6 +45,7 @@ suite("Integration Tests", () => {
         "previewRequest",
         "optionSelected",
         "dynamicSearch",
+        "sessionStateUpdate",
         "closePanel",
       ];
 

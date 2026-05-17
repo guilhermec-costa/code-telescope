@@ -1,10 +1,5 @@
+import { WebviewSessionState } from "../../../../shared/extension-webview-protocol";
 import { VSCodeApi } from "./code-api";
-
-export type WebviewState = {
-  selectedIndex: number;
-  scrollTop: number;
-  previewContent: string | null;
-};
 
 export type MatchingAlgorithm = "substring" | "subsequence";
 
@@ -15,60 +10,26 @@ declare const __MATCHING_CFG__: { algorithm: MatchingAlgorithm };
  *
  * Exposes semantic state properties via static getters/setters.
  */
-export class StateManager {
-  public static pathsToExclude: string[] = [];
-  private static readonly DEFAULT_STATE: WebviewState = {
+export class SessionStateManager {
+  private static readonly DEFAULT_SESSION_STATE: WebviewSessionState = {
+    query: "",
     selectedIndex: 0,
-    scrollTop: 0,
-    previewContent: "",
   };
 
-  private static read(): WebviewState {
-    return VSCodeApi.getState<WebviewState>() ?? { ...this.DEFAULT_STATE };
-  }
-
-  private static write(state: WebviewState): void {
+  private static write(state: WebviewSessionState): void {
     VSCodeApi.setState(state);
   }
 
-  private static update(patch: Partial<WebviewState>): void {
+  static read(): WebviewSessionState {
+    return VSCodeApi.getState<WebviewSessionState>() ?? { ...this.DEFAULT_SESSION_STATE };
+  }
+
+  static patch(patch: Partial<WebviewSessionState>): void {
     const prev = this.read();
     this.write({
       ...prev,
       ...patch,
     });
-  }
-
-  static get selectedIndex(): number {
-    return this.read().selectedIndex;
-  }
-
-  static set selectedIndex(value: number) {
-    this.update({ selectedIndex: value });
-  }
-
-  static get scrollTop(): number {
-    return this.read().scrollTop;
-  }
-
-  static set scrollTop(value: number) {
-    this.update({ scrollTop: value });
-  }
-
-  static get previewContent(): string | null {
-    return this.read().previewContent;
-  }
-
-  static set previewContent(value: string | null) {
-    this.update({ previewContent: value });
-  }
-
-  static get state(): WebviewState {
-    return this.read();
-  }
-
-  static reset(): void {
-    this.write({ ...this.DEFAULT_STATE });
   }
 
   static get layoutMode() {

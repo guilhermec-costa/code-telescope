@@ -7,6 +7,7 @@ import { ExternalFinderRegistry } from "../../integration/api/external-registry"
 import { getProviderListTitle, getProviderPreviewTitle, getProviderPromptMessage } from "../../utils/configuration";
 import { joinPath } from "../../utils/files";
 import { ExtensionConfigManager } from "../common/config-manager";
+import { ProviderStartOptions } from "../presentation/fuzzy-panel.controller";
 import { CustomProviderStorage } from "./custom/custom-provider.storage";
 import { PreContextManager } from "./pre-context";
 
@@ -17,7 +18,11 @@ import { PreContextManager } from "./pre-context";
  * global state injection and dynamic styling.
  */
 export class WebviewAssetManager {
-  public static async getProcessedHtml(wv: vscode.Webview, provider: IFuzzyFinderProvider): Promise<string> {
+  public static async getProcessedHtml(
+    wv: vscode.Webview,
+    provider: IFuzzyFinderProvider,
+    startOptions?: ProviderStartOptions,
+  ): Promise<string> {
     const customPlaceholders = provider.customPlaceholders?.() ?? {};
     const nonce = randomUUID();
 
@@ -27,7 +32,7 @@ export class WebviewAssetManager {
     const rawContent = (await vscode.workspace.fs.readFile(htmlPath)).toString();
 
     let html = this.resolveAssetUris(rawContent, wv, customPlaceholders);
-    html = this.injectGlobalState(html, wv, provider, nonce);
+    html = this.injectGlobalState(html, wv, provider, nonce, startOptions);
     html = this.injectDynamicStyles(html, nonce);
 
     return html;
@@ -71,6 +76,7 @@ export class WebviewAssetManager {
     wv: vscode.Webview,
     provider: IFuzzyFinderProvider,
     nonce: string,
+    startOptions?: ProviderStartOptions,
   ): string {
     let customUiPayload: unknown = null;
 
@@ -103,8 +109,6 @@ export class WebviewAssetManager {
       }
     }
 
-    const ctx = PreContextManager.instance.getContext();
-    const initialQuery = ctx && provider.usePreSelection ? ctx.selectedText : "";
     const csp = [
       "default-src 'none'",
       `img-src ${wv.cspSource} https: data:`,
@@ -116,6 +120,9 @@ export class WebviewAssetManager {
       `base-uri ${wv.cspSource}`,
     ].join("; ");
 
+    const ctx = PreContextManager.instance.getContext();
+    const initialQuery = startOptions?.initialQuery ?? (ctx && provider.usePreSelection ? ctx.selectedText : "");
+    const initialSelectedIndex = startOptions?.initialSelectedIndex ?? "undefined";
     const state: Record<string, string> = {
       "{{__PREVIEW_CFG__}}": JSON.stringify(ExtensionConfigManager.previewManagerCfg),
       "{{__FILE_PATH_DISPLAY__}}": JSON.stringify(ExtensionConfigManager.wsFileFinderCfg.textDisplay),
@@ -128,6 +135,7 @@ export class WebviewAssetManager {
       "{{__PROMPT_MSG__}}": this.escapeHtml(getProviderPromptMessage(provider.fuzzyAdapterType)),
       "{{__PROVIDER__}}": JSON.stringify(provider.fuzzyAdapterType),
       "{{__INITIAL_QUERY__}}": JSON.stringify(initialQuery),
+      "{{__INITIAL_SELECTED_INDEX__}}": JSON.stringify(initialSelectedIndex),
       "{{dist-uri}}": wv.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, "ui", "dist")).toString(),
       "{{__NONCE__}}": nonce,
       "{{__CSP__}}": csp,

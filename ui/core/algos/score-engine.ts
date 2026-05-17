@@ -1,4 +1,4 @@
-import { StateManager } from "../common/code/state-manager";
+import { SessionStateManager } from "../common/code/state-manager";
 
 function isWordBoundary(text: string, idx: number): boolean {
   if (idx === 0) return true;
@@ -203,7 +203,7 @@ function computeSubstringMatch(lowerQuery: string, text: string): MatchResult {
 }
 
 export function computeMatch(lowerQuery: string, text: string): MatchResult {
-  const algorithm = StateManager.matchingAlgorithm;
+  const algorithm = SessionStateManager.matchingAlgorithm;
   return algorithm === "subsequence" ? computeBestMatch(lowerQuery, text) : computeSubstringMatch(lowerQuery, text);
 }
 

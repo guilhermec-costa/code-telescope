@@ -3,6 +3,7 @@ import { FromWebviewKindMessage } from "../../../../shared/extension-webview-pro
 import { Globals } from "../../../globals";
 import { execCmd } from "../../../utils/commands";
 import { IWebviewMessageHandler } from "../../abstractions/webview-message-handler";
+import { FinderResumeStore } from "../../common/finder-resume.store";
 import { PreContextManager } from "../../common/pre-context";
 import { WebviewMessageHandler } from "../../decorators/webview-message-handler.decorator";
 import { FuzzyFinderPanelController } from "../fuzzy-panel.controller";
@@ -12,6 +13,9 @@ export class ClosePanelHandler implements IWebviewMessageHandler<"closePanel"> {
   readonly type = "closePanel";
 
   async handle(msg: Extract<FromWebviewKindMessage, { type: "closePanel" }>, wv: vscode.Webview) {
+    const { syncData } = msg.data;
+    FinderResumeStore.instance.update(syncData);
+
     PreContextManager.instance.focusOnCapture();
     const provider = FuzzyFinderPanelController.instance!.provider;
     FuzzyFinderPanelController.instance!.dispose();

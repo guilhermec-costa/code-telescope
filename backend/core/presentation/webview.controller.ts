@@ -3,6 +3,7 @@ import { IFuzzyFinderProvider } from "../../../shared/abstractions/fuzzy-finder.
 import { FromWebviewKindMessage, ToWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { WebviewAssetManager } from "../common/webview-asset.manager";
 import { Logger } from "../log";
+import type { ProviderStartOptions } from "./fuzzy-panel.controller";
 
 export class WebviewController {
   /**
@@ -45,12 +46,16 @@ export class WebviewController {
   /**
    * Resolves and processes the HTML for a provider-specific webview.
    */
-  static async resolveProviderWebviewHtml(wv: vscode.Webview, provider: IFuzzyFinderProvider): Promise<string> {
+  static async resolveProviderWebviewHtml(
+    wv: vscode.Webview,
+    provider: IFuzzyFinderProvider,
+    startOptions?: ProviderStartOptions,
+  ): Promise<string> {
     const t0 = performance.now();
 
     Logger.info(`[Webview HTML] resolving for provider=${provider.fuzzyAdapterType}`);
 
-    const html = await WebviewAssetManager.getProcessedHtml(wv, provider);
+    const html = await WebviewAssetManager.getProcessedHtml(wv, provider, startOptions);
 
     const t1 = performance.now();
     Logger.info(`[Webview HTML] resolved in ${(t1 - t0).toFixed(2)}ms`);

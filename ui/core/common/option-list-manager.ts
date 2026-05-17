@@ -5,7 +5,7 @@ import { escapeHtml } from "../../utils/html";
 import { computeMatch, MatchResult } from "../algos/score-engine";
 import { PreviewManager } from "../render/preview-manager";
 import { Virtualizer } from "../render/virtualizer";
-import { StateManager } from "./code/state-manager";
+import { SessionStateManager } from "./code/state-manager";
 import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
 
 /**
@@ -22,7 +22,20 @@ export class OptionListManager {
 
   private listElement: HTMLUListElement;
   private itemsCountElement: HTMLElement | null;
-  private selectedIndex: number = 0;
+
+  private _selectedIndex: number = 0;
+
+  private set selectedIndex(value: number) {
+    this._selectedIndex = value;
+    SessionStateManager.patch({
+      selectedIndex: this._selectedIndex,
+    });
+  }
+
+  private get selectedIndex(): number {
+    return this._selectedIndex;
+  }
+
   private readonly OPTION_ITEM_ID_PREFIX = "option-item-id-";
   private matchCache = new Map<string, MatchResult>();
   private matchCacheScope = "";
@@ -68,7 +81,7 @@ export class OptionListManager {
    * Returns true if ivy layout is active
    */
   private isIvyLayout(): boolean {
-    return StateManager.layoutMode === "ivy";
+    return SessionStateManager.layoutMode === "ivy";
   }
 
   /**
@@ -176,7 +189,7 @@ export class OptionListManager {
   public onSelectionConfirmed() {
     const selectedValue = this.getSelectedValue();
     if (selectedValue) {
-      WebviewToExtensionMessenger.instance.onOptionSelected(selectedValue);
+      WebviewToExtensionMessenger.instance.onOptionSelected(selectedValue, SessionStateManager.read());
     }
   }
 
@@ -192,14 +205,15 @@ export class OptionListManager {
     return this.filteredOptions.length === 0 || this.allOptions.length === 0;
   }
 
-  /**
-   * Returns the first index for virtualized mode.
-   */
-  private restoreSelectedIndex(): number {
-    return this.getRelativeFirstIndex();
-  }
-
   private getRelativeFirstIndex(): number {
+    if (
+      __INITIAL_SELECTED_INDEX__ != undefined &&
+      __INITIAL_SELECTED_INDEX__ >= 0 &&
+      __INITIAL_SELECTED_INDEX__ <= this.filteredOptions.length - 1
+    ) {
+      return __INITIAL_SELECTED_INDEX__;
+    }
+
     const isIvy = this.isIvyLayout();
 
     // in ivy layout, index 0 is the last visually
@@ -373,7 +387,7 @@ export class OptionListManager {
   }
 
   private resetMatchCacheIfNeeded(query: string): void {
-    const scope = `${StateManager.matchingAlgorithm}::${query.toLowerCase()}`;
+    const scope = `${SessionStateManager.matchingAlgorithm}::${query.toLowerCase()}`;
 
     if (scope !== this.matchCacheScope) {
       this.matchCache.clear();

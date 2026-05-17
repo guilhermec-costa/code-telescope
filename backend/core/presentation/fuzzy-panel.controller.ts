@@ -6,10 +6,16 @@ import { FromWebviewKindMessage } from "../../../shared/extension-webview-protoc
 import { Globals } from "../../globals";
 import { getProviderTabTitle } from "../../utils/configuration";
 import { joinPath } from "../../utils/files";
+import { FinderResumeStore } from "../common/finder-resume.store";
 import { PreContextManager } from "../common/pre-context";
 import { FuzzyFinderAdapterRegistry } from "../registry/fuzzy-provider.registry";
 import { WebviewMessageHandlerRegistry } from "../registry/webview-handler.registry";
 import { WebviewController } from "./webview.controller";
+
+export type ProviderStartOptions = {
+  initialQuery?: string;
+  initialSelectedIndex?: number | undefined;
+};
 
 /**
  * Handles communication between backend (extension) and frontend (Webview UI)
@@ -66,7 +72,7 @@ export class FuzzyFinderPanelController {
    * Shows an existing panel or creates and displays a new one.
    * @returns The active FuzzyPanelController instance.
    */
-  public static createOrShow() {
+  private static createOrShow() {
     if (FuzzyFinderPanelController._instance) {
       console.log("[FuzzyPanel] Reusing existing panel");
       FuzzyFinderPanelController._instance.wvPanel.reveal(this.panelRevealPosition, false);
@@ -82,14 +88,28 @@ export class FuzzyFinderPanelController {
     return FuzzyFinderPanelController._instance;
   }
 
-  public static async setupProvider(providerType: FuzzyProviderType) {
+  public static async setupProvider(providerType: FuzzyProviderType, startOptions: ProviderStartOptions = {}) {
     PreContextManager.instance.captureFromActiveEditor();
-    const instance = FuzzyFinderPanelController.createOrShow();
+    const instance = this.createOrShow();
+
     this.instance!.wvPanel.title = `Code Telescope - ${getProviderTabTitle(providerType)}`;
-    await instance.startProvider(providerType);
+    await instance.startProvider(providerType, startOptions);
   }
 
-  public async startProvider(providerType: FuzzyProviderType) {
+  public static async resumeLastSession(): Promise<void> {
+    const snapshot = FinderResumeStore.instance.getSnapshot();
+    if (!snapshot) {
+      await vscode.window.showInformationMessage("No previous finder session to resume yet.");
+      return;
+    }
+
+    await this.setupProvider(snapshot.providerType, {
+      initialQuery: snapshot.query,
+      initialSelectedIndex: snapshot.selectedIndex,
+    });
+  }
+
+  public async startProvider(providerType: FuzzyProviderType, startOptions?: ProviderStartOptions) {
     const provider = FuzzyFinderAdapterRegistry.instance.getAdapter(providerType);
     if (!provider) {
       this.dispose();
@@ -98,7 +118,11 @@ export class FuzzyFinderPanelController {
     }
 
     this.setFuzzyProvider(provider as IFuzzyFinderProvider);
-    this.wvPanel.webview.html = await WebviewController.resolveProviderWebviewHtml(this.webview, this._provider);
+    this.wvPanel.webview.html = await WebviewController.resolveProviderWebviewHtml(
+      this.webview,
+      this._provider,
+      startOptions,
+    );
   }
 
   /**

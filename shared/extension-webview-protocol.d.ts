@@ -135,7 +135,8 @@ export interface PostHandleListMessage {
  */
 export interface OptionSelectedMessage {
   type: "optionSelected";
-  data: any;
+  option: any;
+  syncData: WebviewSessionState;
 }
 
 /**
@@ -170,10 +171,21 @@ export interface UpdateLayoutPropMessage {
 }
 
 /**
+ * Represents the persisted webview state when the panel is closed.
+ */
+export type WebviewSessionState = {
+  query: string;
+  selectedIndex: number;
+};
+
+/**
  * Message sent from the webview requesting the backend to close the panel.
  */
 export interface ClosePanelMessage {
   type: "closePanel";
+  data: {
+    syncData: WebviewSessionState;
+  };
 }
 
 /**

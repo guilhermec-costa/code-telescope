@@ -125,6 +125,10 @@
                 "title": "Code Telescope: Builtin Finders"
             },
             {
+                "command": "code-telescope.fuzzy.resume",
+                "title": "Code Telescope: Resume Last Finder"
+            },
+            {
                 "command": "code-telescope.fuzzy.fontFamily",
                 "title": "Code Telescope: Workspace Fonts"
             },
@@ -201,6 +205,11 @@
                 "command": "code-telescope.fuzzy.recentFiles",
                 "key": "alt+m r",
                 "mac": "alt+m r"
+            },
+            {
+                "command": "code-telescope.fuzzy.resume",
+                "key": "alt+m shift+r",
+                "mac": "alt+m shift+r"
             },
             {
                 "command": "code-telescope.fuzzy.wsSymbols",

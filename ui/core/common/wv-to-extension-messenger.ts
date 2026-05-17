@@ -1,4 +1,8 @@
-import { FromWebviewKindMessage, UpdateLayoutPropMessage } from "../../../shared/extension-webview-protocol";
+import {
+  FromWebviewKindMessage,
+  UpdateLayoutPropMessage,
+  WebviewSessionState,
+} from "../../../shared/extension-webview-protocol";
 import { VSCodeApi } from "./code/code-api";
 
 /**
@@ -42,8 +46,8 @@ export class WebviewToExtensionMessenger {
    *
    * @param option - The selected value to send back to the extension.
    */
-  onOptionSelected(option: string): void {
-    this.postMessage({ type: "optionSelected", data: option });
+  onOptionSelected(option: string, syncData: WebviewSessionState): void {
+    this.postMessage({ type: "optionSelected", option, syncData });
   }
 
   onHighlighterDone() {
@@ -60,8 +64,8 @@ export class WebviewToExtensionMessenger {
   /**
    * Requests the extension to close the webview panel.
    */
-  requestClosePanel(): void {
-    this.postMessage({ type: "closePanel" });
+  requestClosePanel(syncData: WebviewSessionState): void {
+    this.postMessage({ type: "closePanel", data: { syncData } });
   }
 
   /**

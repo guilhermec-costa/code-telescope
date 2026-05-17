@@ -1,4 +1,4 @@
-import { StateManager } from "../common/code/state-manager";
+import { SessionStateManager } from "../common/code/state-manager";
 
 export function isSubsequence(query: string, text: string): boolean {
   if (query.length > text.length) return false;
@@ -24,7 +24,7 @@ export function getSubstringMatchIndex(query: string, text: string): number {
 }
 
 export function matches(query: string, text: string): boolean {
-  const algorithm = StateManager.matchingAlgorithm;
+  const algorithm = SessionStateManager.matchingAlgorithm;
   if (!query) return true;
   if (!text) return false;
 

@@ -4,6 +4,7 @@ import { MessageBridge } from "../message-bridge";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { PreviewManager } from "../render/preview-manager";
 import { VimInputHandler } from "../vim";
+import { SessionStateManager } from "./code/state-manager";
 import { KeyboardHandler } from "./kbd-handler";
 import { OptionListManager } from "./option-list-manager";
 import { WebviewToExtensionMessenger } from "./wv-to-extension-messenger";
@@ -170,6 +171,8 @@ export class WebviewController {
   private setupEventListeners(): void {
     this.searchElement.addEventListener("input", async () => {
       const query = this.searchElement.value;
+      SessionStateManager.patch({ query });
+
       if (query) {
         WebviewToExtensionMessenger.instance.requestDynamicSearch(query);
         this.currentRequestId = WebviewToExtensionMessenger.instance.lastRequestId;
@@ -191,9 +194,9 @@ export class WebviewController {
     this.keyboardHandler.setScrollRight(PreviewManager.instance.scrollRight.bind(PreviewManager.instance));
     this.keyboardHandler.setScrollLeft(PreviewManager.instance.scrollLeft.bind(PreviewManager.instance));
     this.keyboardHandler.setConfirmHandler(this.confirmSelection.bind(this));
-    this.keyboardHandler.setCloseHandler(
-      WebviewToExtensionMessenger.instance.requestClosePanel.bind(WebviewToExtensionMessenger.instance),
-    );
+    this.keyboardHandler.setCloseHandler(() => {
+      WebviewToExtensionMessenger.instance.requestClosePanel(SessionStateManager.read());
+    });
     this.keyboardHandler.setPromptDeleteHandler(() => {
       const input = this.searchElement;
       const pos = input.selectionStart || 0;
@@ -219,7 +222,7 @@ export class WebviewController {
   private confirmSelection(): void {
     const selectedValue = OptionListManager.instance.getSelectedValue();
     if (selectedValue) {
-      WebviewToExtensionMessenger.instance.onOptionSelected(selectedValue);
+      WebviewToExtensionMessenger.instance.onOptionSelected(selectedValue, SessionStateManager.read());
     }
   }
 }

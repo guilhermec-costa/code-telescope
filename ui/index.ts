@@ -1,4 +1,4 @@
-import { StateManager } from "./core/common/code/state-manager";
+import { SessionStateManager } from "./core/common/code/state-manager";
 import { DIContainer } from "./core/common/di-container";
 import { WebviewController } from "./core/common/webview.controller";
 import { loadDecorators } from "./core/decorators/loader";
@@ -17,7 +17,7 @@ async function bootstrap() {
   const controller = new WebviewController(container.keyboardHandler);
   console.log("[Index] Controller created");
 
-  resizerInitializers[StateManager.layoutMode]?.();
+  resizerInitializers[SessionStateManager.layoutMode]?.();
 
   await controller.initialize();
   console.log("[Index] Controller initialized - Webview ready!");
