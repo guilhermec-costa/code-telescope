@@ -7,13 +7,6 @@ import {
 import { describe, expect, it } from "vitest";
 
 describe("configuration provider metadata", () => {
-  it("returns metadata for the resume finder", () => {
-    expect(getProviderTabTitle("builtin.resume")).toBe("Resume");
-    expect(getProviderListTitle("builtin.resume")).toBe("Resume");
-    expect(getProviderPreviewTitle("builtin.resume")).toBe("Resume Details");
-    expect(getProviderPromptMessage("builtin.resume")).toBe("Resume last finder...");
-  });
-
   it("returns metadata for git diff providers", () => {
     expect(getProviderTabTitle("git.diffs")).toBe("Git Diffs");
     expect(getProviderListTitle("git.diffs")).toBe("Changed Files");

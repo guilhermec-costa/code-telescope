@@ -9,9 +9,12 @@ export class OptionSelectedHandler implements IWebviewMessageHandler<"optionSele
   readonly type = "optionSelected";
 
   async handle(msg: Extract<FromWebviewKindMessage, { type: "optionSelected" }>) {
-    FinderResumeStore.instance.update(msg.syncData);
-
     const provider = FuzzyFinderPanelController.instance!.provider;
+    FinderResumeStore.instance.update({
+      providerType: provider.fuzzyAdapterType,
+      ...msg.syncData,
+    });
+
     FuzzyFinderPanelController.instance!.dispose();
     await provider.onSelect(msg.option);
 

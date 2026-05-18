@@ -13,7 +13,7 @@ declare const __MATCHING_CFG__: { algorithm: MatchingAlgorithm };
 export class SessionStateManager {
   private static readonly DEFAULT_SESSION_STATE: WebviewSessionState = {
     query: "",
-    selectedIndex: 0,
+    selectedValue: null,
   };
 
   private static write(state: WebviewSessionState): void {

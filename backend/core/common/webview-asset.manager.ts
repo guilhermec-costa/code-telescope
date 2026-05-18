@@ -122,7 +122,7 @@ export class WebviewAssetManager {
 
     const ctx = PreContextManager.instance.getContext();
     const initialQuery = startOptions?.initialQuery ?? (ctx && provider.usePreSelection ? ctx.selectedText : "");
-    const initialSelectedIndex = startOptions?.initialSelectedIndex ?? "undefined";
+    const initialSelectedValue = startOptions?.initialSelectedValue ?? null;
     const state: Record<string, string> = {
       "{{__PREVIEW_CFG__}}": JSON.stringify(ExtensionConfigManager.previewManagerCfg),
       "{{__FILE_PATH_DISPLAY__}}": JSON.stringify(ExtensionConfigManager.wsFileFinderCfg.textDisplay),
@@ -135,7 +135,7 @@ export class WebviewAssetManager {
       "{{__PROMPT_MSG__}}": this.escapeHtml(getProviderPromptMessage(provider.fuzzyAdapterType)),
       "{{__PROVIDER__}}": JSON.stringify(provider.fuzzyAdapterType),
       "{{__INITIAL_QUERY__}}": JSON.stringify(initialQuery),
-      "{{__INITIAL_SELECTED_INDEX__}}": JSON.stringify(initialSelectedIndex),
+      "{{__INITIAL_SELECTED_VALUE__}}": JSON.stringify(initialSelectedValue),
       "{{dist-uri}}": wv.asWebviewUri(vscode.Uri.joinPath(Globals.EXTENSION_URI, "ui", "dist")).toString(),
       "{{__NONCE__}}": nonce,
       "{{__CSP__}}": csp,

@@ -14,7 +14,7 @@ import { WebviewController } from "./webview.controller";
 
 export type ProviderStartOptions = {
   initialQuery?: string;
-  initialSelectedIndex?: number | undefined;
+  initialSelectedValue?: any | undefined;
 };
 
 /**
@@ -105,7 +105,7 @@ export class FuzzyFinderPanelController {
 
     await this.setupProvider(snapshot.providerType, {
       initialQuery: snapshot.query,
-      initialSelectedIndex: snapshot.selectedIndex,
+      initialSelectedValue: snapshot.selectedValue,
     });
   }
 

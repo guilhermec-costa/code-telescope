@@ -175,7 +175,7 @@ export interface UpdateLayoutPropMessage {
  */
 export type WebviewSessionState = {
   query: string;
-  selectedIndex: number;
+  selectedValue: any | null;
 };
 
 /**

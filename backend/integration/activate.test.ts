@@ -45,7 +45,6 @@ suite("Integration Tests", () => {
         "previewRequest",
         "optionSelected",
         "dynamicSearch",
-        "sessionStateUpdate",
         "closePanel",
       ];
 
@@ -69,6 +68,7 @@ suite("Integration Tests", () => {
         getCmdId("fuzzy", "tasks"),
         getCmdId("fuzzy", "callHierarchy"),
         getCmdId("fuzzy", "custom"),
+        getCmdId("fuzzy", "resume"),
       ];
 
       for (const cmdId of expectedCommands) {

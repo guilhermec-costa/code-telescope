@@ -3,7 +3,7 @@ import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 export type FinderResumeSnapshot = {
   providerType: FuzzyProviderType;
   query: string;
-  selectedIndex: number;
+  selectedValue: any | null;
 };
 
 export class FinderResumeStore {
@@ -18,21 +18,11 @@ export class FinderResumeStore {
     return this._instance;
   }
 
-  update(data: { query: string; selectedIndex: number }): void {
-    if (!this.snapshot) return;
-
-    this.snapshot = {
-      ...this.snapshot,
-      query: data.query,
-      selectedIndex: Math.max(0, data.selectedIndex),
-    };
+  update(snapshot: FinderResumeSnapshot): void {
+    this.snapshot = snapshot;
   }
 
   getSnapshot(): FinderResumeSnapshot | null {
     return this.snapshot ? { ...this.snapshot } : null;
-  }
-
-  clear(): void {
-    this.snapshot = null;
   }
 }

@@ -24,6 +24,11 @@ export interface IFuzzyFinderProvider {
 
   finderName?: string;
   finderDescription?: string;
+
+  /**
+   * Whether the provider should initialize the prompt with
+   * the current editor selection when the panel opens.
+   */
   usePreSelection?: boolean;
 
   /**

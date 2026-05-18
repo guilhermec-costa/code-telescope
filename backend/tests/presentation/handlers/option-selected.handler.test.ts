@@ -16,6 +16,7 @@ vi.mock("@backend/core/presentation/fuzzy-panel.controller", () => ({
   FuzzyFinderPanelController: {
     instance: {
       provider: {
+        fuzzyAdapterType: "workspace.files",
         onSelect: vi.fn().mockResolvedValue(undefined),
         onPanelClose: vi.fn(),
       },
@@ -28,7 +29,12 @@ describe("OptionSelectedHandler", () => {
   let handler: OptionSelectedHandler;
   const syncData: WebviewSessionState = {
     query: "",
-    selectedIndex: 0,
+    selectedValue: { relativePath: "src/index.ts" },
+  };
+  const expectedSnapshot = {
+    providerType: "workspace.files",
+    query: "",
+    selectedValue: { relativePath: "src/index.ts" },
   };
 
   beforeEach(() => {
@@ -43,7 +49,7 @@ describe("OptionSelectedHandler", () => {
 
     expect(FuzzyFinderPanelController.instance!.provider.onSelect).toHaveBeenCalledExactlyOnceWith(data);
     expect(FuzzyFinderPanelController.instance?.dispose).toHaveBeenCalled();
-    expect(FinderResumeStore.instance.update).toHaveBeenCalledWith(syncData);
+    expect(FinderResumeStore.instance.update).toHaveBeenCalledWith(expectedSnapshot);
   });
 
   it("calls onPanelClose after selection", async () => {
@@ -52,6 +58,6 @@ describe("OptionSelectedHandler", () => {
     await handler.handle({ type: "optionSelected", option: data, syncData });
 
     expect(FuzzyFinderPanelController.instance?.provider.onPanelClose).toHaveBeenCalled();
-    expect(FinderResumeStore.instance.update).toHaveBeenCalledWith(syncData);
+    expect(FinderResumeStore.instance.update).toHaveBeenCalledWith(expectedSnapshot);
   });
 });

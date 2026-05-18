@@ -25,15 +25,21 @@ export class OptionListManager {
 
   private _selectedIndex: number = 0;
 
+  private get selectedIndex(): number {
+    return this._selectedIndex;
+  }
+
   private set selectedIndex(value: number) {
     this._selectedIndex = value;
     SessionStateManager.patch({
-      selectedIndex: this._selectedIndex,
+      selectedValue: this.getSelectedIdentityValue() ?? null,
     });
   }
 
-  private get selectedIndex(): number {
-    return this._selectedIndex;
+  private getSelectedIdentityValue(): any | undefined {
+    if (!this.dataAdapter || this.filteredOptions.length === 0) return undefined;
+    const option = this.filteredOptions.at(this.selectedIndex);
+    return this.dataAdapter.getSelectionValue(option);
   }
 
   private readonly OPTION_ITEM_ID_PREFIX = "option-item-id-";
@@ -206,12 +212,9 @@ export class OptionListManager {
   }
 
   private getRelativeFirstIndex(): number {
-    if (
-      __INITIAL_SELECTED_INDEX__ != undefined &&
-      __INITIAL_SELECTED_INDEX__ >= 0 &&
-      __INITIAL_SELECTED_INDEX__ <= this.filteredOptions.length - 1
-    ) {
-      return __INITIAL_SELECTED_INDEX__;
+    const previousSelectedIndex = this.findIndexBySelectionValue(__INITIAL_SELECTED_VALUE__);
+    if (previousSelectedIndex !== -1) {
+      return previousSelectedIndex;
     }
 
     const isIvy = this.isIvyLayout();
@@ -223,6 +226,34 @@ export class OptionListManager {
 
   private getRelativeFirstItem() {
     return this.filteredOptions.at(this.getRelativeFirstIndex());
+  }
+
+  private findIndexBySelectionValue(targetValue: any | null): number {
+    if (!this.dataAdapter || targetValue == null) return -1;
+
+    const targetKey = this.toSelectionKey(targetValue);
+    for (let i = 0; i < this.filteredOptions.length; i++) {
+      const option = this.filteredOptions[i];
+      const optionKey = this.toSelectionKey(this.dataAdapter.getSelectionValue(option));
+      if (optionKey === targetKey) {
+        return i;
+      }
+    }
+
+    return -1;
+  }
+
+  private toSelectionKey(value: any): string {
+    if (value === null) return "null";
+    if (value === undefined) return "undefined";
+    if (typeof value === "string") return `str:${value}`;
+    if (typeof value === "number" || typeof value === "boolean") return `${typeof value}:${String(value)}`;
+
+    try {
+      return `json:${JSON.stringify(value)}`;
+    } catch {
+      return `fallback:${String(value)}`;
+    }
   }
 
   private setupScrollListener(): void {

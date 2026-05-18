@@ -13,11 +13,13 @@ export class ClosePanelHandler implements IWebviewMessageHandler<"closePanel"> {
   readonly type = "closePanel";
 
   async handle(msg: Extract<FromWebviewKindMessage, { type: "closePanel" }>, wv: vscode.Webview) {
-    const { syncData } = msg.data;
-    FinderResumeStore.instance.update(syncData);
-
     PreContextManager.instance.focusOnCapture();
     const provider = FuzzyFinderPanelController.instance!.provider;
+    FinderResumeStore.instance.update({
+      providerType: provider.fuzzyAdapterType,
+      ...msg.data.syncData,
+    });
+
     FuzzyFinderPanelController.instance!.dispose();
     await execCmd(Globals.cmds.focusActiveFile);
     await provider.onPanelClose?.();

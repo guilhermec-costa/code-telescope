@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { computeMatch, scoreMatch } from "../../core/algos/score-engine";
-import { StateManager } from "../../core/common/code/state-manager";
+import { SessionStateManager } from "../../core/common/code/state-manager";
 
 describe("score-engine", () => {
   beforeEach(() => {
@@ -8,7 +8,7 @@ describe("score-engine", () => {
   });
 
   it("prefers basename matches over directory-only matches", () => {
-    vi.spyOn(StateManager, "matchingAlgorithm", "get").mockReturnValue("subsequence");
+    vi.spyOn(SessionStateManager, "matchingAlgorithm", "get").mockReturnValue("subsequence");
 
     const basename = scoreMatch("cmp", "src/components/ComponentCard.tsx");
     const directoryOnly = scoreMatch("cmp", "components/src/container.tsx");
@@ -17,7 +17,7 @@ describe("score-engine", () => {
   });
 
   it("supports Windows path basename anchoring", () => {
-    vi.spyOn(StateManager, "matchingAlgorithm", "get").mockReturnValue("subsequence");
+    vi.spyOn(SessionStateManager, "matchingAlgorithm", "get").mockReturnValue("subsequence");
 
     const winPath = scoreMatch("app", "src\\pages\\AppShell.tsx");
     const nestedOnly = scoreMatch("app", "app\\pages\\shell.tsx");
@@ -26,7 +26,7 @@ describe("score-engine", () => {
   });
 
   it("favors earlier exact substring matches in substring mode", () => {
-    vi.spyOn(StateManager, "matchingAlgorithm", "get").mockReturnValue("substring");
+    vi.spyOn(SessionStateManager, "matchingAlgorithm", "get").mockReturnValue("substring");
 
     const exact = scoreMatch("diff", "src/git-diff.finder.ts");
     const later = scoreMatch("diff", "src/finders/git/current-diff.ts");
@@ -35,7 +35,7 @@ describe("score-engine", () => {
   });
 
   it("returns a valid ordered index path for the winning match", () => {
-    vi.spyOn(StateManager, "matchingAlgorithm", "get").mockReturnValue("subsequence");
+    vi.spyOn(SessionStateManager, "matchingAlgorithm", "get").mockReturnValue("subsequence");
 
     const query = "gdf";
     const text = "git-diff.finder.ts";
