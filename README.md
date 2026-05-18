@@ -245,6 +245,7 @@ Uses ripgrep when available (bundled with VS Code or in PATH), with automatic fa
 | 📚 Package Docs | `code-telescope.fuzzy.pkgDocs` | `Alt+M V` |
 | 🔤 Font Family | `code-telescope.fuzzy.fontFamily` | `Alt+M ,` |
 | 🪝 Harpoon Marks | `code-telescope.fuzzy.harpoon` | `Alt+M M` |
+| ↩ Resume Last Session | `code-telescope.fuzzy.resume` | `Alt+M Shift+R` |
 | 🛠️ Custom Finders | `code-telescope.fuzzy.custom` | `Alt+M U` |
 
 ---

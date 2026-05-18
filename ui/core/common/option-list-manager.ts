@@ -217,11 +217,7 @@ export class OptionListManager {
       return previousSelectedIndex;
     }
 
-    const isIvy = this.isIvyLayout();
-
-    // in ivy layout, index 0 is the last visually
-    // in default layout, index N-1 is the last visually
-    return isIvy ? 0 : this.filteredOptions.length - 1;
+    return this.getVisualFirstIndex();
   }
 
   private getRelativeFirstItem() {
@@ -241,6 +237,29 @@ export class OptionListManager {
     }
 
     return -1;
+  }
+
+  private promoteInitialSelectionToVisualFirst(): void {
+    if (!this.dataAdapter || __INITIAL_SELECTED_VALUE__ == null || this.filteredOptions.length < 2) {
+      return;
+    }
+
+    const selectedIndex = this.findIndexBySelectionValue(__INITIAL_SELECTED_VALUE__);
+    if (selectedIndex === -1) return;
+
+    const firstOptionIndex = this.getVisualFirstIndex();
+    if (selectedIndex === firstOptionIndex) return;
+
+    const [selectedOption] = this.filteredOptions.splice(selectedIndex, 1);
+    this.filteredOptions.splice(firstOptionIndex, 0, selectedOption);
+  }
+
+  private getVisualFirstIndex(): number {
+    const isIvy = this.isIvyLayout();
+
+    // in ivy layout, index 0 is the last visually
+    // in default layout, index N-1 is the last visually
+    return isIvy ? 0 : this.filteredOptions.length - 1;
   }
 
   private toSelectionKey(value: any): string {
@@ -346,6 +365,7 @@ export class OptionListManager {
     if (shouldSort) {
       this.applySortOnOptions(this.filteredOptions, this.searchElement.value);
     }
+    this.promoteInitialSelectionToVisualFirst();
     this.selectedIndex = this.getRelativeFirstIndex();
     const afterSort = performance.now();
 
