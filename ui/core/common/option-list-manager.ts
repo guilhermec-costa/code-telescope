@@ -239,21 +239,6 @@ export class OptionListManager {
     return -1;
   }
 
-  private promoteInitialSelectionToVisualFirst(): void {
-    if (!this.dataAdapter || __INITIAL_SELECTED_VALUE__ == null || this.filteredOptions.length < 2) {
-      return;
-    }
-
-    const selectedIndex = this.findIndexBySelectionValue(__INITIAL_SELECTED_VALUE__);
-    if (selectedIndex === -1) return;
-
-    const firstOptionIndex = this.getVisualFirstIndex();
-    if (selectedIndex === firstOptionIndex) return;
-
-    const [selectedOption] = this.filteredOptions.splice(selectedIndex, 1);
-    this.filteredOptions.splice(firstOptionIndex, 0, selectedOption);
-  }
-
   private getVisualFirstIndex(): number {
     const isIvy = this.isIvyLayout();
 
@@ -341,11 +326,25 @@ export class OptionListManager {
 
     const scored = workingSet.map((opt) => ({
       opt,
+      searchText: this.dataAdapter!.getSearchText(opt),
+      identityValue: this.dataAdapter!.getSelectionValue(opt),
       score: this.getMatchResult(lowerQuery, this.dataAdapter!.getSearchText(opt)).score,
     }));
 
     scored.sort((a, b) => {
-      const result = a.score - b.score;
+      const scoreDelta = a.score - b.score;
+      if (scoreDelta !== 0) {
+        return isIvy ? -scoreDelta : scoreDelta;
+      }
+
+      // If the score is the same, sort by the textual comparison of the option's selection value.
+      // This helps the "resume" feature by keeping the reconstruction order predictable.
+      const searchTextDelta = a.searchText.localeCompare(b.searchText);
+      if (searchTextDelta !== 0) {
+        return isIvy ? -searchTextDelta : searchTextDelta;
+      }
+
+      const result = this.toSelectionKey(a.identityValue).localeCompare(this.toSelectionKey(b.identityValue));
       return isIvy ? -result : result;
     });
 
@@ -365,7 +364,6 @@ export class OptionListManager {
     if (shouldSort) {
       this.applySortOnOptions(this.filteredOptions, this.searchElement.value);
     }
-    this.promoteInitialSelectionToVisualFirst();
     this.selectedIndex = this.getRelativeFirstIndex();
     const afterSort = performance.now();
 

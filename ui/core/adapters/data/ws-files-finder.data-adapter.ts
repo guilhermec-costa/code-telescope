@@ -15,7 +15,7 @@ export interface FileOption {
 })
 export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<FileFinderData, FileOption> {
   debounceSearchTime?: number;
-  typeName: DataAdapterType;
+  typeName!: DataAdapterType;
 
   parseOptions(data: FileFinderData): FileOption[] {
     const options: FileOption[] = [];
