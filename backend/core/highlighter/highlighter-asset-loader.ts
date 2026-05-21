@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import type { LanguageGrammar, ThemeGrammar } from "../../../shared/extension-webview-protocol";
@@ -32,7 +31,8 @@ export class HighlighterAssetLoader {
       try {
         const themeUri = vscode.Uri.joinPath(ext.extensionUri, matchedTheme.path);
         const contentBytes = await vscode.workspace.fs.readFile(themeUri);
-        const themeJson = JsoncParser.parse(new TextDecoder().decode(contentBytes));
+        const parsedTheme = JsoncParser.parse(new TextDecoder().decode(contentBytes));
+        const themeJson = await this.resolveThemeRecursively(themeUri.fsPath, parsedTheme);
 
         themeJson.name = themeName;
         themeJson.type = type;
@@ -112,31 +112,34 @@ export class HighlighterAssetLoader {
     }
   }
 
-  private static findInExtensionRoots<T>(roots: string[], matcher: (pkg: any, extDir: string) => T | null): T | null {
+  private static async findInExtensionRoots<T>(
+    roots: string[],
+    matcher: (pkg: any, extDir: string) => Promise<T | null>,
+  ): Promise<T | null> {
     for (const root of roots) {
-      if (!fs.existsSync(root)) continue;
-
-      let entries: string[];
+      const rootUri = vscode.Uri.file(root);
+      let entries: [string, vscode.FileType][];
       try {
-        entries = fs.readdirSync(root);
+        entries = await vscode.workspace.fs.readDirectory(rootUri);
       } catch {
         continue;
       }
 
-      for (const entry of entries) {
+      for (const [entry, fileType] of entries) {
+        if (fileType !== vscode.FileType.Directory) continue;
+
         const extDir = path.join(root, entry);
         const pkgPath = path.join(extDir, "package.json");
-
-        if (!fs.existsSync(pkgPath)) continue;
+        const pkgUri = vscode.Uri.file(pkgPath);
 
         let pkg: any;
         try {
-          pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+          pkg = await this.readJsonFromUri(pkgUri);
         } catch {
           continue;
         }
 
-        const result = matcher(pkg, extDir);
+        const result = await matcher(pkg, extDir);
         if (result !== null) return result;
       }
     }
@@ -144,14 +147,14 @@ export class HighlighterAssetLoader {
     return null;
   }
 
-  private static findThemeGrammarInRoots(
+  private static async findThemeGrammarInRoots(
     themeName: string | undefined,
     type: "dark" | "light",
     roots: string[],
-  ): ThemeGrammar | null {
+  ): Promise<ThemeGrammar | null> {
     if (!themeName || roots.length === 0) return null;
 
-    return this.findInExtensionRoots(roots, (pkg, extDir) => {
+    return this.findInExtensionRoots(roots, async (pkg, extDir) => {
       const themes = pkg.contributes?.themes;
       if (!themes) return null;
 
@@ -159,7 +162,9 @@ export class HighlighterAssetLoader {
       if (!matchedTheme) return null;
 
       try {
-        const themeJson = JsoncParser.parse(fs.readFileSync(path.join(extDir, matchedTheme.path), "utf8"));
+        const themePath = path.join(extDir, matchedTheme.path);
+        const parsedTheme = await this.readJsoncFromUri(vscode.Uri.file(themePath));
+        const themeJson = await this.resolveThemeRecursively(themePath, parsedTheme);
 
         themeJson.name = themeName;
         themeJson.type = type;
@@ -173,10 +178,10 @@ export class HighlighterAssetLoader {
     });
   }
 
-  private static findLanguageGrammarInRoots(langId: string, roots: string[]): LanguageGrammar | null {
+  private static async findLanguageGrammarInRoots(langId: string, roots: string[]): Promise<LanguageGrammar | null> {
     if (roots.length === 0) return null;
 
-    return this.findInExtensionRoots(roots, (pkg, extDir) => {
+    return this.findInExtensionRoots(roots, async (pkg, extDir) => {
       const grammars = pkg.contributes?.grammars;
       if (!grammars) return null;
 
@@ -184,7 +189,7 @@ export class HighlighterAssetLoader {
       if (!matchedGrammar) return null;
 
       try {
-        const grammarJson = JsoncParser.parse(fs.readFileSync(path.join(extDir, matchedGrammar.path), "utf8"));
+        const grammarJson = await this.readJsoncFromUri(vscode.Uri.file(path.join(extDir, matchedGrammar.path)));
 
         const langInfo: LanguageGrammar = {
           id: langId,
@@ -200,5 +205,59 @@ export class HighlighterAssetLoader {
         return null;
       }
     });
+  }
+
+  private static async resolveThemeRecursively(
+    currentThemePath: string,
+    currentThemeJson: any,
+    visited: Set<string> = new Set(),
+  ): Promise<any> {
+    if (visited.has(currentThemePath)) return currentThemeJson;
+    visited.add(currentThemePath);
+
+    const includePath = currentThemeJson?.include;
+    if (!includePath || typeof includePath !== "string") {
+      return currentThemeJson;
+    }
+
+    const includeFullPath = path.resolve(path.dirname(currentThemePath), includePath);
+    const includeParsed = await this.readJsoncFromUri(vscode.Uri.file(includeFullPath));
+    const includeResolved = await this.resolveThemeRecursively(includeFullPath, includeParsed, visited);
+
+    return this.mergeThemeJson(includeResolved, currentThemeJson);
+  }
+
+  private static async readJsoncFromUri(uri: vscode.Uri) {
+    const bytes = await vscode.workspace.fs.readFile(uri);
+    return JsoncParser.parse(new TextDecoder().decode(bytes));
+  }
+
+  private static async readJsonFromUri(uri: vscode.Uri): Promise<any> {
+    const bytes = await vscode.workspace.fs.readFile(uri);
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+
+  private static mergeThemeJson(baseTheme: any, currentTheme: any): any {
+    const mergeObject = (key: string) => ({
+      ...(baseTheme?.[key] ?? {}),
+      ...(currentTheme?.[key] ?? {}),
+    });
+
+    const mergeArray = (key: string) => [
+      ...(Array.isArray(baseTheme?.[key]) ? baseTheme[key] : []),
+      ...(Array.isArray(currentTheme?.[key]) ? currentTheme[key] : []),
+    ];
+
+    const merged = {
+      ...baseTheme,
+      ...currentTheme,
+      colors: mergeObject("colors"),
+      semanticTokenColors: mergeObject("semanticTokenColors"),
+      tokenColors: mergeArray("tokenColors"),
+    };
+
+    delete merged.include;
+
+    return merged;
   }
 }

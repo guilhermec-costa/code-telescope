@@ -111,7 +111,7 @@ export class WebviewAssetManager {
 
     const csp = [
       "default-src 'none'",
-      `img-src ${wv.cspSource} https: data:`,
+      `img-src ${wv.cspSource} https: data: blob:`,
       `style-src ${wv.cspSource} 'nonce-${nonce}'`,
       `style-src-attr 'unsafe-inline'`,
       `font-src ${wv.cspSource} data:`,

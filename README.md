@@ -157,6 +157,10 @@ Configure via `codeTelescope.matching.algorithm`:
 
 Uses ripgrep when available (bundled with VS Code or in PATH), with automatic fallback to JavaScript regex-based search.
 
+### Syntax Highlighting Note
+
+Preview highlighting is powered by Shiki/TextMate grammars. In some languages/themes, VS Code editor colors may differ slightly because the editor can also apply Semantic Tokens from language servers.
+
 ---
 
 ## Configuration
