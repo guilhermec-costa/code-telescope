@@ -659,7 +659,7 @@
         "@types/mocha": "^10.0.10",
         "@types/node": "25.x",
         "@types/vscode": "1.85.0",
-        "@vitest/coverage-v8": "4.0.16",
+        "@vitest/coverage-v8": "4.1.7",
         "@vscode/test-cli": "^0.0.12",
         "@vscode/test-electron": "^2.5.2",
         "@vscode/vsce": "^3.9.1",
