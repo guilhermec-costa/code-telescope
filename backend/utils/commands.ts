@@ -2,6 +2,7 @@ import { exec, execFile } from "child_process";
 import { promisify } from "util";
 import * as vscode from "vscode";
 import { Globals } from "../globals";
+import { TelemetryService } from "../telemetry";
 
 /**
  * Produces a command id based in a parts array
@@ -15,8 +16,24 @@ export function registerAndSubscribeCmd(cmdId: string, cb: () => void, ctx: vsco
   ctx.subscriptions.push(cmdDisposable);
 }
 
-export function registerProviderCmd(fuzzyName: string, cb: () => void, ctx: vscode.ExtensionContext) {
-  registerAndSubscribeCmd(getCmdId("fuzzy", fuzzyName), cb, ctx);
+export function registerFuzzyCmd(commandSuffix: string, cb: () => void, ctx: vscode.ExtensionContext) {
+  registerAndSubscribeCmd(getCmdId("fuzzy", commandSuffix), cb, ctx);
+}
+
+export function registerFuzzyFinder(
+  commandSuffix: string,
+  cb: () => void | Promise<void>,
+  ctx: vscode.ExtensionContext,
+) {
+  const telemetryService = TelemetryService.instance;
+  registerFuzzyCmd(
+    commandSuffix,
+    async () => {
+      telemetryService.trackFinderInvoked(`finder-${commandSuffix}`);
+      await cb();
+    },
+    ctx,
+  );
 }
 
 export function registerHarpoonCmd(cmdSuffix: string, cb: () => void, ctx: vscode.ExtensionContext) {

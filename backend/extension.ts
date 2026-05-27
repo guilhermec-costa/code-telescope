@@ -12,7 +12,8 @@ import { registerHarpoonCmds } from "./harpoon/commands";
 import { HarpoonOrchestrator } from "./harpoon/orchestrator";
 import { createCodeTelescopeAPI } from "./integration/api";
 import { PerformanceDevModule } from "./perf/perf-dev.module";
-import { registerProviderCmd } from "./utils/commands";
+import { TelemetryService } from "./telemetry";
+import { registerFuzzyFinder } from "./utils/commands";
 import { getConfigurationSection } from "./utils/configuration";
 
 let customProviderLoader: CustomProviderLoader;
@@ -26,6 +27,9 @@ export async function activate(ctx: vscode.ExtensionContext) {
     PerformanceDevModule.activate(ctx);
     Logger.info("[DEV MODE] Performance debugging enabled");
   }
+
+  const telemetry = TelemetryService.instance;
+  telemetry.track("extension.activation.started");
 
   Globals.USER_THEME = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
 
@@ -45,39 +49,43 @@ export async function activate(ctx: vscode.ExtensionContext) {
     PreContextManager.instance.captureFromActiveEditor();
   });
 
-  registerProviderCmd("file", () => FuzzyFinderPanelController.setupProvider("workspace.files"), ctx);
-  registerProviderCmd("keybindings", () => FuzzyFinderPanelController.setupProvider("workspace.keybindings"), ctx);
-  registerProviderCmd("branch", () => FuzzyFinderPanelController.setupProvider("git.branches"), ctx);
-  registerProviderCmd("diff", () => FuzzyFinderPanelController.setupProvider("git.diffs"), ctx);
-  registerProviderCmd("commit", () => FuzzyFinderPanelController.setupProvider("git.commits"), ctx);
-  registerProviderCmd("stash", () => FuzzyFinderPanelController.setupProvider("git.stashes"), ctx);
-  registerProviderCmd("wsText", () => FuzzyFinderPanelController.setupProvider("workspace.text"), ctx);
-  registerProviderCmd("fileText", () => FuzzyFinderPanelController.setupProvider("currentFile.text"), ctx);
-  registerProviderCmd("wsSymbols", () => FuzzyFinderPanelController.setupProvider("workspace.symbols"), ctx);
-  registerProviderCmd("recentFiles", () => FuzzyFinderPanelController.setupProvider("workspace.recentFiles"), ctx);
-  registerProviderCmd("colorschemes", () => FuzzyFinderPanelController.setupProvider("workspace.colorschemes"), ctx);
-  registerProviderCmd("diagnostics", () => FuzzyFinderPanelController.setupProvider("workspace.diagnostics"), ctx);
-  registerProviderCmd("tasks", () => FuzzyFinderPanelController.setupProvider("workspace.tasks"), ctx);
-  registerProviderCmd("harpoon", () => FuzzyFinderPanelController.setupProvider("harpoon.marks"), ctx);
-  registerProviderCmd("callHierarchy", () => FuzzyFinderPanelController.setupProvider("workspace.callHierarchy"), ctx);
-  registerProviderCmd("breakpoints", () => FuzzyFinderPanelController.setupProvider("debug.breakpoints"), ctx);
-  registerProviderCmd("documentSymbols", () => FuzzyFinderPanelController.setupProvider("document.symbols"), ctx);
-  registerProviderCmd("extensions", () => FuzzyFinderPanelController.setupProvider("workspace.extensions"), ctx);
-  registerProviderCmd("pkgDocs", () => FuzzyFinderPanelController.setupProvider("workspace.packageDocs"), ctx);
-  registerProviderCmd("builtin", () => FuzzyFinderPanelController.setupProvider("builtin.finders"), ctx);
-  registerProviderCmd("resume", () => FuzzyFinderPanelController.resumeLastSession(), ctx);
-  registerProviderCmd("fontFamily", () => FuzzyFinderPanelController.setupProvider("workspace.fonts"), ctx);
-  registerProviderCmd("lspRefs", () => FuzzyFinderPanelController.setupProvider("workspace.references"), ctx);
-  registerProviderCmd(
+  registerFuzzyFinder("file", () => FuzzyFinderPanelController.setupProvider("workspace.files"), ctx);
+  registerFuzzyFinder("keybindings", () => FuzzyFinderPanelController.setupProvider("workspace.keybindings"), ctx);
+  registerFuzzyFinder("branch", () => FuzzyFinderPanelController.setupProvider("git.branches"), ctx);
+  registerFuzzyFinder("diff", () => FuzzyFinderPanelController.setupProvider("git.diffs"), ctx);
+  registerFuzzyFinder("commit", () => FuzzyFinderPanelController.setupProvider("git.commits"), ctx);
+  registerFuzzyFinder("stash", () => FuzzyFinderPanelController.setupProvider("git.stashes"), ctx);
+  registerFuzzyFinder("wsText", () => FuzzyFinderPanelController.setupProvider("workspace.text"), ctx);
+  registerFuzzyFinder("fileText", () => FuzzyFinderPanelController.setupProvider("currentFile.text"), ctx);
+  registerFuzzyFinder("wsSymbols", () => FuzzyFinderPanelController.setupProvider("workspace.symbols"), ctx);
+  registerFuzzyFinder("recentFiles", () => FuzzyFinderPanelController.setupProvider("workspace.recentFiles"), ctx);
+  registerFuzzyFinder("colorschemes", () => FuzzyFinderPanelController.setupProvider("workspace.colorschemes"), ctx);
+  registerFuzzyFinder("diagnostics", () => FuzzyFinderPanelController.setupProvider("workspace.diagnostics"), ctx);
+  registerFuzzyFinder("tasks", () => FuzzyFinderPanelController.setupProvider("workspace.tasks"), ctx);
+  registerFuzzyFinder("harpoon", () => FuzzyFinderPanelController.setupProvider("harpoon.marks"), ctx);
+  registerFuzzyFinder("callHierarchy", () => FuzzyFinderPanelController.setupProvider("workspace.callHierarchy"), ctx);
+  registerFuzzyFinder("breakpoints", () => FuzzyFinderPanelController.setupProvider("debug.breakpoints"), ctx);
+  registerFuzzyFinder("documentSymbols", () => FuzzyFinderPanelController.setupProvider("document.symbols"), ctx);
+  registerFuzzyFinder("extensions", () => FuzzyFinderPanelController.setupProvider("workspace.extensions"), ctx);
+  registerFuzzyFinder("pkgDocs", () => FuzzyFinderPanelController.setupProvider("workspace.packageDocs"), ctx);
+  registerFuzzyFinder("builtin", () => FuzzyFinderPanelController.setupProvider("builtin.finders"), ctx);
+  registerFuzzyFinder("resume", () => FuzzyFinderPanelController.resumeLastSession(), ctx);
+  registerFuzzyFinder("fontFamily", () => FuzzyFinderPanelController.setupProvider("workspace.fonts"), ctx);
+  registerFuzzyFinder("lspRefs", () => FuzzyFinderPanelController.setupProvider("workspace.references"), ctx);
+  registerFuzzyFinder(
     "custom",
     async () => {
       const customTypes = CustomProviderStorage.instance.getAllTypes();
       if (customTypes.length === 0) {
         vscode.window.showInformationMessage("No custom finders found in .vscode/code-telescope/");
+        telemetry.track("customFinder.empty");
         return;
       }
       const selected = await vscode.window.showQuickPick(customTypes, { placeHolder: "Select a custom provider" });
-      if (selected) await FuzzyFinderPanelController.setupProvider(selected as CustomFuzzyProviderType);
+      if (selected) {
+        telemetry.track("customFinder.selected");
+        await FuzzyFinderPanelController.setupProvider(selected as CustomFuzzyProviderType);
+      }
     },
     ctx,
   );
@@ -87,11 +95,11 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerHarpoonCmds(manager, ctx);
 
   Logger.info(`${Globals.EXTENSION_NAME} activated!`);
-
   return createCodeTelescopeAPI();
 }
 
-export function deactivate() {
+export async function deactivate() {
   customProviderLoader.dispose();
+  await TelemetryService.instance.dispose();
   console.log("code-telescope deactivated");
 }
