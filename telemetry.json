@@ -1,0 +1,21 @@
+[
+  {
+    "name": "extension.activation.started",
+    "description": "Extension activation started."
+  },
+  {
+    "name": "finder.invoked",
+    "description": "A finder command was invoked.",
+    "properties": {
+      "finder": "finder command suffix prefixed with 'finder-'"
+    }
+  },
+  {
+    "name": "customFinder.empty",
+    "description": "User attempted to open custom finder but no custom providers were found."
+  },
+  {
+    "name": "customFinder.selected",
+    "description": "User selected a custom provider from quick pick."
+  }
+]

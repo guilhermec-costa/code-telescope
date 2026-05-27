@@ -29,6 +29,7 @@ vi.mock("@backend/core/common/file-reader", () => ({
 }));
 
 vi.mock("@backend/utils/commands");
+vi.mock("@vscode/extension-telemetry", () => ({}));
 
 describe("WorkspaceFileFinder", () => {
   let finder: WorkspaceFileFinder;

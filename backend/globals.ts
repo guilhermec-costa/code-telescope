@@ -7,6 +7,14 @@ export const Globals = {
   /** Extension identifier */
   EXTENSION_NAME: "code-telescope",
 
+  /**
+   * Microsoft documentation states that the Application Insights connection string
+     is NOT considered sensitive and can be safely hardcoded or stored in source control.
+     It is used only to identify the telemetry ingestion endpoint and resource.
+   */
+  REPORT_CONN_STR:
+    "InstrumentationKey=36e3b3c9-3fd6-489e-927e-5843174881b6;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/;ApplicationId=a37ec5a9-3555-433b-a807-bdde963575e4",
+
   /** Prefix for extension configuration keys */
   EXTENSION_CONFIGURATION_PREFIX: "codeTelescope",
 

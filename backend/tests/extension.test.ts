@@ -2,10 +2,22 @@ import { beforeEach, describe, expect, it, type Mocked, vi } from "vitest";
 import { CustomProviderLoader } from "../core/common/custom/custom-provider.loader";
 import { activate, deactivate } from "../extension";
 import { Globals } from "../globals";
-import { registerProviderCmd } from "../utils/commands";
+import { registerFuzzyFinder } from "../utils/commands";
 
 vi.mock("../core/decorators/loader", () => ({
   loadDecorators: vi.fn().mockResolvedValue(undefined),
+}));
+
+const telemetryMock = vi.hoisted(() => ({
+  track: vi.fn(),
+  trackFinderInvoked: vi.fn(),
+  dispose: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock("../telemetry", () => ({
+  TelemetryService: {
+    instance: telemetryMock,
+  },
 }));
 
 vi.mock("@backend/harpoon", () => ({
@@ -24,7 +36,8 @@ vi.mock("../core/common/custom/custom-provider.loader", () => {
 });
 
 vi.mock("../utils/commands", () => ({
-  registerProviderCmd: vi.fn(),
+  registerFuzzyFinder: vi.fn(),
+  registerFuzzyCmd: vi.fn(),
   registerHarpoonCmd: vi.fn(),
 }));
 
@@ -111,22 +124,27 @@ describe("Extension entrypoint", () => {
     ];
 
     expectedCommands.forEach((cmd) => {
-      expect(registerProviderCmd).toHaveBeenCalledWith(cmd, expect.any(Function), context);
+      expect(registerFuzzyFinder).toHaveBeenCalledWith(cmd, expect.any(Function), context);
     });
 
-    expect(registerProviderCmd).toHaveBeenCalledTimes(expectedCommands.length);
+    expect(registerFuzzyFinder).toHaveBeenCalledTimes(expectedCommands.length);
   });
 
-  it("should dispose provider loader on deactivate", () => {
-    const loaderInstance = {
-      dispose: vi.fn(),
-    } as any;
+  it("should dispose resources on deactivate", async () => {
+    await activate({
+      extensionUri: "uri",
+      subscriptions: [],
+    } as any);
 
-    (global as any).customProviderLoader = loaderInstance;
+    const loaderInstance = vi.mocked(CustomProviderLoader).mock.results[0].value as Mocked<CustomProviderLoader>;
 
     const consoleSpy = vi.spyOn(console, "log");
 
-    deactivate();
+    await deactivate();
+
+    expect(loaderInstance.dispose).toHaveBeenCalledOnce();
+
+    expect(telemetryMock.dispose).toHaveBeenCalledOnce();
 
     expect(consoleSpy).toHaveBeenCalledWith("code-telescope deactivated");
 
