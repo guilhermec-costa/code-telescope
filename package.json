@@ -452,7 +452,8 @@
                         "**/.nuxt/**",
                         "**/coverage/**",
                         "**/*.jar",
-                        "**/*.zip"
+                        "**/*.zip",
+                        "**/.terraform/**"
                     ],
                     "description": "Glob patterns to exclude from file search",
                     "order": 6
