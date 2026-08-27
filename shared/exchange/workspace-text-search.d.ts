@@ -5,6 +5,7 @@ export interface TextSearchData {
 
 export interface TextSearchMatch {
   file: string;
+  relativeFile?: string;
   line: number;
   column: number;
   text: string;

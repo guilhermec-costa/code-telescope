@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { TextSearchMatch } from "../../../../shared/exchange/workspace-text-search";
 import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
 import { ChunkableProvider } from "../../abstractions/chunkable-provider";
 import { FileReader } from "../../common/file-reader";
@@ -35,9 +36,9 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, Chunkab
     return [];
   }
 
-  public mapChunk(chunk: any[]) {
+  public mapChunk(chunk: TextSearchMatch[]) {
     return {
-      results: chunk,
+      results: this.withRelativeFilePaths(chunk),
     };
   }
 
@@ -82,12 +83,19 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, Chunkab
       searchResult = await this.regexFinder.search(query);
     }
 
-    const allMatches = searchResult.results;
+    const allMatches = this.withRelativeFilePaths(searchResult.results);
 
     return {
       results: allMatches,
       query,
     };
+  }
+
+  private withRelativeFilePaths(matches: TextSearchMatch[]): TextSearchMatch[] {
+    return matches.map((match) => ({
+      ...match,
+      relativeFile: vscode.workspace.asRelativePath(match.file),
+    }));
   }
 
   static destructureIdentifier(identifier: string) {

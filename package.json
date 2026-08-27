@@ -7,7 +7,7 @@
     },
     "publisher": "guichina",
     "description": "A keyboard-first fuzzy finder for navigating files, symbols, text and more in VS Code, inspired by Neovim Telescope.",
-    "version": "1.11.3",
+    "version": "1.11.5",
     "keywords": [
         "fuzzy",
         "fuzzy finder",
@@ -478,7 +478,7 @@
                         "filename-only"
                     ],
                     "default": "relative",
-                    "description": "How to display file path",
+                    "description": "How to display file paths in file and text search results",
                     "order": 9
                 },
                 "codeTelescope.wsTextFinder.excludePatterns": {

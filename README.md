@@ -198,7 +198,7 @@ Preview highlighting is powered by Shiki/TextMate grammars. In some languages/th
 | `codeTelescope.wsFileFinder.excludePatterns` | `["**/node_modules/**", ...]` | Glob patterns to exclude |
 | `codeTelescope.wsFileFinder.maxFileSize` | `150` | Max file size (KB) |
 | `codeTelescope.wsFileFinder.maxResults` | `2000` | Max results |
-| `codeTelescope.wsFileFinder.textDisplay` | `relative` | `relative`, `absolute`, or `filename-only` |
+| `codeTelescope.wsFileFinder.textDisplay` | `relative` | File path display in file and text search results: `relative`, `absolute`, or `filename-only` |
 
 ### Workspace Text Search
 
