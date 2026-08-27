@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FileFinderData } from "../../../../shared/exchange/file-search";
 import { FileOption, WorkspaceFilesFinderDataAdapter } from "../../../core/adapters/data/ws-files-finder.data-adapter";
 import { formatFileOptionHtml } from "../../../utils/html";
@@ -8,6 +8,10 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
 
   beforeEach(() => {
     adapter = new WorkspaceFilesFinderDataAdapter();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   describe("parseOptions", () => {
@@ -54,6 +58,23 @@ describe("WorkspaceFilesFinderDataAdapter", () => {
       const result = adapter.getHtmlWrapper(option, "file.ts");
       const output = formatFileOptionHtml("./vendor/material-icons/typescript.svg", "file.ts");
       expect(result).toBe(output);
+    });
+  });
+
+  describe("getSearchText", () => {
+    const option: FileOption = {
+      relative: "src/components/file.ts",
+      absolute: "/home/user/project/src/components/file.ts",
+    };
+
+    it.each([
+      ["relative", "src/components/file.ts"],
+      ["absolute", "/home/user/project/src/components/file.ts"],
+      ["filename-only", "file.ts"],
+    ] as const)("uses the %s path display mode", (mode, expected) => {
+      vi.stubGlobal("__FILE_PATH_DISPLAY__", mode);
+
+      expect(adapter.getSearchText(option)).toBe(expected);
     });
   });
 

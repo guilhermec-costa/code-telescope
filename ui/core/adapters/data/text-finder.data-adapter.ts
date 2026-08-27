@@ -8,6 +8,7 @@ import { FuzzyFinderDataAdapter } from "../../decorators/fuzzy-data-adapter.deco
 interface SearchOption {
   identifier: string;
   file: string;
+  relativeFile?: string;
   line: number;
   preview: string;
 }
@@ -23,14 +24,14 @@ export class TextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearch
     return data.results.map((match) => ({
       identifier: `${match.file}||${match.line}||${match.column}`,
       file: match.file,
+      relativeFile: match.relativeFile,
       line: match.line,
       preview: match.preview,
     }));
   }
 
   getSearchText(option: SearchOption): string {
-    const fileName = this.getFileName(option.file);
-    return `${fileName}:${option.line} ${option.preview}`;
+    return `${this.getPrefix(option)}${option.preview}`;
   }
 
   getHtmlWrapper(option: SearchOption, highlightedContent: string): string {
@@ -43,9 +44,22 @@ export class TextFinderDataAdapter implements IFuzzyFinderDataAdapter<TextSearch
   }
 
   calcHlOffsetChars(option: SearchOption): number {
-    const fileName = this.getFileName(option.file);
-    const prefix = `${fileName}:${option.line} - `;
-    return prefix.length;
+    return this.getPrefix(option).length;
+  }
+
+  private getPrefix(option: SearchOption): string {
+    return `${this.getDisplayPath(option)}:${option.line} `;
+  }
+
+  private getDisplayPath(option: SearchOption): string {
+    switch (__FILE_PATH_DISPLAY__) {
+      case "absolute":
+        return option.file;
+      case "filename-only":
+        return this.getFileName(option.file);
+      default:
+        return option.relativeFile ?? this.getFileName(option.file);
+    }
   }
 
   private getFileName(path: string): string {

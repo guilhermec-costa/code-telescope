@@ -31,7 +31,7 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
   }
 
   getSearchText(option: FileOption): string {
-    return option.relative;
+    return this.getDisplayPath(option);
   }
 
   getHtmlWrapper(option: FileOption, highlightedContent: string): string {
@@ -41,5 +41,16 @@ export class WorkspaceFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<
 
   getSelectionValue(option: FileOption): string {
     return option.absolute;
+  }
+
+  private getDisplayPath(option: FileOption): string {
+    switch (__FILE_PATH_DISPLAY__) {
+      case "absolute":
+        return option.absolute;
+      case "filename-only":
+        return option.relative.split(/[/\\]/).at(-1) ?? option.relative;
+      default:
+        return option.relative;
+    }
   }
 }

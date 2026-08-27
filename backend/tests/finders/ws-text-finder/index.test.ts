@@ -34,6 +34,9 @@ describe("WorkspaceTextSearchProvider", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(vscode.workspace.asRelativePath).mockImplementation((file) =>
+      String(file).replace("/home/user/project/", ""),
+    );
     provider = new WorkspaceTextSearchProvider();
   });
 
@@ -45,12 +48,23 @@ describe("WorkspaceTextSearchProvider", () => {
   it("uses ripgrep when available", async () => {
     const rgInstance = vi.mocked(RipgrepTextFinder).mock.results[0].value as Mocked<RipgrepTextFinder>;
 
-    rgInstance.search.mockResolvedValueOnce({ results: ["match"] } as any);
+    rgInstance.search.mockResolvedValueOnce({
+      results: [
+        {
+          file: "/home/user/project/src/index.ts",
+          line: 10,
+          column: 5,
+          text: "const value = 42;",
+          preview: "const value = 42;",
+        },
+      ],
+      query: "test",
+    });
 
     const result = await provider.searchOnDynamicMode("test");
 
     expect(rgInstance.search).toHaveBeenCalledWith("test", undefined);
-    expect(result.results).toEqual(["match"]);
+    expect(result.results[0].relativeFile).toBe("src/index.ts");
   });
 
   it("falls back to regex finder when ripgrep fails", async () => {
@@ -58,12 +72,36 @@ describe("WorkspaceTextSearchProvider", () => {
     const regexInstance = vi.mocked(RegexFinder).mock.results[0].value as Mocked<RegexFinder>;
 
     rgInstance.search.mockRejectedValueOnce(new Error("rg error"));
-    regexInstance.search.mockResolvedValueOnce({ results: ["fallback"] });
+    regexInstance.search.mockResolvedValueOnce({
+      results: [
+        {
+          file: "/home/user/project/src/fallback.ts",
+          line: 1,
+          column: 1,
+          text: "fallback",
+          preview: "fallback",
+        },
+      ],
+    });
 
     const result = await provider.searchOnDynamicMode("test");
 
     expect(regexInstance.search).toHaveBeenCalledWith("test");
-    expect(result.results).toEqual(["fallback"]);
+    expect(result.results[0].relativeFile).toBe("src/fallback.ts");
+  });
+
+  it("adds relative paths to streamed chunks", () => {
+    const result = provider.mapChunk([
+      {
+        file: "/home/user/project/src/streamed.ts",
+        line: 2,
+        column: 3,
+        text: "streamed",
+        preview: "streamed",
+      },
+    ]);
+
+    expect(result.results[0].relativeFile).toBe("src/streamed.ts");
   });
 
   it("opens file and reveals position on select", async () => {
