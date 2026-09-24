@@ -89,5 +89,6 @@ describe("GitDiffFuzzyFinder", () => {
     expect(preview.kind).toBe("text");
     expect(preview.language).toBe("diff");
     expect(preview.content).toContain("diff --git");
+    expect(preview.metadata).toEqual({ filePath: "/repo/file.ts" });
   });
 });

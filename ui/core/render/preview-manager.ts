@@ -53,6 +53,7 @@ export class PreviewManager {
     let adapter = data.overridePreviewer
       ? PreviewRendererAdapterRegistry.instance.getAdapter(data.overridePreviewer)
       : PreviewRendererAdapterRegistry.instance.getAdapter(finderType);
+    const finalPreviewerType = data.overridePreviewer ?? finderType;
 
     this.clearPreview();
 
@@ -73,9 +74,11 @@ export class PreviewManager {
 
     await this.adapter.render(this.previewElement, data);
 
-    requestAnimationFrame(() => {
-      this.scrollToHighlighted();
-    });
+    if (finalPreviewerType !== "preview.buffer") {
+      requestAnimationFrame(() => {
+        this.scrollToHighlighted();
+      });
+    }
   }
 
   hidePreviewPanel() {
@@ -143,7 +146,9 @@ export class PreviewManager {
       this.scrollToTop();
       return;
     }
-    highlightedLine.scrollIntoView({ behavior: this.cfg.scrollBehavior, block: "center" });
+    const previousScrollLeft = this.previewElement.scrollLeft;
+    highlightedLine.scrollIntoView({ behavior: this.cfg.scrollBehavior, block: "center", inline: "nearest" });
+    this.previewElement.scrollLeft = previousScrollLeft;
   }
 
   private getPreviewHeight() {
@@ -199,6 +204,7 @@ export class PreviewManager {
     };
 
     let adapter = PreviewRendererAdapterRegistry.instance.getAdapter(previewAdapterType);
+    const finalPreviewerType = previewData.overridePreviewer ?? previewAdapterType;
 
     this.clearPreview();
 
@@ -218,9 +224,11 @@ export class PreviewManager {
     this.setAdapter(adapter);
     await this.adapter.render(this.previewElement, previewData);
 
-    requestAnimationFrame(() => {
-      this.scrollToHighlighted();
-    });
+    if (finalPreviewerType !== "preview.buffer") {
+      requestAnimationFrame(() => {
+        this.scrollToHighlighted();
+      });
+    }
 
     this.chunkStore.reset();
   }

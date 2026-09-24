@@ -20,6 +20,8 @@ import { FuzzyFinderAdapter, FuzzyFinderProvider } from "../../decorators/fuzzy-
   description: "Browse recently opened files",
 })
 export class RecentFilesFinder implements FuzzyFinderProvider {
+  private static readonly TERMINAL_PREFIX = "terminal://";
+
   async querySelectableOptions(): Promise<RecentFilesFinderData> {
     const files = await this.getRecentFiles();
 
@@ -38,11 +40,27 @@ export class RecentFilesFinder implements FuzzyFinderProvider {
   }
 
   async onSelect(path: string) {
+    if (this.isTerminalSelection(path)) {
+      const terminal = this.findTerminalBySelection(path);
+      if (terminal) {
+        terminal.show();
+      }
+      return;
+    }
+
     const uri = vscode.Uri.file(path);
     await execCmd(Globals.cmds.openFile, uri);
   }
 
   async getPreviewData(path: string): Promise<TextPreviewData> {
+    if (this.isTerminalSelection(path)) {
+      return {
+        content: "Terminal preview is not available.",
+        kind: "text",
+        language: "plaintext",
+      };
+    }
+
     const content = await FileReader.read(path);
 
     return {
@@ -66,11 +84,24 @@ export class RecentFilesFinder implements FuzzyFinderProvider {
       for (const tab of group.tabs) {
         const input = tab.input as any;
 
+        if (input instanceof vscode.TabInputTerminal) {
+          const terminalId = this.buildTerminalSelection(tab.label);
+
+          if (recentFiles.has(terminalId)) continue;
+
+          recentFiles.set(terminalId, {
+            kind: "terminal",
+            path: terminalId,
+            relativePath: `[Terminal] ${tab.label}`,
+            lastModified: new Date(),
+            exists: true,
+          });
+          continue;
+        }
+
         if (input && "uri" in input && input.uri instanceof vscode.Uri) {
           const uri = input.uri;
-
           if (uri.scheme !== "file") continue;
-
           const filePath = uri.fsPath;
 
           if (recentFiles.has(filePath)) continue;
@@ -86,6 +117,7 @@ export class RecentFilesFinder implements FuzzyFinderProvider {
           }
 
           recentFiles.set(filePath, {
+            kind: "file",
             path: filePath,
             relativePath: vscode.workspace.asRelativePath(filePath),
             lastModified,
@@ -99,5 +131,18 @@ export class RecentFilesFinder implements FuzzyFinderProvider {
     filesArray.sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime());
 
     return filesArray;
+  }
+
+  private buildTerminalSelection(label: string): string {
+    return `${RecentFilesFinder.TERMINAL_PREFIX}${encodeURIComponent(label)}`;
+  }
+
+  private isTerminalSelection(selection: string): boolean {
+    return selection.startsWith(RecentFilesFinder.TERMINAL_PREFIX);
+  }
+
+  private findTerminalBySelection(selection: string): vscode.Terminal | undefined {
+    const label = decodeURIComponent(selection.slice(RecentFilesFinder.TERMINAL_PREFIX.length));
+    return vscode.window.terminals.find((terminal) => terminal.name === label);
   }
 }

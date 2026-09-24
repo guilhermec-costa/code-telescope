@@ -1,4 +1,5 @@
 export interface RecentFileData {
+  kind: "file" | "terminal";
   path: string;
   relativePath: string;
   lastModified: Date;

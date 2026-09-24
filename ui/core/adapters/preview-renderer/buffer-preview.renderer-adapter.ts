@@ -85,20 +85,31 @@ function escapeHtml(str: string): string {
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+function getDiffLineClass(line: string, enabled: boolean): string {
+  if (!enabled) return "";
+  if (line.startsWith("+++") || line.startsWith("---")) return "";
+  if (line.startsWith("+")) return " diff-added-line";
+  if (line.startsWith("-")) return " diff-removed-line";
+  return "";
+}
+
 function makeHtmlFromTokens(
   lineTokens: ThemedToken[][],
+  rawLines: string[],
   bg: string,
   fg: string,
   themeName: string,
   startLineIndex: number,
   highlightLineNum?: number,
   showLineNumbers: boolean = true,
+  enableDiffLineDecorations: boolean = false,
 ): string {
   const lineHtmlParts = lineTokens.map((tokens, index) => {
     const currentLineNum = startLineIndex + index + 1;
     const isHighlighted = highlightLineNum !== undefined && currentLineNum - 1 === highlightLineNum;
+    const diffLineClass = getDiffLineClass(rawLines[index] ?? "", enableDiffLineDecorations);
 
-    const lineClass = isHighlighted ? 'class="line highlighted"' : 'class="line"';
+    const lineClass = isHighlighted ? `class="line highlighted${diffLineClass}"` : `class="line${diffLineClass}"`;
     const dataLine = showLineNumbers ? ` data-line="${currentLineNum}"` : "";
 
     const tokenSpans = tokens
@@ -149,6 +160,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
   private abortController?: AbortController;
   private grammarStateCache = new Map<string, Map<number, GrammarState>>();
   private grammarStates = new Map<number, GrammarState>();
+  private renderSessionId = 0;
 
   constructor(private highlighter: SyntaxHighlighter) {}
 
@@ -161,6 +173,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
     }
 
     this.cleanup();
+    const renderSessionId = ++this.renderSessionId;
 
     previewElement.innerHTML = "";
     previewElement.scrollTop = 0;
@@ -185,9 +198,14 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
 
     const highlightLine = metadata?.highlightLine ?? 0;
     const initialChunk = Math.floor(highlightLine / CHUNK_SIZE);
+    const shouldDecorateDiffLines = language === "diff";
 
     let finalLanguageId = "plaintext";
-    if (language) {
+    if (shouldDecorateDiffLines && metadata?.filePath) {
+      const detectedLanguage = getLanguageIdForFile(metadata.filePath);
+      const langLoadResult = await HighlighterManager.loadLanguageIfNeeded(detectedLanguage);
+      finalLanguageId = langLoadResult.ok ? langLoadResult.value.id : detectedLanguage;
+    } else if (language) {
       const langLoadResult = await HighlighterManager.loadLanguageIfNeeded(language);
       if (langLoadResult.ok) {
         finalLanguageId = langLoadResult.value.id;
@@ -237,14 +255,16 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
     };
 
     const BATCH_SIZE = 10;
+    const isStaleRender = () => renderSessionId !== this.renderSessionId || this.abortController?.signal.aborted;
 
     // returns true if completed fully, false if aborted mid-way
     const warmupChunks = async (): Promise<boolean> => {
       for (let i = 0; i < initialChunk; i += BATCH_SIZE) {
-        if (this.abortController?.signal.aborted) return false;
+        if (isStaleRender()) return false;
 
         const batchEnd = Math.min(i + BATCH_SIZE, initialChunk);
         for (let j = i; j < batchEnd; j++) {
+          if (isStaleRender()) return false;
           if (this.grammarStates.has(j)) continue;
 
           const start = j * CHUNK_SIZE;
@@ -276,7 +296,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
         return;
       }
 
-      if (this.abortController?.signal.aborted) return;
+      if (isStaleRender()) return;
       if (this.loadedChunks.has(chunkIndex)) return;
       if (chunkIndex < 0 || chunkIndex * CHUNK_SIZE >= totalLines) return;
 
@@ -292,6 +312,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
       const start = chunkIndex * CHUNK_SIZE;
       const end = Math.min(start + CHUNK_SIZE, totalLines);
       const chunkText = getChunkText(start, end);
+      const rawLines = chunkText.split("\n");
       const prevGrammarState = this.grammarStates.get(chunkIndex - 1);
 
       let lineTokens: ThemedToken[][];
@@ -304,19 +325,22 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
           ...(prevGrammarState ? { grammarState: prevGrammarState } : {}),
         });
 
+        if (isStaleRender()) return;
         lineTokens = result.tokens as ThemedToken[][];
         nextGrammarState = result.grammarState as GrammarState | undefined;
-      } catch (err) {
+      } catch (_err) {
         const html = this.highlighter.codeToHtml(chunkText, {
           lang: finalLanguageId,
           theme: finalThemeName,
         });
 
+        if (isStaleRender()) return;
         this.chunkHtmlCache.set(chunkIndex, html);
         this.insertChunkIntoDOM(previewElement, html, chunkIndex, position);
         return;
       }
 
+      if (isStaleRender()) return;
       if (nextGrammarState) {
         this.grammarStates.set(chunkIndex, nextGrammarState);
       }
@@ -325,12 +349,14 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
 
       const html = makeHtmlFromTokens(
         lineTokens,
+        rawLines,
         themeBg,
         themeFg,
         finalThemeName,
         start,
         metadata?.highlightLine,
         showLineNumbers,
+        shouldDecorateDiffLines,
       );
 
       this.chunkHtmlCache.set(chunkIndex, html);
@@ -341,16 +367,17 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
 
     if (initialChunk > 0 && !cachedStates) {
       warmupChunks().then((completed) => {
-        if (!completed || this.abortController?.signal.aborted) return;
+        if (!completed || isStaleRender()) return;
 
         this.grammarStateCache.set(cacheKey, new Map(this.grammarStates));
 
         this.loadedChunks.delete(initialChunk);
         this.chunkHtmlCache.delete(initialChunk);
         renderChunk(initialChunk).then(() => {
+          if (isStaleRender()) return;
           if (metadata?.highlightLine !== undefined) {
             const highlightedLine = previewElement.querySelector(".line.highlighted");
-            highlightedLine?.scrollIntoView({ block: "center", behavior: "instant" });
+            highlightedLine?.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" });
           }
         });
       });
@@ -363,19 +390,23 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
     }
 
     Promise.all(adjacentPromises).then(() => {
-      if (this.abortController?.signal.aborted) return;
+      if (isStaleRender()) return;
       if (metadata?.highlightLine !== undefined && (initialChunk === 0 || !!cachedStates)) {
         const highlightedLine = previewElement.querySelector(".line.highlighted");
-        highlightedLine?.scrollIntoView({ block: "center", behavior: "instant" });
+        highlightedLine?.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" });
       }
     });
 
     let ticking = false;
     this.scrollHandler = () => {
-      if (ticking || this.isRendering || this.abortController?.signal.aborted) return;
+      if (ticking || this.isRendering || isStaleRender()) return;
 
       ticking = true;
       requestAnimationFrame(async () => {
+        if (isStaleRender()) {
+          ticking = false;
+          return;
+        }
         const { scrollTop, scrollHeight, clientHeight } = previewElement;
         this.isRendering = true;
 
@@ -408,6 +439,12 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
     const chunkContainer = document.createElement("div");
     chunkContainer.innerHTML = htmlContent;
     chunkContainer.dataset.chunkIndex = String(chunkIndex);
+    const existingChunk = previewElement.querySelector<HTMLElement>(`[data-chunk-index="${chunkIndex}"]`);
+
+    if (existingChunk) {
+      existingChunk.replaceWith(chunkContainer);
+      return;
+    }
 
     if (position === "prepend") {
       const oldScrollTop = previewElement.scrollTop;

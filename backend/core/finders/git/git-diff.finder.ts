@@ -55,6 +55,9 @@ export class GitDiffFuzzyFinder implements FuzzyFinderProvider {
         content: content || "No diff available.",
         kind: "text",
         language: "diff",
+        metadata: {
+          filePath: diff.absolutePath,
+        },
       };
     } catch (e) {
       if ((e as NodeJS.ErrnoException).code === "ENOENT") {

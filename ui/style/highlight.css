@@ -36,6 +36,14 @@
   font-size: 0.9em;
 }
 
+.shiki .line.diff-added-line {
+  background-color: var(--vscode-diffEditor-insertedLineBackground, rgba(46, 160, 67, 0.16)) !important;
+}
+
+.shiki .line.diff-removed-line {
+  background-color: var(--vscode-diffEditor-removedLineBackground, rgba(248, 81, 73, 0.16)) !important;
+}
+
 .highlight {
   color: var(--vscode-list-highlightForeground, #2aaaff);
   font-weight: 600;

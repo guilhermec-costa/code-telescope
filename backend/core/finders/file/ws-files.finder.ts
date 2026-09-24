@@ -1,6 +1,5 @@
 import * as fg from "fast-glob";
 import * as vscode from "vscode";
-import { IFuzzyFinderProvider } from "../../../../shared/abstractions/fuzzy-finder.provider";
 import { FileFinderData } from "../../../../shared/exchange/file-search";
 import { ImagePreviewData, TextPreviewData } from "../../../../shared/extension-webview-protocol";
 import { DEFAULT_EXCLUDE_PATTERNS } from "../../../config/exclude-patterns";
@@ -178,9 +177,5 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
         filePath: identifier,
       },
     };
-  }
-
-  private get casted() {
-    return this as unknown as IFuzzyFinderProvider;
   }
 }

@@ -36,6 +36,10 @@ export class RecentFilesFinderDataAdapter implements IFuzzyFinderDataAdapter<Rec
   }
 
   getHtmlWrapper(option: RecentFileOption, highlightedContent: string): string {
+    if (option.file.kind === "terminal") {
+      return `<i class="codicon codicon-terminal file-icon"></i><span class="file-path">${highlightedContent}</span>`;
+    }
+
     const svgIconUrl = getSvgIconUrl(option.file.path);
     return formatFileOptionHtml(svgIconUrl, highlightedContent);
   }

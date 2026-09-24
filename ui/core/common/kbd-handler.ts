@@ -48,11 +48,21 @@ export class KeyboardHandler {
     return event.ctrlKey && event.key === key;
   }
 
+  private normalizeKey(key: string | undefined): string {
+    if (!key) return "";
+    return key.trim().toLowerCase();
+  }
+
   private match(event: KeyboardEvent, binding: string): boolean {
     if (!binding) return false;
 
-    const parts = binding.toLowerCase().split("+");
-    const targetKey = parts.pop();
+    const parts = binding
+      .toLowerCase()
+      .split("+")
+      .map((part) => part.trim())
+      .filter(Boolean);
+    const targetKey = this.normalizeKey(parts.pop());
+    const eventKey = this.normalizeKey(event.key);
 
     const hasCtrl = parts.includes("ctrl");
     const hasAlt = parts.includes("alt");
@@ -60,7 +70,7 @@ export class KeyboardHandler {
     const hasMeta = parts.includes("meta");
 
     return (
-      event.key.toLowerCase() === targetKey &&
+      eventKey === targetKey &&
       event.ctrlKey === hasCtrl &&
       event.altKey === hasAlt &&
       event.shiftKey === hasShift &&
@@ -69,69 +79,73 @@ export class KeyboardHandler {
   }
 
   private setupListeners(): void {
-    document.addEventListener("keydown", (event) => {
-      if (this.isCtrlArrow(event, "ArrowDown")) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.onScrollDown?.();
-        return;
-      }
-
-      if (this.isCtrlArrow(event, "ArrowUp")) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.onScrollUp?.();
-        return;
-      }
-
-      if (this.isArrow(event, "ArrowDown")) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.onMoveDown?.();
-        return;
-      }
-
-      if (this.isArrow(event, "ArrowUp")) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.onMoveUp?.();
-        return;
-      }
-
-      if (this.isCtrlArrow(event, "ArrowRight")) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.onScrollRight?.();
-        return;
-      }
-
-      if (this.isCtrlArrow(event, "ArrowLeft")) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.onScrollLeft?.();
-        return;
-      }
-      const actions = [
-        { key: this._cfg.moveDown, handler: () => this.onMoveDown?.() },
-        { key: this._cfg.moveUp, handler: () => this.onMoveUp?.() },
-        { key: this._cfg.confirm, handler: () => this.onConfirm?.() },
-        { key: this._cfg.close, handler: () => this.onClose?.() },
-        { key: this._cfg.scrollUp, handler: () => this.onScrollUp?.() },
-        { key: this._cfg.scrollDown, handler: () => this.onScrollDown?.() },
-        { key: this._cfg.scrollLeft, handler: () => this.onScrollLeft?.() },
-        { key: this._cfg.scrollRight, handler: () => this.onScrollRight?.() },
-        { key: this._cfg.promptDelete, handler: () => this.onPromptDelete?.() },
-      ];
-
-      for (const action of actions) {
-        if (this.match(event, action.key)) {
+    document.addEventListener(
+      "keydown",
+      (event) => {
+        if (this.isCtrlArrow(event, "ArrowDown")) {
           event.preventDefault();
           event.stopPropagation();
-          action.handler();
-          break;
+          this.onScrollDown?.();
+          return;
         }
-      }
-    });
+
+        if (this.isCtrlArrow(event, "ArrowUp")) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.onScrollUp?.();
+          return;
+        }
+
+        if (this.isArrow(event, "ArrowDown")) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.onMoveDown?.();
+          return;
+        }
+
+        if (this.isArrow(event, "ArrowUp")) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.onMoveUp?.();
+          return;
+        }
+
+        if (this.isCtrlArrow(event, "ArrowRight")) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.onScrollRight?.();
+          return;
+        }
+
+        if (this.isCtrlArrow(event, "ArrowLeft")) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.onScrollLeft?.();
+          return;
+        }
+        const actions = [
+          { key: this._cfg.moveDown, handler: () => this.onMoveDown?.() },
+          { key: this._cfg.moveUp, handler: () => this.onMoveUp?.() },
+          { key: this._cfg.confirm, handler: () => this.onConfirm?.() },
+          { key: this._cfg.close, handler: () => this.onClose?.() },
+          { key: this._cfg.scrollUp, handler: () => this.onScrollUp?.() },
+          { key: this._cfg.scrollDown, handler: () => this.onScrollDown?.() },
+          { key: this._cfg.scrollLeft, handler: () => this.onScrollLeft?.() },
+          { key: this._cfg.scrollRight, handler: () => this.onScrollRight?.() },
+          { key: this._cfg.promptDelete, handler: () => this.onPromptDelete?.() },
+        ];
+
+        for (const action of actions) {
+          if (this.match(event, action.key)) {
+            event.preventDefault();
+            event.stopPropagation();
+            action.handler();
+            break;
+          }
+        }
+      },
+      true,
+    );
   }
 
   setMoveUpHandler(handler: KeydownHandler): void {
