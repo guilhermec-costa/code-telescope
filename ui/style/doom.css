@@ -1,0 +1,104 @@
+.doom-preview {
+  min-height: 0;
+  overflow: hidden !important;
+  padding: 0 !important;
+  white-space: normal !important;
+}
+
+.doom-shell {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  color: #d6d0bd;
+  background: #090806;
+  font-family: var(--vscode-editor-font-family), monospace;
+}
+
+.doom-header,
+.doom-controls {
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  color: #9d9787;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.doom-header {
+  justify-content: space-between;
+  border-bottom: 1px solid #403c32;
+}
+
+.doom-header strong {
+  color: #d4513f;
+}
+
+.doom-status {
+  color: #b5aa7a;
+}
+
+.doom-controls {
+  justify-content: center;
+  border-top: 1px solid #403c32;
+  text-align: center;
+}
+
+.doom-viewport {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  place-items: center;
+  background: #000;
+}
+
+.doom-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 8 / 5;
+  object-fit: contain;
+  background: #000;
+  image-rendering: pixelated;
+  outline: none;
+  cursor: crosshair;
+}
+
+.doom-launch {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  color: #a29b87;
+  background: rgb(0 0 0 / 82%);
+  font: inherit;
+  cursor: pointer;
+}
+
+.doom-launch:hover,
+.doom-launch:focus-visible {
+  color: #fff1c2;
+  background: rgb(16 5 3 / 88%);
+  outline: 1px solid #8e2c22;
+  outline-offset: -8px;
+}
+
+.doom-launch:disabled {
+  cursor: wait;
+}
+
+.doom-launch-title {
+  color: #d4513f;
+  font-size: clamp(20px, 4vw, 48px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}

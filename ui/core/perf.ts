@@ -19,6 +19,7 @@ export function withPerformanceLogging<T extends IFuzzyFinderDataAdapter | IPrev
     get(target, prop) {
       const original = (target as any)[prop];
       if (typeof original === "function") {
+        if (prop === "cleanup") return (...args: any[]) => original.apply(target, args);
         return async (...args: any[]) => {
           const name = `${target.constructor.name}.${String(prop)}`;
           return PerformanceLogger.measure(name, () => original.apply(target, args));

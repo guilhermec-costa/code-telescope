@@ -241,6 +241,7 @@ Preview highlighting is powered by Shiki/TextMate grammars. In some languages/th
 | ⚠️ Diagnostics | `code-telescope.fuzzy.diagnostics` | `Alt+M Shift+D` |
 | 📞 Call Hierarchy | `code-telescope.fuzzy.callHierarchy` | `Alt+M H` |
 | 🔗 LSP References | `code-telescope.fuzzy.lspRefs` | `Alt+M N` |
+| 🔥 DOOM Shareware | `code-telescope.fuzzy.doom` | Command Palette |
 | 🔑 Keybindings | `code-telescope.fuzzy.keybindings` | `Alt+M K` |
 | 🎨 Color Schemes | `code-telescope.fuzzy.colorschemes` | `Alt+M T` |
 | ⚙️ Tasks | `code-telescope.fuzzy.tasks` | `Alt+M X` |

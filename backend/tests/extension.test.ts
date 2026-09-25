@@ -121,6 +121,7 @@ describe("Extension entrypoint", () => {
       "lspRefs",
       "builtin",
       "resume",
+      "doom",
     ];
 
     expectedCommands.forEach((cmd) => {

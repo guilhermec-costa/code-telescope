@@ -146,6 +146,12 @@ const BUILTIN_PROVIDER_META: Record<FuzzyProviderType, ProviderMeta> = {
     previewTitle: "Reference Preview",
     promptMessage: "References...",
   },
+  "fun.doom": {
+    tabTitle: "DOOM",
+    listTitle: "Game",
+    previewTitle: "DOOM Shareware",
+    promptMessage: "Rip and tear...",
+  },
 };
 
 function formatExternalName(provider: string): string {

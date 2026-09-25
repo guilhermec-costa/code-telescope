@@ -124,6 +124,8 @@ export class PreviewManager {
   }
 
   clearPreview() {
+    this.adapter?.cleanup?.();
+    this.adapter = null;
     this.chunkStore.reset();
     this.previewElement.innerHTML = "";
   }

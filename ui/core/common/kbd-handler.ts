@@ -1,4 +1,5 @@
 import { KeybindingConfig } from "../../../shared/exchange/extension-config";
+import { isGameActive } from "../game/game-state";
 
 type KeydownHandler = () => void;
 
@@ -82,6 +83,8 @@ export class KeyboardHandler {
     document.addEventListener(
       "keydown",
       (event) => {
+        if (isGameActive()) return;
+
         if (this.isCtrlArrow(event, "ArrowDown")) {
           event.preventDefault();
           event.stopPropagation();

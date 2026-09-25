@@ -17,6 +17,11 @@ export interface IPreviewRendererAdapter {
   render(previewElement: HTMLElement, data: PreviewData): Promise<void>;
 
   /**
+   * Releases resources owned by the current preview before it is replaced.
+   */
+  cleanup?(): void;
+
+  /**
    * (Optional) Renders a fallback state when there is no preview data available.
    */
   renderNoPreviewData?(previewElement: HTMLElement): Promise<void>;

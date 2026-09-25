@@ -23,6 +23,7 @@ import "../finders/pkg-json.finder";
 import "../finders/builtin.finder";
 import "../finders/font-family.finder";
 import "../finders/lsp-refs.finder";
+import "../finders/doom.finder";
 
 // PRESENTATION HANDLERS
 import "../presentation/handlers/close-panel.handler";

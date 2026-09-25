@@ -1,5 +1,6 @@
 import { OptionListMessage, ToWebviewKindMessage } from "../../../shared/extension-webview-protocol";
 import { HarpoonKeyPlugin } from "../../plugins/harpoon-key.plugin";
+import { isGameActive } from "../game/game-state";
 import { MessageBridge } from "../message-bridge";
 import { FuzzyFinderDataAdapterRegistry } from "../registry/finder-adapter.registry";
 import { PreviewManager } from "../render/preview-manager";
@@ -57,6 +58,7 @@ export class WebviewController {
 
   private focusSearchInput(): void {
     requestAnimationFrame(() => {
+      if (isGameActive()) return;
       this.searchElement?.focus();
     });
   }

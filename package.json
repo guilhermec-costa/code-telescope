@@ -137,6 +137,10 @@
                 "title": "Code Telescope: Workspace References"
             },
             {
+                "command": "code-telescope.fuzzy.doom",
+                "title": "Code Telescope: Run DOOM"
+            },
+            {
                 "command": "code-telescope.harpoon.addFile",
                 "title": "Code Telescope: Harpoon - Add File"
             },
@@ -627,7 +631,7 @@
         }
     },
     "scripts": {
-        "vscode:prepublish": "npm run backend:bundle:prod",
+        "vscode:prepublish": "npm run verify:doom-assets && npm run backend:bundle:prod",
         "backend:bundle:prod": "tsx scripts/bundle-backend.ts --env=prod",
         "backend:compile": "tsc -p ./backend/tsconfig.build.json",
         "backend:watch": "tsc -w -p ./backend/tsconfig.build.json",
@@ -642,13 +646,14 @@
         "test:unit": "vitest",
         "test:unit:watch": "vitest --watch",
         "test:unit:cov": "vitest --coverage",
+        "verify:doom-assets": "tsx scripts/verify-doom-assets.ts",
         "prepare": "husky",
         "webview:dev": "tsx scripts/bundle-webview.ts --env=dev",
         "webview:dev:watch": "tsx scripts/bundle-webview.ts --env=dev --watch=true",
         "webview:prod": "tsx scripts/bundle-webview.ts --env=prod",
         "webview:prod:watch": "tsx scripts/bundle-webview.ts --env=prod --watch=true",
         "clean": "rm -rf ui/dist && rm -rf backend/dist",
-        "build": "npm run webview:prod && npm run backend:bundle:prod",
+        "build": "npm run verify:doom-assets && npm run webview:prod && npm run backend:bundle:prod",
         "make:package": "npm run clean && npm run build && vsce package",
         "deploy:patch": "npm run make:package && vsce publish patch",
         "deploy:minor": "npm run make:package && vsce publish minor",

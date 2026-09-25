@@ -24,7 +24,8 @@ export type BuiltinFuzzyProviderType =
   | "workspace.fonts"
   | "workspace.packageDocs"
   | "workspace.references"
-  | "workspace.extensions";
+  | "workspace.extensions"
+  | "fun.doom";
 
 export type CustomFuzzyProviderType = `custom.${string}` | `ext.${string}`;
 
@@ -51,6 +52,7 @@ export type DataAdapterType =
   | "extensionsAdapter"
   | "packageDocsAdapter"
   | "workspaceReferencesAdapter"
+  | "doomAdapter"
   | `custom.${string}`
   | `ext.${string}`;
 
@@ -60,4 +62,5 @@ export type PreviewRendererType =
   | "preview.image"
   | "preview.font"
   | "preview.failed"
+  | "preview.doom"
   | "preview.none";

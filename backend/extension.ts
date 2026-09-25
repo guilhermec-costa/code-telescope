@@ -72,6 +72,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
   registerFuzzyFinder("resume", () => FuzzyFinderPanelController.resumeLastSession(), ctx);
   registerFuzzyFinder("fontFamily", () => FuzzyFinderPanelController.setupProvider("workspace.fonts"), ctx);
   registerFuzzyFinder("lspRefs", () => FuzzyFinderPanelController.setupProvider("workspace.references"), ctx);
+  registerFuzzyFinder("doom", () => FuzzyFinderPanelController.setupProvider("fun.doom"), ctx);
   registerFuzzyFinder(
     "custom",
     async () => {
