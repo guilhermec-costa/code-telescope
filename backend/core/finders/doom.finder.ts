@@ -16,7 +16,7 @@ export class DoomFinder implements FuzzyFinderProvider {
         {
           id: "doom-shareware",
           name: "DOOM Shareware",
-          description: "Knee-Deep in the Dead — running locally in WebAssembly",
+          description: "Knee-Deep in the Dead",
         },
       ],
     };
@@ -33,6 +33,7 @@ export class DoomFinder implements FuzzyFinderProvider {
         enginePath: "vendor/doom/wasmdoom.wasm",
         musicEnginePath: "vendor/doom/wasmdoom.music.wasm",
         wadPath: "vendor/doom/doom1.wad",
+        titleImagePath: "vendor/doom/titlepic.png",
       },
       metadata: {
         edition: "DOOM Shareware 1.9",

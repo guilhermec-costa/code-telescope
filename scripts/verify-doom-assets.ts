@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 type Artifact = {
   bytes: number;
   sha256: string;
-  kind: "wasm" | "iwad";
+  kind: "wasm" | "iwad" | "png";
   expectedImports?: number;
 };
 
@@ -45,8 +45,10 @@ for (const [name, expected] of Object.entries(manifest.artifacts)) {
     if (imports.length !== expected.expectedImports) {
       fail(`${name} imports ${imports.length} host capabilities; expected ${expected.expectedImports}`);
     }
-  } else if (bytes.subarray(0, 4).toString("ascii") !== "IWAD") {
+  } else if (expected.kind === "iwad" && bytes.subarray(0, 4).toString("ascii") !== "IWAD") {
     fail(`${name} does not have an IWAD header`);
+  } else if (expected.kind === "png" && bytes.subarray(1, 4).toString("ascii") !== "PNG") {
+    fail(`${name} does not have a PNG signature`);
   }
 }
 

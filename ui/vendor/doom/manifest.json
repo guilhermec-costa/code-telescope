@@ -33,6 +33,12 @@
             "bytes": 4196020,
             "sha256": "1d7d43be501e67d927e415e0b8f3e29c3bf33075e859721816f652a526cac771",
             "kind": "iwad"
+        },
+        "titlepic.png": {
+            "bytes": 46733,
+            "sha256": "5278ccc99239f07943db131214e228d068f19b7df6836c4b8e8d8787b608d4f1",
+            "kind": "png",
+            "source": "doom1.wad:TITLEPIC"
         }
     },
     "requiredNotices": ["LICENSE-wasmdoom.txt", "LICENSE-doom-shareware.txt"]

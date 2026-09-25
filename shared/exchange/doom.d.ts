@@ -12,4 +12,5 @@ export interface DoomPreviewContent {
   enginePath: string;
   musicEnginePath: string;
   wadPath: string;
+  titleImagePath: string;
 }

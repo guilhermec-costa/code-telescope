@@ -6,99 +6,161 @@
 }
 
 .doom-shell {
-  box-sizing: border-box;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   width: 100%;
   height: 100%;
-  padding: 12px;
-  color: #d6d0bd;
-  background: #090806;
-  font-family: var(--vscode-editor-font-family), monospace;
-}
-
-.doom-header,
-.doom-controls {
-  display: flex;
-  align-items: center;
-  min-height: 28px;
-  color: #9d9787;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.doom-header {
-  justify-content: space-between;
-  border-bottom: 1px solid #403c32;
-}
-
-.doom-header strong {
-  color: #d4513f;
-}
-
-.doom-status {
-  color: #b5aa7a;
-}
-
-.doom-controls {
-  justify-content: center;
-  border-top: 1px solid #403c32;
-  text-align: center;
+  color: var(--vscode-editor-foreground);
+  background: #000;
+  font-family: var(--vscode-font-family), sans-serif;
 }
 
 .doom-viewport {
   position: relative;
   display: grid;
   min-height: 0;
+  overflow: hidden;
   place-items: center;
   background: #000;
 }
 
+.doom-titlepic,
 .doom-canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
   max-width: 100%;
   max-height: 100%;
   aspect-ratio: 8 / 5;
   object-fit: contain;
-  background: #000;
   image-rendering: pixelated;
+  transform: translate(-50%, -50%);
+}
+
+.doom-canvas {
+  background: transparent;
   outline: none;
   cursor: crosshair;
 }
 
-.doom-launch {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  color: #a29b87;
-  background: rgb(0 0 0 / 82%);
-  font: inherit;
-  cursor: pointer;
+.doom-footer {
+  min-height: 52px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--vscode-editorWidget-border);
+  background: var(--vscode-editorWidget-background, var(--vscode-editor-background));
 }
 
-.doom-launch:hover,
+.doom-start-controls {
+  display: flex;
+  min-height: 35px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.doom-launch {
+  display: inline-flex;
+  min-width: 112px;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 2px;
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
+  font: inherit;
+  cursor: pointer;
+  transition-property: background-color;
+  transition-duration: 120ms;
+  transition-timing-function: ease-out;
+}
+
+.doom-launch:hover:not(:disabled) {
+  background: var(--vscode-button-hoverBackground);
+}
+
 .doom-launch:focus-visible {
-  color: #fff1c2;
-  background: rgb(16 5 3 / 88%);
-  outline: 1px solid #8e2c22;
-  outline-offset: -8px;
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 2px;
 }
 
 .doom-launch:disabled {
+  opacity: 0.65;
   cursor: wait;
 }
 
-.doom-launch-title {
-  color: #d4513f;
-  font-size: clamp(20px, 4vw, 48px);
-  font-weight: 900;
-  letter-spacing: -0.04em;
+.doom-launch .codicon {
+  margin-left: 1px;
+}
+
+.doom-feedback,
+.doom-runtime-status {
+  color: var(--vscode-errorForeground);
+  font-size: 12px;
+}
+
+.doom-feedback {
+  max-width: min(60%, 520px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.doom-game-controls {
+  display: flex;
+  min-height: 35px;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 2vw, 28px);
+  color: var(--vscode-descriptionForeground);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.doom-game-controls > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.doom-game-controls kbd {
+  color: var(--vscode-editor-foreground);
+  font:
+    600 11px var(--vscode-editor-font-family),
+    monospace;
+}
+
+.doom-runtime-status {
+  display: flex;
+  min-height: 35px;
+  align-items: center;
+  justify-content: center;
+}
+
+.doom-start-controls[hidden],
+.doom-game-controls[hidden],
+.doom-runtime-status[hidden] {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .doom-game-controls {
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .doom-game-controls > span > span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doom-launch {
+    transition: none;
+  }
 }

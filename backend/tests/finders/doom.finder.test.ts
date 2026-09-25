@@ -22,6 +22,7 @@ describe("DoomFinder", () => {
       enginePath: "vendor/doom/wasmdoom.wasm",
       musicEnginePath: "vendor/doom/wasmdoom.music.wasm",
       wadPath: "vendor/doom/doom1.wad",
+      titleImagePath: "vendor/doom/titlepic.png",
     });
   });
 });

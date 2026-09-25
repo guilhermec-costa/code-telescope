@@ -10,6 +10,7 @@ const previewData = {
     enginePath: "vendor/doom/doom.wasm",
     musicEnginePath: "vendor/doom/doom-music.wasm",
     wadPath: "vendor/doom/doom1.wad",
+    titleImagePath: "vendor/doom/titlepic.png",
   },
 };
 
@@ -59,5 +60,21 @@ describe("DoomRendererAdapter lifecycle", () => {
 
     expect(signal.aborted).toBe(true);
     await vi.waitFor(() => expect(staleSession.stop).toHaveBeenCalledOnce());
+  });
+
+  it("uses the original title art and reveals controls only after launch", async () => {
+    const session = { capturePointer: vi.fn(), stop: vi.fn() };
+    startDoom.mockResolvedValue(session);
+    await adapter.render(container, previewData);
+
+    expect(container.querySelector<HTMLImageElement>(".doom-titlepic")?.src).toContain("vendor/doom/titlepic.png");
+    expect(container.querySelector(".doom-launch")?.textContent).toBe("Play DOOM");
+    expect(container.querySelector(".doom-game-controls")?.hasAttribute("hidden")).toBe(true);
+
+    container.querySelector<HTMLButtonElement>(".doom-launch")?.click();
+    await vi.waitFor(() => expect(startDoom).toHaveBeenCalledOnce());
+
+    expect(container.querySelector(".doom-start-controls")?.hasAttribute("hidden")).toBe(true);
+    expect(container.querySelector(".doom-game-controls")?.hasAttribute("hidden")).toBe(false);
   });
 });
