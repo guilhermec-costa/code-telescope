@@ -47,6 +47,12 @@ vi.mock("vscode", () => {
     TextEditorRevealType: {
       InCenter: 0,
     },
+    ColorThemeKind: {
+      Light: 1,
+      Dark: 2,
+      HighContrast: 3,
+      HighContrastLight: 4,
+    },
     window: {
       showTextDocument: vi.fn().mockResolvedValue({
         revealRange: vi.fn(),
@@ -55,7 +61,9 @@ vi.mock("vscode", () => {
       showInformationMessage: vi.fn(),
       showWarningMessage: vi.fn(),
       activeTextEditor: undefined,
+      activeColorTheme: { kind: 2 },
       onDidChangeActiveTextEditor: vi.fn(),
+      onDidChangeActiveColorTheme: vi.fn(),
       tabGroups: {
         all: [],
       },

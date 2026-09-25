@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as vscode from "vscode";
 import type { LanguageGrammar, ThemeGrammar } from "../../../shared/extension-webview-protocol";
+import { getActiveThemeName } from "../../utils/theme";
 import { JsoncParser } from "../common/jsonc-parser";
 import { ExtensionRootsResolver } from "./extension-roots-resolver";
 import { HostDetector } from "./remote-detector";
@@ -10,7 +11,7 @@ export class HighlighterAssetLoader {
   private static langCache: Map<string, LanguageGrammar> = new Map();
 
   static async getThemeGrammar(targetTheme?: string): Promise<ThemeGrammar | null> {
-    const themeName = targetTheme || vscode.workspace.getConfiguration("workbench").get<string>("colorTheme");
+    const themeName = targetTheme || getActiveThemeName();
     const activeTheme = vscode.window.activeColorTheme;
     const type =
       activeTheme.kind === vscode.ColorThemeKind.Dark || activeTheme.kind === vscode.ColorThemeKind.HighContrast

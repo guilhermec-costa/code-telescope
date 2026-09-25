@@ -41,8 +41,9 @@ vi.mock("../utils/commands", () => ({
   registerHarpoonCmd: vi.fn(),
 }));
 
-vi.mock("../utils/configuration", () => ({
-  getConfigurationSection: vi.fn(() => "Dark+"),
+vi.mock("../utils/theme", () => ({
+  getActiveThemeName: vi.fn(() => "Dark+"),
+  THEME_CONFIGURATION_SECTIONS: ["workbench.colorTheme"],
 }));
 
 vi.mock("../core/presentation/fuzzy-panel.controller", () => ({

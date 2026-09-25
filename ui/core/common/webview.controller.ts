@@ -87,6 +87,16 @@ export class WebviewController {
         break;
       }
 
+      case "activeThemeChanged": {
+        if (isGameActive()) break;
+
+        const selectedValue = OptionListManager.instance.getSelectedValue();
+        if (selectedValue !== undefined) {
+          PreviewManager.instance.requestPreview(selectedValue);
+        }
+        break;
+      }
+
       case "optionList": {
         this.handleOptionListMessage(msg);
         break;

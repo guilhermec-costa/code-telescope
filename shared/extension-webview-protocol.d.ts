@@ -126,6 +126,10 @@ export interface GrammarCompleteMessage {
   requestId: string;
 }
 
+export interface ActiveThemeChangedMessage {
+  type: "activeThemeChanged";
+}
+
 export interface PostHandleListMessage {
   type: "postHandleListMessage";
 }
@@ -247,7 +251,8 @@ export type ToWebviewKindMessage =
   | RemoveHeavyOptions
   | PromiseBridgeResponse
   | GrammarChunkMessage
-  | GrammarCompleteMessage;
+  | GrammarCompleteMessage
+  | ActiveThemeChangedMessage;
 
 /**
  * Represents all messages that **the webview sends to the backend**.

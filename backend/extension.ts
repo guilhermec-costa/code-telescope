@@ -7,6 +7,7 @@ import "./core/decorators/loader";
 import { HarpoonProvider } from "./core/finders/harpoon.finder";
 import { Logger } from "./core/log";
 import { FuzzyFinderPanelController } from "./core/presentation/fuzzy-panel.controller";
+import { WebviewController } from "./core/presentation/webview.controller";
 import { Globals } from "./globals";
 import { registerHarpoonCmds } from "./harpoon/commands";
 import { HarpoonOrchestrator } from "./harpoon/orchestrator";
@@ -14,7 +15,7 @@ import { createCodeTelescopeAPI } from "./integration/api";
 import { PerformanceDevModule } from "./perf/perf-dev.module";
 import { TelemetryService } from "./telemetry";
 import { registerFuzzyFinder } from "./utils/commands";
-import { getConfigurationSection } from "./utils/configuration";
+import { getActiveThemeName, THEME_CONFIGURATION_SECTIONS } from "./utils/theme";
 
 let customProviderLoader: CustomProviderLoader;
 
@@ -31,13 +32,16 @@ export async function activate(ctx: vscode.ExtensionContext) {
   const telemetry = TelemetryService.instance;
   telemetry.track("extension.activation.started");
 
-  Globals.USER_THEME = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
+  Globals.USER_THEME = getActiveThemeName();
 
   vscode.workspace.onDidChangeConfiguration((e) => {
-    if (e.affectsConfiguration(Globals.cfgSections.colorTheme)) {
-      const newTheme = getConfigurationSection(Globals.cfgSections.colorTheme, "Default Dark+");
-      Globals.USER_THEME = newTheme;
+    if (THEME_CONFIGURATION_SECTIONS.some((section) => e.affectsConfiguration(section))) {
+      updateActiveTheme();
     }
+  });
+
+  vscode.window.onDidChangeActiveColorTheme(() => {
+    updateActiveTheme(true);
   });
 
   Globals.EXTENSION_URI = ctx.extensionUri;
@@ -97,6 +101,17 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
   Logger.info(`${Globals.EXTENSION_NAME} activated!`);
   return createCodeTelescopeAPI();
+}
+
+function updateActiveTheme(forcePreviewRefresh = false): void {
+  const activeTheme = getActiveThemeName();
+  const themeChanged = activeTheme !== Globals.USER_THEME;
+  Globals.USER_THEME = activeTheme;
+
+  const panel = FuzzyFinderPanelController.instance;
+  if ((themeChanged || forcePreviewRefresh) && panel) {
+    void WebviewController.sendMessage(panel.webview, { type: "activeThemeChanged" });
+  }
 }
 
 export async function deactivate() {
