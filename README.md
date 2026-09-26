@@ -15,6 +15,12 @@ Find files instantly, search across your workspace, explore symbols, browse git 
 
 ![Code Telescope Preview](images/preview.gif)
 
+### You can even play DOOM
+
+Need a break from finding files? Launch the original DOOM Shareware episode directly inside Code Telescope — with keyboard, mouse, sound, and music support.
+
+![DOOM running inside Code Telescope](images/doom.gif)
+
 ---
 
 ## Architecture Overview
@@ -103,6 +109,7 @@ Registered via `@PreviewRendererAdapter`, renderers transform raw preview data i
 | `preview.branch` | Git branch diff preview |
 | `preview.image` | Image preview |
 | `preview.font` | Font specimen preview |
+| `preview.doom` | Playable DOOM Shareware session |
 | `preview.none` | No preview |
 
 ---
