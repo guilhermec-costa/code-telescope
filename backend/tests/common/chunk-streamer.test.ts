@@ -29,6 +29,7 @@ describe("ChunkStreamer", () => {
   beforeEach(() => {
     mockWebview = { postMessage: vi.fn() };
     mockItems = Array.from({ length: 10 }, (_, i) => `item-${i}`);
+    (FuzzyFinderPanelController["instance"] as unknown) = { webview: mockWebview };
     vi.clearAllMocks();
   });
 
@@ -110,6 +111,28 @@ describe("ChunkStreamer", () => {
   });
 
   describe("streamConcurrently", () => {
+    it("waits until every postMessage finishes", async () => {
+      let resolveSend!: () => void;
+      mockSendMessage.mockReturnValueOnce(new Promise<void>((resolve) => (resolveSend = resolve)));
+      const streamer = new ChunkStreamer(["a"], {
+        messageType: "optionList",
+        fuzzyProviderType: "workspace.files",
+        dataAdapterType: "workspaceFilesAdapter",
+        chunkSize: 1,
+        totalLimit: 1,
+      });
+
+      let finished = false;
+      const streaming = streamer.streamConcurrently().then(() => (finished = true));
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(finished).toBe(false);
+
+      resolveSend();
+      await streaming;
+      expect(finished).toBe(true);
+    });
+
     it("should return early if no webview available", async () => {
       (FuzzyFinderPanelController["instance"] as unknown) = undefined;
 

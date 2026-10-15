@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as vscode from "vscode";
 import { FuzzyFinderPanelController } from "../../../core/presentation/fuzzy-panel.controller";
 import { PreviewRequestHandler } from "../../../core/presentation/handlers/preview-request.handler";
+import { PreviewRequestState } from "../../../core/presentation/preview-request-state";
 import { WebviewController } from "../../../core/presentation/webview.controller";
 
 vi.mock("@backend/utils/theme", () => ({
@@ -44,6 +45,8 @@ describe("PreviewRequestHandler", () => {
   let webview: vscode.Webview;
 
   beforeEach(() => {
+    vi.clearAllMocks();
+    PreviewRequestState.resetPreviewRequestId();
     handler = new PreviewRequestHandler();
     webview = {} as vscode.Webview;
   });
@@ -51,6 +54,7 @@ describe("PreviewRequestHandler", () => {
   it("request selected option data", async () => {
     const data: any = {
       selectedId: "1",
+      requestId: 1,
     };
 
     const providerMock = FuzzyFinderPanelController.instance!.provider;
@@ -66,6 +70,29 @@ describe("PreviewRequestHandler", () => {
           mocked: true,
         },
       }),
+    );
+  });
+
+  it("drops a stale preview that finishes after a newer request", async () => {
+    const providerMock = FuzzyFinderPanelController.instance!.provider;
+    let resolveOld!: (value: any) => void;
+    let resolveNew!: (value: any) => void;
+    vi.mocked(providerMock.getPreviewData)
+      .mockReturnValueOnce(new Promise((resolve) => (resolveOld = resolve)))
+      .mockReturnValueOnce(new Promise((resolve) => (resolveNew = resolve)));
+
+    const oldRequest = handler.handle({ type: "previewRequest", data: { selectedId: "old", requestId: 10 } }, webview);
+    const newRequest = handler.handle({ type: "previewRequest", data: { selectedId: "new", requestId: 11 } }, webview);
+
+    resolveNew({ kind: "text", content: "new" });
+    await newRequest;
+    resolveOld({ kind: "text", content: "old" });
+    await oldRequest;
+
+    expect(WebviewController.sendMessage).toHaveBeenCalledTimes(1);
+    expect(WebviewController.sendMessage).toHaveBeenCalledWith(
+      webview,
+      expect.objectContaining({ requestId: 11, data: expect.objectContaining({ content: "new" }) }),
     );
   });
 });

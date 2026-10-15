@@ -8,6 +8,7 @@ import { WebviewToExtensionMessenger } from "./common/wv-to-extension-messenger"
 type PendingRequest = {
   resolve: (data: any) => void;
   reject: (error: any) => void;
+  timeoutId: ReturnType<typeof setTimeout>;
 };
 
 type PendingChunk = PendingRequest & {
@@ -16,7 +17,7 @@ type PendingChunk = PendingRequest & {
   timeoutId: ReturnType<typeof setTimeout>;
 };
 
-const DEFAULT_TIMEOUT = 500;
+const DEFAULT_TIMEOUT = 5000;
 
 export class MessageBridge {
   private static pendingRequests = new Map<string, PendingRequest>();
@@ -26,7 +27,13 @@ export class MessageBridge {
     const requestId = Math.random().toString(36).substring(2, 9);
 
     return new Promise((resolve, reject) => {
-      this.pendingRequests.set(requestId, { resolve, reject });
+      const timeoutId = setTimeout(() => {
+        if (this.pendingRequests.has(requestId)) {
+          this.pendingRequests.delete(requestId);
+          reject(new Error(`Timeout requesting asset: ${type}`));
+        }
+      }, timeout);
+      this.pendingRequests.set(requestId, { resolve, reject, timeoutId });
 
       WebviewToExtensionMessenger.instance.postMessage({
         type: "promiseBridgeRequest",
@@ -34,13 +41,6 @@ export class MessageBridge {
         data,
         kind: type as any,
       });
-
-      setTimeout(() => {
-        if (this.pendingRequests.has(requestId)) {
-          this.pendingRequests.delete(requestId);
-          reject(new Error(`Timeout requesting asset: ${type}`));
-        }
-      }, timeout);
     });
   }
 
@@ -49,6 +49,7 @@ export class MessageBridge {
     const pending = this.pendingRequests.get(requestId);
 
     if (pending) {
+      clearTimeout(pending.timeoutId);
       if (error) pending.reject(error);
       else pending.resolve(payload);
 
@@ -76,6 +77,7 @@ export class MessageBridge {
       // the request which requested grammar load
       const originalRequest = this.pendingRequests.get(requestId);
       if (originalRequest) {
+        clearTimeout(originalRequest.timeoutId);
         pending.resolve = originalRequest.resolve;
         pending.reject = originalRequest.reject;
         this.pendingRequests.delete(requestId);

@@ -13,6 +13,7 @@ import { VSCodeApi } from "./code/code-api";
 export class WebviewToExtensionMessenger {
   private static _instance: WebviewToExtensionMessenger | null = null;
   private _lastRequestId: string | undefined;
+  private previewRequestSequence = 0;
 
   static get instance() {
     if (this._instance) return this._instance;
@@ -73,14 +74,16 @@ export class WebviewToExtensionMessenger {
    *
    * @param selection - The identifier of the item the user highlighted.
    */
-  requestSelectionPreviewData(selectedId: string): void {
+  requestSelectionPreviewData(selectedId: string): number {
+    const requestId = Date.now() * 1000 + (this.previewRequestSequence++ % 1000);
     this.postMessage({
       type: "previewRequest",
       data: {
         selectedId,
-        requestId: Date.now(),
+        requestId,
       },
     });
+    return requestId;
   }
 
   /**

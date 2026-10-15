@@ -106,7 +106,7 @@ export class WebviewController {
         this.previewQueue = this.previewQueue.then(async () => {
           try {
             const { previewAdapterType, data } = msg;
-            await PreviewManager.instance.updatePreview(data, previewAdapterType);
+            await PreviewManager.instance.updatePreview(data, previewAdapterType, msg.requestId);
           } catch (error) {
             console.error("[WebviewController] Error processing preview chunk:", error);
           }
@@ -171,10 +171,6 @@ export class WebviewController {
     }
     this.lastHandledOptionListRequestId = msg.requestId;
     OptionListManager.instance.appendChunk(options, totalLimit);
-
-    if (this.searchElement.value) {
-      OptionListManager.instance.filter(this.searchElement.value);
-    }
   }
 
   /**
@@ -185,11 +181,9 @@ export class WebviewController {
       const query = this.searchElement.value;
       SessionStateManager.patch({ query });
 
-      if (query) {
-        WebviewToExtensionMessenger.instance.requestDynamicSearch(query);
-        this.currentRequestId = WebviewToExtensionMessenger.instance.lastRequestId;
-      }
-      OptionListManager.instance.filter(query);
+      WebviewToExtensionMessenger.instance.requestDynamicSearch(query);
+      this.currentRequestId = WebviewToExtensionMessenger.instance.lastRequestId;
+      OptionListManager.instance.scheduleFilter(query);
       OptionListManager.instance.resetIfNeeded();
     });
     this.searchElement.value = __INITIAL_QUERY__;

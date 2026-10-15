@@ -110,7 +110,7 @@ export class CustomFinderBackendProxy implements IFuzzyFinderProvider {
 
     try {
       return { ok: true, value: new CustomFinderBackendProxy(def) };
-    } catch (err) {
+    } catch (_err) {
       return { ok: false, error: "Failed to initialize custom finder proxy" };
     }
   }

@@ -1,6 +1,7 @@
 import { PreviewRendererType } from "../../../shared/adapters-namespace";
 import { PreviewManagerConfig } from "../../../shared/exchange/extension-config";
 import { PreviewChunkMessage, PreviewCompleteMessage, PreviewData } from "../../../shared/extension-webview-protocol";
+import { centerElementVertically } from "../../utils/scroll";
 import { IPreviewRendererAdapter } from "../abstractions/preview-renderer-adapter";
 import { WebviewToExtensionMessenger } from "../common/wv-to-extension-messenger";
 import { PreviewRendererAdapterRegistry } from "../registry/preview-adapter.registry";
@@ -13,12 +14,17 @@ export class PreviewManager {
   private adapter: IPreviewRendererAdapter | null = null;
   private cfg: PreviewManagerConfig = __PREVIEW_CFG__;
   private static _instance: PreviewManager | undefined = undefined;
+  private activeRequestId = 0;
 
   private chunkStore = {
-    chunks: [],
+    requestId: 0,
+    chunks: [] as Array<string | undefined>,
+    received: new Set<number>(),
     total: 0,
     reset() {
+      this.requestId = 0;
       this.chunks = [];
+      this.received.clear();
       this.total = 0;
     },
   };
@@ -49,7 +55,8 @@ export class PreviewManager {
     this.adapter = adapter;
   }
 
-  async updatePreview(data: PreviewData, finderType: PreviewRendererType): Promise<void> {
+  async updatePreview(data: PreviewData, finderType: PreviewRendererType, requestId?: number): Promise<void> {
+    if (requestId !== undefined && requestId !== this.activeRequestId) return;
     let adapter = data.overridePreviewer
       ? PreviewRendererAdapterRegistry.instance.getAdapter(data.overridePreviewer)
       : PreviewRendererAdapterRegistry.instance.getAdapter(finderType);
@@ -131,7 +138,7 @@ export class PreviewManager {
   }
 
   requestPreview(selection: string): void {
-    WebviewToExtensionMessenger.instance.requestSelectionPreviewData(selection);
+    this.activeRequestId = WebviewToExtensionMessenger.instance.requestSelectionPreviewData(selection);
   }
 
   scrollToTop() {
@@ -148,9 +155,7 @@ export class PreviewManager {
       this.scrollToTop();
       return;
     }
-    const previousScrollLeft = this.previewElement.scrollLeft;
-    highlightedLine.scrollIntoView({ behavior: this.cfg.scrollBehavior, block: "center", inline: "nearest" });
-    this.previewElement.scrollLeft = previousScrollLeft;
+    centerElementVertically(this.previewElement, highlightedLine, this.cfg.scrollBehavior);
   }
 
   private getPreviewHeight() {
@@ -177,23 +182,32 @@ export class PreviewManager {
     this.previewElement.scrollLeft += this.getPreviewWidth() / this.horizontalScrollFraction;
   }
 
-  async handlePreviewChunk({ chunkIndex, totalChunks, content }: PreviewChunkMessage): Promise<void> {
+  async handlePreviewChunk({ requestId, chunkIndex, totalChunks, content }: PreviewChunkMessage): Promise<void> {
+    if (requestId !== this.activeRequestId) return;
+    if (this.chunkStore.requestId !== requestId) {
+      this.chunkStore.reset();
+      this.chunkStore.requestId = requestId;
+      this.chunkStore.chunks = new Array(totalChunks);
+      this.chunkStore.total = totalChunks;
+    }
     this.chunkStore.chunks[chunkIndex] = content;
-    this.chunkStore.total = totalChunks;
+    this.chunkStore.received.add(chunkIndex);
   }
 
   async handlePreviewComplete({
+    requestId,
     previewAdapterType,
     language,
     theme,
     metadata,
   }: PreviewCompleteMessage): Promise<void> {
-    const isComplete = this.chunkStore.chunks.every((chunk) => chunk !== undefined);
+    if (requestId !== this.activeRequestId || this.chunkStore.requestId !== requestId) return;
+    const isComplete = this.chunkStore.received.size === this.chunkStore.total;
 
     if (!isComplete) {
-      const missingChunks = this.chunkStore.chunks
-        .map((chunk, index) => (chunk === undefined ? index : -1))
-        .filter((index) => index !== -1);
+      const missingChunks = Array.from({ length: this.chunkStore.total }, (_, index) => index).filter(
+        (index) => !this.chunkStore.received.has(index),
+      );
       console.error(`[PreviewManager] Missing chunks: ${missingChunks.join(", ")}`);
       return;
     }

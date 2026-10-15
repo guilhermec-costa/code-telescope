@@ -85,7 +85,7 @@ describe("Extension entrypoint", () => {
   });
 
   it("should activate the extension correctly", async () => {
-    const context = { extensionUri: "uri" } as any;
+    const context = { extensionUri: "uri", subscriptions: [] } as any;
 
     await activate(context);
 

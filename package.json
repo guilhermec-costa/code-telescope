@@ -34,9 +34,6 @@
     "categories": [
         "Other"
     ],
-    "activationEvents": [
-        "onStartupFinished"
-    ],
     "main": "./backend/dist/extension.js",
     "contributes": {
         "commands": [
@@ -434,6 +431,7 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Search using literal text instead of regex.",
+                    "deprecationMessage": "Use codeTelescope.wsTextFinder.fixedStrings instead.",
                     "order": 4
                 },
                 "codeTelescope.wsFileFinder.excludePatterns": {
@@ -466,7 +464,14 @@
                     "type": "number",
                     "default": 150,
                     "description": "Maximum file size ripgrep will search (e.g. 200k, 1M)",
+                    "deprecationMessage": "This setting was not used. Use codeTelescope.preview.maxFileSizeKB to limit previews.",
                     "order": 7
+                },
+                "codeTelescope.wsFileFinder.respectGitIgnore": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Respect .gitignore and other ripgrep ignore files when listing workspace files.",
+                    "order": 8
                 },
                 "codeTelescope.wsFileFinder.maxResults": {
                     "type": "number",
@@ -506,6 +511,12 @@
                     ],
                     "description": "Glob patterns to exclude from file search",
                     "order": 10
+                },
+                "codeTelescope.wsTextFinder.fixedStrings": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Search using literal text instead of regular expressions.",
+                    "order": 11
                 },
                 "codeTelescope.wsTextFinder.maxColumns": {
                     "type": "number",
@@ -562,6 +573,13 @@
                     "default": false,
                     "description": "If line numbers should be displayed in the preview",
                     "order": 19
+                },
+                "codeTelescope.preview.maxFileSizeKB": {
+                    "type": "number",
+                    "default": 1024,
+                    "minimum": 1,
+                    "description": "Maximum file size in KB that Code Telescope will load into the preview panel.",
+                    "order": 20
                 },
                 "codeTelescope.layout.mode": {
                     "type": "string",
@@ -631,7 +649,7 @@
         }
     },
     "scripts": {
-        "vscode:prepublish": "npm run verify:doom-assets && npm run backend:bundle:prod",
+        "vscode:prepublish": "npm run build",
         "backend:bundle:prod": "tsx scripts/bundle-backend.ts --env=prod",
         "backend:compile": "tsc -p ./backend/tsconfig.build.json",
         "backend:watch": "tsc -w -p ./backend/tsconfig.build.json",
@@ -642,18 +660,19 @@
         "check": "biome check",
         "check:write": "biome check --write",
         "format:write": "biome format --write",
-        "test:integration": "vscode-test",
+        "test:integration": "npm run backend:compile && vscode-test",
         "test:unit": "vitest",
         "test:unit:watch": "vitest --watch",
         "test:unit:cov": "vitest --coverage",
         "verify:doom-assets": "tsx scripts/verify-doom-assets.ts",
+        "verify:webview-bundle": "tsx scripts/verify-webview-bundle.ts",
         "prepare": "husky",
         "webview:dev": "tsx scripts/bundle-webview.ts --env=dev",
         "webview:dev:watch": "tsx scripts/bundle-webview.ts --env=dev --watch=true",
         "webview:prod": "tsx scripts/bundle-webview.ts --env=prod",
         "webview:prod:watch": "tsx scripts/bundle-webview.ts --env=prod --watch=true",
         "clean": "rm -rf ui/dist && rm -rf backend/dist",
-        "build": "npm run verify:doom-assets && npm run webview:prod && npm run backend:bundle:prod",
+        "build": "npm run verify:doom-assets && npm run webview:prod && npm run verify:webview-bundle && npm run backend:bundle:prod",
         "make:package": "npm run clean && npm run build && vsce package",
         "deploy:patch": "npm run make:package && vsce publish patch",
         "deploy:minor": "npm run make:package && vsce publish minor",

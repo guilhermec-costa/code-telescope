@@ -74,7 +74,7 @@ export class RipgrepTextFinder {
           matches.push({
             file: resolvedPath,
             line: data.line_number,
-            column: data.submatches[0]?.start || 1,
+            column: (data.submatches[0]?.start ?? 0) + 1,
             text: lineText,
             preview: lineText,
           });

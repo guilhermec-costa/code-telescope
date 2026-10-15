@@ -29,7 +29,7 @@ export class CustomProviderLoader {
       await this.loadAndTrack(uri);
     }
 
-    await this.loadExtensionExamples();
+    if (Globals.ENV === vscode.ExtensionMode.Development) await this.loadExtensionExamples();
 
     this.watcher = vscode.workspace.createFileSystemWatcher(wsGlob);
 
@@ -41,6 +41,7 @@ export class CustomProviderLoader {
   }
 
   private async loadAndTrack(uri: vscode.Uri): Promise<void> {
+    const previousType = this.loadedProviders.get(uri.fsPath);
     const result = await this.loadCustomProvider(uri);
 
     if (!result.ok) {
@@ -48,6 +49,10 @@ export class CustomProviderLoader {
       return;
     }
 
+    if (previousType && previousType !== result.value.fuzzyType) {
+      CustomProviderStorage.instance.deleteConfig(previousType);
+      FuzzyFinderAdapterRegistry.instance.deleteAdapter(previousType);
+    }
     this.loadedProviders.set(result.value.uri.fsPath, result.value.fuzzyType);
   }
 

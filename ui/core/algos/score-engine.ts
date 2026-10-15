@@ -34,45 +34,6 @@ function getFilenameStart(text: string): number {
   return Math.max(slash, backslash) + 1;
 }
 
-function getBeamWidth(queryLen: number, textLen: number): number {
-  if (queryLen <= 3) return Math.min(120, Math.max(40, textLen));
-  if (queryLen <= 6) return 80;
-  return 48;
-}
-
-function buildPositionIndex(text: string): Map<string, number[]> {
-  const positions = new Map<string, number[]>();
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const bucket = positions.get(char);
-
-    if (bucket) {
-      bucket.push(i);
-    } else {
-      positions.set(char, [i]);
-    }
-  }
-
-  return positions;
-}
-
-function lowerBound(values: number[], target: number): number {
-  let left = 0;
-  let right = values.length;
-
-  while (left < right) {
-    const mid = (left + right) >> 1;
-    if (values[mid] < target) {
-      left = mid + 1;
-    } else {
-      right = mid;
-    }
-  }
-
-  return left;
-}
-
 type State = { score: number; lastIdx: number; prev: State | null };
 
 export type MatchResult = { score: number; indices: number[] };
@@ -142,48 +103,42 @@ function computeBestMatch(lowerQuery: string, text: string): MatchResult {
   const lowerText = text.toLowerCase();
   const filenameStart = getFilenameStart(text);
   const exactSubstringIdx = lowerText.indexOf(lowerQuery);
-  const beamWidth = getBeamWidth(queryLen, textLen);
-  const positionIndex = buildPositionIndex(lowerText);
+  const initialState: State = { score: 0, lastIdx: -1, prev: null };
+  let best: State | null = null;
 
-  let globalStateHistory: State[] = [{ score: 0, lastIdx: -1, prev: null }];
+  // Try every occurrence of the first character, then greedily complete the
+  // sequence. Paths are short, so this keeps basename/word-boundary quality
+  // without allocating and sorting a beam of states for every character.
+  let startIdx = lowerText.indexOf(lowerQuery[0]);
+  while (startIdx !== -1) {
+    let state: State = {
+      score: computeStateScore(lowerQuery, text, initialState, startIdx, 0, filenameStart, exactSubstringIdx),
+      lastIdx: startIdx,
+      prev: initialState,
+    };
+    let matched = true;
 
-  for (let qi = 0; qi < queryLen; qi++) {
-    const char = lowerQuery[qi];
-    const charPositions = positionIndex.get(char);
-    if (!charPositions) return { score: -Infinity, indices: [] };
-
-    const localStateHistory: State[] = [];
-
-    for (const state of globalStateHistory) {
-      const startAt = lowerBound(charPositions, state.lastIdx + 1);
-
-      for (let i = startAt; i < charPositions.length; i++) {
-        const foundIdx = charPositions[i];
-        localStateHistory.push({
-          score: computeStateScore(lowerQuery, text, state, foundIdx, qi, filenameStart, exactSubstringIdx),
-          lastIdx: foundIdx,
-          prev: state,
-        });
+    for (let qi = 1; qi < queryLen; qi++) {
+      const foundIdx = lowerText.indexOf(lowerQuery[qi], state.lastIdx + 1);
+      if (foundIdx === -1) {
+        matched = false;
+        break;
       }
+
+      state = {
+        score: computeStateScore(lowerQuery, text, state, foundIdx, qi, filenameStart, exactSubstringIdx),
+        lastIdx: foundIdx,
+        prev: state,
+      };
     }
 
-    if (localStateHistory.length === 0) return { score: -Infinity, indices: [] };
-
-    const uniqueStates = new Map<number, State>();
-    for (const state of localStateHistory) {
-      const existing = uniqueStates.get(state.lastIdx);
-      if (!existing || state.score > existing.score) {
-        uniqueStates.set(state.lastIdx, state);
-      }
+    if (matched && (!best || state.score > best.score)) {
+      best = state;
     }
-
-    const filteredNextStates = Array.from(uniqueStates.values());
-    filteredNextStates.sort((a, b) => b.score - a.score);
-    globalStateHistory = filteredNextStates.slice(0, beamWidth);
+    startIdx = lowerText.indexOf(lowerQuery[0], startIdx + 1);
   }
 
-  const best = globalStateHistory[0];
-  return { score: best.score, indices: buildIndices(best) };
+  return best ? { score: best.score, indices: buildIndices(best) } : { score: -Infinity, indices: [] };
 }
 
 function computeSubstringMatch(lowerQuery: string, text: string): MatchResult {

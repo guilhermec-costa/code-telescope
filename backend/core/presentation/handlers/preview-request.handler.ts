@@ -24,8 +24,10 @@ export class PreviewRequestHandler implements IWebviewMessageHandler<"previewReq
       return;
     }
     PreviewRequestState.setLatestPreviewRequestId(requestId);
+    const signal = PreviewRequestState.getActiveSignal();
 
     const previewData = await provider.getPreviewData(selectedId);
+    if (signal?.aborted || !PreviewRequestState.isLatest(requestId)) return;
     const contentType = previewData.kind;
     const theme = provider.fuzzyAdapterType !== "workspace.colorschemes" ? Globals.USER_THEME : previewData.theme;
 
@@ -36,7 +38,7 @@ export class PreviewRequestHandler implements IWebviewMessageHandler<"previewReq
       const isLargeContent = textContent.length > CONTENT_CHUNK_THRESHOLD_BYTES;
 
       if (isLargeContent && textContent.length > 0) {
-        return await this.sendChunkedPreview(provider, previewData, textContent, requestId);
+        return await this.sendChunkedPreview(provider, previewData, textContent, requestId, signal);
       } else {
         return await this.sendFullPreview(provider, previewData, wv, requestId);
       }
@@ -49,6 +51,7 @@ export class PreviewRequestHandler implements IWebviewMessageHandler<"previewReq
     previewData: PreviewData,
     buffer: string,
     requestId: number,
+    signal?: AbortSignal,
   ) {
     const theme =
       provider.fuzzyAdapterType !== "workspace.colorschemes" ? Globals.USER_THEME : (previewData.theme as string);
@@ -61,7 +64,7 @@ export class PreviewRequestHandler implements IWebviewMessageHandler<"previewReq
       requestId,
     });
 
-    await chunkStreamer.streamConcurrently(8);
+    await chunkStreamer.streamConcurrently(8, signal);
   }
 
   private async sendFullPreview(provider: any, previewData: PreviewData, wv: vscode.Webview, requestId: number) {

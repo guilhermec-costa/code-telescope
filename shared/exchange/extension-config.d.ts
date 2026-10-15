@@ -4,6 +4,7 @@ export interface WsFileFinderConfig {
   excludePatterns: string[];
   maxResults: number;
   maxFileSize: number;
+  respectGitIgnore: boolean;
   asRelativePath: boolean;
   textDisplay: "relative" | "absolte" | "filename-only";
 }
@@ -37,6 +38,7 @@ export interface PreviewManagerConfig {
   verticalScrollFraction: "1/2" | "1/3" | "1/4";
   horizontalScrollFraction: "1/2" | "1/3" | "1/4";
   showLineNumbers: boolean;
+  maxFileSizeKB: number;
 }
 
 export interface KeybindingConfig {

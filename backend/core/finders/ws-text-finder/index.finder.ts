@@ -58,7 +58,7 @@ export class WorkspaceTextSearchProvider implements FuzzyFinderProvider, Chunkab
       }
     }
 
-    const result = await this.regexFinder.search(query);
+    const result = await this.regexFinder.search(query, signal);
     if (signal?.aborted) return;
     if (result.results?.length > 0) yield result.results;
   }

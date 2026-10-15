@@ -30,7 +30,29 @@ export class ExtensionConfigManager {
   }
 
   static get wsTextFinderCfg(): WsTextFinderConfig {
-    return this.root.get<WsTextFinderConfig>(ExtensionCfgSection.WS_TEXT_FINDER)!;
+    const config = this.root.get<WsTextFinderConfig>(ExtensionCfgSection.WS_TEXT_FINDER)!;
+    const current = this.root.inspect<boolean>(`${ExtensionCfgSection.WS_TEXT_FINDER}.fixedStrings`);
+    const hasCurrentOverride = Boolean(
+      current?.globalValue !== undefined ||
+        current?.workspaceValue !== undefined ||
+        current?.workspaceFolderValue !== undefined ||
+        current?.globalLanguageValue !== undefined ||
+        current?.workspaceLanguageValue !== undefined ||
+        current?.workspaceFolderLanguageValue !== undefined,
+    );
+
+    if (hasCurrentOverride) return config;
+
+    const legacy = this.root.inspect<boolean>(`${ExtensionCfgSection.WS_FILE_FINDER}.fixedStrings`);
+    const legacyValue =
+      legacy?.workspaceFolderLanguageValue ??
+      legacy?.workspaceLanguageValue ??
+      legacy?.globalLanguageValue ??
+      legacy?.workspaceFolderValue ??
+      legacy?.workspaceValue ??
+      legacy?.globalValue;
+
+    return legacyValue === undefined ? config : { ...config, fixedStrings: legacyValue };
   }
 
   static get previewManagerCfg(): PreviewManagerConfig {

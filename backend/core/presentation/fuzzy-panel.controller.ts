@@ -10,6 +10,8 @@ import { FinderResumeStore } from "../common/finder-resume.store";
 import { PreContextManager } from "../common/pre-context";
 import { FuzzyFinderAdapterRegistry } from "../registry/fuzzy-provider.registry";
 import { WebviewMessageHandlerRegistry } from "../registry/webview-handler.registry";
+import { DynamicSearchState } from "./dynamic-search-state";
+import { PreviewRequestState } from "./preview-request-state";
 import { WebviewController } from "./webview.controller";
 
 export type ProviderStartOptions = {
@@ -33,6 +35,8 @@ export class FuzzyFinderPanelController {
 
     _wvPanel.onDidDispose(() => {
       console.log("[FuzzyPanel] Panel disposed");
+      DynamicSearchState.cancel();
+      PreviewRequestState.resetPreviewRequestId();
       FuzzyFinderPanelController._instance = undefined;
     });
   }
@@ -110,6 +114,8 @@ export class FuzzyFinderPanelController {
   }
 
   public async startProvider(providerType: FuzzyProviderType, startOptions?: ProviderStartOptions) {
+    DynamicSearchState.cancel();
+    PreviewRequestState.resetPreviewRequestId();
     const provider = FuzzyFinderAdapterRegistry.instance.getAdapter(providerType);
     if (!provider) {
       this.dispose();
@@ -160,6 +166,8 @@ export class FuzzyFinderPanelController {
    */
   public async dispose() {
     console.log("[FuzzyPanel] Closing panel");
+    DynamicSearchState.cancel();
+    PreviewRequestState.resetPreviewRequestId();
     this.wvPanel.dispose();
   }
 }

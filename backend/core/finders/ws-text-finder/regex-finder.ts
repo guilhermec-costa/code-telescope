@@ -1,4 +1,6 @@
+import * as vscode from "vscode";
 import { TextSearchMatch } from "../../../../shared/exchange/workspace-text-search";
+import { ExtensionConfigManager } from "../../common/config-manager";
 import { FileReader } from "../../common/file-reader";
 import { WorkspaceFileFinder } from "../file/ws-files.finder";
 
@@ -11,10 +13,10 @@ function escapeRegExp(string: string) {
  * using a regular expression-based approach.
  */
 export class RegexFinder {
-  public async search(query: string): Promise<any> {
+  public async search(query: string, signal?: AbortSignal): Promise<any> {
     const matches: TextSearchMatch[] = [];
-    const MAX_RESULTS = 200;
-    const BATCH_SIZE = 50;
+    const { maxResults, maxFileSize } = ExtensionConfigManager.wsTextFinderCfg;
+    const BATCH_SIZE = 25;
 
     const queryRegex = new RegExp(escapeRegExp(query), "gi");
 
@@ -23,16 +25,19 @@ export class RegexFinder {
       const uris = await wsFileFinder.getWorkspaceFiles();
 
       for (let i = 0; i < uris.length; i += BATCH_SIZE) {
-        if (matches.length >= MAX_RESULTS) break;
+        if (signal?.aborted || matches.length >= maxResults) break;
 
         const batch = uris.slice(i, i + BATCH_SIZE);
 
         await Promise.all(
           batch.map(async (uri) => {
-            if (matches.length >= MAX_RESULTS) return;
+            if (signal?.aborted || matches.length >= maxResults) return;
 
             try {
+              const stat = await vscode.workspace.fs.stat(vscode.Uri.file(uri));
+              if (stat.size > parseFileSize(maxFileSize) || signal?.aborted) return;
               const content = (await FileReader.read(uri)) as string;
+              if (signal?.aborted) return;
               queryRegex.lastIndex = 0;
 
               const match = queryRegex.exec(content);
@@ -78,4 +83,11 @@ export class RegexFinder {
       return { results: [], query, message: "Error during search" };
     }
   }
+}
+
+function parseFileSize(value: string): number {
+  const match = /^\s*(\d+(?:\.\d+)?)\s*([kmgt]?)b?\s*$/i.exec(value);
+  if (!match) return 200 * 1024;
+  const multiplier = { "": 1, k: 1024, m: 1024 ** 2, g: 1024 ** 3, t: 1024 ** 4 }[match[2].toLowerCase()]!;
+  return Number(match[1]) * multiplier;
 }

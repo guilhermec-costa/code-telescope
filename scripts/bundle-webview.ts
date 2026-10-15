@@ -12,6 +12,7 @@ const ENV = envArg === "prod" || envArg === "production" ? "prod" : "dev";
 const WATCH = watchArg === "true" ? true : false;
 
 const isProd = ENV === "prod";
+const DIST_ROOT = path.resolve(process.cwd(), "ui", "dist");
 console.log(`⚙️ Running build in ${isProd ? "PRODUCTION" : "DEV"} mode`);
 
 function findEntryPoints() {
@@ -125,6 +126,11 @@ function watchAssets() {
 }
 
 async function run() {
+  if (!WATCH) {
+    fs.rmSync(DIST_ROOT, { recursive: true, force: true });
+  }
+  fs.mkdirSync(DIST_ROOT, { recursive: true });
+
   const entryPoints = findEntryPoints();
   console.log("Entrypoints:", entryPoints);
 
@@ -149,8 +155,11 @@ async function run() {
       const uiDirPath = path.resolve(process.cwd(), "ui");
       const opts: esbuild.BuildOptions = {
         entryPoints: [entry],
-        outfile: path.join(outdir, "index.js"),
+        outdir,
+        entryNames: "[name]",
+        chunkNames: "chunks/[name]-[hash]",
         bundle: true,
+        splitting: true,
         format: "esm",
         target: ["chrome110"],
         loader: { ".css": "css", ".ts": "ts" },

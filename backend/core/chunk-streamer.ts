@@ -85,7 +85,7 @@ export class ChunkStreamer<T> {
           if (this.checkAborted()) return;
           const mapped = mapChunk ? await mapChunk(chunk) : chunk;
           if (this.checkAborted()) return;
-          WebviewController.sendMessage(webview, {
+          await WebviewController.sendMessage(webview, {
             type: messageType as any,
             data: mapped,
             fuzzyProviderType,

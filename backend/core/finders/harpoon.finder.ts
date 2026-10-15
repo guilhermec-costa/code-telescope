@@ -32,6 +32,7 @@ export class HarpoonProvider implements FuzzyFinderProvider {
   }
 
   async querySelectableOptions(): Promise<HarpoonFinderData> {
+    await this.getManager().initialize();
     const marks = this.getManager().getMarks();
 
     const { displayTexts } = marks.reduce<{ displayTexts: string[] }>(
@@ -61,6 +62,7 @@ export class HarpoonProvider implements FuzzyFinderProvider {
   }
 
   async getPreviewData(identifier: string): Promise<TextPreviewData> {
+    await this.getManager().initialize();
     const index = parseInt(identifier, 10);
     const marks = this.getManager().getMarks();
     const selected = marks[index];

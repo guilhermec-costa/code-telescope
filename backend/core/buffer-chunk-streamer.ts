@@ -24,7 +24,7 @@ export class BufferChunkStreamer {
     this.chunkSizeBytes = options.chunkSizeBytes ?? DEFAULT_CHUNK_SIZE_BYTES;
   }
 
-  async streamConcurrently(concurrency: number = 4) {
+  async streamConcurrently(concurrency: number = 4, signal?: AbortSignal) {
     const { previewAdapterType, metadata } = this.options;
     const webview = FuzzyFinderPanelController.instance?.webview;
     if (!webview) return;
@@ -36,18 +36,20 @@ export class BufferChunkStreamer {
     const limit = pLimit(concurrency);
 
     const jobs = chunks.map((chunk, index) =>
-      limit(() =>
-        WebviewController.sendMessage(webview, {
+      limit(async () => {
+        if (signal?.aborted) return;
+        await WebviewController.sendMessage(webview, {
           type: "previewChunk",
           chunkIndex: index,
           totalChunks,
           content: chunk,
           requestId: this.options.requestId,
-        }),
-      ),
+        });
+      }),
     );
 
     await Promise.all(jobs);
+    if (signal?.aborted) return;
 
     const { language, theme, requestId } = this.options;
     await WebviewController.sendMessage(webview, {

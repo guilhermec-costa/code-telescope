@@ -3,6 +3,7 @@ import { FuzzyProviderType } from "../../../shared/adapters-namespace";
 import { debounce } from "../../utils/debounce";
 import { escapeHtml } from "../../utils/html";
 import { computeMatch, MatchResult } from "../algos/score-engine";
+import { matches } from "../algos/subsequence";
 import { PreviewManager } from "../render/preview-manager";
 import { Virtualizer } from "../render/virtualizer";
 import { SessionStateManager } from "./code/state-manager";
@@ -19,6 +20,7 @@ export class OptionListManager {
   private static _instance: OptionListManager | undefined;
   private lastOption: any | undefined;
   private lastFilterQuery: string = "";
+  private pendingFilterTimer: ReturnType<typeof setTimeout> | undefined;
 
   private listElement: HTMLUListElement;
   private itemsCountElement: HTMLElement | null;
@@ -68,8 +70,9 @@ export class OptionListManager {
     this.itemsCountElement = document.getElementById("items-count");
     this.searchElement = document.getElementById("search") as HTMLInputElement;
 
+    const resultFontSize = Number.parseFloat(getComputedStyle(this.listElement).fontSize) || 16;
     this.virtualizer = new Virtualizer(this.listElement, {
-      itemHeight: 22,
+      itemHeight: Math.max(22, Math.ceil(resultFontSize + 6)),
       bufferSize: 10,
     });
 
@@ -107,7 +110,7 @@ export class OptionListManager {
       this.resetMatchCacheIfNeeded(this.searchElement.value);
       const newFiltered = chunk.filter((opt) => {
         const text = this.dataAdapter!.getSearchText(opt);
-        return this.getMatchResult(this.searchElement.value, text).score > -Infinity;
+        return matches(this.searchElement.value, text);
       });
       this.filteredOptions.push(...newFiltered);
     }
@@ -138,7 +141,7 @@ export class OptionListManager {
 
     this.filteredOptions = sourceList.filter((opt) => {
       const text = this.dataAdapter!.getSearchText(opt);
-      return this.getMatchResult(query, text).score > -Infinity;
+      return matches(query, text);
     });
 
     this.lastFilterQuery = query;
@@ -159,6 +162,20 @@ export class OptionListManager {
       this.lastOption = undefined;
       return;
     }
+  }
+
+  public scheduleFilter(query: string): void {
+    if (this.pendingFilterTimer !== undefined) {
+      clearTimeout(this.pendingFilterTimer);
+    }
+
+    // Yield once for large lists so the browser can paint the typed character
+    // before filtering. The timer also coalesces rapid consecutive keystrokes.
+    const delay = this.dataAdapter?.debounceSearchTime ?? (this.allOptions.length >= 10_000 ? 16 : 0);
+    this.pendingFilterTimer = setTimeout(() => {
+      this.pendingFilterTimer = undefined;
+      if (this.searchElement.value === query) this.filter(query);
+    }, delay);
   }
 
   public moveSelectionUp() {
@@ -261,10 +278,16 @@ export class OptionListManager {
   }
 
   private setupScrollListener(): void {
+    let renderScheduled = false;
     const renderVirtualized = () => {
-      this.virtualizer.renderVirtualized(this.filteredOptions, this.searchElement.value, (item, idx, q) =>
-        this.createListItem(item, idx, q),
-      );
+      if (renderScheduled) return;
+      renderScheduled = true;
+      requestAnimationFrame(() => {
+        renderScheduled = false;
+        this.virtualizer.renderVirtualized(this.filteredOptions, this.searchElement.value, (item, idx, q) =>
+          this.createListItem(item, idx, q),
+        );
+      });
     };
 
     this.listElement.addEventListener("scroll", renderVirtualized);
@@ -319,17 +342,17 @@ export class OptionListManager {
     if (!query) return;
 
     const lowerQuery = query.toLowerCase();
-    const limit = 5000;
-    const hasOverflow = options.length > limit;
-    const workingSet = hasOverflow ? options.slice(0, limit) : options;
+    const workingSet = options;
     this.resetMatchCacheIfNeeded(lowerQuery);
 
-    const scored = workingSet.map((opt) => ({
-      opt,
-      searchText: this.dataAdapter!.getSearchText(opt),
-      identityValue: this.dataAdapter!.getSelectionValue(opt),
-      score: this.getMatchResult(lowerQuery, this.dataAdapter!.getSearchText(opt)).score,
-    }));
+    const scored = workingSet.map((opt) => {
+      const searchText = this.dataAdapter!.getSearchText(opt);
+      return {
+        opt,
+        searchText,
+        score: computeMatch(lowerQuery, searchText).score,
+      };
+    });
 
     scored.sort((a, b) => {
       const scoreDelta = a.score - b.score;
@@ -344,7 +367,9 @@ export class OptionListManager {
         return isIvy ? -searchTextDelta : searchTextDelta;
       }
 
-      const result = this.toSelectionKey(a.identityValue).localeCompare(this.toSelectionKey(b.identityValue));
+      const result = this.toSelectionKey(this.dataAdapter!.getSelectionValue(a.opt)).localeCompare(
+        this.toSelectionKey(this.dataAdapter!.getSelectionValue(b.opt)),
+      );
       return isIvy ? -result : result;
     });
 
@@ -455,6 +480,10 @@ export class OptionListManager {
     if (cached) return cached;
 
     const result = computeMatch(lowerQuery, text);
+    if (this.matchCache.size >= 500) {
+      const oldestKey = this.matchCache.keys().next().value;
+      if (oldestKey !== undefined) this.matchCache.delete(oldestKey);
+    }
     this.matchCache.set(key, result);
     return result;
   }

@@ -157,6 +157,16 @@ export class WorkspaceFileFinder implements FuzzyFinderProvider, ChunkableProvid
   async getPreviewData(identifier: string): Promise<TextPreviewData | ImagePreviewData> {
     const ext = resolvePathExt(identifier);
     const isImg = ["jpg", "jpeg", "png", "webp", "gif", "svg"].includes(ext);
+    const maxBytes = ExtensionConfigManager.previewManagerCfg.maxFileSizeKB * 1024;
+    const stat = await vscode.workspace.fs.stat(vscode.Uri.file(identifier));
+
+    if (stat.size > maxBytes) {
+      return {
+        kind: "text",
+        content: `Preview unavailable: file is larger than ${ExtensionConfigManager.previewManagerCfg.maxFileSizeKB} KB.`,
+        metadata: { filePath: identifier },
+      };
+    }
 
     const content = await FileReader.read(identifier);
 

@@ -233,6 +233,7 @@ body {
   font-size: var(--preview-font-size);
   font-weight: 400;
   line-height: 1.4;
+  scrollbar-gutter: stable;
 }
 
 

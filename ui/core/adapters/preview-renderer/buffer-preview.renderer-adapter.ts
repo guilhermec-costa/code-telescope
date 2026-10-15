@@ -4,6 +4,7 @@ import { PreviewManagerConfig } from "../../../../shared/exchange/extension-conf
 import { TextPreviewData } from "../../../../shared/extension-webview-protocol";
 import { toInnerHTML } from "../../../utils/html";
 import { getLanguageIdForFile } from "../../../utils/icon";
+import { centerElementVertically } from "../../../utils/scroll";
 import { IPreviewRendererAdapter } from "../../abstractions/preview-renderer-adapter";
 import { OptionListManager } from "../../common/option-list-manager";
 import { PreviewRendererAdapter } from "../../decorators/preview-renderer-adapter.decorator";
@@ -177,6 +178,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
 
     previewElement.innerHTML = "";
     previewElement.scrollTop = 0;
+    previewElement.scrollLeft = 0;
     this.loadedChunks.clear();
     this.chunkHtmlCache.clear();
     this.grammarStates.clear();
@@ -377,7 +379,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
           if (isStaleRender()) return;
           if (metadata?.highlightLine !== undefined) {
             const highlightedLine = previewElement.querySelector(".line.highlighted");
-            highlightedLine?.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" });
+            if (highlightedLine) centerElementVertically(previewElement, highlightedLine, "instant");
           }
         });
       });
@@ -393,7 +395,7 @@ export class BufferPreviewRendererAdapter implements IPreviewRendererAdapter {
       if (isStaleRender()) return;
       if (metadata?.highlightLine !== undefined && (initialChunk === 0 || !!cachedStates)) {
         const highlightedLine = previewElement.querySelector(".line.highlighted");
-        highlightedLine?.scrollIntoView({ block: "center", inline: "nearest", behavior: "instant" });
+        if (highlightedLine) centerElementVertically(previewElement, highlightedLine, "instant");
       }
     });
 

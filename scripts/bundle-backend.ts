@@ -28,6 +28,11 @@ function findEntryPoint() {
 }
 
 async function run() {
+  if (!WATCH) {
+    fs.rmSync(OUT_DIR, { recursive: true, force: true });
+  }
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+
   const entryPoint = findEntryPoint();
   console.log("Entrypoint:", entryPoint);
 

@@ -34,24 +34,27 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
   Globals.USER_THEME = getActiveThemeName();
 
-  vscode.workspace.onDidChangeConfiguration((e) => {
-    if (THEME_CONFIGURATION_SECTIONS.some((section) => e.affectsConfiguration(section))) {
-      updateActiveTheme();
-    }
-  });
-
-  vscode.window.onDidChangeActiveColorTheme(() => {
-    updateActiveTheme(true);
-  });
+  ctx.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (THEME_CONFIGURATION_SECTIONS.some((section) => e.affectsConfiguration(section))) {
+        updateActiveTheme();
+      }
+    }),
+    vscode.window.onDidChangeActiveColorTheme(() => {
+      updateActiveTheme(true);
+    }),
+  );
 
   Globals.EXTENSION_URI = ctx.extensionUri;
 
   customProviderLoader = new CustomProviderLoader(ctx);
   await customProviderLoader.initialize();
 
-  vscode.window.onDidChangeActiveTextEditor((ed) => {
-    PreContextManager.instance.captureFromActiveEditor();
-  });
+  ctx.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor(() => {
+      PreContextManager.instance.captureFromActiveEditor();
+    }),
+  );
 
   registerFuzzyFinder("file", () => FuzzyFinderPanelController.setupProvider("workspace.files"), ctx);
   registerFuzzyFinder("keybindings", () => FuzzyFinderPanelController.setupProvider("workspace.keybindings"), ctx);
@@ -97,6 +100,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
 
   HarpoonProvider.initialize(ctx);
   const manager = HarpoonOrchestrator.getInstance(ctx);
+  await manager.initialize();
   registerHarpoonCmds(manager, ctx);
 
   Logger.info(`${Globals.EXTENSION_NAME} activated!`);
@@ -115,7 +119,7 @@ function updateActiveTheme(forcePreviewRefresh = false): void {
 }
 
 export async function deactivate() {
-  customProviderLoader.dispose();
+  customProviderLoader?.dispose();
   await TelemetryService.instance.dispose();
   console.log("code-telescope deactivated");
 }

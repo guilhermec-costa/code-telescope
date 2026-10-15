@@ -9,10 +9,11 @@ export class HarpoonOrchestrator {
   private static instance: HarpoonOrchestrator;
   private marks: HarpoonMark[] = [];
   private storage: HarpoonStorage;
+  private readonly loadPromise: Promise<void>;
 
   private constructor(private context: vscode.ExtensionContext) {
     this.storage = new HarpoonStorage(context);
-    this.load();
+    this.loadPromise = this.load();
   }
 
   public static getInstance(context: vscode.ExtensionContext): HarpoonOrchestrator {
@@ -26,11 +27,16 @@ export class HarpoonOrchestrator {
     this.marks = await this.storage.load();
   }
 
+  public async initialize(): Promise<void> {
+    await this.loadPromise;
+  }
+
   /**
    * Adds current file to marks list
    * If file already exists, updates its position
    */
   public async addFile(uri?: vscode.Uri, position?: vscode.Position): Promise<boolean> {
+    await this.initialize();
     const activeEditor = vscode.window.activeTextEditor;
     const targetUri = uri || activeEditor?.document.uri;
     if (!targetUri) {
@@ -46,7 +52,7 @@ export class HarpoonOrchestrator {
         this.marks[existingIndex].position = cursorPosition;
       }
       vscode.window.showInformationMessage(`File already marked at position ${existingIndex + 1}. Position updated.`);
-      this.persist();
+      await this.persist();
       return true;
     }
 
@@ -63,11 +69,13 @@ export class HarpoonOrchestrator {
   }
 
   public async insertAt(mark: HarpoonMark, index: number): Promise<void> {
+    await this.initialize();
     this.marks.splice(index, 0, mark);
     await this.persist();
   }
 
   public async removeFile(index: number): Promise<boolean> {
+    await this.initialize();
     if (index < 0 || index >= this.marks.length) {
       vscode.window.showWarningMessage(`Invalid mark index: ${index + 1}`);
       return false;
@@ -98,6 +106,7 @@ export class HarpoonOrchestrator {
   }
 
   public async navigateTo(index: number): Promise<boolean> {
+    await this.initialize();
     if (index < 0 || index >= this.marks.length) {
       vscode.window.showWarningMessage(`No mark at position ${index + 1}. Current marks: ${this.marks.length}`);
       return false;
@@ -125,6 +134,7 @@ export class HarpoonOrchestrator {
   }
 
   public async reorder(fromIndex: number, toIndex: number): Promise<boolean> {
+    await this.initialize();
     if (fromIndex < 0 || fromIndex >= this.marks.length || toIndex < 0 || toIndex >= this.marks.length) {
       vscode.window.showWarningMessage("Invalid reorder indices");
       return false;
@@ -138,6 +148,7 @@ export class HarpoonOrchestrator {
   }
 
   public async clearMarks(): Promise<void> {
+    await this.initialize();
     this.marks = [];
     await this.persist();
     vscode.window.showInformationMessage("Cleared all harpoon marks");
@@ -148,6 +159,7 @@ export class HarpoonOrchestrator {
   }
 
   public async updateLabel(index: number, label?: string): Promise<boolean> {
+    await this.initialize();
     if (index < 0 || index >= this.marks.length) {
       vscode.window.showWarningMessage(`Invalid mark index: ${index + 1}`);
       return false;

@@ -14,14 +14,16 @@ export class RipgrepFileFinder {
   }
 
   public async *streamFiles(rootPath: string): AsyncGenerator<string[]> {
-    const { excludePatterns, excludeHidden, includePatterns, maxResults } = ExtensionConfigManager.wsFileFinderCfg;
+    const { excludePatterns, excludeHidden, includePatterns, maxResults, respectGitIgnore } =
+      ExtensionConfigManager.wsFileFinderCfg;
 
     const args: string[] = ["--files"];
     for (const pattern of includePatterns) args.push("--glob", pattern);
     const excludes = [...excludePatterns, ...DEFAULT_EXCLUDE_PATTERNS];
     for (const pattern of excludes) args.push("--glob", `!${pattern}`);
     if (!excludeHidden) args.push("--hidden");
-    args.push("--no-ignore", "--", rootPath);
+    if (!respectGitIgnore) args.push("--no-ignore");
+    args.push("--", rootPath);
 
     for await (const rawChunk of RipgrepLineStreamer.stream({
       rgPath: RipgrepAvailability.rgPath,

@@ -131,7 +131,7 @@ export class HighlighterManager {
             name: support.scopeName,
             scopeName: support.scopeName,
           });
-        } catch (e) {}
+        } catch (_error) {}
       }
 
       await this.highlighter.loadLanguage({
