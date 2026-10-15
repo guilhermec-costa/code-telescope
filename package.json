@@ -7,7 +7,7 @@
     },
     "publisher": "guichina",
     "description": "A keyboard-first fuzzy finder for navigating files, symbols, text and more in VS Code, inspired by Neovim Telescope.",
-    "version": "1.12.0",
+    "version": "1.12.1",
     "keywords": [
         "fuzzy",
         "fuzzy finder",
@@ -27,7 +27,7 @@
         "harpoon",
         "jump"
     ],
-    "icon": "images/logo.webp",
+    "icon": "images/logo.png",
     "engines": {
         "vscode": "^1.85.0"
     },

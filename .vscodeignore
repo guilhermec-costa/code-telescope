@@ -91,3 +91,4 @@ Thumbs.db
 ############################
 images/*.gif
 images/*.png
+!images/logo.png
